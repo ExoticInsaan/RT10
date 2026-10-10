@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HeaderAuth from "@/components/HeaderAuth";
 
 export default function Header() {
   return (
@@ -10,12 +11,7 @@ export default function Header() {
         <nav className="flex items-center gap-4 text-sm font-medium text-slate-700">
           <Link href="/browse" className="hover:text-teal-700">Browse</Link>
           <Link href="/library" className="hover:text-teal-700">My Library</Link>
-          <Link
-            href="/login"
-            className="rounded-full bg-teal-600 px-4 py-1.5 text-white hover:bg-teal-700"
-          >
-            Login
-          </Link>
+          <HeaderAuth />
         </nav>
       </div>
     </header>

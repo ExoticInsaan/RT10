@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-// POST /api/checkout  { productId: string }
+// POST /api/checkout  { slug: string }
 // The price is ALWAYS read from the database, never from the browser.
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -13,9 +13,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please log in first." }, { status: 401 });
   }
 
-  const { productId } = (await request.json().catch(() => ({}))) as { productId?: string };
-  if (!productId) {
-    return NextResponse.json({ error: "Missing productId." }, { status: 400 });
+  const { slug } = (await request.json().catch(() => ({}))) as { slug?: string };
+  if (!slug) {
+    return NextResponse.json({ error: "Missing product." }, { status: 400 });
   }
 
   const admin = createAdminClient();
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   const { data: product } = await admin
     .from("products")
     .select("id, title, price")
-    .eq("id", productId)
+    .eq("slug", slug)
     .eq("published", true)
     .single();
   if (!product) {

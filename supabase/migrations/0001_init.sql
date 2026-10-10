@@ -21,6 +21,9 @@ begin
   return new;
 end $$;
 
+-- Only the database itself may run this; nobody can call it from the API.
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
@@ -50,6 +53,8 @@ create table public.questions (
   is_sample boolean not null default false  -- first few questions free to preview
 );
 
+create index questions_product_id_idx on public.questions (product_id);
+
 -- Correct answers + explanations live apart, with NO policies:
 -- only the server (service role) can read them, so they never reach the browser.
 create table public.question_answers (
@@ -71,6 +76,7 @@ create table public.purchases (
 );
 create unique index one_paid_purchase_per_item
   on public.purchases (user_id, product_id) where status = 'paid';
+create index purchases_product_id_idx on public.purchases (product_id);
 
 -- 5. attempts: quiz and test results -------------------------------------
 create table public.attempts (
@@ -82,6 +88,8 @@ create table public.attempts (
   started_at timestamptz not null default now(),
   submitted_at timestamptz
 );
+create index attempts_user_id_idx on public.attempts (user_id);
+create index attempts_product_id_idx on public.attempts (product_id);
 
 -- Row Level Security ------------------------------------------------------
 alter table public.profiles         enable row level security;
@@ -91,8 +99,8 @@ alter table public.question_answers enable row level security;  -- no policy = s
 alter table public.purchases        enable row level security;
 alter table public.attempts         enable row level security;
 
-create policy "own profile read"   on public.profiles for select using (auth.uid() = id);
-create policy "own profile update" on public.profiles for update using (auth.uid() = id);
+create policy "own profile read"   on public.profiles for select using ((select auth.uid()) = id);
+create policy "own profile update" on public.profiles for update using ((select auth.uid()) = id);
 
 create policy "anyone reads published products"
   on public.products for select using (published);
@@ -103,16 +111,19 @@ create policy "read sample questions or questions you paid for"
     or exists (
       select 1 from public.purchases pu
       where pu.product_id = questions.product_id
-        and pu.user_id = auth.uid()
+        and pu.user_id = (select auth.uid())
         and pu.status = 'paid'
     )
   );
 
 -- Students read only their own purchases. No insert/update policy:
 -- only the server (service role) writes purchases.
-create policy "own purchases read" on public.purchases for select using (auth.uid() = user_id);
+create policy "own purchases read" on public.purchases for select using ((select auth.uid()) = user_id);
 
-create policy "own attempts read" on public.attempts for select using (auth.uid() = user_id);
+create policy "own attempts read" on public.attempts for select using ((select auth.uid()) = user_id);
 
--- Storage: create a PRIVATE bucket named 'notes' (Dashboard -> Storage).
--- Add no public policies. The server checks the purchase, then issues a signed URL (~60 s).
+-- Storage: private bucket for the PDFs. No public policies are added.
+-- The server checks the purchase, then issues a signed URL (~60 s).
+insert into storage.buckets (id, name, public)
+values ('notes', 'notes', false)
+on conflict (id) do nothing;

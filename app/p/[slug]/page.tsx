@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { products, typeLabel } from "@/lib/sample-data";
+import BuyButton from "@/components/BuyButton";
 
 export async function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -31,16 +32,10 @@ export default async function ProductPage(props: PageProps<"/p/[slug]">) {
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
           <span className="text-3xl font-extrabold text-teal-700">₹{p.price}</span>
-          <button
-            disabled
-            className="rounded-full bg-teal-600 px-6 py-3 font-semibold text-white opacity-60"
-            title="Payments are connected in Phase 3"
-          >
-            Buy now
-          </button>
+          <BuyButton slug={p.slug} price={p.price} />
         </div>
         <p className="mt-3 text-xs text-slate-500">
-          Payments switch on after the Razorpay setup. Free sample and preview will appear here.
+          You will be asked to sign in before paying. Secure payment by Razorpay (UPI, cards, net banking).
         </p>
       </div>
     </div>
