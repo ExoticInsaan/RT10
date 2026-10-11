@@ -1,24 +1,44 @@
 import Link from "next/link";
-
-const links = [
-  { href: "/privacy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
-  { href: "/refund", label: "Refund policy" },
-  { href: "/contact", label: "Contact" },
-];
+import cn from "@/lib/design/twStyles";
+import Brand from "@/components/ui/Brand";
 
 export default function Footer() {
   return (
-    <footer className="mt-16 border-t border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-8 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-        <p>© TopperShelf. Study material for nursing students.</p>
-        <ul className="flex flex-wrap gap-4">
-          {links.map((l) => (
-            <li key={l.href}>
-              <Link href={l.href} className="hover:text-teal-700">{l.label}</Link>
-            </li>
-          ))}
-        </ul>
+    <footer className={cn("site-footer")}>
+      <div className={cn("container footer-main")}>
+        <div className={cn("footer-brand")}>
+          <Brand />
+          <strong>Your Nursing Journey, One Shelf at a Time.</strong>
+          <p>
+            Notes, quizzes and mock tests for GNM, BSc Nursing and Post Basic students, organized
+            for focused study and revision.
+          </p>
+        </div>
+        <nav aria-label="Footer explore links">
+          <strong>Explore</strong>
+          <Link href="/">Home</Link>
+          <Link href="/browse">All Resources</Link>
+          <Link href="/library">My Library</Link>
+          <Link href="/contact">Contact</Link>
+        </nav>
+        <nav aria-label="Footer legal links">
+          <strong>Policies</strong>
+          <Link href="/privacy">Privacy Policy</Link>
+          <Link href="/terms">Terms &amp; Conditions</Link>
+          <Link href="/refund">Refund Policy</Link>
+        </nav>
+        <div className={cn("footer-statement")}>
+          <p>
+            Study smarter.
+            <br />
+            Build confidence.
+            <br />
+            <em>Reach your goals.</em>
+          </p>
+        </div>
+      </div>
+      <div className={cn("container footer-bottom")}>
+        <span>© 2026 Toppershelf. All rights reserved.</span>
       </div>
     </footer>
   );
