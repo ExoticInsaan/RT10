@@ -2,6 +2,7 @@ import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import Hero from "@/components/home/Hero";
 import Finder from "@/components/home/Finder";
+import Semesters from "@/components/home/Semesters";
 import { products } from "@/lib/sample-data";
 
 const subjects = [
@@ -18,6 +19,7 @@ export default function Home() {
     <>
       <Hero />
       <Finder />
+      <Semesters />
 
       <section className="mx-auto max-w-5xl px-4 py-10">
         <h2 className="text-xl font-bold">Subjects</h2>
