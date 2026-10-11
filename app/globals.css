@@ -1,9 +1,62 @@
 @import "tailwindcss";
 
+/* Toppershelf design system: tokens from the new website experience. */
 @theme inline {
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", sans-serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", sans-serif;
+  --font-display: var(--font-dm-serif), Georgia, serif;
+}
+
+@theme {
+  --color-ivory: #fffbf7;
+  --color-surface: #f7f0e6;
+  --color-blue-soft: #e9f4fc;
+  --color-blue: #60a5fa;
+  --color-blue-hover: #3b82f6;
+  --color-navy: #102a4c;
+  --color-ink: #1f2937;
+  --color-muted: #687483;
+  --color-line: #dedbd5;
+}
+
+html {
+  background: #fffbf7;
+  color: #1f2937;
+  scroll-behavior: smooth;
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  min-width: 320px;
+  background: #fffbf7;
+  color: #1f2937;
+  @apply antialiased;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(96, 165, 250, 0.38);
+  outline-offset: 2px;
+}
+
+@keyframes founders-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
