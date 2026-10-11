@@ -17,6 +17,7 @@ export default function Footer() {
         <nav aria-label="Footer explore links">
           <strong>Explore</strong>
           <Link href="/">Home</Link>
+          <Link href="/about">About Us</Link>
           <Link href="/browse">All Resources</Link>
           <Link href="/library">My Library</Link>
           <Link href="/contact">Contact</Link>

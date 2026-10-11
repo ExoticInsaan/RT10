@@ -1,7 +1,15 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import cn from "@/lib/design/twStyles";
+import { slug as toSlug, subjectAccent } from "@/lib/design/catalog";
 import { products, typeLabel } from "@/lib/sample-data";
 import BuyButton from "@/components/BuyButton";
+import CartButton from "@/components/cart/CartButton";
+import WishButton from "@/components/cart/WishButton";
+import Cover from "@/components/ui/Cover";
+import Icon from "@/components/ui/Icon";
+import SectionLabel from "@/components/ui/SectionLabel";
 
 export async function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -19,25 +27,51 @@ export default async function ProductPage(props: PageProps<"/p/[slug]">) {
   if (!p) notFound();
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-800">
-        {typeLabel[p.type]}
-      </span>
-      <h1 className="mt-3 text-2xl font-bold sm:text-3xl">{p.title}</h1>
-      <p className="mt-1 text-sm text-slate-500">
-        {p.subject} · {p.course} · {p.year}
-      </p>
-      <p className="mt-4 text-slate-700">{p.blurb}</p>
-
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="flex items-center justify-between">
-          <span className="text-3xl font-extrabold text-teal-700">₹{p.price}</span>
-          <BuyButton slug={p.slug} price={p.price} />
-        </div>
-        <p className="mt-3 text-xs text-slate-500">
-          You will be asked to sign in before paying. Secure payment by Razorpay (UPI, cards, net banking).
-        </p>
+    <main className={cn("container product-page")}>
+      <div className={cn("breadcrumbs")}>
+        <Link href="/">Home</Link>
+        <span>/</span>
+        <Link href={`/browse?subject=${toSlug(p.subject)}`}>{p.subject}</Link>
+        <span>/</span>
+        <span>{p.title}</span>
       </div>
-    </div>
+      <div className={cn("product-detail")}>
+        <div className={cn("detail-cover")}>
+          <Cover
+            title={p.title}
+            subject={p.subject}
+            accent={subjectAccent[p.subject] ?? "surgical"}
+            coverLine={p.blurb}
+          />
+        </div>
+        <div className={cn("detail-copy")}>
+          <SectionLabel variant="content">Resource details</SectionLabel>
+          <span className={cn("eyebrow")}>{typeLabel[p.type]}</span>
+          <h1>{p.title}</h1>
+          <span className={cn("tag")}>
+            {p.subject} · {p.course} · {p.year}
+          </span>
+          <p>{p.blurb}</p>
+          <ul>
+            <li>
+              <Icon name="check" /> Instant access after payment
+            </li>
+            <li>
+              <Icon name="check" /> Read on mobile, tablet or desktop
+            </li>
+            <li>
+              <Icon name="check" /> Secure payment by Razorpay (UPI, cards, net banking)
+            </li>
+          </ul>
+          <strong className={cn("detail-price")}>₹ {p.price}</strong>
+          <div className={cn("detail-actions")}>
+            <BuyButton slug={p.slug} price={p.price} />
+            <CartButton slug={p.slug} variant="detail" />
+            <WishButton slug={p.slug} variant="detail" />
+          </div>
+          <p>You will be asked to sign in before paying.</p>
+        </div>
+      </div>
+    </main>
   );
 }

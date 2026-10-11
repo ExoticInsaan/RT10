@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AuthProvider from "@/components/AuthProvider";
+import { CartProvider } from "@/components/cart/CartProvider";
+import CartDrawer from "@/components/cart/CartDrawer";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const dmSerif = DM_Serif_Display({
@@ -27,9 +29,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`h-full ${inter.variable} ${dmSerif.variable}`}>
       <body className="flex min-h-full flex-col font-sans">
         <AuthProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <CartProvider>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <CartDrawer />
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

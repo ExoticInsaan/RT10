@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
+import Button from "@/components/ui/Button";
+import Icon from "@/components/ui/Icon";
 
 type RzpOptions = {
   key: string;
@@ -90,15 +92,10 @@ export default function BuyButton({ slug, price }: { slug: string; price: number
   }
 
   return (
-    <div className="flex flex-col items-end gap-2">
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={busy}
-        className="rounded-full bg-teal-600 px-6 py-3 font-semibold text-white hover:bg-teal-700 disabled:opacity-60"
-      >
-        {busy ? "Please wait…" : `Buy now · ₹${price}`}
-      </button>
+    <div className="flex flex-col gap-2">
+      <Button onClick={onClick} disabled={busy}>
+        {busy ? "Please wait…" : `Buy now · ₹${price}`} <Icon name="cart" />
+      </Button>
       {message && <p className="text-sm text-red-600">{message}</p>}
     </div>
   );

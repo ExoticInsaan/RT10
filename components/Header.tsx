@@ -7,15 +7,19 @@ import Brand from "@/components/ui/Brand";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import HeaderAuth from "@/components/HeaderAuth";
+import { useCart } from "@/components/cart/CartProvider";
 
 const navLinks = [
   { href: "/browse", label: "Browse" },
   { href: "/library", label: "My Library" },
+  { href: "/founders", label: "Founders" },
+  { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { cart, openCart } = useCart();
   return (
     <header className={cn("site-header")}>
       <div className={cn("header-inner")}>
@@ -41,6 +45,10 @@ export default function Header() {
           <Link href="/browse" className={cn("icon-link")} aria-label="Search">
             <Icon name="search" />
           </Link>
+          <Button variant="icon" ariaLabel={`Cart with ${cart.length} items`} onClick={openCart}>
+            <Icon name="cart" />
+            {cart.length > 0 && <span className={cn("count")}>{cart.length}</span>}
+          </Button>
           <HeaderAuth />
         </div>
       </div>
