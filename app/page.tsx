@@ -1,18 +1,7 @@
-import Link from "next/link";
-import ProductCard from "@/components/ProductCard";
 import Hero from "@/components/home/Hero";
 import Finder from "@/components/home/Finder";
 import Semesters from "@/components/home/Semesters";
-import { products } from "@/lib/sample-data";
-
-const subjects = [
-  "Anatomy & Physiology",
-  "Fundamentals of Nursing",
-  "Pharmacology",
-  "Microbiology",
-  "Medical-Surgical Nursing",
-  "Community Health",
-];
+import Popular from "@/components/home/Popular";
 
 export default function Home() {
   return (
@@ -20,34 +9,7 @@ export default function Home() {
       <Hero />
       <Finder />
       <Semesters />
-
-      <section className="mx-auto max-w-5xl px-4 py-10">
-        <h2 className="text-xl font-bold">Subjects</h2>
-        <ul className="mt-4 flex flex-wrap gap-2">
-          {subjects.map((s) => (
-            <li key={s}>
-              <Link
-                href={`/browse?subject=${encodeURIComponent(s)}`}
-                className="inline-block rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-teal-400 hover:text-teal-700"
-              >
-                {s}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mx-auto max-w-5xl px-4">
-        <div className="flex items-end justify-between">
-          <h2 className="text-xl font-bold">Popular right now</h2>
-          <Link href="/browse" className="text-sm font-medium text-teal-700">See all →</Link>
-        </div>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {products.slice(0, 6).map((p) => (
-            <ProductCard key={p.slug} p={p} />
-          ))}
-        </div>
-      </section>
+      <Popular />
 
       <section className="mx-auto mt-12 max-w-5xl px-4">
         <div className="grid gap-4 rounded-2xl bg-white p-6 shadow-sm sm:grid-cols-3">

@@ -24,3 +24,13 @@ export function slug(value: string) {
     .replace(/[^\w]+/g, "-")
     .replace(/^-|-$/g, "");
 }
+
+// Cover colour per subject. Subjects without a match use the default cover colour.
+export const subjectAccent: Record<string, string> = {
+  "Anatomy & Physiology": "anatomy",
+  "Fundamentals of Nursing": "foundation",
+  Pharmacology: "pharma",
+  Microbiology: "pathology",
+  "Medical-Surgical Nursing": "surgical",
+  "Exam practice": "mental",
+};
