@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
+import Hero from "@/components/home/Hero";
 import { products } from "@/lib/sample-data";
 
 const subjects = [
@@ -14,31 +15,7 @@ const subjects = [
 export default function Home() {
   return (
     <>
-      <section className="bg-gradient-to-b from-teal-50 to-slate-50">
-        <div className="mx-auto max-w-5xl px-4 py-14 text-center sm:py-20">
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-            Study smarter for nursing exams
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 sm:text-lg">
-            Clear notes, practice quizzes and mock tests for GNM, BSc Nursing and Post Basic.
-            Notes and quizzes at <b>₹19</b>, full tests at <b>₹28</b>.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/browse"
-              className="w-full rounded-full bg-teal-600 px-6 py-3 font-semibold text-white shadow hover:bg-teal-700 sm:w-auto"
-            >
-              Browse material
-            </Link>
-            <Link
-              href="/browse?free=1"
-              className="w-full rounded-full border border-teal-600 px-6 py-3 font-semibold text-teal-700 hover:bg-teal-50 sm:w-auto"
-            >
-              Try a free sample
-            </Link>
-          </div>
-        </div>
-      </section>
+      <Hero />
 
       <section className="mx-auto max-w-5xl px-4 py-10">
         <h2 className="text-xl font-bold">Subjects</h2>
