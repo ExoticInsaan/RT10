@@ -17,9 +17,21 @@ const dmSerif = DM_Serif_Display({
 });
 
 export const metadata: Metadata = {
-  title: { default: "TopperShelf: Nursing notes, quizzes & tests", template: "%s | TopperShelf" },
+  metadataBase: new URL("https://www.toppershelf.online"),
+  title: {
+    default: "Toppershelf: Nursing study notes, important questions and flashcards",
+    template: "%s | Toppershelf",
+  },
   description:
-    "Affordable nursing notes, quizzes and mock tests for GNM, BSc Nursing and Post Basic students. Notes and quizzes at ₹19, full tests at ₹28.",
+    "Exam-focused nursing study material: important questions, case studies, care plans, assignments and flashcards, organized by semester and subject.",
+  openGraph: {
+    siteName: "Toppershelf",
+    type: "website",
+    locale: "en_IN",
+    title: "Toppershelf: Better Resources. Better Results.",
+    description:
+      "Important questions, case studies, care plans, assignments and flashcards for nursing students.",
+  },
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#FFFBF7" };

@@ -8,7 +8,7 @@ export default function Hero() {
     <section className={cn("hero container")}>
       <SectionLabel variant="hero">For nursing students</SectionLabel>
       <h1>
-        Nursing Notes, Quizzes
+        Nursing Notes, Quizzes{" "}
         <br className="max-[560px]:hidden" />
         &amp; Mock Tests — <em>All in One Place.</em>
       </h1>

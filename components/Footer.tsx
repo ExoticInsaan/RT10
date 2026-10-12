@@ -7,11 +7,11 @@ export default function Footer() {
     <footer className={cn("site-footer")}>
       <div className={cn("container footer-main")}>
         <div className={cn("footer-brand")}>
-          <Brand />
+          <Brand tile />
           <strong>Your Nursing Journey, One Shelf at a Time.</strong>
           <p>
-            Notes, quizzes and mock tests for GNM, BSc Nursing and Post Basic students, organized
-            for focused study and revision.
+            Important questions, case studies, care plans, assignments and flashcards for nursing
+            students, organized by subject and semester.
           </p>
         </div>
         <nav aria-label="Footer explore links">

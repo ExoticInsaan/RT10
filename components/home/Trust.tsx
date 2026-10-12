@@ -7,13 +7,13 @@ export default function Trust() {
       <div>
         <Icon name="book" />
         <span>
-          <strong>Trusted by</strong> thousands of nursing students
+          <strong>Organized by</strong> semester and subject
         </span>
       </div>
       <div>
         <Icon name="shield" />
         <span>
-          <strong>Exam-focused</strong> and syllabus aligned
+          <strong>Exam-focused</strong> revision material
         </span>
       </div>
       <div>
