@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import AuthPanel from "@/components/AuthPanel";
 import Button from "@/components/ui/Button";
-import PdfViewer from "@/components/reader/PdfViewer";
+import PageViewer, { type PageSize } from "@/components/reader/PageViewer";
 
 const SUPPORT_EMAIL = "support@toppershelf.online";
 
 type State =
   | { kind: "loading" }
-  | { kind: "ready"; url: string; title: string; email: string }
+  | { kind: "ready"; title: string; email: string; pages: PageSize[] }
   | { kind: "message"; heading: string; text: string; action: "product" | "browse" | "retry" | "none" };
 
 function Notice({ heading, text, children }: { heading: string; text: string; children?: React.ReactNode }) {
@@ -37,7 +37,7 @@ export default function ReaderGate({ slug }: { slug: string }) {
         const res = await fetch(`/api/read/${encodeURIComponent(slug)}`, { cache: "no-store" });
         const data = await res.json().catch(() => ({}));
         if (cancelled) return;
-        if (res.ok) return setState({ kind: "ready", url: data.url, title: data.title, email: data.email });
+        if (res.ok) return setState({ kind: "ready", title: data.title, email: data.email, pages: data.pages });
         if (data.code === "not_owned")
           return setState({
             kind: "message",
@@ -97,7 +97,7 @@ export default function ReaderGate({ slug }: { slug: string }) {
           aria-hidden
           className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
         />
-        Checking your purchase…
+        Opening your PDF…
       </p>
     );
   }
@@ -121,5 +121,5 @@ export default function ReaderGate({ slug }: { slug: string }) {
     );
   }
 
-  return <PdfViewer url={state.url} title={state.title} email={state.email} />;
+  return <PageViewer slug={slug} title={state.title} email={state.email} pages={state.pages} />;
 }

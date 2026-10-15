@@ -33,7 +33,7 @@ Toppershelf is an online shop for exam-focused nursing study material. Students 
 | Database tables and security rules | Done |
 | Admin page: upload PDFs, set price, publish | Done |
 | Shop pages read uploaded resources | Done. Home, browse and product pages show only resources the admin has published. |
-| In-browser PDF reader (no download button) | Planned |
+| In-browser PDF reader (no download button) | Done. The PDF stays on the server; buyers get watermarked page pictures. |
 | Razorpay checkout and webhook | Code written, not live. Needs keys and Razorpay approval. |
 | Cart checkout for several items at once | Planned. An order currently covers one item. |
 | Sitemap and robots file | Planned |
@@ -135,6 +135,18 @@ To add a resource: choose the course, semester or year, subject, type and price,
 4. The webhook checks the signature and marks the purchase as paid. **Access is unlocked only here, never because the browser says "paid".**
 
 ---
+
+## PDF reader
+
+After paying, a student opens the PDF at `/read/<slug>` and reads it in the browser.
+
+- **The PDF file never reaches the browser.** The server draws one page at a time and sends a picture with the student's email burned into it (diagonal across the page and along the bottom). `/api/read/<slug>` gives the page sizes; `/api/read/<slug>/page/<n>` gives a page picture. Both check the sign-in and a paid purchase first (admins can preview any PDF).
+- No download, print or share button. Right-click, Ctrl+S and Ctrl+P are blocked, printing shows only a note, and the pages are hidden whenever the window is not in front or the Print Screen key is pressed.
+- A copied page link does not work for anyone else, because it needs the student's own sign-in.
+- **What this cannot do:** no website can block a phone's own screenshot button, a screen recording or a photo of the screen. The burned-in email is what makes any leaked copy traceable to the person who shared it. Say so honestly in any copy you write.
+- Code: `lib/reader-access.ts` (who may read), `lib/reader-server.ts` (draws pages and the watermark), `components/reader/` (the screen). The watermark font is `lib/fonts/DejaVuSans-Bold.ttf` (see `DejaVu-LICENSE.txt`).
+- `next.config.ts` lists `pdfjs-dist` and `@napi-rs/canvas` as server external packages and makes sure the worker, fonts and watermark font ship with the deploy. If the reader works locally but not after deploying, check those first.
+- A student whose purchase is refunded can keep reading for up to a minute (the server remembers "allowed" briefly to save database calls).
 
 ## Sign-in
 
