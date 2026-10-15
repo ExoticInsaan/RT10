@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import cn from "@/lib/design/twStyles";
 import LibraryClient from "@/components/LibraryClient";
@@ -13,7 +14,9 @@ export default function LibraryPage() {
       <h1 className="font-display m-0 mb-8 text-[clamp(27px,3.2vw,40px)] font-normal leading-[1.12] text-navy">
         My Library
       </h1>
-      <LibraryClient />
+      <Suspense fallback={<p className="text-muted">Loading…</p>}>
+        <LibraryClient />
+      </Suspense>
       <SavedItems />
     </main>
   );

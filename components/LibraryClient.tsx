@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import AuthPanel from "@/components/AuthPanel";
 import Button from "@/components/ui/Button";
@@ -9,30 +10,100 @@ import Icon from "@/components/ui/Icon";
 import cn from "@/lib/design/twStyles";
 import { createClient } from "@/lib/supabase/client";
 
-type Item = { id: string; title: string; slug: string };
+const SUPPORT_EMAIL = "support@toppershelf.online";
+const CHECK_EVERY_MS = 3000;
+const GIVE_UP_AFTER_MS = 90_000;
+
+type Row = {
+  id: string;
+  status: "pending" | "paid" | "failed" | "refunded";
+  gateway_order_id: string;
+  products: { title: string; slug: string } | null;
+};
+
+async function fetchRows(): Promise<Row[]> {
+  const { data } = await createClient()
+    .from("purchases")
+    .select("id, status, gateway_order_id, products(title, slug)")
+    .order("created_at", { ascending: false });
+  return (data ?? []) as unknown as Row[];
+}
+
+function Banner({
+  tone,
+  title,
+  children,
+  spinner = false,
+}: {
+  tone: "success" | "wait" | "warn" | "info";
+  title: string;
+  children?: React.ReactNode;
+  spinner?: boolean;
+}) {
+  const colours = {
+    success: "border-green-300 bg-green-50 text-green-900",
+    wait: "border-line bg-white text-navy",
+    warn: "border-amber-300 bg-amber-50 text-amber-900",
+    info: "border-line bg-white text-navy",
+  }[tone];
+  return (
+    <div className={`mb-6 flex items-start gap-3 rounded-lg border p-4 ${colours}`} role="status" aria-live="polite">
+      {spinner ? (
+        <span
+          aria-hidden
+          className="mt-1 inline-block h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent"
+        />
+      ) : tone === "success" ? (
+        <Icon name="check" size={18} />
+      ) : null}
+      <div>
+        <p className="m-0 font-semibold">{title}</p>
+        {children && <div className="mt-1 text-sm leading-relaxed">{children}</div>}
+      </div>
+    </div>
+  );
+}
 
 export default function LibraryClient() {
   const { user, ready } = useAuth();
-  const [items, setItems] = useState<Item[] | null>(null);
+  const params = useSearchParams();
+  const justPaid = params.get("paid") === "1";
+  const orderId = params.get("order");
+
+  const [rows, setRows] = useState<Row[] | null>(null);
+  const [timedOut, setTimedOut] = useState(false);
+
+  const load = useCallback(async () => setRows(await fetchRows()), []);
 
   useEffect(() => {
     if (!user) return;
-    createClient()
-      .from("purchases")
-      .select("id, products(title, slug)")
-      .eq("status", "paid")
-      .then(({ data }) => {
-        const rows = (data ?? []) as unknown as {
-          id: string;
-          products: { title: string; slug: string } | null;
-        }[];
-        setItems(
-          rows
-            .filter((r) => r.products)
-            .map((r) => ({ id: r.id, title: r.products!.title, slug: r.products!.slug })),
-        );
-      });
+    let cancelled = false;
+    fetchRows().then((data) => {
+      if (!cancelled) setRows(data);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
+
+  // The payment we are waiting on (the student has just come back from the payment window).
+  const justBought = justPaid && orderId ? rows?.find((r) => r.gateway_order_id === orderId) : undefined;
+  const confirming = justBought?.status === "pending" || justBought?.status === "failed";
+
+  // The unlock arrives from the payment company a few seconds after paying. Keep checking.
+  useEffect(() => {
+    if (!confirming || timedOut) return;
+    const startedAt = Date.now();
+    const timer = setInterval(() => {
+      if (Date.now() - startedAt > GIVE_UP_AFTER_MS) {
+        clearInterval(timer);
+        setTimedOut(true);
+        return;
+      }
+      load();
+    }, CHECK_EVERY_MS);
+    return () => clearInterval(timer);
+  }, [confirming, timedOut, load]);
 
   if (!ready) return <p className="text-muted">Loading…</p>;
 
@@ -44,41 +115,102 @@ export default function LibraryClient() {
     );
   }
 
-  if (items === null) return <p className="text-muted">Loading your library…</p>;
+  if (rows === null) return <p className="text-muted">Loading your library…</p>;
+
+  const items = rows.filter((r) => r.status === "paid" && r.products);
+  const title = justBought?.products?.title;
+
+  let banner: React.ReactNode = null;
+  if (justBought?.status === "paid") {
+    banner = (
+      <Banner tone="success" title="Payment received">
+        {title ? <>“{title}” is now in your library.</> : "Your resource is now in your library."}
+        {justBought.products && (
+          <>
+            {" "}
+            <Link href={`/read/${justBought.products.slug}`} className="font-semibold underline">
+              Read it now
+            </Link>
+          </>
+        )}
+      </Banner>
+    );
+  } else if (confirming && !timedOut) {
+    banner = (
+      <Banner tone="wait" title="Confirming your payment…" spinner>
+        This usually takes a few seconds. Please keep this page open and do not pay again.
+      </Banner>
+    );
+  } else if (confirming && timedOut) {
+    banner = (
+      <Banner tone="warn" title="Your payment is taking longer than usual">
+        <p className="m-0">
+          If money was deducted, your resource will appear here automatically once the bank confirms it. Please do
+          not pay again. If it is not here within 30 minutes, email {SUPPORT_EMAIL} with this reference:{" "}
+          <b>{orderId}</b>.
+        </p>
+        <button
+          type="button"
+          className="mt-2 cursor-pointer border-0 bg-transparent p-0 font-semibold underline"
+          onClick={() => {
+            setTimedOut(false);
+            load();
+          }}
+        >
+          Check again
+        </button>
+      </Banner>
+    );
+  } else if (justBought?.status === "refunded") {
+    banner = (
+      <Banner tone="info" title="This payment was refunded">
+        The money is being returned to your original payment method (usually 5 to 7 working days).
+        {items.length > 0 && " You already own this resource, so nothing else is needed."}
+      </Banner>
+    );
+  }
 
   if (items.length === 0) {
     return (
-      <section className={cn("empty")}>
-        <div className={cn("empty-art")}>
-          <span className={cn("paper")}>
-            <i />
-            <i />
-            <i />
-          </span>
-          <span className={cn("glass")}>
-            <b />
-          </span>
-        </div>
-        <h2>You have not bought anything yet</h2>
-        <p>Resources you buy will appear here, ready whenever you need to revise.</p>
-        <Button href="/browse">Browse material</Button>
-      </section>
+      <>
+        {banner}
+        {!confirming && (
+          <section className={cn("empty")}>
+            <div className={cn("empty-art")}>
+              <span className={cn("paper")}>
+                <i />
+                <i />
+                <i />
+              </span>
+              <span className={cn("glass")}>
+                <b />
+              </span>
+            </div>
+            <h2>You have not bought anything yet</h2>
+            <p>Resources you buy will appear here, ready whenever you need to revise.</p>
+            <Button href="/browse">Browse material</Button>
+          </section>
+        )}
+      </>
     );
   }
 
   return (
-    <ul className="m-0 grid list-none gap-3 p-0">
-      {items.map((i) => (
-        <li
-          key={i.id}
-          className="flex items-center justify-between gap-4 rounded-lg border border-line bg-white p-4 transition hover:border-[#b9cbd7]"
-        >
-          <span className="font-semibold text-navy">{i.title}</span>
-          <Link href={`/p/${i.slug}`} className={cn("text-link")}>
-            Open <Icon name="arrow" size={14} />
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <>
+      {banner}
+      <ul className="m-0 grid list-none gap-3 p-0">
+        {items.map((i) => (
+          <li
+            key={i.id}
+            className="flex items-center justify-between gap-4 rounded-lg border border-line bg-white p-4 transition hover:border-[#b9cbd7]"
+          >
+            <span className="font-semibold text-navy">{i.products!.title}</span>
+            <Link href={`/read/${i.products!.slug}`} className={cn("text-link")}>
+              Read <Icon name="arrow" size={14} />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
