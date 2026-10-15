@@ -1,7 +1,8 @@
 import Link from "next/link";
 import cn from "@/lib/design/twStyles";
-import { subjectAccent } from "@/lib/design/catalog";
-import { Product, typeLabel } from "@/lib/sample-data";
+import { accentFor } from "@/lib/design/catalog";
+import { courseLabel, termText, typeLabelOf } from "@/lib/catalog-config";
+import type { Product } from "@/lib/product-types";
 import Cover from "@/components/ui/Cover";
 import CartButton from "@/components/cart/CartButton";
 import WishButton from "@/components/cart/WishButton";
@@ -14,17 +15,18 @@ export default function PopularCard({ p }: { p: Product }) {
         <Cover
           title={p.title}
           subject={p.subject}
-          accent={subjectAccent[p.subject] ?? "surgical"}
-          coverLine={p.blurb}
+          accent={accentFor(p.subject)}
+          coverLine={typeLabelOf(p.type)}
         />
       </Link>
       <div className={cn("card-body")}>
-        <span className={cn("eyebrow")}>{typeLabel[p.type]}</span>
+        <span className={cn("eyebrow")}>{typeLabelOf(p.type)}</span>
         <Link href={href}>
           <h3>{p.title}</h3>
         </Link>
         <span className={cn("tag")}>
-          {p.course} · {p.year}
+          {courseLabel(p.course)}
+          {p.term ? ` · ${termText(p.course, p.term)}` : ""}
         </span>
         <div className={cn("price-row")}>
           <strong>₹ {p.price}</strong>

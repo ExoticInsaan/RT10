@@ -29,7 +29,7 @@ export default function BrowseControls({
   }, [sheet]);
 
   const changeSort = (next: Sort) => {
-    const query = toQuery(filters, next);
+    const query = toQuery(filters, next, facets.priceMax);
     router.replace(query ? `/browse?${query}` : "/browse");
   };
 

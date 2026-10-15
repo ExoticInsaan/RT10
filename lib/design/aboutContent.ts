@@ -8,19 +8,19 @@ export const aboutCategories = [
   {
     title: "Year-Wise Resources",
     text: "Find study materials relevant to your current year of study.",
-    href: "/browse?year=1st-year",
+    href: "/browse?course=bsc-nursing&term=1",
     number: "02",
   },
   {
     title: "Medical-Surgical Nursing",
     text: "Explore notes and revision resources for Medical-Surgical Nursing.",
-    href: "/browse?subject=medical-surgical-nursing",
+    href: "/browse?q=medical-surgical",
     number: "03",
   },
   {
     title: "Nursing Exam Preparation",
     text: "Discover study materials to support nursing exam revision.",
-    href: "/browse?type=test",
+    href: "/browse?type=important-questions",
     number: "04",
   },
 ];
@@ -36,7 +36,7 @@ export const aboutFaqs: [question: string, answer: string][] = [
   ],
   [
     "Can I filter resources by course and subject?",
-    "Yes. Use the filters on the Browse page to narrow resources by course, year, subject and resource type.",
+    "Yes. Use the filters on the Browse page for course, semester or year and resource type, and type a subject name into the search bar to find its PDFs.",
   ],
   [
     "Does Toppershelf replace textbooks or official nursing syllabi?",

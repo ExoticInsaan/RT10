@@ -32,13 +32,11 @@ Toppershelf is an online shop for exam-focused nursing study material. Students 
 | Legal pages (privacy, terms, refund, contact) | Done |
 | Database tables and security rules | Done |
 | Admin page: upload PDFs, set price, publish | Done |
-| Shop pages read uploaded resources | **Next.** Browse, home and product pages still show sample data. |
+| Shop pages read uploaded resources | Done. Home, browse and product pages show only resources the admin has published. |
 | In-browser PDF reader (no download button) | Planned |
 | Razorpay checkout and webhook | Code written, not live. Needs keys and Razorpay approval. |
 | Cart checkout for several items at once | Planned. An order currently covers one item. |
 | Sitemap and robots file | Planned |
-
-Known leftovers: the home page text and sample cards still mention the old prices (₹19 and ₹28). They are replaced when the shop pages switch to the database.
 
 ---
 
@@ -81,6 +79,8 @@ Copy `.env.example` to `.env.local` and fill it in. On Vercel, add the same name
 | `components/` | `home/`, `browse/`, `cart/`, `admin/`, `ui/`, plus sign-in and header parts |
 | `lib/catalog-config.ts` | The courses and the five content types. The database enforces the same values. |
 | `lib/supabase/` | Browser, server and admin (service role) clients |
+| `lib/products.ts` | Reads published resources from Supabase (cached for about a minute) |
+| `lib/browse.ts` | Search, filters and sorting for `/browse` |
 | `lib/design/` | Design styles and catalogue helpers |
 | `public/` | Logos |
 | `supabase/migrations/` | SQL for the database |
@@ -121,7 +121,9 @@ To add another admin, run this in the Supabase SQL Editor (use lowercase):
 insert into public.admins (email) values ('name@example.com');
 ```
 
-To add a resource: choose the course, semester or year, subject, type and price, then upload the PDF (and an optional free sample). Tick **Published** to show it in the shop. New resources start as drafts.
+To add a resource: choose the course, semester or year, subject, type and price, then upload the PDF (and an optional free sample). Tick **Published** to show it in the shop (it appears within about a minute). New resources start as drafts.
+
+**Subject is typed, not picked.** Type the subject name exactly as students would search for it. Students have no subject filter: they type a subject into the search bar on the home or browse page, and every published PDF whose subject, title or description contains those words is shown. Search ignores capital letters, and "and" matches "&".
 
 ---
 

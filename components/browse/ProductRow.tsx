@@ -1,7 +1,8 @@
 import Link from "next/link";
 import cn from "@/lib/design/twStyles";
-import { subjectAccent } from "@/lib/design/catalog";
-import { Product, typeLabel } from "@/lib/sample-data";
+import { accentFor } from "@/lib/design/catalog";
+import { courseLabel, termText, typeLabelOf } from "@/lib/catalog-config";
+import type { Product } from "@/lib/product-types";
 import CartButton from "@/components/cart/CartButton";
 import WishButton from "@/components/cart/WishButton";
 import Cover from "@/components/ui/Cover";
@@ -14,18 +15,24 @@ export default function ProductRow({ p }: { p: Product }) {
         <Cover
           title={p.title}
           subject={p.subject}
-          accent={subjectAccent[p.subject] ?? "surgical"}
-          coverLine={p.blurb}
+          accent={accentFor(p.subject)}
+          coverLine={typeLabelOf(p.type)}
           small
         />
       </Link>
       <div className={cn("row-main")}>
-        <span className={cn("eyebrow")}>{typeLabel[p.type]}</span>
+        <span className={cn("eyebrow")}>{typeLabelOf(p.type)}</span>
         <Link href={href}>
           <h3>{p.title}</h3>
         </Link>
         <p>
-          {p.subject} <b>•</b> {p.course} <b>•</b> {p.year}
+          {p.subject} <b>•</b> {courseLabel(p.course)}
+          {p.term ? (
+            <>
+              {" "}
+              <b>•</b> {termText(p.course, p.term)}
+            </>
+          ) : null}
         </p>
         <strong className={cn("row-price")}>₹ {p.price}</strong>
       </div>

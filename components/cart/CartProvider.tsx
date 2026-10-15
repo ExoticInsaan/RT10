@@ -1,10 +1,12 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { products } from "@/lib/sample-data";
+import { createClient } from "@/lib/supabase/client";
+import { PRODUCT_COLUMNS, toProduct, type Product } from "@/lib/product-types";
 
 // Cart and wishlist live in the browser only (localStorage), keyed by product slug.
-// Payment still happens one product at a time through the existing Buy now flow.
+// Product details are looked up in the database, so a resource that is unpublished or deleted
+// simply drops out. Payment still happens one product at a time through the existing Buy now flow.
 
 const CART_KEY = "ts-cart";
 const WISH_KEY = "ts-wish";
@@ -12,6 +14,8 @@ const WISH_KEY = "ts-wish";
 type CartContextValue = {
   cart: string[];
   wished: string[];
+  cartItems: Product[];
+  wishedItems: Product[];
   cartOpen: boolean;
   toggleCart: (slug: string) => void;
   toggleWish: (slug: string) => void;
@@ -22,6 +26,8 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue>({
   cart: [],
   wished: [],
+  cartItems: [],
+  wishedItems: [],
   cartOpen: false,
   toggleCart: () => {},
   toggleWish: () => {},
@@ -29,12 +35,10 @@ const CartContext = createContext<CartContextValue>({
   closeCart: () => {},
 });
 
-const known = new Set(products.map((p) => p.slug));
-
 function read(key: string): string[] {
   try {
     const value = JSON.parse(localStorage.getItem(key) || "[]");
-    return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string" && known.has(v)) : [];
+    return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
   } catch {
     return [];
   }
@@ -56,6 +60,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [wished, setWished] = useState<string[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [catalog, setCatalog] = useState<Record<string, Product>>({});
 
   // Read saved items after the first render so server and browser HTML match.
   useEffect(() => {
@@ -72,14 +77,47 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (hydrated) write(WISH_KEY, wished);
   }, [wished, hydrated]);
 
+  // Look up the saved products. Anything no longer published is removed from cart and wishlist.
+  const slugKey = Array.from(new Set([...cart, ...wished])).sort().join(",");
+  useEffect(() => {
+    if (!hydrated || !slugKey) return;
+    const slugs = slugKey.split(",");
+    let cancelled = false;
+    try {
+      createClient()
+        .from("products")
+        .select(PRODUCT_COLUMNS)
+        .eq("published", true)
+        .in("slug", slugs)
+        .then(({ data, error }) => {
+          if (cancelled || error || !data) return;
+          const found = data.map(toProduct);
+          setCatalog((prev) => ({ ...prev, ...Object.fromEntries(found.map((p) => [p.slug, p])) }));
+          const gone = new Set(slugs.filter((s) => !found.some((p) => p.slug === s)));
+          if (gone.size) {
+            setCart((items) => items.filter((s) => !gone.has(s)));
+            setWished((items) => items.filter((s) => !gone.has(s)));
+          }
+        });
+    } catch {
+      // Supabase keys not set: nothing to look up.
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, slugKey]);
+
+  const cartItems = useMemo(() => cart.map((s) => catalog[s]).filter(Boolean), [cart, catalog]);
+  const wishedItems = useMemo(() => wished.map((s) => catalog[s]).filter(Boolean), [wished, catalog]);
+
   const toggleCart = useCallback((slug: string) => setCart((items) => toggle(items, slug)), []);
   const toggleWish = useCallback((slug: string) => setWished((items) => toggle(items, slug)), []);
   const openCart = useCallback(() => setCartOpen(true), []);
   const closeCart = useCallback(() => setCartOpen(false), []);
 
   const value = useMemo(
-    () => ({ cart, wished, cartOpen, toggleCart, toggleWish, openCart, closeCart }),
-    [cart, wished, cartOpen, toggleCart, toggleWish, openCart, closeCart],
+    () => ({ cart, wished, cartItems, wishedItems, cartOpen, toggleCart, toggleWish, openCart, closeCart }),
+    [cart, wished, cartItems, wishedItems, cartOpen, toggleCart, toggleWish, openCart, closeCart],
   );
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

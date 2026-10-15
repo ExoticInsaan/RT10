@@ -6,7 +6,6 @@ import { useAuth } from "@/components/AuthProvider";
 import AuthPanel from "@/components/AuthPanel";
 import { slug as toSlug } from "@/lib/design/catalog";
 import {
-  commonSubjects,
   contentTypes,
   courseLabel,
   courses,
@@ -120,7 +119,6 @@ export default function AdminClient() {
   }, [ready, user, load]);
 
   const course = courses.find((c) => c.value === form.course) ?? courses[0];
-  const knownSubjects = Array.from(new Set([...commonSubjects, ...rows.map((r) => r.subject)])).sort();
 
   function set<K extends keyof Form>(key: K, value: Form[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -375,12 +373,8 @@ export default function AdminClient() {
 
           <div>
             <label className={label} htmlFor="subject">Subject</label>
-            <input id="subject" className={input} list="subjects" value={form.subject} onChange={(e) => set("subject", e.target.value)} placeholder="Choose or type a subject" maxLength={80} />
-            <datalist id="subjects">
-              {knownSubjects.map((s) => (
-                <option key={s} value={s} />
-              ))}
-            </datalist>
+            <input id="subject" className={input} value={form.subject} onChange={(e) => set("subject", e.target.value)} placeholder="Type the subject name, e.g. Pharmacology" maxLength={80} />
+            <p className="mt-1 text-xs text-muted">Students find this PDF by typing this name in the search bar.</p>
           </div>
 
           <div>
