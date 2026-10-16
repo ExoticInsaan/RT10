@@ -14,7 +14,7 @@ export default function Hero() {
       </h1>
       <p>
         Important questions, case studies, care plans, assignments and flashcards for B.Sc. Nursing,
-        GNM and Post Basic. Type a subject to find the PDF you need.
+        GNM and Post Basic. Search by document name to find the PDF you need.
       </p>
       <Button href="/browse" className={cn("hero-cta")}>
         Explore Nursing Resources <Icon name="arrow" size={17} />
@@ -26,7 +26,7 @@ export default function Hero() {
           name="q"
           type="search"
           aria-label="Search study notes"
-          placeholder="Search subjects, topics, notes..."
+          placeholder="Search by document name..."
           autoComplete="off"
         />
         <Button type="submit" ariaLabel="Search">

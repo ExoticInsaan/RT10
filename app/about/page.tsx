@@ -123,7 +123,7 @@ export default function AboutPage() {
           <div className={cn("about-section-head")}>
             <SectionLabel variant="content">Explore nursing resources</SectionLabel>
             <h2>Explore Nursing Study Materials</h2>
-            <p>Start with your course, year or subject.</p>
+            <p>Start with your course and year, or search by document name.</p>
           </div>
           <div className={cn("about-category-grid")}>
             {aboutCategories.map((category) => (
@@ -157,7 +157,7 @@ export default function AboutPage() {
             <Icon name="book" />
             <h3>Clear Organization</h3>
             <p>
-              Arrange materials by course, year, subject and type wherever available.
+              Arrange materials by course, year and type wherever available.
             </p>
           </article>
           <article>

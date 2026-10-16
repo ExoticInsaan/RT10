@@ -121,9 +121,9 @@ To add another admin, run this in the Supabase SQL Editor (use lowercase):
 insert into public.admins (email) values ('name@example.com');
 ```
 
-To add a resource: choose the course, semester or year, subject, type and price, then upload the PDF (and an optional free sample). Tick **Published** to show it in the shop (it appears within about a minute). New resources start as drafts.
+To add a resource: choose the course, semester or year, type and price, then upload the PDF (and an optional free sample). Tick **Published** to show it in the shop (it appears within about a minute). New resources start as drafts.
 
-**Subject is typed, not picked.** Type the subject name exactly as students would search for it. Students have no subject filter: they type a subject into the search bar on the home or browse page, and every published PDF whose subject, title or description contains those words is shown. Search ignores capital letters, and "and" matches "&".
+**There is no subject field.** Students find a PDF by typing words from its document name (the title) into the search bar on the home or browse page. Search also matches the description, type, course and semester, ignores capital letters, and "and" matches "&". Give each resource a clear title, for example "Applied Anatomy - Most Important Questions".
 
 ---
 

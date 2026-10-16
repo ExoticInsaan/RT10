@@ -39,8 +39,15 @@ const accentKeywords: [word: string, accent: string][] = [
   ["midwifery", "obstetrics"],
 ];
 
-export function accentFor(subject: string) {
-  const text = subject.toLowerCase();
+// Short heading for a cover: the part of the title before " - " or ":" ("Applied Anatomy - Most
+// Important Questions" becomes "Applied Anatomy"). Titles without a separator are used whole.
+export function coverHeading(title: string) {
+  const head = title.split(/\s[-\u2013\u2014]\s|:\s/)[0].trim();
+  return head || title;
+}
+
+export function accentFor(text0: string) {
+  const text = text0.toLowerCase();
   const hit = accentKeywords.find(([word]) => text.includes(word));
   if (hit) return hit[1];
   let hash = 0;
