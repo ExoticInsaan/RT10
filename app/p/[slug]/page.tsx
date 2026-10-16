@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import cn from "@/lib/design/twStyles";
-import { accentFor } from "@/lib/design/catalog";
+import { accentFor, coverHeading } from "@/lib/design/catalog";
 import { courseLabel, termText, typeLabelOf } from "@/lib/catalog-config";
 import { getProductBySlug } from "@/lib/products";
 import BuyButton from "@/components/BuyButton";
@@ -59,7 +59,7 @@ async function ProductDetail({ params }: { params: PageProps<"/p/[slug]">["param
       <div className={cn("breadcrumbs")}>
         <Link href="/">Home</Link>
         <span>/</span>
-        <Link href={`/browse?q=${encodeURIComponent(p.subject)}`}>{p.subject}</Link>
+        <Link href="/browse">Resources</Link>
         <span>/</span>
         <span>{p.title}</span>
       </div>
@@ -67,8 +67,8 @@ async function ProductDetail({ params }: { params: PageProps<"/p/[slug]">["param
         <div className={cn("detail-cover")}>
           <Cover
             title={p.title}
-            subject={p.subject}
-            accent={accentFor(p.subject)}
+            heading={coverHeading(p.title)}
+            accent={accentFor(p.title)}
             coverLine={typeLabelOf(p.type)}
           />
         </div>
@@ -77,7 +77,7 @@ async function ProductDetail({ params }: { params: PageProps<"/p/[slug]">["param
           <span className={cn("eyebrow")}>{typeLabelOf(p.type)}</span>
           <h1>{p.title}</h1>
           <span className={cn("tag")}>
-            {p.subject} · {where}
+            {where}
             {p.pages ? ` · ${p.pages} pages` : ""}
           </span>
           {p.description ? <p>{p.description}</p> : null}

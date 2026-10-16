@@ -11,7 +11,7 @@ export default function Footer() {
           <strong>Your Nursing Journey, One Shelf at a Time.</strong>
           <p>
             Important questions, case studies, care plans, assignments and flashcards for nursing
-            students, organized by subject and semester.
+            students, organized by course and semester.
           </p>
         </div>
         <nav aria-label="Footer explore links">

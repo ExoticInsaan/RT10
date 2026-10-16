@@ -1,6 +1,6 @@
 import Link from "next/link";
 import cn from "@/lib/design/twStyles";
-import { accentFor } from "@/lib/design/catalog";
+import { accentFor, coverHeading } from "@/lib/design/catalog";
 import { courseLabel, termText, typeLabelOf } from "@/lib/catalog-config";
 import type { Product } from "@/lib/product-types";
 import Cover from "@/components/ui/Cover";
@@ -14,8 +14,8 @@ export default function PopularCard({ p }: { p: Product }) {
       <Link href={href} className={cn("card-cover-link")}>
         <Cover
           title={p.title}
-          subject={p.subject}
-          accent={accentFor(p.subject)}
+          heading={coverHeading(p.title)}
+          accent={accentFor(p.title)}
           coverLine={typeLabelOf(p.type)}
         />
       </Link>

@@ -5,7 +5,7 @@ import type { Filters, Sort } from "@/lib/browse";
 
 /**
  * Search box for the results page. A plain GET form, so it works without JavaScript.
- * Students type a subject (or any words from the title) and matching PDFs appear.
+ * Students type words from the document name and matching PDFs appear.
  * The current filters are carried along as hidden fields.
  */
 export default function SearchBar({
@@ -24,8 +24,8 @@ export default function SearchBar({
         name="q"
         type="search"
         defaultValue={filters.q}
-        aria-label="Search by subject or title"
-        placeholder="Type a subject, e.g. Pharmacology"
+        aria-label="Search by document name"
+        placeholder="Search by document name"
         autoComplete="off"
       />
       {filters.courses.map((v) => (

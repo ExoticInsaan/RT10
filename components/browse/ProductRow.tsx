@@ -1,6 +1,6 @@
 import Link from "next/link";
 import cn from "@/lib/design/twStyles";
-import { accentFor } from "@/lib/design/catalog";
+import { accentFor, coverHeading } from "@/lib/design/catalog";
 import { courseLabel, termText, typeLabelOf } from "@/lib/catalog-config";
 import type { Product } from "@/lib/product-types";
 import CartButton from "@/components/cart/CartButton";
@@ -14,8 +14,8 @@ export default function ProductRow({ p }: { p: Product }) {
       <Link href={href} className={cn("row-cover")}>
         <Cover
           title={p.title}
-          subject={p.subject}
-          accent={accentFor(p.subject)}
+          heading={coverHeading(p.title)}
+          accent={accentFor(p.title)}
           coverLine={typeLabelOf(p.type)}
           small
         />
@@ -26,7 +26,7 @@ export default function ProductRow({ p }: { p: Product }) {
           <h3>{p.title}</h3>
         </Link>
         <p>
-          {p.subject} <b>•</b> {courseLabel(p.course)}
+          {courseLabel(p.course)}
           {p.term ? (
             <>
               {" "}

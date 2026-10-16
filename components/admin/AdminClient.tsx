@@ -23,7 +23,6 @@ type Row = {
   slug: string;
   title: string;
   type: TypeValue;
-  subject: string;
   course: CourseValue | null;
   term: number | null;
   price: number | string;
@@ -40,7 +39,6 @@ type Form = {
   title: string;
   course: CourseValue;
   term: string;
-  subject: string;
   type: TypeValue;
   price: string;
   pages: string;
@@ -53,7 +51,6 @@ const emptyForm: Form = {
   title: "",
   course: "bsc-nursing",
   term: "1",
-  subject: "",
   type: "important-questions",
   price: "",
   pages: "",
@@ -143,7 +140,6 @@ export default function AdminClient() {
       title: row.title,
       course: (row.course ?? "bsc-nursing") as CourseValue,
       term: String(row.term ?? 1),
-      subject: row.subject,
       type: row.type,
       price: String(row.price),
       pages: row.pages ? String(row.pages) : "",
@@ -160,7 +156,6 @@ export default function AdminClient() {
 
   function checkForm(): string | null {
     if (!form.title.trim()) return "Enter a title.";
-    if (!form.subject.trim()) return "Enter a subject.";
     const price = Number(form.price);
     if (!form.price || !Number.isFinite(price) || price <= 0 || price > 99999) {
       return "Enter a price in rupees between 1 and 99999.";
@@ -224,7 +219,6 @@ export default function AdminClient() {
       const fields = {
         title: form.title.trim(),
         type: form.type,
-        subject: form.subject.trim(),
         course: form.course,
         term: Number(form.term),
         price: Number(form.price),
@@ -372,12 +366,6 @@ export default function AdminClient() {
           </div>
 
           <div>
-            <label className={label} htmlFor="subject">Subject</label>
-            <input id="subject" className={input} value={form.subject} onChange={(e) => set("subject", e.target.value)} placeholder="Type the subject name, e.g. Pharmacology" maxLength={80} />
-            <p className="mt-1 text-xs text-muted">Students find this PDF by typing this name in the search bar.</p>
-          </div>
-
-          <div>
             <label className={label} htmlFor="type">Type</label>
             <select id="type" className={input} value={form.type} onChange={(e) => set("type", e.target.value as TypeValue)}>
               {contentTypes.map((t) => (
@@ -459,7 +447,7 @@ export default function AdminClient() {
                 <div className="min-w-0">
                   <p className="font-semibold text-navy">{r.title}</p>
                   <p className="mt-0.5 text-sm text-muted">
-                    {typeLabelOf(r.type)} · {r.subject} · {courseLabel(r.course)} {termText(r.course, r.term) && `· ${termText(r.course, r.term)}`}
+                    {typeLabelOf(r.type)} · {courseLabel(r.course)} {termText(r.course, r.term) && `· ${termText(r.course, r.term)}`}
                   </p>
                   <p className="mt-1 text-sm text-muted">
                     ₹{r.price}

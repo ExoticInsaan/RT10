@@ -295,7 +295,7 @@ export default function PdfViewer({ url, title, email }: { url: string; title: s
                 className="relative overflow-hidden border border-line bg-white shadow-sm"
                 style={{ width: pageWidth, height: pageWidth ? (pageWidth * s.h) / s.w : 0 }}
               >
-                <canvas draggable={false} className="absolute left-0 top-0 block" />
+                <canvas draggable={false} className="absolute left-0 top-0 block h-full w-full" />
               </div>
             ))}
           </div>

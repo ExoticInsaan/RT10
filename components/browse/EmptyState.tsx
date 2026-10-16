@@ -29,7 +29,7 @@ export default function EmptyState({
       ) : (
         <>
           <h2>No resources found</h2>
-          <p>Check the spelling of the subject, try fewer words, or clear the filters.</p>
+          <p>Check the spelling of the document name, try fewer words, or clear the filters.</p>
           <Button href={clearHref}>Clear filters</Button>
           <Button variant="secondary" href="/browse">
             Browse all resources

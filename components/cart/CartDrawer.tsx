@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import cn from "@/lib/design/twStyles";
-import { accentFor } from "@/lib/design/catalog";
+import { accentFor, coverHeading } from "@/lib/design/catalog";
 import { typeLabelOf } from "@/lib/catalog-config";
 import BuyButton from "@/components/BuyButton";
 import Button from "@/components/ui/Button";
@@ -46,8 +46,8 @@ export default function CartDrawer() {
               <div className={cn("drawer-item")} key={p.slug}>
                 <Cover
                   title={p.title}
-                  subject={p.subject}
-                  accent={accentFor(p.subject)}
+                  heading={coverHeading(p.title)}
+                  accent={accentFor(p.title)}
                   coverLine={typeLabelOf(p.type)}
                   small
                 />

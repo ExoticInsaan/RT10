@@ -11,8 +11,8 @@ import {
 import { ordinal } from "@/lib/design/catalog";
 
 // Filtering, sorting and URL handling for the /browse results page.
-// Filters: course, semester/year, resource type and price. Subjects are NOT a filter:
-// students type a subject into the search box and it is matched against the subject text.
+// Filters: course, semester/year, resource type and price. There is no subject filter:
+// students type words from the document name into the search box.
 
 export type Sort = "featured" | "price-low" | "price-high";
 
@@ -94,7 +94,7 @@ const normalize = (text: string) =>
 /** Everything a search can match on for one product. */
 function searchText(p: Product) {
   return normalize(
-    [p.title, p.subject, p.description ?? "", typeLabelOf(p.type), courseLabel(p.course), termText(p.course, p.term)].join(
+    [p.title, p.description ?? "", typeLabelOf(p.type), courseLabel(p.course), termText(p.course, p.term)].join(
       " ",
     ),
   );

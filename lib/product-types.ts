@@ -7,7 +7,6 @@ export type Product = {
   slug: string;
   title: string;
   type: TypeValue;
-  subject: string;
   course: CourseValue;
   term: number | null;
   price: number; // rupees
@@ -15,7 +14,7 @@ export type Product = {
   description: string | null;
 };
 
-export const PRODUCT_COLUMNS = "id, slug, title, type, subject, course, term, price, pages, description";
+export const PRODUCT_COLUMNS = "id, slug, title, type, course, term, price, pages, description";
 
 type ProductRow = Omit<Product, "price" | "term" | "pages"> & {
   price: number | string;

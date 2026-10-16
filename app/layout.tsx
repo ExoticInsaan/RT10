@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s | Toppershelf",
   },
   description:
-    "Exam-focused nursing study material: important questions, case studies, care plans, assignments and flashcards, organized by semester and subject.",
+    "Exam-focused nursing study material: important questions, case studies, care plans, assignments and flashcards, organized by course and semester.",
   openGraph: {
     siteName: "Toppershelf",
     type: "website",
