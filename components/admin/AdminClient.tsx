@@ -6,7 +6,6 @@ import { useAuth } from "@/components/AuthProvider";
 import AuthPanel from "@/components/AuthPanel";
 import { slug as toSlug } from "@/lib/design/catalog";
 import {
-  commonSubjects,
   contentTypes,
   courseLabel,
   courses,
@@ -24,7 +23,6 @@ type Row = {
   slug: string;
   title: string;
   type: TypeValue;
-  subject: string;
   course: CourseValue | null;
   term: number | null;
   price: number | string;
@@ -41,7 +39,6 @@ type Form = {
   title: string;
   course: CourseValue;
   term: string;
-  subject: string;
   type: TypeValue;
   price: string;
   pages: string;
@@ -54,7 +51,6 @@ const emptyForm: Form = {
   title: "",
   course: "bsc-nursing",
   term: "1",
-  subject: "",
   type: "important-questions",
   price: "",
   pages: "",
@@ -120,7 +116,6 @@ export default function AdminClient() {
   }, [ready, user, load]);
 
   const course = courses.find((c) => c.value === form.course) ?? courses[0];
-  const knownSubjects = Array.from(new Set([...commonSubjects, ...rows.map((r) => r.subject)])).sort();
 
   function set<K extends keyof Form>(key: K, value: Form[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -145,7 +140,6 @@ export default function AdminClient() {
       title: row.title,
       course: (row.course ?? "bsc-nursing") as CourseValue,
       term: String(row.term ?? 1),
-      subject: row.subject,
       type: row.type,
       price: String(row.price),
       pages: row.pages ? String(row.pages) : "",
@@ -162,7 +156,6 @@ export default function AdminClient() {
 
   function checkForm(): string | null {
     if (!form.title.trim()) return "Enter a title.";
-    if (!form.subject.trim()) return "Enter a subject.";
     const price = Number(form.price);
     if (!form.price || !Number.isFinite(price) || price <= 0 || price > 99999) {
       return "Enter a price in rupees between 1 and 99999.";
@@ -226,7 +219,6 @@ export default function AdminClient() {
       const fields = {
         title: form.title.trim(),
         type: form.type,
-        subject: form.subject.trim(),
         course: form.course,
         term: Number(form.term),
         price: Number(form.price),
@@ -374,16 +366,6 @@ export default function AdminClient() {
           </div>
 
           <div>
-            <label className={label} htmlFor="subject">Subject</label>
-            <input id="subject" className={input} list="subjects" value={form.subject} onChange={(e) => set("subject", e.target.value)} placeholder="Choose or type a subject" maxLength={80} />
-            <datalist id="subjects">
-              {knownSubjects.map((s) => (
-                <option key={s} value={s} />
-              ))}
-            </datalist>
-          </div>
-
-          <div>
             <label className={label} htmlFor="type">Type</label>
             <select id="type" className={input} value={form.type} onChange={(e) => set("type", e.target.value as TypeValue)}>
               {contentTypes.map((t) => (
@@ -465,7 +447,7 @@ export default function AdminClient() {
                 <div className="min-w-0">
                   <p className="font-semibold text-navy">{r.title}</p>
                   <p className="mt-0.5 text-sm text-muted">
-                    {typeLabelOf(r.type)} · {r.subject} · {courseLabel(r.course)} {termText(r.course, r.term) && `· ${termText(r.course, r.term)}`}
+                    {typeLabelOf(r.type)} · {courseLabel(r.course)} {termText(r.course, r.term) && `· ${termText(r.course, r.term)}`}
                   </p>
                   <p className="mt-1 text-sm text-muted">
                     ₹{r.price}

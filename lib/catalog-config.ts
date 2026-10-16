@@ -28,27 +28,6 @@ export const contentTypes: { value: TypeValue; label: string }[] = [
   { value: "flashcards", label: "Flashcards" },
 ];
 
-// Suggestions for the Subject box. Any other subject can be typed in.
-export const commonSubjects = [
-  "Anatomy & Physiology",
-  "Fundamentals of Nursing",
-  "Nursing Foundations",
-  "Pharmacology",
-  "Microbiology",
-  "Pathology and Genetics",
-  "Nutrition and Biochemistry",
-  "Psychology",
-  "Sociology",
-  "Medical-Surgical Nursing",
-  "Community Health Nursing",
-  "Child Health Nursing",
-  "Mental Health Nursing",
-  "Obstetrics and Gynaecological Nursing",
-  "Midwifery",
-  "Nursing Research and Statistics",
-  "Management of Nursing Services",
-];
-
 export function courseLabel(value: string | null) {
   return courses.find((c) => c.value === value)?.label ?? "";
 }

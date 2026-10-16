@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import cn from "@/lib/design/twStyles";
-import { subjectAccent } from "@/lib/design/catalog";
-import { products } from "@/lib/sample-data";
+import { accentFor, coverHeading } from "@/lib/design/catalog";
+import { typeLabelOf } from "@/lib/catalog-config";
 import BuyButton from "@/components/BuyButton";
 import Button from "@/components/ui/Button";
 import Cover from "@/components/ui/Cover";
@@ -11,7 +11,7 @@ import Icon from "@/components/ui/Icon";
 import { useCart } from "@/components/cart/CartProvider";
 
 export default function CartDrawer() {
-  const { cart, cartOpen, closeCart, toggleCart } = useCart();
+  const { cartItems: items, cartOpen, closeCart, toggleCart } = useCart();
 
   useEffect(() => {
     if (!cartOpen) return;
@@ -22,7 +22,6 @@ export default function CartDrawer() {
 
   if (!cartOpen) return null;
 
-  const items = products.filter((p) => cart.includes(p.slug));
   const total = items.reduce((sum, p) => sum + p.price, 0);
 
   return (
@@ -47,9 +46,9 @@ export default function CartDrawer() {
               <div className={cn("drawer-item")} key={p.slug}>
                 <Cover
                   title={p.title}
-                  subject={p.subject}
-                  accent={subjectAccent[p.subject] ?? "surgical"}
-                  coverLine={p.blurb}
+                  heading={coverHeading(p.title)}
+                  accent={accentFor(p.title)}
+                  coverLine={typeLabelOf(p.type)}
                   small
                 />
                 <div>

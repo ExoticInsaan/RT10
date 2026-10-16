@@ -8,13 +8,13 @@ export default function Hero() {
     <section className={cn("hero container")}>
       <SectionLabel variant="hero">For nursing students</SectionLabel>
       <h1>
-        Nursing Notes, Quizzes{" "}
+        Nursing Study Material{" "}
         <br className="max-[560px]:hidden" />
-        &amp; Mock Tests — <em>All in One Place.</em>
+        for Exams — <em>All in One Place.</em>
       </h1>
       <p>
-        Clear notes, practice quizzes and mock tests for GNM, BSc Nursing and Post Basic. Notes and
-        quizzes at ₹19, full tests at ₹28.
+        Important questions, case studies, care plans, assignments and flashcards for B.Sc. Nursing,
+        GNM and Post Basic. Search by document name to find the PDF you need.
       </p>
       <Button href="/browse" className={cn("hero-cta")}>
         Explore Nursing Resources <Icon name="arrow" size={17} />
@@ -26,7 +26,7 @@ export default function Hero() {
           name="q"
           type="search"
           aria-label="Search study notes"
-          placeholder="Search subjects, topics, notes..."
+          placeholder="Search by document name..."
           autoComplete="off"
         />
         <Button type="submit" ariaLabel="Search">

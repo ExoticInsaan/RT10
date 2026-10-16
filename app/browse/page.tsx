@@ -8,8 +8,10 @@ import BrowseControls from "@/components/browse/BrowseControls";
 import EmptyState from "@/components/browse/EmptyState";
 import FilterControls from "@/components/browse/FilterControls";
 import ProductRow from "@/components/browse/ProductRow";
-import { activeChips, filterProducts, getFacets, parseParams, toQuery } from "@/lib/browse";
-import { typeLabel } from "@/lib/sample-data";
+import SearchBar from "@/components/browse/SearchBar";
+import { activeChips, filterProducts, getFacets, parseParams, priceMaxOf, toQuery } from "@/lib/browse";
+import { courseLabel, typeLabelOf } from "@/lib/catalog-config";
+import { getProducts } from "@/lib/products";
 
 export const metadata: Metadata = { title: "Browse" };
 
@@ -30,17 +32,19 @@ export default function BrowsePage(props: PageProps<"/browse">) {
 }
 
 async function BrowseResults({ searchParams }: { searchParams: PageProps<"/browse">["searchParams"] }) {
-  const { filters, sort } = parseParams(await searchParams);
-  const facets = getFacets();
-  const results = filterProducts(filters, sort);
-  const chips = activeChips(filters);
+  const products = await getProducts();
+  const priceMax = priceMaxOf(products);
+  const { filters, sort } = parseParams(await searchParams, priceMax);
+  const facets = getFacets(products);
+  const results = filterProducts(products, filters, sort);
+  const chips = activeChips(filters, priceMax);
 
-  const courseTitle = filters.courses.length === 1 ? filters.courses[0] : "All Courses";
-  const typeTitle = filters.types.length === 1 ? typeLabel[filters.types[0]] : "All Resources";
+  const courseTitle = filters.courses.length === 1 ? courseLabel(filters.courses[0]) : "All Courses";
+  const typeTitle = filters.types.length === 1 ? typeLabelOf(filters.types[0]) : "All Resources";
   // "Clear all" drops every filter but keeps the search text.
   const clearHref = filters.q ? `/browse?${new URLSearchParams({ q: filters.q })}` : "/browse";
   // Remounts the filter panels (and their draft state) whenever the URL filters change.
-  const filterKey = toQuery(filters, sort);
+  const filterKey = toQuery(filters, sort, priceMax);
 
   return (
     <main className={cn("results-page container")}>
@@ -49,6 +53,7 @@ async function BrowseResults({ searchParams }: { searchParams: PageProps<"/brows
         <span>/</span>
         <span>Search Results</span>
       </div>
+      <SearchBar filters={filters} sort={sort} priceMax={priceMax} />
       <div className={cn("results-heading")}>
         <div>
           <SectionLabel variant="content">Explore the library</SectionLabel>
@@ -86,7 +91,7 @@ async function BrowseResults({ searchParams }: { searchParams: PageProps<"/brows
           {results.length ? (
             results.map((p) => <ProductRow key={p.slug} p={p} />)
           ) : (
-            <EmptyState clearHref={clearHref} />
+            <EmptyState clearHref={clearHref} noProducts={products.length === 0} />
           )}
         </div>
       </div>

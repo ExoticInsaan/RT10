@@ -7,7 +7,7 @@ export default function Trust() {
       <div>
         <Icon name="book" />
         <span>
-          <strong>Organized by</strong> semester and subject
+          <strong>Organized by</strong> course and semester
         </span>
       </div>
       <div>

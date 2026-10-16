@@ -1,15 +1,13 @@
 "use client";
 
 import cn from "@/lib/design/twStyles";
-import { products } from "@/lib/sample-data";
 import ProductRow from "@/components/browse/ProductRow";
 import SectionLabel from "@/components/ui/SectionLabel";
 import { useCart } from "@/components/cart/CartProvider";
 
 /** Resources the student saved with the heart button. Works without logging in. */
 export default function SavedItems() {
-  const { wished } = useCart();
-  const items = products.filter((p) => wished.includes(p.slug));
+  const { wishedItems: items } = useCart();
   if (!items.length) return null;
   return (
     <section className="mt-14" aria-labelledby="saved-title">

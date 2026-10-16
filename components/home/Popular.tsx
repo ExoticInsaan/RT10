@@ -1,14 +1,17 @@
 import Link from "next/link";
 import cn from "@/lib/design/twStyles";
-import { products } from "@/lib/sample-data";
+import { getProducts } from "@/lib/products";
 import Icon from "@/components/ui/Icon";
 import PopularCard from "@/components/home/PopularCard";
 
-export default function Popular() {
+// The newest published resources. (There are no sales numbers yet, so this is not called "popular".)
+export default async function Popular() {
+  const products = await getProducts();
+  if (products.length === 0) return null;
   return (
     <section className={cn("container popular")}>
       <div className={cn("section-title")}>
-        <h2>Popular Nursing Notes</h2>
+        <h2>Latest Resources</h2>
         <Link href="/browse">
           View all <Icon name="arrow" size={14} />
         </Link>

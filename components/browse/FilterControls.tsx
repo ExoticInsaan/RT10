@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import cn from "@/lib/design/twStyles";
 import Button from "@/components/ui/Button";
-import { PRICE_MAX, toQuery, type FacetOption, type Facets, type Filters, type Sort } from "@/lib/browse";
-import type { ProductType } from "@/lib/sample-data";
+import { toQuery, type FacetOption, type Facets, type Filters, type Sort } from "@/lib/browse";
+import type { CourseValue, TypeValue } from "@/lib/catalog-config";
 
 function toggle<T>(items: T[], item: T) {
   return items.includes(item) ? items.filter((value) => value !== item) : [...items, item];
@@ -30,8 +30,6 @@ function Check({
   );
 }
 
-const SUBJECTS_SHOWN = 5;
-
 /** Filter checkboxes + price slider. Filters are drafted locally and applied to the URL on "Apply filters". */
 export default function FilterControls({
   initial,
@@ -46,11 +44,9 @@ export default function FilterControls({
 }) {
   const router = useRouter();
   const [draft, setDraft] = useState<Filters>(initial);
-  const [showAll, setShowAll] = useState(false);
-  const visibleSubjects = showAll ? facets.subjects : facets.subjects.slice(0, SUBJECTS_SHOWN);
 
   const apply = () => {
-    const query = toQuery(draft, sort);
+    const query = toQuery(draft, sort, facets.priceMax);
     router.push(query ? `/browse?${query}` : "/browse");
     onApplied?.();
   };
@@ -63,37 +59,23 @@ export default function FilterControls({
           <Check
             key={option.value}
             option={option}
-            checked={draft.courses.includes(option.value)}
-            onChange={() => setDraft({ ...draft, courses: toggle(draft.courses, option.value) })}
+            checked={draft.courses.includes(option.value as CourseValue)}
+            onChange={() =>
+              setDraft({ ...draft, courses: toggle(draft.courses, option.value as CourseValue) })
+            }
           />
         ))}
       </fieldset>
       <fieldset>
-        <legend>Year</legend>
-        {facets.years.map((option) => (
+        <legend>Semester / Year</legend>
+        {facets.terms.map((option) => (
           <Check
             key={option.value}
             option={option}
-            checked={draft.years.includes(option.value)}
-            onChange={() => setDraft({ ...draft, years: toggle(draft.years, option.value) })}
+            checked={draft.terms.includes(Number(option.value))}
+            onChange={() => setDraft({ ...draft, terms: toggle(draft.terms, Number(option.value)) })}
           />
         ))}
-      </fieldset>
-      <fieldset>
-        <legend>Subject</legend>
-        {visibleSubjects.map((option) => (
-          <Check
-            key={option.value}
-            option={option}
-            checked={draft.subjects.includes(option.value)}
-            onChange={() => setDraft({ ...draft, subjects: toggle(draft.subjects, option.value) })}
-          />
-        ))}
-        {facets.subjects.length > SUBJECTS_SHOWN && (
-          <Button variant="ghost" className={cn("show-more")} onClick={() => setShowAll(!showAll)}>
-            {showAll ? "− Show less" : "+ Show more"}
-          </Button>
-        )}
       </fieldset>
       <fieldset>
         <legend>Resource type</legend>
@@ -101,10 +83,8 @@ export default function FilterControls({
           <Check
             key={option.value}
             option={option}
-            checked={draft.types.includes(option.value as ProductType)}
-            onChange={() =>
-              setDraft({ ...draft, types: toggle(draft.types, option.value as ProductType) })
-            }
+            checked={draft.types.includes(option.value as TypeValue)}
+            onChange={() => setDraft({ ...draft, types: toggle(draft.types, option.value as TypeValue) })}
           />
         ))}
       </fieldset>
@@ -114,7 +94,7 @@ export default function FilterControls({
           aria-label="Maximum price"
           type="range"
           min="0"
-          max={PRICE_MAX}
+          max={facets.priceMax}
           step="1"
           value={draft.maxPrice}
           onChange={(event) => setDraft({ ...draft, maxPrice: Number(event.target.value) })}

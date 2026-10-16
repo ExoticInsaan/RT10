@@ -13,7 +13,7 @@ export default function Semesters() {
           All
         </Link>
         {semesters.map((item) => (
-          <Link key={item} href={`/browse?semester=${item}`}>
+          <Link key={item} href={`/browse?course=bsc-nursing&term=${item}`}>
             {ordinal(item)}
           </Link>
         ))}
