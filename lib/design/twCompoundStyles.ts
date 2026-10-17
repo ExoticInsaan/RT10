@@ -65,7 +65,7 @@ const compoundTailwindStyles: Record<string, string> = {
   "filter-controls":
     "[&_fieldset]:border-0 [&_fieldset]:[margin:0_0_22px] [&_fieldset]:p-0 [&_legend]:w-full [&_legend]:[color:#203b57] [&_legend]:[font-weight:700] [&_legend]:[font-size:11px] [&_legend]:[margin-bottom:10px] [&_.apply]:w-full max-[560px]:[&_.apply]:sticky max-[560px]:[&_.apply]:[bottom:0] max-[560px]:[&_.apply]:[box-shadow:0_-12px_18px_#fffbf7]",
   "filter-sheet":
-    "max-[900px]:[&_.filter-controls]:grid max-[900px]:[&_.filter-controls]:[grid-template-columns:1fr_1fr] max-[900px]:[&_.filter-controls]:[gap:0_25px] max-[900px]:[&_.range-field]:[grid-column:1_/_-1] max-[900px]:[&_.apply]:[grid-column:1_/_-1] max-[560px]:[&_.filter-controls]:block",
+    "max-[900px]:[&_.filter-controls]:grid max-[900px]:[&_.filter-controls]:[grid-template-columns:1fr_1fr] max-[900px]:[&_.filter-controls]:[gap:0_25px] max-[900px]:[&_.apply]:[grid-column:1_/_-1] max-[560px]:[&_.filter-controls]:block",
   "filter-title":
     "[&_h2]:[color:#102a4c] [&_h2]:m-0 [&_h2]:[font-size:15px] [&_.button]:[font-size:10px]",
   finder:
@@ -126,8 +126,6 @@ const compoundTailwindStyles: Record<string, string> = {
     "[&_h1]:[color:#102a4c] [&_h1]:font-display [&_h1]:[font-size:clamp(27px,_3.2vw,_40px)] [&_h1]:[line-height:1.12] [&_h1]:[letter-spacing:-.025em] [&_h1]:m-0 [&_h1]:[font-weight:400]",
   "product-row":
     "hover:[border-color:#b9cbd7] hover:[box-shadow:0_8px_22px_rgba(16,_42,_76,_.05)]",
-  "range-field":
-    "[&_input]:w-full [&_input]:[height:4px] [&_input]:[accent-color:#1687e8] [&_>_div]:flex [&_>_div]:justify-between [&_>_div]:[color:#75808b] [&_>_div]:[font-size:9px]",
   rating: "[&_>_span]:[color:#e6ad3b] [&_em]:[color:#7b8792] [&_em]:not-italic",
   "results-heading":
     "[&_h1]:[color:#102a4c] [&_h1]:font-display [&_h1]:[font-size:clamp(27px,_3.2vw,_40px)] [&_h1]:[line-height:1.12] [&_h1]:[letter-spacing:-.025em] [&_h1]:m-0 [&_h1]:[font-weight:400] [&_.section-label]:[margin-bottom:9px] [&_>_div_>_p:not(.section-label)]:[font-size:11px] [&_>_div_>_p:not(.section-label)]:[color:#75808b] [&_>_div_>_p:not(.section-label)]:[margin:8px_0_0] max-[900px]:[&_>_div]:[grid-column:1_/_-1] max-[560px]:[&_h1]:font-display max-[560px]:[&_h1]:[font-weight:400] max-[560px]:[&_h1]:[letter-spacing:-.01em] max-[560px]:[&_h1]:[font-size:22px] max-[560px]:[&_h1]:[max-width:330px] max-[560px]:[&_>_div_>_p:not(.section-label)]:[margin-top:4px]",
@@ -145,7 +143,7 @@ const compoundTailwindStyles: Record<string, string> = {
     "[&_>_div]:flex [&_>_div]:justify-between [&_>_div]:[gap:20px] [&_>_div]:[padding:15px_4px] [&_>_div]:[border-bottom:1px_solid_#dedbd5] [&_>_div]:[font-size:13px] [&_a]:[color:#175a88] [&_a]:[text-decoration:underline] [&_a]:[text-underline-offset:3px] [&_span]:[color:#7b8490] max-[560px]:[&_>_div]:flex-col max-[560px]:[&_>_div]:[gap:5px] max-[560px]:[&_span]:[font-size:10px]",
   "row-cart": "[&.added]:[background:#2c6e57] max-[560px]:[&_.icon]:block",
   "row-main":
-    "[&_h3]:[color:#102a4c] [&_h3]:[font-size:14px] [&_h3]:[line-height:1.25] [&_h3]:[margin:9px_0] [&_h3]:[min-height:35px] [&_h3]:[min-height:0] [&_h3]:[margin:7px_0] [&_p]:[margin:0_0_9px] [&_p]:[color:#75808b] [&_p]:[font-size:10px] [&_p_b]:[padding:0_5px] [&_p_b]:[color:#b0b4b8] max-[560px]:[&_.eyebrow]:[padding:3px_5px] max-[560px]:[&_.eyebrow]:[font-size:7px] max-[560px]:[&_h3]:[font-size:11px] max-[560px]:[&_h3]:[margin:5px_0] max-[560px]:[&_h3]:[padding-right:18px] max-[560px]:[&_p]:[font-size:8px] max-[560px]:[&_p]:[margin-bottom:6px] max-[560px]:[&_p_b]:hidden max-[560px]:[&_p_b_+_*]:hidden max-[560px]:[&_.rating]:[font-size:8px]",
+    "[&_h3]:[color:#102a4c] [&_h3]:[font-size:14px] [&_h3]:[line-height:1.25] [&_h3]:[margin:9px_0] [&_h3]:[min-height:35px] [&_h3]:[min-height:0] [&_h3]:[margin:7px_0] [&_h3]:[padding-right:46px] [&_h3]:[overflow-wrap:anywhere] [&_p]:[overflow-wrap:anywhere] [&_p]:[margin:0_0_9px] [&_p]:[color:#75808b] [&_p]:[font-size:10px] [&_p_b]:[padding:0_5px] [&_p_b]:[color:#b0b4b8] max-[560px]:[&_.eyebrow]:[padding:3px_5px] max-[560px]:[&_.eyebrow]:[font-size:7px] max-[560px]:[&_h3]:[font-size:11px] max-[560px]:[&_h3]:[margin:5px_0] max-[560px]:[&_h3]:[padding-right:30px] max-[560px]:[&_p]:[font-size:8px] max-[560px]:[&_p]:[margin-bottom:6px] max-[560px]:[&_p_b]:hidden max-[560px]:[&_p_b_+_*]:hidden max-[560px]:[&_.rating]:[font-size:8px]",
   "section-title":
     "[&_h2]:m-0 [&_h2]:[color:#102a4c] [&_h2]:[font-size:20px] [&_h2]:[letter-spacing:-.025em] [&_>_a]:flex [&_>_a]:items-center [&_>_a]:[gap:5px] [&_>_a]:[font-size:11px] [&_>_a]:[color:#47718f] max-[560px]:[&_h2]:[font-size:17px]",
   "select-field":

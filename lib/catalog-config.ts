@@ -4,10 +4,11 @@
 export type CourseValue = "bsc-nursing" | "gnm" | "post-basic";
 export type TypeValue =
   | "important-questions"
-  | "case-studies"
   | "care-plans"
-  | "assignments"
-  | "flashcards";
+  | "case-studies"
+  | "flashcards"
+  | "notes"
+  | "assignments";
 
 export const courses: {
   value: CourseValue;
@@ -22,10 +23,11 @@ export const courses: {
 
 export const contentTypes: { value: TypeValue; label: string }[] = [
   { value: "important-questions", label: "Important Questions" },
-  { value: "case-studies", label: "Case Studies" },
   { value: "care-plans", label: "Care Plans" },
-  { value: "assignments", label: "Assignments" },
+  { value: "case-studies", label: "Case Studies" },
   { value: "flashcards", label: "Flashcards" },
+  { value: "notes", label: "Notes" },
+  { value: "assignments", label: "Assignments" },
 ];
 
 export function courseLabel(value: string | null) {

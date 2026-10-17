@@ -11,16 +11,16 @@ import {
 import { ordinal } from "@/lib/design/catalog";
 
 // Filtering, sorting and URL handling for the /browse results page.
-// Filters: course, semester/year, resource type and price. There is no subject filter:
+// Filters: course, semester/year and resource type. There is no subject filter:
 // students type words from the document name into the search box.
 
-export type Sort = "featured" | "price-low" | "price-high";
+// "type-<category>" sorts that category to the top (the rest follow, newest first).
+export type Sort = "featured" | "price-low" | "price-high" | `type-${TypeValue}`;
 
 export type Filters = {
   courses: CourseValue[];
   terms: number[];
   types: TypeValue[];
-  maxPrice: number;
   q: string;
 };
 
@@ -30,14 +30,21 @@ export type Facets = {
   courses: FacetOption[];
   terms: FacetOption[];
   types: FacetOption[];
-  priceMax: number;
 };
 
 export const sortLabels: Record<Sort, string> = {
   featured: "Newest first",
   "price-low": "Price: Low to High",
   "price-high": "Price: High to Low",
+  ...(Object.fromEntries(contentTypes.map((t) => [`type-${t.value}`, t.label])) as Record<
+    `type-${TypeValue}`,
+    string
+  >),
 };
+
+/** Dropdown groups: general orderings, then one entry per category. */
+export const generalSorts: Sort[] = ["featured", "price-low", "price-high"];
+export const categorySorts: Sort[] = contentTypes.map((t) => `type-${t.value}` as Sort);
 
 type RawParams = Record<string, string | string[] | undefined>;
 
@@ -46,14 +53,7 @@ function listOf(params: RawParams, key: string) {
   return (Array.isArray(value) ? value : value ? [value] : []).flatMap((v) => v.split(","));
 }
 
-/** Top of the price slider: the dearest resource, rounded up to the next 10. */
-export function priceMaxOf(products: Product[]) {
-  const dearest = Math.max(0, ...products.map((p) => p.price));
-  return Math.max(10, Math.ceil(dearest / 10) * 10);
-}
-
-export function parseParams(params: RawParams, priceMax: number): { filters: Filters; sort: Sort } {
-  const maxPrice = Number(listOf(params, "maxPrice")[0]);
+export function parseParams(params: RawParams): { filters: Filters; sort: Sort } {
   const sortValue = listOf(params, "sort")[0] as Sort | undefined;
   const wantedCourses = listOf(params, "course");
   const wantedTypes = listOf(params, "type");
@@ -65,19 +65,17 @@ export function parseParams(params: RawParams, priceMax: number): { filters: Fil
         (a, b) => a - b,
       ),
       types: contentTypes.map((t) => t.value).filter((v) => wantedTypes.includes(v)),
-      maxPrice: maxPrice > 0 && maxPrice < priceMax ? maxPrice : priceMax,
       q: (listOf(params, "q")[0] ?? "").trim(),
     },
     sort: sortValue && sortValue in sortLabels ? sortValue : "featured",
   };
 }
 
-export function toQuery(filters: Filters, sort: Sort, priceMax: number) {
+export function toQuery(filters: Filters, sort: Sort) {
   const query = new URLSearchParams();
   filters.courses.forEach((v) => query.append("course", v));
   filters.terms.forEach((v) => query.append("term", String(v)));
   filters.types.forEach((v) => query.append("type", v));
-  if (filters.maxPrice < priceMax) query.set("maxPrice", String(filters.maxPrice));
   if (filters.q) query.set("q", filters.q);
   if (sort !== "featured") query.set("sort", sort);
   return query.toString();
@@ -107,7 +105,6 @@ export function filterProducts(products: Product[], filters: Filters, sort: Sort
     if (filters.courses.length && !filters.courses.includes(p.course)) return false;
     if (filters.terms.length && (p.term === null || !filters.terms.includes(p.term))) return false;
     if (filters.types.length && !filters.types.includes(p.type)) return false;
-    if (p.price > filters.maxPrice) return false;
     if (!words.length) return true;
     const text = searchText(p);
     return words.every((word) => text.includes(word));
@@ -115,6 +112,11 @@ export function filterProducts(products: Product[], filters: Filters, sort: Sort
   // `products` is already newest first, which is the default order.
   if (sort === "price-low") return [...matching].sort((a, b) => a.price - b.price);
   if (sort === "price-high") return [...matching].sort((a, b) => b.price - a.price);
+  if (sort.startsWith("type-")) {
+    // Chosen category first, everything else after it; both parts stay newest first.
+    const first = sort.slice("type-".length);
+    return [...matching.filter((p) => p.type === first), ...matching.filter((p) => p.type !== first)];
+  }
   return matching;
 }
 
@@ -134,15 +136,13 @@ export function getFacets(products: Product[]): Facets {
     types: contentTypes
       .map((t) => ({ value: t.value, label: t.label, count: products.filter((p) => p.type === t.value).length }))
       .filter((o) => o.count > 0),
-    priceMax: priceMaxOf(products),
   };
 }
 
-export function activeChips(filters: Filters, priceMax: number): string[] {
+export function activeChips(filters: Filters): string[] {
   return [
     ...filters.courses.map(courseLabel),
     ...filters.terms.map((t) => `${ordinal(t)} semester / year`),
     ...filters.types.map(typeLabelOf),
-    ...(filters.maxPrice < priceMax ? [`Under ₹${filters.maxPrice}`] : []),
   ];
 }

@@ -216,12 +216,12 @@ const tailwindStyles: Record<string, string> = {
   "product-list": "flex flex-col [gap:12px] min-w-0 max-[560px]:[gap:8px]",
   "product-page": "[padding-top:24px] [padding-bottom:70px]",
   "product-row":
-    "[min-height:164px] [background:#fffdfa] [border:1px_solid_#dedbd5] [border-radius:7px] [padding:14px] grid [grid-template-columns:100px_1fr_auto] [grid-template-rows:1fr_auto] [column-gap:18px] relative [transition:border-color_.2s,_box-shadow_.2s] max-[560px]:[min-height:145px] max-[560px]:[grid-template-columns:78px_1fr_35px] max-[560px]:[grid-template-rows:1fr_32px] max-[560px]:[column-gap:10px] max-[560px]:[padding:10px_8px]",
+    "[min-height:164px] [background:#fffdfa] [border:1px_solid_#dedbd5] [border-radius:7px] [padding:14px] grid [grid-template-columns:100px_minmax(0,1fr)_auto] [grid-template-rows:1fr_auto] [column-gap:18px] [row-gap:8px] relative min-w-0 max-w-full [transition:border-color_.2s,_box-shadow_.2s] max-[560px]:[min-height:145px] max-[560px]:[grid-template-columns:78px_minmax(0,1fr)_35px] max-[560px]:[grid-template-rows:1fr_32px] max-[560px]:[column-gap:10px] max-[560px]:[padding:10px_8px]",
   rating: "block [font-size:10px] [color:#415c72]",
   "results-heading":
-    "flex [align-items:end] justify-between [border-bottom:1px_solid_#dedbd5] [padding-bottom:18px] max-[900px]:grid max-[900px]:[grid-template-columns:1fr_auto] max-[900px]:[gap:13px] max-[900px]:items-center max-[560px]:[border-bottom:0] max-[560px]:p-0",
+    "flex [align-items:end] justify-between [border-bottom:1px_solid_#dedbd5] [padding-bottom:18px] max-[900px]:grid max-[900px]:[grid-template-columns:minmax(0,1fr)_auto] max-[900px]:[gap:13px] max-[900px]:items-center max-[560px]:[border-bottom:0] max-[560px]:p-0",
   "results-layout":
-    "grid [grid-template-columns:220px_1fr] [gap:28px] [margin-top:16px] max-[900px]:[grid-template-columns:1fr] max-[560px]:[margin-top:9px]",
+    "grid [grid-template-columns:220px_minmax(0,1fr)] [gap:28px] [margin-top:16px] min-w-0 max-[900px]:[grid-template-columns:minmax(0,1fr)] max-[560px]:[margin-top:9px]",
   "results-page":
     "[padding-top:22px] [padding-bottom:50px] [min-height:80vh] max-[560px]:w-full max-[560px]:[padding:14px_12px_35px]",
   "review-arrows": "flex [gap:12px] max-[560px]:hidden",
@@ -241,9 +241,9 @@ const tailwindStyles: Record<string, string> = {
     "[background:#eaf5fb] [border-block:1px_solid_#dcecf5] [padding:54px_0_34px] max-[560px]:[padding:42px_0_27px]",
   "route-list": "[margin:30px_0] [border-top:1px_solid_#dedbd5]",
   "row-cart":
-    "[grid-column:3] [grid-row:2] [min-height:36px] [align-self:end] [padding-inline:15px] max-[560px]:[width:31px] max-[560px]:[height:31px] max-[560px]:[min-height:31px] max-[560px]:overflow-hidden max-[560px]:[font-size:0] max-[560px]:p-0 max-[560px]:[border-radius:4px] max-[560px]:[grid-column:3] max-[560px]:[justify-self:end]",
+    "[grid-column:3] [grid-row:2] [min-height:36px] [align-self:end] [justify-self:end] [padding-inline:15px] whitespace-nowrap shrink-0 [gap:7px] max-[560px]:[width:31px] max-[560px]:[height:31px] max-[560px]:[min-height:31px] max-[560px]:overflow-hidden max-[560px]:p-0 max-[560px]:[border-radius:4px] max-[560px]:[grid-column:3] max-[560px]:[justify-self:end]",
   "row-cover": "[grid-row:1_/_3]",
-  "row-main": "[align-self:center] max-[560px]:[align-self:start]",
+  "row-main": "min-w-0 [align-self:center] max-[560px]:[align-self:start]",
   "row-price":
     "block [margin-top:7px] [color:#102a4c] [font-size:15px] max-[560px]:[font-size:12px] max-[560px]:[margin-top:5px]",
   "section-label":

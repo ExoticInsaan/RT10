@@ -6,7 +6,7 @@ import cn from "@/lib/design/twStyles";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import FilterControls from "@/components/browse/FilterControls";
-import { sortLabels, toQuery, type Facets, type Filters, type Sort } from "@/lib/browse";
+import { categorySorts, generalSorts, sortLabels, toQuery, type Facets, type Filters, type Sort } from "@/lib/browse";
 
 /** Sort dropdown, the mobile "Filters" button and the mobile filter sheet. */
 export default function BrowseControls({
@@ -29,7 +29,7 @@ export default function BrowseControls({
   }, [sheet]);
 
   const changeSort = (next: Sort) => {
-    const query = toQuery(filters, next, facets.priceMax);
+    const query = toQuery(filters, next);
     router.replace(query ? `/browse?${query}` : "/browse");
   };
 
@@ -38,11 +38,20 @@ export default function BrowseControls({
       <label className={cn("sort")}>
         Sort by:
         <select value={sort} onChange={(event) => changeSort(event.target.value as Sort)}>
-          {(Object.keys(sortLabels) as Sort[]).map((key) => (
-            <option key={key} value={key}>
-              {sortLabels[key]}
-            </option>
-          ))}
+          <optgroup label="Sort">
+            {generalSorts.map((key) => (
+              <option key={key} value={key}>
+                {sortLabels[key]}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Category">
+            {categorySorts.map((key) => (
+              <option key={key} value={key}>
+                {sortLabels[key]}
+              </option>
+            ))}
+          </optgroup>
         </select>
       </label>
       <Button variant="secondary" className={cn("filter-trigger")} onClick={() => setSheet(true)}>

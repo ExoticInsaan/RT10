@@ -19,6 +19,8 @@
 }
 
 html {
+  max-width: 100%;
+  overflow-x: clip;
   background: #fffbf7;
   color: #1f2937;
   scroll-behavior: smooth;
@@ -26,15 +28,31 @@ html {
 
 body {
   min-width: 320px;
+  max-width: 100%;
+  overflow-x: clip;
   background: #fffbf7;
   color: #1f2937;
   @apply antialiased;
 }
 
-button,
-input,
-select {
-  font: inherit;
+/* In the base layer so component utilities (e.g. the .button font-size) can override it.
+   Unlayered rules always beat Tailwind's layered utilities. */
+@layer base {
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+}
+
+/* Keep form fields at 16px on phones: smaller text makes iOS Safari zoom the page on focus. */
+@media (max-width: 560px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
 }
 
 button,
