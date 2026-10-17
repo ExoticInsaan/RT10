@@ -23,14 +23,14 @@ export const metadata: Metadata = {
     template: "%s | Toppershelf",
   },
   description:
-    "Exam-focused nursing study material: important questions, case studies, care plans, assignments and flashcards, organized by course and semester.",
+    "Exam-focused nursing study material: important questions, care plans, case studies, flashcards, notes and assignments, organized by course and semester.",
   openGraph: {
     siteName: "Toppershelf",
     type: "website",
     locale: "en_IN",
     title: "Toppershelf: Better Resources. Better Results.",
     description:
-      "Important questions, case studies, care plans, assignments and flashcards for nursing students.",
+      "Important questions, care plans, case studies, flashcards, notes and assignments for nursing students.",
   },
 };
 

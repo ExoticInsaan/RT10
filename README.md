@@ -6,7 +6,7 @@ Toppershelf is an online shop for exam-focused nursing study material. Students 
 
 - **Live site:** https://www.toppershelf.online
 - **Courses:** B.Sc. Nursing (semesters 1 to 8), GNM (years 1 to 3), Post Basic (years 1 to 2)
-- **Content types:** Important Questions, Case Studies, Care Plans, Assignments, Flashcards
+- **Content types:** Important Questions, Care Plans, Case Studies, Flashcards, Notes, Assignments
 - **Price:** every PDF is currently sold at **₹49**. The price is stored on each resource, so it can be changed per item in the admin page.
 - **Support:** support@toppershelf.online
 
@@ -29,13 +29,15 @@ Toppershelf is an online shop for exam-focused nursing study material. Students 
 | --- | --- |
 | Design (home, About, Founders, Study Smarter, cart and wishlist) | Done |
 | Sign-in with Google and email code | Done |
+| Browse page: search, filters and sorting | Done. Filters: course, semester or year, resource type. Sort by: newest, price, or a category (that category first). There is no price filter. |
 | Legal pages (privacy, terms, refund, contact) | Done |
 | Database tables and security rules | Done |
 | Admin page: upload PDFs, set price, publish | Done |
 | Shop pages read uploaded resources | Done. Home, browse and product pages show only resources the admin has published. |
 | In-browser PDF reader (no download button) | Done. The PDF stays on the server; buyers get watermarked page pictures. |
 | Razorpay checkout and webhook | Code written, not live. Needs keys and Razorpay approval. |
-| Cart checkout for several items at once | Planned. An order currently covers one item. |
+| Cart checkout for several items at once | Done. One Razorpay order pays for the whole cart (one `purchases` row per item). Needs `0008_multi_item_orders.sql`. |
+| Custom 404, error and crash pages | Done (`app/not-found.tsx`, `app/error.tsx`, `app/global-error.tsx`) |
 | Sitemap and robots file | Planned |
 
 ---
@@ -73,14 +75,15 @@ Copy `.env.example` to `.env.local` and fill it in. On Vercel, add the same name
 | Path | What it is |
 | --- | --- |
 | `app/` | Pages and routes: `/`, `/browse`, `/p/[slug]`, `/library`, `/admin`, `/about`, `/founders`, `/study-smarter`, `/privacy`, `/terms`, `/refund`, `/contact`, `/login` |
-| `app/api/checkout` | Creates a Razorpay order. The price is read from the database, never from the browser. |
+| `app/api/checkout` | Creates one Razorpay order for one or many resources (the cart). Prices are read from the database, never from the browser. |
 | `app/api/webhooks/razorpay` | Checks the payment signature, then marks the purchase as paid. |
 | `app/auth/callback` | Finishes Google sign-in. |
 | `components/` | `home/`, `browse/`, `cart/`, `admin/`, `ui/`, plus sign-in and header parts |
-| `lib/catalog-config.ts` | The courses and the five content types. The database enforces the same values. |
+| `lib/catalog-config.ts` | The courses and the six content types. The database enforces the same values, so change both together (add a migration). |
 | `lib/supabase/` | Browser, server and admin (service role) clients |
 | `lib/products.ts` | Reads published resources from Supabase (cached for about a minute) |
-| `lib/browse.ts` | Search, filters and sorting for `/browse` |
+| `lib/browse.ts` | Search, filters and sorting for `/browse` (sort options include one entry per content type) |
+| `app/not-found.tsx`, `app/error.tsx`, `app/global-error.tsx` | The 404 page, the error page, and the last-resort crash page |
 | `lib/design/` | Design styles and catalogue helpers |
 | `public/` | Logos |
 | `supabase/migrations/` | SQL for the database |
@@ -93,6 +96,11 @@ Run the files in `supabase/migrations/` in order, using the Supabase SQL Editor:
 
 1. `0001_init.sql`: profiles, products, questions, purchases, attempts, security rules, and the private `notes` bucket.
 2. `0003_admin_and_catalogue.sql`: admin list, the catalogue fields, and file permissions.
+3. `0004_buyers_read_bought_products.sql`: buyers keep access to what they paid for, even if it is unpublished.
+4. `0005_subject_optional.sql`: the subject column is now optional.
+5. `0006_covers.sql`: cover pictures (`cover_path` and the public `covers` bucket).
+6. `0007_notes_type.sql`: adds the `notes` content type.
+7. `0008_multi_item_orders.sql`: lets one payment cover several resources (cart checkout).
 
 There is no `0002` file. It was an experiment that was rolled back.
 
@@ -129,10 +137,11 @@ To add a resource: choose the course, semester or year, type and price, then upl
 
 ## Payments
 
-1. The student signs in and taps **Buy now**.
-2. `/api/checkout` creates a Razorpay order using the price stored in the database.
+1. The student signs in and taps **Buy now** on one resource, or **Checkout** in the cart to pay for everything in it at once (up to 20 resources).
+2. `/api/checkout` creates one Razorpay order for the total, using the prices stored in the database. It saves one `purchases` row per resource, all sharing the same order id. It refuses to charge for anything the student already owns, and reuses an open order instead of creating a second one.
 3. Razorpay sends the result to `/api/webhooks/razorpay`.
-4. The webhook checks the signature and marks the purchase as paid. **Access is unlocked only here, never because the browser says "paid".**
+4. The webhook checks the signature, checks that the payment equals the sum of the order's rows, and marks all of them as paid. **Access is unlocked only here, never because the browser says "paid".**
+5. Refunds: a full refund of the payment removes access to everything in it; a partial refund keeps access. If a payment turns out to be a duplicate of something already owned, the whole payment is refunded automatically.
 
 ---
 

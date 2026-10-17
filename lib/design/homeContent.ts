@@ -1,7 +1,7 @@
 export const faqs: [question: string, answer: string][] = [
   [
     "What is Toppershelf?",
-    "Toppershelf is a marketplace for exam-focused nursing study material: important questions, case studies, care plans, assignments and flashcards, organized by semester and subject.",
+    "Toppershelf is a marketplace for exam-focused nursing study material: important questions, care plans, case studies, flashcards, notes and assignments, organized by semester and subject.",
   ],
   [
     "Which nursing courses and semesters are covered?",

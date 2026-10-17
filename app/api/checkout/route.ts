@@ -3,13 +3,20 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { razorpay, razorpayConfigured } from "@/lib/razorpay";
 
-// POST /api/checkout  { slug: string }
+// POST /api/checkout  { slugs: string[] }   (a single { slug: string } is accepted too)
+// One Razorpay order pays for every resource in the cart. Each resource gets its own `purchases`
+// row, and all rows of one order share the same gateway_order_id.
 // The price is ALWAYS read from the database, never from the browser.
 //
 // Every error carries a `code` so the page can show a clear message:
-//   login_required, bad_request, not_found, already_owned, confirming, not_configured, gateway_error, save_failed
-const fail = (status: number, code: string, error: string) =>
-  NextResponse.json({ code, error }, { status });
+//   login_required, bad_request, too_many, not_found, items_changed, already_owned, confirming,
+//   not_configured, gateway_error, save_failed
+const MAX_ITEMS = 20;
+
+const fail = (status: number, code: string, error: string, extra: Record<string, unknown> = {}) =>
+  NextResponse.json({ code, error, ...extra }, { status });
+
+type OpenRow = { gateway_order_id: string; product_id: string; amount: number };
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -18,8 +25,15 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
   if (!user) return fail(401, "login_required", "Please log in first.");
 
-  const { slug } = (await request.json().catch(() => ({}))) as { slug?: string };
-  if (!slug) return fail(400, "bad_request", "Missing product.");
+  const body = (await request.json().catch(() => ({}))) as { slug?: unknown; slugs?: unknown };
+  const asked = Array.isArray(body.slugs) ? body.slugs : body.slug ? [body.slug] : [];
+  const slugs = Array.from(
+    new Set(asked.filter((s): s is string => typeof s === "string" && s.length > 0 && s.length < 200)),
+  );
+  if (!slugs.length) return fail(400, "bad_request", "Your cart is empty.");
+  if (slugs.length > MAX_ITEMS) {
+    return fail(400, "too_many", `You can pay for up to ${MAX_ITEMS} resources at once. Please remove a few.`);
+  }
 
   if (!razorpayConfigured()) {
     console.error("Checkout: RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET are not set.");
@@ -28,58 +42,98 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient();
 
-  const { data: product } = await admin
+  const { data: found } = await admin
     .from("products")
-    .select("id, title, price")
-    .eq("slug", slug)
-    .eq("published", true)
-    .single();
-  if (!product) return fail(404, "not_found", "This resource is not available.");
+    .select("id, slug, title, price")
+    .in("slug", slugs)
+    .eq("published", true);
+  const products = (found ?? []) as { id: string; slug: string; title: string; price: number }[];
+  if (!products.length) return fail(404, "not_found", "This resource is not available.");
+  if (products.length !== slugs.length) {
+    const have = new Set(products.map((p) => p.slug));
+    return fail(
+      409,
+      "items_changed",
+      "Some items in your cart are no longer available, so we removed them. Check your total and try again.",
+      { unavailable: slugs.filter((s) => !have.has(s)) },
+    );
+  }
+  const ids = products.map((p) => p.id);
 
-  const { data: already } = await admin
+  // Never charge for something the student already owns.
+  const { data: ownedRows } = await admin
     .from("purchases")
-    .select("id")
+    .select("product_id")
     .eq("user_id", user.id)
-    .eq("product_id", product.id)
     .eq("status", "paid")
-    .maybeSingle();
-  if (already) return fail(409, "already_owned", "You already own this resource.");
+    .in("product_id", ids);
+  const ownedIds = new Set((ownedRows ?? []).map((r: { product_id: string }) => r.product_id));
+  if (ownedIds.size) {
+    const owned = products.filter((p) => ownedIds.has(p.id));
+    return fail(
+      409,
+      "already_owned",
+      products.length === 1 ? "You already own this resource." : `You already own: ${owned.map((p) => p.title).join(", ")}.`,
+      { owned: owned.map((p) => p.slug) },
+    );
+  }
 
-  const amountPaise = Math.round(Number(product.price) * 100);
+  const lines = products.map((p) => ({ product: p, amount: Math.round(Number(p.price) * 100) }));
+  const amountPaise = lines.reduce((sum, l) => sum + l.amount, 0);
+  const wanted = new Set(ids);
+  const title = products.length === 1 ? products[0].title : `${products.length} resources`;
   const reply = (orderId: string) =>
     NextResponse.json({
       orderId,
       amount: amountPaise,
       currency: "INR",
       keyId: process.env.RAZORPAY_KEY_ID,
-      name: product.title,
+      name: title,
     });
 
-  // A student who clicks Buy twice (or reopens the page) must not get a second order:
-  // two open orders can both be paid, which charges them twice. Reuse the open one instead.
-  const { data: openOrders } = await admin
+  // A student who clicks Pay twice (or reopens the cart) must not get a second order:
+  // two open orders can both be paid, which charges them twice. Look at every unfinished order that
+  // touches one of these resources, newest first. If any is already paid at Razorpay (our webhook just
+  // has not unlocked it yet) stop. If one is for exactly this set, reuse it.
+  const { data: touching } = await admin
     .from("purchases")
     .select("gateway_order_id")
     .eq("user_id", user.id)
-    .eq("product_id", product.id)
+    .in("product_id", ids)
     .in("status", ["pending", "failed"])
-    .eq("amount", amountPaise)
     .order("created_at", { ascending: false })
-    .limit(3);
+    .limit(100);
+  const orderIds = Array.from(new Set((touching ?? []).map((r: { gateway_order_id: string }) => r.gateway_order_id))).slice(0, 5);
 
-  for (const open of openOrders ?? []) {
-    const existing = await razorpay<{ status?: string }>(`/orders/${open.gateway_order_id}`);
-    if (!existing.ok) continue;
-    if (existing.data.status === "paid") {
-      // Money is in, our webhook just has not unlocked it yet. Do NOT let them pay again.
-      return fail(
-        409,
-        "confirming",
-        "Your payment was received and is being confirmed. Please check My Library in a minute. Do not pay again.",
-      );
+  if (orderIds.length) {
+    const { data: orderRows } = await admin
+      .from("purchases")
+      .select("gateway_order_id, product_id, amount")
+      .in("gateway_order_id", orderIds);
+    const orders = new Map<string, { products: Set<string>; total: number }>();
+    for (const row of (orderRows ?? []) as OpenRow[]) {
+      const entry = orders.get(row.gateway_order_id) ?? { products: new Set<string>(), total: 0 };
+      entry.products.add(row.product_id);
+      entry.total += row.amount;
+      orders.set(row.gateway_order_id, entry);
     }
-    if (existing.data.status === "created" || existing.data.status === "attempted") {
-      return reply(open.gateway_order_id);
+
+    for (const orderId of orderIds) {
+      const existing = await razorpay<{ status?: string }>(`/orders/${orderId}`);
+      if (!existing.ok) continue;
+      if (existing.data.status === "paid") {
+        return fail(
+          409,
+          "confirming",
+          "Your payment was received and is being confirmed. Please check My Library in a minute. Do not pay again.",
+        );
+      }
+      if (existing.data.status === "created" || existing.data.status === "attempted") {
+        const entry = orders.get(orderId);
+        const sameSet =
+          entry && entry.total === amountPaise && entry.products.size === wanted.size && ids.every((id) => entry.products.has(id));
+        if (sameSet) return reply(orderId);
+      }
     }
   }
 
@@ -89,7 +143,7 @@ export async function POST(request: Request) {
       amount: amountPaise,
       currency: "INR",
       receipt: `${user.id.slice(0, 8)}-${Date.now()}`,
-      notes: { user_id: user.id, product_id: product.id },
+      notes: { user_id: user.id, items: String(products.length) },
     },
   });
   if (!created.ok || !created.data.id) {
@@ -98,13 +152,15 @@ export async function POST(request: Request) {
   }
   const orderId = created.data.id;
 
-  const { error } = await admin.from("purchases").insert({
-    user_id: user.id,
-    product_id: product.id,
-    gateway_order_id: orderId,
-    amount: amountPaise,
-    status: "pending",
-  });
+  const { error } = await admin.from("purchases").insert(
+    lines.map((l) => ({
+      user_id: user.id,
+      product_id: l.product.id,
+      gateway_order_id: orderId,
+      amount: l.amount,
+      status: "pending",
+    })),
+  );
   if (error) {
     console.error("Checkout: could not save purchase", error);
     return fail(500, "save_failed", "Could not save your order. Please try again.");

@@ -6,7 +6,7 @@ import { PRODUCT_COLUMNS, toProduct, type Product } from "@/lib/product-types";
 
 // Cart and wishlist live in the browser only (localStorage), keyed by product slug.
 // Product details are looked up in the database, so a resource that is unpublished or deleted
-// simply drops out. Payment still happens one product at a time through the existing Buy now flow.
+// simply drops out. The whole cart is paid in one Razorpay order (see /api/checkout).
 
 const CART_KEY = "ts-cart";
 const WISH_KEY = "ts-wish";
@@ -19,6 +19,7 @@ type CartContextValue = {
   cartOpen: boolean;
   toggleCart: (slug: string) => void;
   toggleWish: (slug: string) => void;
+  removeFromCart: (slugs: string[]) => void;
   openCart: () => void;
   closeCart: () => void;
 };
@@ -31,6 +32,7 @@ const CartContext = createContext<CartContextValue>({
   cartOpen: false,
   toggleCart: () => {},
   toggleWish: () => {},
+  removeFromCart: () => {},
   openCart: () => {},
   closeCart: () => {},
 });
@@ -112,12 +114,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const toggleCart = useCallback((slug: string) => setCart((items) => toggle(items, slug)), []);
   const toggleWish = useCallback((slug: string) => setWished((items) => toggle(items, slug)), []);
+  const removeFromCart = useCallback(
+    (slugs: string[]) => setCart((items) => items.filter((s) => !slugs.includes(s))),
+    [],
+  );
   const openCart = useCallback(() => setCartOpen(true), []);
   const closeCart = useCallback(() => setCartOpen(false), []);
 
   const value = useMemo(
-    () => ({ cart, wished, cartItems, wishedItems, cartOpen, toggleCart, toggleWish, openCart, closeCart }),
-    [cart, wished, cartItems, wishedItems, cartOpen, toggleCart, toggleWish, openCart, closeCart],
+    () => ({ cart, wished, cartItems, wishedItems, cartOpen, toggleCart, toggleWish, removeFromCart, openCart, closeCart }),
+    [cart, wished, cartItems, wishedItems, cartOpen, toggleCart, toggleWish, removeFromCart, openCart, closeCart],
   );
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
