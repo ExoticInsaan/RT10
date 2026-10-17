@@ -3,7 +3,8 @@ import crypto from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { razorpay } from "@/lib/razorpay";
 
-// Razorpay calls this URL after a payment. Access is unlocked ONLY here,
+// Razorpay calls this URL after a payment. One payment can cover several resources (the cart).
+// Access is unlocked ONLY here,
 // after the signature is verified. Never because the browser says "paid".
 //
 // Enable these events in Razorpay Dashboard > Webhooks:
@@ -57,40 +58,45 @@ export async function POST(request: Request) {
       return ok();
     }
 
+    // One order can cover several resources: one purchases row each, all with the same
+    // gateway_order_id. The payment must equal the sum of those rows, otherwise it is not ours to unlock.
+    const { data: rows, error: readError } = await admin
+      .from("purchases")
+      .select("amount, status")
+      .eq("gateway_order_id", pay.order_id);
+    if (readError) {
+      console.error("Webhook: could not read order", pay.order_id, readError);
+      return retryLater("Could not read order.");
+    }
+    const expected = (rows ?? []).reduce((sum, r) => sum + r.amount, 0);
+    if (!rows?.length || expected !== pay.amount) {
+      console.error("Webhook: payment does not match any order", {
+        payment: pay.id,
+        order: pay.order_id,
+        paid: pay.amount,
+        expected: rows?.length ? expected : null,
+      });
+      return ok();
+    }
+    // Nothing left to unlock: already processed (safe to receive the same event twice).
+    if (!rows.some((r) => r.status === "pending" || r.status === "failed")) return ok();
+
     // A failed attempt may be followed by a successful retry on the same order, so 'failed' rows
-    // can still become 'paid'. A row that is already 'paid' is left alone (safe to receive twice).
-    const { data: updated, error } = await admin
+    // can still become 'paid'. Rows that are already 'paid' are left alone.
+    const { error } = await admin
       .from("purchases")
       .update({ status: "paid", gateway_payment_id: pay.id })
       .eq("gateway_order_id", pay.order_id)
-      .eq("amount", pay.amount)
-      .in("status", ["pending", "failed"])
-      .select("id");
+      .in("status", ["pending", "failed"]);
 
     if (error) {
       if (error.code === "23505" && error.message.includes("one_paid_purchase_per_item")) {
-        // The student already owns this resource, so this payment is a duplicate. Refund it.
+        // The student already owns one of these resources, so this payment is a duplicate.
+        // The whole payment is refunded (they can buy the rest again).
         return refundDuplicate(admin, pay);
       }
       console.error("Webhook: could not mark purchase paid", pay.id, error);
       return retryLater("Could not record payment.");
-    }
-
-    if (!updated?.length) {
-      // Nothing changed: either already processed (fine) or this order is not one of ours.
-      const { data: row } = await admin
-        .from("purchases")
-        .select("amount, status")
-        .eq("gateway_order_id", pay.order_id)
-        .maybeSingle();
-      if (!row || row.amount !== pay.amount) {
-        console.error("Webhook: payment does not match any order", {
-          payment: pay.id,
-          order: pay.order_id,
-          paid: pay.amount,
-          expected: row?.amount ?? null,
-        });
-      }
     }
     return ok();
   }
@@ -115,16 +121,32 @@ export async function POST(request: Request) {
   if (event.event === "refund.processed") {
     const refund = event.payload?.refund?.entity;
     if (refund?.payment_id) {
-      // Only a refund of the full amount removes access; a partial refund keeps it.
-      const { error } = await admin
+      const { data: rows, error: readError } = await admin
         .from("purchases")
-        .update({ status: "refunded" })
+        .select("amount")
         .eq("gateway_payment_id", refund.payment_id)
-        .eq("status", "paid")
-        .lte("amount", refund.amount);
-      if (error) {
-        console.error("Webhook: could not mark purchase refunded", refund.payment_id, error);
+        .eq("status", "paid");
+      if (readError) {
+        console.error("Webhook: could not read refunded payment", refund.payment_id, readError);
         return retryLater("Could not record refund.");
+      }
+      if (rows?.length) {
+        const total = rows.reduce((sum, r) => sum + r.amount, 0);
+        // refund.amount is this refund only. Ask Razorpay for the running total so two part-refunds add up.
+        const payment = await razorpay<{ amount_refunded?: number }>(`/payments/${refund.payment_id}`);
+        const refunded = Math.max(refund.amount, payment.ok ? (payment.data.amount_refunded ?? 0) : 0);
+        // Only a refund of the full payment removes access; a partial refund keeps it.
+        if (refunded >= total) {
+          const { error } = await admin
+            .from("purchases")
+            .update({ status: "refunded" })
+            .eq("gateway_payment_id", refund.payment_id)
+            .eq("status", "paid");
+          if (error) {
+            console.error("Webhook: could not mark purchase refunded", refund.payment_id, error);
+            return retryLater("Could not record refund.");
+          }
+        }
       }
     }
     return ok();

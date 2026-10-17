@@ -87,8 +87,19 @@ export default function LibraryClient() {
   }, [user]);
 
   // The payment we are waiting on (the student has just come back from the payment window).
-  const justBought = justPaid && orderId ? rows?.find((r) => r.gateway_order_id === orderId) : undefined;
-  const confirming = justBought?.status === "pending" || justBought?.status === "failed";
+  // One order can cover several resources (one row each), so look at all rows of the order together.
+  const orderRows = justPaid && orderId ? (rows ?? []).filter((r) => r.gateway_order_id === orderId) : [];
+  const orderStatus: "pending" | "paid" | "refunded" | undefined = !orderRows.length
+    ? undefined
+    : orderRows.some((r) => r.status === "pending" || r.status === "failed")
+      ? "pending"
+      : orderRows.every((r) => r.status === "paid")
+        ? "paid"
+        : orderRows.every((r) => r.status === "refunded")
+          ? "refunded"
+          : undefined;
+  const justBought = orderRows[0];
+  const confirming = orderStatus === "pending";
 
   // The unlock arrives from the payment company a few seconds after paying. Keep checking.
   useEffect(() => {
@@ -118,14 +129,20 @@ export default function LibraryClient() {
   if (rows === null) return <p className="text-muted">Loading your library…</p>;
 
   const items = rows.filter((r) => r.status === "paid" && r.products);
-  const title = justBought?.products?.title;
+  const boughtTitles = orderRows.map((r) => r.products?.title).filter((t): t is string => Boolean(t));
 
   let banner: React.ReactNode = null;
-  if (justBought?.status === "paid") {
+  if (orderStatus === "paid") {
     banner = (
       <Banner tone="success" title="Payment received">
-        {title ? <>“{title}” is now in your library.</> : "Your resource is now in your library."}
-        {justBought.products && (
+        {orderRows.length > 1 ? (
+          <>All {orderRows.length} resources from your order are now in your library.</>
+        ) : boughtTitles[0] ? (
+          <>“{boughtTitles[0]}” is now in your library.</>
+        ) : (
+          "Your resource is now in your library."
+        )}
+        {orderRows.length === 1 && justBought.products && (
           <>
             {" "}
             <Link href={`/read/${justBought.products.slug}`} className="font-semibold underline">
@@ -161,11 +178,11 @@ export default function LibraryClient() {
         </button>
       </Banner>
     );
-  } else if (justBought?.status === "refunded") {
+  } else if (orderStatus === "refunded") {
     banner = (
       <Banner tone="info" title="This payment was refunded">
         The money is being returned to your original payment method (usually 5 to 7 working days).
-        {items.length > 0 && " You already own this resource, so nothing else is needed."}
+        {items.length > 0 && " You already own these resources, so nothing else is needed."}
       </Banner>
     );
   }

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import cn from "@/lib/design/twStyles";
 import { accentFor, coverHeading } from "@/lib/design/catalog";
 import { typeLabelOf } from "@/lib/catalog-config";
-import BuyButton from "@/components/BuyButton";
+import CheckoutButton from "@/components/cart/CheckoutButton";
 import Button from "@/components/ui/Button";
 import Cover from "@/components/ui/Cover";
 import Icon from "@/components/ui/Icon";
@@ -55,7 +55,6 @@ export default function CartDrawer() {
                 <div>
                   <strong>{p.title}</strong>
                   <span>₹ {p.price}</span>
-                  <BuyButton slug={p.slug} price={p.price} />
                 </div>
                 <Button variant="icon" ariaLabel={`Remove ${p.title}`} onClick={() => toggleCart(p.slug)}>
                   <Icon name="trash" size={17} />
@@ -75,7 +74,8 @@ export default function CartDrawer() {
             <span>Total</span>
             <strong>₹ {total}</strong>
           </div>
-          <small>Each resource is bought separately. Use Buy now beside the item you want.</small>
+          {items.length > 0 && <CheckoutButton slugs={items.map((p) => p.slug)} total={total} />}
+          <small>One payment for everything in your cart. Your resources appear in My Library after payment.</small>
         </div>
       </aside>
     </div>

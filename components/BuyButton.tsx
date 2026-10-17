@@ -7,35 +7,7 @@ import { useAuth } from "@/components/AuthProvider";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import { createClient } from "@/lib/supabase/client";
-
-type RzpSuccess = { razorpay_order_id: string };
-type RzpFailure = { error?: { description?: string } };
-type RzpOptions = {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  prefill?: { email?: string };
-  theme?: { color: string };
-  modal?: { ondismiss?: () => void };
-  handler: (response: RzpSuccess) => void;
-};
-type RzpInstance = { open: () => void; on: (event: "payment.failed", cb: (r: RzpFailure) => void) => void };
-type RzpCtor = new (o: RzpOptions) => RzpInstance;
-
-function loadRazorpay(): Promise<RzpCtor | null> {
-  const w = window as unknown as { Razorpay?: RzpCtor };
-  if (w.Razorpay) return Promise.resolve(w.Razorpay);
-  return new Promise((resolve) => {
-    const s = document.createElement("script");
-    s.src = "https://checkout.razorpay.com/v1/checkout.js";
-    s.onload = () => resolve(w.Razorpay ?? null);
-    s.onerror = () => resolve(null);
-    document.body.appendChild(s);
-  });
-}
+import { failedPaymentText, loadRazorpay } from "@/lib/razorpay-client";
 
 type Note = { tone: "error" | "info"; text: string; libraryLink?: boolean };
 
@@ -102,12 +74,7 @@ export default function BuyButton({ slug, price }: { slug: string; price: number
         handler: (response) =>
           router.push(`/library?paid=1&order=${encodeURIComponent(response.razorpay_order_id ?? data.orderId)}`),
       });
-      rzp.on("payment.failed", (r) =>
-        setNote({
-          tone: "error",
-          text: `Payment failed${r.error?.description ? `: ${r.error.description}` : ""}. If money was deducted, your bank usually returns it in 5 to 7 working days. You can try again.`,
-        }),
-      );
+      rzp.on("payment.failed", (r) => setNote({ tone: "error", text: failedPaymentText(r) }));
       rzp.open();
     } catch {
       setNote({ tone: "error", text: "Something went wrong. Please try again." });

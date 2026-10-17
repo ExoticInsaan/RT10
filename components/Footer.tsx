@@ -10,7 +10,7 @@ export default function Footer() {
           <Brand tile />
           <strong>Your Nursing Journey, One Shelf at a Time.</strong>
           <p>
-            Important questions, case studies, care plans, assignments and flashcards for nursing
+            Important questions, care plans, case studies, flashcards, notes and assignments for nursing
             students, organized by course and semester.
           </p>
         </div>

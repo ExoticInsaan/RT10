@@ -13,7 +13,7 @@ export default function Hero() {
         for Exams — <em>All in One Place.</em>
       </h1>
       <p>
-        Important questions, case studies, care plans, assignments and flashcards for B.Sc. Nursing,
+        Important questions, care plans, case studies, flashcards, notes and assignments for B.Sc. Nursing,
         GNM and Post Basic. Search by document name to find the PDF you need.
       </p>
       <Button href="/browse" className={cn("hero-cta")}>
