@@ -19,6 +19,8 @@
 }
 
 html {
+  max-width: 100%;
+  overflow-x: clip;
   background: #fffbf7;
   color: #1f2937;
   scroll-behavior: smooth;
@@ -26,6 +28,8 @@ html {
 
 body {
   min-width: 320px;
+  max-width: 100%;
+  overflow-x: clip;
   background: #fffbf7;
   color: #1f2937;
   @apply antialiased;

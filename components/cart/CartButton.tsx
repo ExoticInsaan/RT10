@@ -31,8 +31,13 @@ export default function CartButton({ slug, variant }: { slug: string; variant: "
     );
   }
   return (
-    <Button className={cn(`row-cart ${inCart ? "added" : ""}`)} onClick={() => toggleCart(slug)}>
-      {inCart ? "Added" : "Add to cart"} <Icon name={inCart ? "check" : "arrow"} size={15} />
+    <Button
+      className={cn(`row-cart ${inCart ? "added" : ""}`)}
+      ariaLabel={label}
+      onClick={() => toggleCart(slug)}
+    >
+      <span className="max-[560px]:hidden">{inCart ? "Added" : "Add to cart"}</span>
+      <Icon name={inCart ? "check" : "arrow"} size={15} />
     </Button>
   );
 }

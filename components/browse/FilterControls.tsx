@@ -30,7 +30,7 @@ function Check({
   );
 }
 
-/** Filter checkboxes + price slider. Filters are drafted locally and applied to the URL on "Apply filters". */
+/** Filter checkboxes. Filters are drafted locally and applied to the URL on "Apply filters". */
 export default function FilterControls({
   initial,
   facets,
@@ -46,7 +46,7 @@ export default function FilterControls({
   const [draft, setDraft] = useState<Filters>(initial);
 
   const apply = () => {
-    const query = toQuery(draft, sort, facets.priceMax);
+    const query = toQuery(draft, sort);
     router.push(query ? `/browse?${query}` : "/browse");
     onApplied?.();
   };
@@ -87,22 +87,6 @@ export default function FilterControls({
             onChange={() => setDraft({ ...draft, types: toggle(draft.types, option.value as TypeValue) })}
           />
         ))}
-      </fieldset>
-      <fieldset className={cn("range-field")}>
-        <legend>Price range</legend>
-        <input
-          aria-label="Maximum price"
-          type="range"
-          min="0"
-          max={facets.priceMax}
-          step="1"
-          value={draft.maxPrice}
-          onChange={(event) => setDraft({ ...draft, maxPrice: Number(event.target.value) })}
-        />
-        <div>
-          <span>₹0</span>
-          <span>₹{draft.maxPrice}</span>
-        </div>
       </fieldset>
       <Button className={cn("apply")} onClick={apply}>
         Apply filters

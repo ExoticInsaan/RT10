@@ -11,11 +11,9 @@ import type { Filters, Sort } from "@/lib/browse";
 export default function SearchBar({
   filters,
   sort,
-  priceMax,
 }: {
   filters: Filters;
   sort: Sort;
-  priceMax: number;
 }) {
   return (
     <form className={cn("hero-search")} action="/browse" method="get" role="search" style={{ marginBottom: 20 }}>
@@ -37,7 +35,6 @@ export default function SearchBar({
       {filters.types.map((v) => (
         <input key={`type-${v}`} type="hidden" name="type" value={v} />
       ))}
-      {filters.maxPrice < priceMax && <input type="hidden" name="maxPrice" value={filters.maxPrice} />}
       {sort !== "featured" && <input type="hidden" name="sort" value={sort} />}
       <Button type="submit" ariaLabel="Search">
         <Icon name="search" size={18} />
