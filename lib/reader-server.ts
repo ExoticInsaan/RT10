@@ -52,6 +52,14 @@ async function open(filePath: string): Promise<Loaded> {
   return { doc, sizes };
 }
 
+// Forget the in-memory copy of a PDF (used when an admin has replaced the file).
+export function forgetPdf(filePath: string) {
+  const entry = opened.get(filePath);
+  if (!entry) return;
+  opened.delete(filePath);
+  entry.loading.then((l) => l.doc.destroy()).catch(() => {});
+}
+
 export async function getPdf(filePath: string): Promise<Loaded> {
   const now = Date.now();
   for (const [key, entry] of opened) {

@@ -187,3 +187,15 @@ Google sign-in is configured in Google Cloud Console (OAuth client) and in Supab
 ## License
 
 No license is set. By default, all rights are reserved by the owner. The study material is for each buyer's personal use only.
+
+---
+
+## Cover pictures
+
+Every card, the product page and the cart show the **real first page of the PDF** as the cover. The page is scaled to fit the frame and is never cropped. It carries no watermark, so everyone can see it. Resources that have no cover yet show the plain generated cover.
+
+- **Made automatically** when you upload or replace a PDF in `/admin`. The server (`app/api/admin/cover`) draws page 1 at 640 px wide and saves it as a WebP in the public `covers` bucket.
+- **Existing resources:** open `/admin` and click **Create cover** (or **Refresh cover**) on each one.
+- The shop caches its lists for about a minute, so a new cover can take up to a minute to appear.
+- Only the first page is public. Paid pages are still served only to buyers, with their email on them.
+- Needs migration `0006_covers.sql` and the `SUPABASE_SERVICE_ROLE_KEY` setting.

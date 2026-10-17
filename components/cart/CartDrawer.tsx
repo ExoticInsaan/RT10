@@ -49,6 +49,7 @@ export default function CartDrawer() {
                   heading={coverHeading(p.title)}
                   accent={accentFor(p.title)}
                   coverLine={typeLabelOf(p.type)}
+                  image={p.coverUrl}
                   small
                 />
                 <div>

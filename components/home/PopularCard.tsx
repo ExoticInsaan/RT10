@@ -17,6 +17,7 @@ export default function PopularCard({ p }: { p: Product }) {
           heading={coverHeading(p.title)}
           accent={accentFor(p.title)}
           coverLine={typeLabelOf(p.type)}
+          image={p.coverUrl}
         />
       </Link>
       <div className={cn("card-body")}>

@@ -17,6 +17,7 @@ export default function ProductRow({ p }: { p: Product }) {
           heading={coverHeading(p.title)}
           accent={accentFor(p.title)}
           coverLine={typeLabelOf(p.type)}
+          image={p.coverUrl}
           small
         />
       </Link>

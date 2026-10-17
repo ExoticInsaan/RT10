@@ -70,6 +70,8 @@ async function ProductDetail({ params }: { params: PageProps<"/p/[slug]">["param
             heading={coverHeading(p.title)}
             accent={accentFor(p.title)}
             coverLine={typeLabelOf(p.type)}
+            image={p.coverUrl}
+            large
           />
         </div>
         <div className={cn("detail-copy")}>

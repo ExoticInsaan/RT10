@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import AuthPanel from "@/components/AuthPanel";
 import { slug as toSlug } from "@/lib/design/catalog";
+import { coverUrlFor } from "@/lib/product-types";
 import {
   contentTypes,
   courseLabel,
@@ -30,6 +31,7 @@ type Row = {
   description: string | null;
   file_path: string | null;
   sample_path: string | null;
+  cover_path: string | null;
   published: boolean;
   created_at: string;
 };
@@ -84,6 +86,7 @@ export default function AdminClient() {
   const [removeSample, setRemoveSample] = useState(false);
   const [fileKey, setFileKey] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [coverBusy, setCoverBusy] = useState<string | null>(null);
   const [notice, setNotice] = useState<Notice>(null);
   const formTop = useRef<HTMLDivElement>(null);
 
@@ -171,6 +174,35 @@ export default function AdminClient() {
     return validPdf(pdf) ?? validPdf(sample);
   }
 
+  // Ask the server to make the cover from page 1 of the PDF. Returns an error message, or null.
+  async function makeCover(id: string): Promise<string | null> {
+    try {
+      const res = await fetch("/api/admin/cover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: id }),
+      });
+      if (res.ok) return null;
+      const data = await res.json().catch(() => ({}));
+      return data.error ?? `The server answered ${res.status}.`;
+    } catch {
+      return "Could not reach the server.";
+    }
+  }
+
+  async function createCover(row: Row) {
+    setNotice(null);
+    setCoverBusy(row.id);
+    const problem = await makeCover(row.id);
+    setCoverBusy(null);
+    setNotice(
+      problem
+        ? { kind: "error", text: `Cover not made: ${problem}` }
+        : { kind: "ok", text: "Cover made. It shows on the site within about a minute." },
+    );
+    await load();
+  }
+
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setNotice(null);
@@ -239,14 +271,17 @@ export default function AdminClient() {
         if (error) throw new Error(error.message);
       }
 
-      setNotice({
-        kind: "ok",
-        text: editing
-          ? "Saved."
-          : form.published
-            ? "Added and published. It shows on the site within about a minute."
-            : "Added as a draft. Tick Published when you want it on the site.",
-      });
+      const saved = editing
+        ? "Saved."
+        : form.published
+          ? "Added and published. It shows on the site within about a minute."
+          : "Added as a draft. Tick Published when you want it on the site.";
+      const coverProblem = pdf ? await makeCover(id) : null;
+      setNotice(
+        coverProblem
+          ? { kind: "error", text: `${saved} But the cover could not be made (${coverProblem}). Use "Create cover" in the list.` }
+          : { kind: "ok", text: pdf ? `${saved} The cover was made from the first page.` : saved },
+      );
       resetForm();
       await load();
     } catch (err) {
@@ -286,6 +321,7 @@ export default function AdminClient() {
     }
     const paths = [row.file_path, row.sample_path].filter((p): p is string => Boolean(p));
     if (paths.length) await supabase.storage.from(BUCKET).remove(paths);
+    if (row.cover_path) await supabase.storage.from("covers").remove([row.cover_path]);
     if (form.id === row.id) resetForm();
     await load();
   }
@@ -444,6 +480,13 @@ export default function AdminClient() {
           {rows.map((r) => (
             <li key={r.id} className="rounded-2xl border border-line bg-white p-4 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="flex min-w-0 gap-3">
+                  {r.cover_path ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={coverUrlFor(r.cover_path) ?? ""} alt="" className="h-20 w-14 shrink-0 rounded border border-line bg-white object-contain" />
+                  ) : (
+                    <div className="flex h-20 w-14 shrink-0 items-center justify-center rounded border border-dashed border-line text-center text-[10px] leading-tight text-muted">No cover</div>
+                  )}
                 <div className="min-w-0">
                   <p className="font-semibold text-navy">{r.title}</p>
                   <p className="mt-0.5 text-sm text-muted">
@@ -454,6 +497,7 @@ export default function AdminClient() {
                     {r.pages ? ` · ${r.pages} pages` : ""} · PDF {r.file_path ? "✓" : "missing"} · Sample {r.sample_path ? "✓" : "none"}
                   </p>
                 </div>
+                </div>
                 <span className={`rounded-full px-3 py-1 text-xs font-semibold ${r.published ? "bg-green-100 text-green-800" : "bg-surface text-muted"}`}>
                   {r.published ? "Published" : "Draft"}
                 </span>
@@ -463,6 +507,11 @@ export default function AdminClient() {
                 <button type="button" onClick={() => togglePublished(r)} className={`${button} border border-line bg-white text-navy hover:bg-surface`}>
                   {r.published ? "Unpublish" : "Publish"}
                 </button>
+                {r.file_path && (
+                  <button type="button" onClick={() => createCover(r)} disabled={coverBusy === r.id} className={`${button} border border-line bg-white text-navy hover:bg-surface`}>
+                    {coverBusy === r.id ? "Making cover…" : r.cover_path ? "Refresh cover" : "Create cover"}
+                  </button>
+                )}
                 {r.file_path && (
                   <button type="button" onClick={() => openFile(r.file_path as string)} className={`${button} border border-line bg-white text-navy hover:bg-surface`}>Open PDF</button>
                 )}
