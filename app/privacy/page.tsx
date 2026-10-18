@@ -37,7 +37,7 @@ export default function PrivacyPage() {
 
       <h2 className={h2}>2. Data we collect</h2>
       <ul className={ul}>
-        <li><b>Sign-in data:</b> if you continue with Google, your name, email address and profile picture, as shared by Google. If you continue with email, your email address and the one-time code you enter.</li>
+        <li><b>Sign-in data:</b> if you continue with Google, your name, email address and profile picture, as shared by Google. If you continue with email, your email address and the one-time code you enter. On your first sign-in we also ask what name we should call you; you can change it at any time.</li>
         <li><b>Purchase data:</b> the items you buy, order and payment reference numbers, amount and date.</li>
         <li><b>Quiz and test data:</b> your answers, scores and attempt times, so we can show your results.</li>
         <li><b>Technical data:</b> device, browser, IP address and pages visited, collected through cookies and analytics (see section 6).</li>

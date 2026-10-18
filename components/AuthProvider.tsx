@@ -1,13 +1,22 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Suspense, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import AuthPanel from "@/components/AuthPanel";
+import WelcomeGate from "@/components/welcome/WelcomeGate";
+
+export type Profile = { name: string | null; welcomedAt: string | null };
 
 type AuthCtx = {
   user: User | null;
   ready: boolean;
+  /** The student's profile (name and whether they have seen the welcome screen). Null until loaded. */
+  profile: Profile | null;
+  /** True once the profile has been looked up for the signed-in user. */
+  profileReady: boolean;
+  /** Update the profile in memory after it has been saved. */
+  setProfile: (p: Profile) => void;
   openSignIn: () => void;
   signOut: () => Promise<void>;
 };
@@ -15,9 +24,13 @@ type AuthCtx = {
 const Ctx = createContext<AuthCtx>({
   user: null,
   ready: false,
+  profile: null,
+  profileReady: false,
+  setProfile: () => {},
   openSignIn: () => {},
   signOut: async () => {},
 });
+
 
 export const useAuth = () => useContext(Ctx);
 
@@ -25,6 +38,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profileFor, setProfileFor] = useState<string | null>(null); // id of the user the profile belongs to
 
   useEffect(() => {
     let unsubscribe = () => {};
@@ -46,6 +61,34 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     return unsubscribe;
   }, []);
 
+  // Look up the student's profile once they are signed in.
+  const userId = user?.id ?? null;
+  useEffect(() => {
+    if (!userId) {
+      Promise.resolve().then(() => {
+        setProfile(null);
+        setProfileFor(null);
+      });
+      return;
+    }
+    let cancelled = false;
+    createClient()
+      .from("profiles")
+      .select("name, welcomed_at")
+      .eq("id", userId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return;
+        setProfile({ name: data?.name ?? null, welcomedAt: data?.welcomed_at ?? null });
+        setProfileFor(userId);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  const profileReady = Boolean(userId) && profileFor === userId;
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
@@ -63,11 +106,17 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     setUser(null);
   }, []);
 
-  const value = useMemo(() => ({ user, ready, openSignIn, signOut }), [user, ready, openSignIn, signOut]);
+  const value = useMemo(
+    () => ({ user, ready, profile, profileReady, setProfile, openSignIn, signOut }),
+    [user, ready, profile, profileReady, openSignIn, signOut],
+  );
 
   return (
     <Ctx.Provider value={value}>
       {children}
+      <Suspense fallback={null}>
+        <WelcomeGate />
+      </Suspense>
       {open && (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4"

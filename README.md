@@ -221,3 +221,15 @@ Every card, the product page and the cart show the **real first page of the PDF*
 - The shop caches its lists for about a minute, so a new cover can take up to a minute to appear.
 - Only the first page is public. Paid pages are still served only to buyers, with their email on them.
 - Needs migration `0006_covers.sql` and the `SUPABASE_SERVICE_ROLE_KEY` setting.
+
+---
+
+## Welcome screen and profile name
+
+After a student's **first sign-in** the site sends them to `/welcome` once:
+
+1. **Name step:** "What should we call you?" The box is filled with the name Google gave us (never guessed from an email address). Names are 2 to 40 characters, with no links, emails or symbols, in any language. They can also **Skip for now**.
+2. **Hello step:** an animated "Hi, Priya! Welcome to Toppershelf" for about 3 seconds, then the student goes back to what they were doing (for example a product they wanted to buy).
+3. **Later:** on tablets and desktops the header shows **Hi, Priya**. Tapping it opens `/welcome?edit=1` to change the name.
+
+Details: the name is saved in `profiles.name` and the one-time flag in `profiles.welcomed_at` (migration `0009_profile_welcome.sql`). The check lives in `components/welcome/WelcomeGate.tsx`. Pages such as privacy, terms, refund, contact, login and admin are never interrupted. The `next` address is only followed if it is a path inside this site.
