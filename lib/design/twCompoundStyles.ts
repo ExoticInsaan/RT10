@@ -69,7 +69,7 @@ const compoundTailwindStyles: Record<string, string> = {
   "filter-title":
     "[&_h2]:[color:#102a4c] [&_h2]:m-0 [&_h2]:[font-size:15px] [&_.button]:[font-size:10px]",
   finder:
-    "[&_h2]:m-0 [&_h2]:[color:#102a4c] [&_h2]:[font-size:20px] [&_h2]:[letter-spacing:-.025em] [&_p]:[margin:5px_0_0] [&_p]:[font-size:11px] [&_p]:[color:#687483] max-[900px]:[&_>_.button]:[align-self:end] max-[900px]:[&_>_.button]:[grid-column:1_/_-1] max-[560px]:[&_>_.button]:[min-height:46px] max-[560px]:[&_h2]:[font-size:17px]",
+    "[&_h2]:m-0 [&_h2]:[color:#102a4c] [&_h2]:[font-size:20px] [&_h2]:[letter-spacing:-.025em] [&_p]:[margin:5px_0_0] [&_p]:[font-size:11px] [&_p]:[color:#687483] [&_>_.button]:[height:40px] [&_>_.button]:[min-height:40px] [&_>_.button]:whitespace-nowrap [&_>_.button]:[padding-inline:20px] max-[900px]:[&_>_.button]:[align-self:end] max-[900px]:[&_>_.button]:[grid-column:1_/_-1] max-[560px]:[&_>_.button]:[min-height:46px] max-[560px]:[&_h2]:[font-size:17px]",
   "footer-brand":
     "[&_>_strong]:text-white [&_>_strong]:[font-size:12px] [&_p]:[color:#b8c7da] [&_p]:[font-size:10px] [&_p]:[line-height:1.65] [&_p]:[max-width:290px] [&_p]:[margin:13px_0_0]",
   "footer-statement":
@@ -141,13 +141,13 @@ const compoundTailwindStyles: Record<string, string> = {
     "[&_h2]:m-0 [&_h2]:[color:#102a4c] [&_h2]:font-display [&_h2]:[font-size:clamp(31px,_3.5vw,_45px)] [&_h2]:[line-height:1.04] [&_h2]:[letter-spacing:-.03em] [&_h2]:[font-weight:400] [&_h2_em]:[color:#42a6d9] [&_h2_em]:[font-weight:500] [&_>_div:first-child_>_p:last-child]:[color:#576878] [&_>_div:first-child_>_p:last-child]:[font-size:12px] [&_>_div:first-child_>_p:last-child]:[line-height:1.6] [&_>_div:first-child_>_p:last-child]:[max-width:390px] [&_>_div:first-child_>_p:last-child]:[margin:12px_0_0] max-[560px]:[&_h2]:[font-size:33px] max-[560px]:[&_>_div:first-child_>_p:last-child]:[max-width:280px]",
   "route-list":
     "[&_>_div]:flex [&_>_div]:justify-between [&_>_div]:[gap:20px] [&_>_div]:[padding:15px_4px] [&_>_div]:[border-bottom:1px_solid_#dedbd5] [&_>_div]:[font-size:13px] [&_a]:[color:#175a88] [&_a]:[text-decoration:underline] [&_a]:[text-underline-offset:3px] [&_span]:[color:#7b8490] max-[560px]:[&_>_div]:flex-col max-[560px]:[&_>_div]:[gap:5px] max-[560px]:[&_span]:[font-size:10px]",
-  "row-cart": "[&.added]:[background:#2c6e57] max-[560px]:[&_.icon]:block",
+  "row-cart": "[&.added]:[background:#2c6e57]",
   "row-main":
     "[&_h3]:[color:#102a4c] [&_h3]:[font-size:14px] [&_h3]:[line-height:1.25] [&_h3]:[margin:9px_0] [&_h3]:[min-height:35px] [&_h3]:[min-height:0] [&_h3]:[margin:7px_0] [&_h3]:[padding-right:46px] [&_h3]:[overflow-wrap:anywhere] [&_p]:[overflow-wrap:anywhere] [&_p]:[margin:0_0_9px] [&_p]:[color:#75808b] [&_p]:[font-size:10px] [&_p_b]:[padding:0_5px] [&_p_b]:[color:#b0b4b8] max-[560px]:[&_.eyebrow]:[padding:3px_5px] max-[560px]:[&_.eyebrow]:[font-size:7px] max-[560px]:[&_h3]:[font-size:11px] max-[560px]:[&_h3]:[margin:5px_0] max-[560px]:[&_h3]:[padding-right:30px] max-[560px]:[&_p]:[font-size:8px] max-[560px]:[&_p]:[margin-bottom:6px] max-[560px]:[&_p_b]:hidden max-[560px]:[&_p_b_+_*]:hidden max-[560px]:[&_.rating]:[font-size:8px]",
   "section-title":
     "[&_h2]:m-0 [&_h2]:[color:#102a4c] [&_h2]:[font-size:20px] [&_h2]:[letter-spacing:-.025em] [&_>_a]:flex [&_>_a]:items-center [&_>_a]:[gap:5px] [&_>_a]:[font-size:11px] [&_>_a]:[color:#47718f] max-[560px]:[&_h2]:[font-size:17px]",
   "select-field":
-    "[&_select]:[border:1px_solid_#d8dfe4] [&_select]:[background:#fffcf8] [&_select]:[color:#25364a] [&_select]:[height:40px] [&_select]:[border-radius:5px] [&_select]:[padding:0_30px_0_12px] [&_select]:[font-size:12px] [&_select]:w-full [&_select]:min-w-0 [&_select]:[max-width:100%]",
+    "[&_select]:[border:1px_solid_#d8dfe4] [&_select]:[background:#fffcf8] [&_select]:[color:#25364a] [&_select]:[height:40px] [&_select]:[border-radius:5px] [&_select]:[padding:0_30px_0_12px] [&_select]:[font-size:12px] [&_select]:w-full [&_select]:min-w-0 [&_select]:[max-width:100%] [&_select]:[text-overflow:ellipsis] [&_span]:[font-weight:600] [&_span]:whitespace-nowrap [&_span]:overflow-hidden [&_span]:[text-overflow:ellipsis]",
   "semester-list":
     "[&_a]:[border:1px_solid_#dedbd5] [&_a]:[height:42px] [&_a]:grid [&_a]:[place-items:center] [&_a]:[border-radius:22px] [&_a]:[font-size:12px] [&_a]:[font-weight:600] [&_a:hover]:text-white [&_a:hover]:[background:#102a4c] [&_a:hover]:[border-color:#102a4c] [&_.active]:text-white [&_.active]:[background:#102a4c] [&_.active]:[border-color:#102a4c] max-[560px]:[&_a]:[min-width:60px] max-[560px]:[&_a]:[height:36px]",
   "seo-checks":

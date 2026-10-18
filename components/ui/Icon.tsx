@@ -27,6 +27,7 @@ const iconPaths: Record<string, ReactNode> = {
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   filter: <path d="M4 5h16l-6 7v6l-4 2v-8Z" />,
   arrow: <path d="M5 12h14m-5-5 5 5-5 5" />,
+  back: <path d="M19 12H5m5-5-5 5 5 5" />,
   close: <path d="m6 6 12 12M18 6 6 18" />,
   book: (
     <>

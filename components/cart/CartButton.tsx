@@ -36,8 +36,8 @@ export default function CartButton({ slug, variant }: { slug: string; variant: "
       ariaLabel={label}
       onClick={() => toggleCart(slug)}
     >
-      <span className="max-[560px]:hidden">{inCart ? "Added" : "Add to cart"}</span>
-      <Icon name={inCart ? "check" : "arrow"} size={15} />
+      {inCart ? "Added" : "Add to cart"}
+      <Icon name={inCart ? "check" : "cart"} size={15} />
     </Button>
   );
 }
