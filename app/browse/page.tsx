@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import cn from "@/lib/design/twStyles";
 import Button from "@/components/ui/Button";
+import Icon from "@/components/ui/Icon";
 import SectionLabel from "@/components/ui/SectionLabel";
 import BrowseControls from "@/components/browse/BrowseControls";
 import EmptyState from "@/components/browse/EmptyState";
@@ -47,10 +47,11 @@ async function BrowseResults({ searchParams }: { searchParams: PageProps<"/brows
 
   return (
     <main className={cn("results-page container")}>
-      <div className={cn("breadcrumbs")}>
-        <Link href="/">Home</Link>
-        <span>/</span>
-        <span>Search Results</span>
+      {/* A clear way back to the home page (hidden on phones, which have the header menu). */}
+      <div className="mb-4 max-[560px]:hidden">
+        <Button variant="secondary" href="/" ariaLabel="Back to home">
+          <Icon name="back" size={16} /> Back to home
+        </Button>
       </div>
       <SearchBar filters={filters} sort={sort} />
       <div className={cn("results-heading")}>
