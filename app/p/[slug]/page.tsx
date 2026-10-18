@@ -9,6 +9,8 @@ import { courseLabel, termText, typeLabelOf } from "@/lib/catalog-config";
 import { getProductBySlug } from "@/lib/products";
 import BuyButton from "@/components/BuyButton";
 import CartButton from "@/components/cart/CartButton";
+import TrackEvent from "@/components/analytics/TrackEvent";
+import { itemOf } from "@/lib/analytics";
 import Cover from "@/components/ui/Cover";
 import Icon from "@/components/ui/Icon";
 import SectionLabel from "@/components/ui/SectionLabel";
@@ -55,6 +57,7 @@ async function ProductDetail({ params }: { params: PageProps<"/p/[slug]">["param
 
   return (
     <main className={cn("container product-page")}>
+      <TrackEvent name="view_item" params={{ currency: "INR", value: p.price, items: [itemOf(p)] }} />
       <div className={cn("breadcrumbs")}>
         <Link href="/">Home</Link>
         <span>/</span>
@@ -95,8 +98,8 @@ async function ProductDetail({ params }: { params: PageProps<"/p/[slug]">["param
           </ul>
           <strong className={cn("detail-price")}>₹ {p.price}</strong>
           <div className={cn("detail-actions")}>
-            <BuyButton slug={p.slug} price={p.price} />
-            <CartButton slug={p.slug} variant="detail" />
+            <BuyButton slug={p.slug} price={p.price} title={p.title} />
+            <CartButton slug={p.slug} variant="detail" product={p} />
           </div>
           <p>You will be asked to sign in before paying.</p>
         </div>

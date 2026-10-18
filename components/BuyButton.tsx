@@ -8,10 +8,11 @@ import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import { createClient } from "@/lib/supabase/client";
 import { failedPaymentText, loadRazorpay } from "@/lib/razorpay-client";
+import { trackBeginCheckout } from "@/lib/analytics";
 
 type Note = { tone: "error" | "info"; text: string; libraryLink?: boolean };
 
-export default function BuyButton({ slug, price }: { slug: string; price: number }) {
+export default function BuyButton({ slug, price, title = slug }: { slug: string; price: number; title?: string }) {
   const router = useRouter();
   const { user, ready, openSignIn } = useAuth();
   const [busy, setBusy] = useState(false);
@@ -58,6 +59,7 @@ export default function BuyButton({ slug, price }: { slug: string; price: number
         setNote({ tone: "error", text: "Could not load the payment window. Check your internet and try again." });
         return;
       }
+      trackBeginCheckout([{ slug, title, type: "resource", price }]);
       const rzp = new Razorpay({
         key: data.keyId,
         amount: data.amount,
@@ -81,7 +83,7 @@ export default function BuyButton({ slug, price }: { slug: string; price: number
     } finally {
       setBusy(false);
     }
-  }, [slug, user, router, openSignIn]);
+  }, [slug, price, title, user, router, openSignIn]);
 
   // After signing in, carry on with the purchase the student started.
   useEffect(() => {

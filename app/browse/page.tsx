@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import cn from "@/lib/design/twStyles";
 import Button from "@/components/ui/Button";
+import TrackEvent from "@/components/analytics/TrackEvent";
 import Icon from "@/components/ui/Icon";
 import SectionLabel from "@/components/ui/SectionLabel";
 import BrowseControls from "@/components/browse/BrowseControls";
@@ -53,6 +54,7 @@ async function BrowseResults({ searchParams }: { searchParams: PageProps<"/brows
           <Icon name="back" size={16} /> Back to home
         </Button>
       </div>
+      {filters.q && <TrackEvent name="search" params={{ search_term: filters.q }} />}
       <SearchBar filters={filters} />
       <div className={cn("results-heading")}>
         <div>

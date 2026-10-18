@@ -9,6 +9,7 @@ import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import cn from "@/lib/design/twStyles";
 import { createClient } from "@/lib/supabase/client";
+import { trackPurchase } from "@/lib/analytics";
 
 const SUPPORT_EMAIL = "support@toppershelf.online";
 const CHECK_EVERY_MS = 3000;
@@ -18,13 +19,14 @@ type Row = {
   id: string;
   status: "pending" | "paid" | "failed" | "refunded";
   gateway_order_id: string;
+  amount: number; // paise
   products: { title: string; slug: string } | null;
 };
 
 async function fetchRows(): Promise<Row[]> {
   const { data } = await createClient()
     .from("purchases")
-    .select("id, status, gateway_order_id, products(title, slug)")
+    .select("id, status, gateway_order_id, amount, products(title, slug)")
     .order("created_at", { ascending: false });
   return (data ?? []) as unknown as Row[];
 }
@@ -115,6 +117,28 @@ export default function LibraryClient() {
     }, CHECK_EVERY_MS);
     return () => clearInterval(timer);
   }, [confirming, timedOut, load]);
+
+  // Report the sale once, after the payment company has confirmed it (not when the browser merely says "paid").
+  const paidOrderKey = orderStatus === "paid" && orderId ? `ts-purchase-${orderId}` : null;
+  useEffect(() => {
+    if (!paidOrderKey || !orderId) return;
+    try {
+      if (localStorage.getItem(paidOrderKey)) return;
+      localStorage.setItem(paidOrderKey, "1");
+    } catch {
+      // Storage blocked: report it anyway (may count twice on reload, which is better than missing a sale).
+    }
+    trackPurchase(
+      orderId,
+      orderRows.map((r) => ({
+        slug: r.products?.slug ?? r.id,
+        title: r.products?.title ?? "Resource",
+        type: "resource",
+        price: r.amount / 100,
+      })),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paidOrderKey]);
 
   if (!ready) return <p className="text-muted">Loading…</p>;
 

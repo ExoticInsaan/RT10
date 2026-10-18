@@ -74,7 +74,7 @@ export default function CartDrawer() {
             <span>Total</span>
             <strong>₹ {total}</strong>
           </div>
-          {items.length > 0 && <CheckoutButton slugs={items.map((p) => p.slug)} total={total} />}
+          {items.length > 0 && <CheckoutButton items={items} />}
           <small>One payment for everything in your cart. Your resources appear in My Library after payment.</small>
         </div>
       </aside>

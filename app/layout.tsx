@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import AuthProvider from "@/components/AuthProvider";
 import { CartProvider } from "@/components/cart/CartProvider";
 import CartDrawer from "@/components/cart/CartDrawer";
+import Analytics from "@/components/Analytics";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const dmSerif = DM_Serif_Display({
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <main className="flex-1">{children}</main>
             <Footer />
             <CartDrawer />
+            <Analytics />
           </CartProvider>
         </AuthProvider>
       </body>

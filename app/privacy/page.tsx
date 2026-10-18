@@ -70,7 +70,7 @@ export default function PrivacyPage() {
         <li><b>Vercel Inc.</b> hosts the website and its server code.</li>
         <li><b>Supabase Inc.</b> provides our database, sign-in system (including the one-time email codes) and private file storage for purchased material.</li>
         <li><b>Cloudflare, Inc.</b> manages our domain name (DNS) and email forwarding.</li>
-        <li><b>Google LLC</b> provides Google sign-in and, with your consent, Google Analytics.</li>
+        <li><b>Google LLC</b> provides Google sign-in and Google Analytics.</li>
         <li><b>Razorpay Software Private Limited</b> processes payments. Payment details you enter go directly to Razorpay and are governed by its own privacy policy.</li>
       </ul>
       <p className={p}>
@@ -87,10 +87,13 @@ export default function PrivacyPage() {
 
       <h2 className={h2}>6. Cookies and analytics</h2>
       <p className={p}>
-        We use essential cookies to keep you signed in, and Razorpay sets cookies of its own during payment. With your
-        consent, we also use Google Analytics to measure visits in aggregate form. You can accept or reject analytics
-        in the cookie notice, block cookies in your browser settings, or install Google&apos;s opt-out add-on. We do not
-        use your data for targeted advertising.
+        We use essential cookies to keep you signed in and to remember your cart, and Razorpay sets cookies of its own
+        during payment. We also use Google Analytics to measure visits (pages visited, how you found the site, device
+        type and approximate location, and which resources are viewed, added to a cart or bought). We do not send your
+        name, email address or account details to Google, we have turned off Google&apos;s advertising features, and we
+        do not use your data for advertising or sell it. For visitors in the European Economic Area, the United Kingdom
+        and Switzerland, analytics cookies are switched off. You can block cookies in your browser settings or install
+        Google&apos;s opt-out add-on.
       </p>
 
       <h2 className={h2}>7. Age and children</h2>

@@ -36,7 +36,7 @@ export default function ProductRow({ p }: { p: Product }) {
         </p>
         <strong className={cn("row-price")}>₹ {p.price}</strong>
       </div>
-      <CartButton slug={p.slug} variant="row" />
+      <CartButton slug={p.slug} variant="row" product={p} />
     </article>
   );
 }

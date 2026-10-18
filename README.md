@@ -37,6 +37,7 @@ Toppershelf is an online shop for exam-focused nursing study material. Students 
 | In-browser PDF reader (no download button) | Done. The PDF stays on the server; buyers get watermarked page pictures. |
 | Razorpay checkout and webhook | Code written, not live. Needs keys and Razorpay approval. |
 | Cart checkout for several items at once | Done. One Razorpay order pays for the whole cart (one `purchases` row per item). Needs `0008_multi_item_orders.sql`. |
+| Analytics: Google Analytics 4 (no ads, no cookie banner) | Done. Active on the live site (Vercel production) with the built-in ID; see "Analytics" below. |
 | Custom 404, error and crash pages | Done (`app/not-found.tsx`, `app/error.tsx`, `app/global-error.tsx`) |
 | Sitemap and robots file | Planned |
 
@@ -63,10 +64,22 @@ Copy `.env.example` to `.env.local` and fill it in. On Vercel, add the same name
 | `NEXT_PUBLIC_SITE_URL` | Links and metadata | No |
 | `NEXT_PUBLIC_SUPABASE_URL` | Browser and server | No |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser and server (the public key) | No |
+| `NEXT_PUBLIC_GA_ID` | Optional. Overrides the Google Analytics 4 measurement ID built into `components/Analytics.tsx`. An empty value switches analytics off. | No |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only: checkout and payment webhook | **Yes** |
 | `RAZORPAY_KEY_ID` | Server: creates payment orders | **Yes** |
 | `RAZORPAY_KEY_SECRET` | Server: creates payment orders | **Yes** |
 | `RAZORPAY_WEBHOOK_SECRET` | Server: verifies payment messages | **Yes** |
+
+
+### Analytics
+
+`components/Analytics.tsx` loads Google Analytics 4 on the live site only (Vercel production). Local development and preview deployments send nothing. It is analytics only:
+
+- There are **no ads** and **no cookie banner**. Google's advertising features are switched off.
+- For visitors in the EEA, UK and Switzerland, analytics cookies are off (Google Consent Mode), so only cookieless pings are sent.
+- Events sent (see `lib/analytics.ts`): `view_item`, `search`, `add_to_cart`, `remove_from_cart`, `begin_checkout` and `purchase`. The sale is reported from My Library after the payment is confirmed, once per order. Nothing personal (name, email, account id) is sent.
+- **If you ever add ads, remarketing or the Meta Pixel, add a consent banner first** and update the privacy policy. Those need visitors' consent.
+- India's data-protection law (DPDP) main obligations start in May 2027. Re-check the privacy notice and consent wording then.
 
 ---
 
