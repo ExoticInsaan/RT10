@@ -4,21 +4,18 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { createClient } from "@/lib/supabase/client";
 import { PRODUCT_COLUMNS, toProduct, type Product } from "@/lib/product-types";
 
-// Cart and wishlist live in the browser only (localStorage), keyed by product slug.
+// The cart lives in the browser only (localStorage), keyed by product slug.
 // Product details are looked up in the database, so a resource that is unpublished or deleted
 // simply drops out. The whole cart is paid in one Razorpay order (see /api/checkout).
 
 const CART_KEY = "ts-cart";
-const WISH_KEY = "ts-wish";
+const OLD_WISH_KEY = "ts-wish"; // the wishlist was removed; clear what it left behind
 
 type CartContextValue = {
   cart: string[];
-  wished: string[];
   cartItems: Product[];
-  wishedItems: Product[];
   cartOpen: boolean;
   toggleCart: (slug: string) => void;
-  toggleWish: (slug: string) => void;
   removeFromCart: (slugs: string[]) => void;
   openCart: () => void;
   closeCart: () => void;
@@ -26,12 +23,9 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue>({
   cart: [],
-  wished: [],
   cartItems: [],
-  wishedItems: [],
   cartOpen: false,
   toggleCart: () => {},
-  toggleWish: () => {},
   removeFromCart: () => {},
   openCart: () => {},
   closeCart: () => {},
@@ -59,7 +53,6 @@ const toggle = (items: string[], item: string) =>
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<string[]>([]);
-  const [wished, setWished] = useState<string[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [catalog, setCatalog] = useState<Record<string, Product>>({});
@@ -68,19 +61,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCart(read(CART_KEY));
-    setWished(read(WISH_KEY));
+    try {
+      localStorage.removeItem(OLD_WISH_KEY);
+    } catch {
+      // Storage can be blocked; nothing to clear then.
+    }
     setHydrated(true);
   }, []);
 
   useEffect(() => {
     if (hydrated) write(CART_KEY, cart);
   }, [cart, hydrated]);
-  useEffect(() => {
-    if (hydrated) write(WISH_KEY, wished);
-  }, [wished, hydrated]);
 
-  // Look up the saved products. Anything no longer published is removed from cart and wishlist.
-  const slugKey = Array.from(new Set([...cart, ...wished])).sort().join(",");
+  // Look up the saved products. Anything no longer published is removed from the cart.
+  const slugKey = Array.from(new Set(cart)).sort().join(",");
   useEffect(() => {
     if (!hydrated || !slugKey) return;
     const slugs = slugKey.split(",");
@@ -98,7 +92,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
           const gone = new Set(slugs.filter((s) => !found.some((p) => p.slug === s)));
           if (gone.size) {
             setCart((items) => items.filter((s) => !gone.has(s)));
-            setWished((items) => items.filter((s) => !gone.has(s)));
           }
         });
     } catch {
@@ -110,10 +103,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [hydrated, slugKey]);
 
   const cartItems = useMemo(() => cart.map((s) => catalog[s]).filter(Boolean), [cart, catalog]);
-  const wishedItems = useMemo(() => wished.map((s) => catalog[s]).filter(Boolean), [wished, catalog]);
 
   const toggleCart = useCallback((slug: string) => setCart((items) => toggle(items, slug)), []);
-  const toggleWish = useCallback((slug: string) => setWished((items) => toggle(items, slug)), []);
   const removeFromCart = useCallback(
     (slugs: string[]) => setCart((items) => items.filter((s) => !slugs.includes(s))),
     [],
@@ -122,8 +113,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const closeCart = useCallback(() => setCartOpen(false), []);
 
   const value = useMemo(
-    () => ({ cart, wished, cartItems, wishedItems, cartOpen, toggleCart, toggleWish, removeFromCart, openCart, closeCart }),
-    [cart, wished, cartItems, wishedItems, cartOpen, toggleCart, toggleWish, removeFromCart, openCart, closeCart],
+    () => ({ cart, cartItems, cartOpen, toggleCart, removeFromCart, openCart, closeCart }),
+    [cart, cartItems, cartOpen, toggleCart, removeFromCart, openCart, closeCart],
   );
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

@@ -9,7 +9,6 @@ import { courseLabel, termText, typeLabelOf } from "@/lib/catalog-config";
 import { getProductBySlug } from "@/lib/products";
 import BuyButton from "@/components/BuyButton";
 import CartButton from "@/components/cart/CartButton";
-import WishButton from "@/components/cart/WishButton";
 import Cover from "@/components/ui/Cover";
 import Icon from "@/components/ui/Icon";
 import SectionLabel from "@/components/ui/SectionLabel";
@@ -98,7 +97,6 @@ async function ProductDetail({ params }: { params: PageProps<"/p/[slug]">["param
           <div className={cn("detail-actions")}>
             <BuyButton slug={p.slug} price={p.price} />
             <CartButton slug={p.slug} variant="detail" />
-            <WishButton slug={p.slug} variant="detail" />
           </div>
           <p>You will be asked to sign in before paying.</p>
         </div>

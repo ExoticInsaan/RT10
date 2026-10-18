@@ -5,7 +5,6 @@ import { courseLabel, termText, typeLabelOf } from "@/lib/catalog-config";
 import type { Product } from "@/lib/product-types";
 import Cover from "@/components/ui/Cover";
 import CartButton from "@/components/cart/CartButton";
-import WishButton from "@/components/cart/WishButton";
 
 export default function PopularCard({ p }: { p: Product }) {
   const href = `/p/${p.slug}`;
@@ -31,7 +30,6 @@ export default function PopularCard({ p }: { p: Product }) {
         </span>
         <div className={cn("price-row")}>
           <strong>₹ {p.price}</strong>
-          <WishButton slug={p.slug} variant="icon" />
           <CartButton slug={p.slug} variant="icon" />
         </div>
       </div>

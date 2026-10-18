@@ -210,7 +210,7 @@ const tailwindStyles: Record<string, string> = {
     "absolute [width:55px] [height:72px] [background:white] [border:1px_solid_#b9d6e7] [left:45px] [top:8px] [border-radius:3px] [transform:rotate(3deg)] [padding:18px_11px]",
   popular: "[padding-top:26px] max-[560px]:[padding-top:20px]",
   "price-row":
-    "grid [grid-template-columns:1fr_auto_auto] items-center [border-top:1px_solid_#ebe7e1] [margin-top:9px] [padding-top:5px] [color:#102a4c]",
+    "grid [grid-template-columns:1fr_auto] items-center [border-top:1px_solid_#ebe7e1] [margin-top:9px] [padding-top:5px] [color:#102a4c]",
   "product-detail":
     "grid [grid-template-columns:minmax(250px,_380px)_1fr] [gap:clamp(40px,_8vw,_100px)] [padding:35px_6%] items-center max-[560px]:[grid-template-columns:1fr] max-[560px]:[padding:10px_0] max-[560px]:[gap:28px]",
   "product-list": "flex flex-col [gap:12px] min-w-0 max-[560px]:[gap:8px]",
@@ -277,7 +277,6 @@ const tailwindStyles: Record<string, string> = {
   "site-footer": "[margin-top:auto] [background:#0a2b61] [color:#d7e1eb]",
   "site-header":
     "[height:76px] [border-bottom:1px_solid_#e3dfd9] [background:rgba(255,_251,_247,_.96)] sticky [top:0] [z-index:40] [backdrop-filter:blur(12px)] max-[560px]:[height:62px]",
-  sort: "[height:40px] flex items-center [border:1px_solid_#d8dfe4] [background:white] [border-radius:5px] [padding-left:12px] [color:#6d7884] [font-size:11px] max-[900px]:[justify-self:start] max-[560px]:[height:36px] max-[560px]:[padding-left:8px]",
   "study-sheet-visual":
     "[width:min(100%,_420px)] [height:330px] relative [margin:auto] max-[900px]:[transform:scale(.85)] max-[900px]:[transform-origin:center] max-[560px]:[height:280px] max-[560px]:[transform:scale(.8)] max-[560px]:[margin-left:-20px] max-[560px]:[transform-origin:left_center]",
   tag: "block [width:max-content] [background:#f0f3f4] [color:#466075] [font-size:10px] [padding:4px_7px] [border-radius:3px] [margin-bottom:10px] max-[560px]:[font-size:8px]",
@@ -290,7 +289,6 @@ const tailwindStyles: Record<string, string> = {
   trust:
     "[min-height:88px] [background:#e9f4fc] [border:1px_solid_#dfeef7] [border-radius:8px] [margin-top:28px] [margin-bottom:58px] grid [grid-template-columns:repeat(4,_1fr)] items-center [padding:15px_24px] max-[900px]:[grid-template-columns:repeat(2,_1fr)] max-[900px]:[gap:18px] max-[560px]:[grid-template-columns:1fr] max-[560px]:[margin-top:20px] max-[560px]:[padding:18px]",
   "url-example": "[margin:28px_0] flex flex-col [gap:10px] [font-size:13px]",
-  wish: "absolute [right:9px] [top:8px] max-[560px]:[width:31px] max-[560px]:[height:31px] max-[560px]:[min-height:31px] max-[560px]:[top:5px] max-[560px]:[right:3px]",
 }
 
 export default function cn(

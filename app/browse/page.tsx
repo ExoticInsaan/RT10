@@ -33,9 +33,9 @@ export default function BrowsePage(props: PageProps<"/browse">) {
 
 async function BrowseResults({ searchParams }: { searchParams: PageProps<"/browse">["searchParams"] }) {
   const products = await getProducts();
-  const { filters, sort } = parseParams(await searchParams);
+  const filters = parseParams(await searchParams);
   const facets = getFacets(products);
-  const results = filterProducts(products, filters, sort);
+  const results = filterProducts(products, filters);
   const chips = activeChips(filters);
 
   const courseTitle = filters.courses.length === 1 ? courseLabel(filters.courses[0]) : "All Courses";
@@ -43,7 +43,7 @@ async function BrowseResults({ searchParams }: { searchParams: PageProps<"/brows
   // "Clear all" drops every filter but keeps the search text.
   const clearHref = filters.q ? `/browse?${new URLSearchParams({ q: filters.q })}` : "/browse";
   // Remounts the filter panels (and their draft state) whenever the URL filters change.
-  const filterKey = toQuery(filters, sort);
+  const filterKey = toQuery(filters);
 
   return (
     <main className={cn("results-page container")}>
@@ -53,7 +53,7 @@ async function BrowseResults({ searchParams }: { searchParams: PageProps<"/brows
           <Icon name="back" size={16} /> Back to home
         </Button>
       </div>
-      <SearchBar filters={filters} sort={sort} />
+      <SearchBar filters={filters} />
       <div className={cn("results-heading")}>
         <div>
           <SectionLabel variant="content">Explore the library</SectionLabel>
@@ -65,7 +65,7 @@ async function BrowseResults({ searchParams }: { searchParams: PageProps<"/brows
             {filters.q ? <> for “{filters.q}”</> : null}
           </p>
         </div>
-        <BrowseControls key={filterKey} filters={filters} sort={sort} facets={facets} />
+        <BrowseControls key={filterKey} filters={filters} facets={facets} />
       </div>
       {chips.length > 0 && (
         <div className={cn("active-filters")}>
@@ -85,7 +85,7 @@ async function BrowseResults({ searchParams }: { searchParams: PageProps<"/brows
               Clear all
             </Button>
           </div>
-          <FilterControls key={filterKey} initial={filters} facets={facets} sort={sort} />
+          <FilterControls key={filterKey} initial={filters} facets={facets} />
         </aside>
         <div className={cn("product-list")}>
           {results.length ? (

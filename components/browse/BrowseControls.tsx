@@ -5,16 +5,14 @@ import cn from "@/lib/design/twStyles";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import FilterControls from "@/components/browse/FilterControls";
-import type { Facets, Filters, Sort } from "@/lib/browse";
+import type { Facets, Filters } from "@/lib/browse";
 
-/** The "Filters" button and the filter sheet it opens. (There is no sort control.) */
+/** The "Filters" button and the filter sheet it opens. */
 export default function BrowseControls({
   filters,
-  sort,
   facets,
 }: {
   filters: Filters;
-  sort: Sort;
   facets: Facets;
 }) {
   const [sheet, setSheet] = useState(false);
@@ -57,7 +55,6 @@ export default function BrowseControls({
             <FilterControls
               initial={filters}
               facets={facets}
-              sort={sort}
               onApplied={() => setSheet(false)}
             />
           </section>

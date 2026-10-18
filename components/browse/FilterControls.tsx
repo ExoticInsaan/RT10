@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import cn from "@/lib/design/twStyles";
 import Button from "@/components/ui/Button";
-import { toQuery, type FacetOption, type Facets, type Filters, type Sort } from "@/lib/browse";
+import { toQuery, type FacetOption, type Facets, type Filters } from "@/lib/browse";
 import type { CourseValue, TypeValue } from "@/lib/catalog-config";
 
 function toggle<T>(items: T[], item: T) {
@@ -34,19 +34,17 @@ function Check({
 export default function FilterControls({
   initial,
   facets,
-  sort,
   onApplied,
 }: {
   initial: Filters;
   facets: Facets;
-  sort: Sort;
   onApplied?: () => void;
 }) {
   const router = useRouter();
   const [draft, setDraft] = useState<Filters>(initial);
 
   const apply = () => {
-    const query = toQuery(draft, sort);
+    const query = toQuery(draft);
     router.push(query ? `/browse?${query}` : "/browse");
     onApplied?.();
   };
