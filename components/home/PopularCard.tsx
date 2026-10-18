@@ -30,7 +30,7 @@ export default function PopularCard({ p }: { p: Product }) {
         </span>
         <div className={cn("price-row")}>
           <strong>₹ {p.price}</strong>
-          <CartButton slug={p.slug} variant="icon" />
+          <CartButton slug={p.slug} variant="icon" product={p} />
         </div>
       </div>
     </article>

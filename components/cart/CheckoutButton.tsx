@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
@@ -8,11 +8,15 @@ import { useCart } from "@/components/cart/CartProvider";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import { failedPaymentText, loadRazorpay } from "@/lib/razorpay-client";
+import { trackBeginCheckout } from "@/lib/analytics";
+import type { Product } from "@/lib/product-types";
 
 type Note = { tone: "error" | "info"; text: string; libraryLink?: boolean };
 
 /** Pays for everything in the cart with one Razorpay order. */
-export default function CheckoutButton({ slugs, total }: { slugs: string[]; total: number }) {
+export default function CheckoutButton({ items }: { items: Product[] }) {
+  const slugs = items.map((p) => p.slug);
+  const total = items.reduce((sum, p) => sum + p.price, 0);
   const router = useRouter();
   const { user, ready, openSignIn } = useAuth();
   const { removeFromCart, closeCart } = useCart();
@@ -20,8 +24,13 @@ export default function CheckoutButton({ slugs, total }: { slugs: string[]; tota
   const [note, setNote] = useState<Note | null>(null);
 
   const slugKey = slugs.join(",");
+  // Latest cart contents for analytics, without making the payment callback change on every render.
+  const itemsRef = useRef(items);
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
 
-  const startPayment = useCallback(async () => {
+  async function startPayment() {
     if (!slugKey) return;
     setBusy(true);
     setNote(null);
@@ -54,6 +63,7 @@ export default function CheckoutButton({ slugs, total }: { slugs: string[]; tota
         return;
       }
       const paidSlugs = slugKey.split(",");
+      trackBeginCheckout(itemsRef.current.filter((p) => paidSlugs.includes(p.slug)));
       const rzp = new Razorpay({
         key: data.keyId,
         amount: data.amount,
@@ -80,15 +90,17 @@ export default function CheckoutButton({ slugs, total }: { slugs: string[]; tota
     } finally {
       setBusy(false);
     }
-  }, [slugKey, user, router, openSignIn, removeFromCart, closeCart]);
+  }
 
-  // After signing in, carry on with the checkout the student started.
+  // After signing in, carry on with the checkout the student started. (Runs only when the sign-in state
+  // changes, so it deliberately does not depend on startPayment.)
   useEffect(() => {
     if (ready && user && sessionStorage.getItem("pendingCheckout") === "1") {
       sessionStorage.removeItem("pendingCheckout");
       Promise.resolve().then(startPayment);
     }
-  }, [ready, user, startPayment]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, user]);
 
   function onClick() {
     if (!user) {
