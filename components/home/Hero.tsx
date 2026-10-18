@@ -16,7 +16,7 @@ export default function Hero() {
         Important questions, care plans, case studies, flashcards, notes and assignments for B.Sc. Nursing,
         GNM and Post Basic. Search by document name to find the PDF you need.
       </p>
-      <Button href="/browse" className={cn("hero-cta")}>
+      <Button href="/browse" className={`${cn("hero-cta")} max-[560px]:w-full`}>
         Explore Nursing Resources <Icon name="arrow" size={17} />
       </Button>
       {/* Plain GET form: works without JavaScript and sends the query to /browse?q=... */}

@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import cn from "@/lib/design/twStyles";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import FilterControls from "@/components/browse/FilterControls";
-import { categorySorts, generalSorts, sortLabels, toQuery, type Facets, type Filters, type Sort } from "@/lib/browse";
+import type { Facets, Filters, Sort } from "@/lib/browse";
 
-/** Sort dropdown, the mobile "Filters" button and the mobile filter sheet. */
+/** The "Filters" button and the filter sheet it opens. (There is no sort control.) */
 export default function BrowseControls({
   filters,
   sort,
@@ -18,7 +17,6 @@ export default function BrowseControls({
   sort: Sort;
   facets: Facets;
 }) {
-  const router = useRouter();
   const [sheet, setSheet] = useState(false);
 
   useEffect(() => {
@@ -28,32 +26,8 @@ export default function BrowseControls({
     return () => window.removeEventListener("keydown", onKey);
   }, [sheet]);
 
-  const changeSort = (next: Sort) => {
-    const query = toQuery(filters, next);
-    router.replace(query ? `/browse?${query}` : "/browse");
-  };
-
   return (
     <>
-      <label className={cn("sort")}>
-        Sort by:
-        <select value={sort} onChange={(event) => changeSort(event.target.value as Sort)}>
-          <optgroup label="Sort">
-            {generalSorts.map((key) => (
-              <option key={key} value={key}>
-                {sortLabels[key]}
-              </option>
-            ))}
-          </optgroup>
-          <optgroup label="Category">
-            {categorySorts.map((key) => (
-              <option key={key} value={key}>
-                {sortLabels[key]}
-              </option>
-            ))}
-          </optgroup>
-        </select>
-      </label>
       <Button variant="secondary" className={cn("filter-trigger")} onClick={() => setSheet(true)}>
         <Icon name="filter" size={15} /> Filters
       </Button>

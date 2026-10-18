@@ -129,9 +129,9 @@ const tailwindStyles: Record<string, string> = {
     "max-[900px]:[background:#fffbf7] max-[900px]:w-full max-[900px]:[max-height:88vh] max-[900px]:overflow-auto max-[900px]:[border-radius:18px_18px_0_0] max-[900px]:[padding:12px_22px_30px] max-[560px]:[padding-inline:20px]",
   "filter-title": "flex justify-between items-center [margin-bottom:18px]",
   "filter-trigger":
-    "hidden max-[900px]:inline-flex max-[560px]:[min-height:36px] max-[560px]:[height:36px] max-[560px]:[padding:0_12px] max-[560px]:[font-size:11px]",
+    "[border:1px_solid_#c9ced3]! [background:white]! [color:#102a4c] [min-height:40px] [padding:0_16px] max-[900px]:[grid-column:1_/_-1] max-[900px]:w-full max-[900px]:[min-height:44px]",
   finder:
-    "[background:#e9f4fc] [border:1px_solid_#dfeef7] [border-radius:8px] [min-height:104px] [margin-top:24px] [padding:17px_20px] grid [grid-template-columns:1.2fr_repeat(3,_1fr)_auto] [gap:14px] [align-items:end] max-[900px]:[grid-template-columns:repeat(2,_1fr)] max-[560px]:[margin-top:18px] max-[560px]:[grid-template-columns:1fr_1fr] max-[560px]:[gap:10px] max-[560px]:[padding:15px]",
+    "[background:#e9f4fc] [border:1px_solid_#dfeef7] [border-radius:8px] [min-height:104px] [margin-top:24px] [padding:17px_20px] grid [grid-template-columns:minmax(0,1.2fr)_repeat(3,_minmax(0,1fr))_auto] [gap:14px] [align-items:end] max-[900px]:[grid-template-columns:repeat(3,_minmax(0,1fr))] max-[560px]:[margin-top:18px] max-[560px]:[grid-template-columns:minmax(0,1fr)] max-[560px]:[gap:12px] max-[560px]:[padding:16px]",
   "finder-intro": "[align-self:center] max-[900px]:[grid-column:1_/_-1]",
   "footer-bottom":
     "[min-height:52px] [border-top:1px_solid_rgba(131,177,227,.3)] flex items-center justify-center [color:#aabbd0] [font-size:9px] max-[560px]:[min-height:50px] max-[560px]:text-center",
@@ -250,7 +250,7 @@ const tailwindStyles: Record<string, string> = {
     "[width:max-content] [max-width:100%] [min-height:27px] inline-flex items-center [gap:9px] [color:#146db0] uppercase [letter-spacing:.16em] [font-size:9px] [line-height:1.2] [font-weight:700] [margin:0_0_14px]",
   "section-title": "flex items-center justify-between [margin-bottom:15px]",
   "select-field":
-    "flex [flex-direction:column-reverse] [gap:5px] [color:#6d7884] [font-size:10px]",
+    "flex min-w-0 [flex-direction:column-reverse] [gap:5px] [color:#6d7884] [font-size:10px]",
   "semester-list":
     "grid [grid-template-columns:repeat(9,_1fr)] [gap:14px] max-[560px]:flex max-[560px]:overflow-x-auto max-[560px]:[padding-bottom:5px] max-[560px]:[scrollbar-width:none]",
   semesters: "[padding-top:26px] max-[560px]:[padding-top:22px]",

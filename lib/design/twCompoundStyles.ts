@@ -69,7 +69,7 @@ const compoundTailwindStyles: Record<string, string> = {
   "filter-title":
     "[&_h2]:[color:#102a4c] [&_h2]:m-0 [&_h2]:[font-size:15px] [&_.button]:[font-size:10px]",
   finder:
-    "[&_h2]:m-0 [&_h2]:[color:#102a4c] [&_h2]:[font-size:20px] [&_h2]:[letter-spacing:-.025em] [&_p]:[margin:5px_0_0] [&_p]:[font-size:11px] [&_p]:[color:#687483] max-[900px]:[&_>_.button]:[align-self:end] max-[560px]:[&_.select-field:nth-of-type(1)]:[grid-column:1_/_-1] max-[560px]:[&_>_.button]:[grid-column:1_/_-1] max-[560px]:[&_h2]:[font-size:17px]",
+    "[&_h2]:m-0 [&_h2]:[color:#102a4c] [&_h2]:[font-size:20px] [&_h2]:[letter-spacing:-.025em] [&_p]:[margin:5px_0_0] [&_p]:[font-size:11px] [&_p]:[color:#687483] max-[900px]:[&_>_.button]:[align-self:end] max-[900px]:[&_>_.button]:[grid-column:1_/_-1] max-[560px]:[&_>_.button]:[min-height:46px] max-[560px]:[&_h2]:[font-size:17px]",
   "footer-brand":
     "[&_>_strong]:text-white [&_>_strong]:[font-size:12px] [&_p]:[color:#b8c7da] [&_p]:[font-size:10px] [&_p]:[line-height:1.65] [&_p]:[max-width:290px] [&_p]:[margin:13px_0_0]",
   "footer-statement":
@@ -147,7 +147,7 @@ const compoundTailwindStyles: Record<string, string> = {
   "section-title":
     "[&_h2]:m-0 [&_h2]:[color:#102a4c] [&_h2]:[font-size:20px] [&_h2]:[letter-spacing:-.025em] [&_>_a]:flex [&_>_a]:items-center [&_>_a]:[gap:5px] [&_>_a]:[font-size:11px] [&_>_a]:[color:#47718f] max-[560px]:[&_h2]:[font-size:17px]",
   "select-field":
-    "[&_select]:[border:1px_solid_#d8dfe4] [&_select]:[background:#fffcf8] [&_select]:[color:#25364a] [&_select]:[height:40px] [&_select]:[border-radius:5px] [&_select]:[padding:0_30px_0_12px] [&_select]:[font-size:12px]",
+    "[&_select]:[border:1px_solid_#d8dfe4] [&_select]:[background:#fffcf8] [&_select]:[color:#25364a] [&_select]:[height:40px] [&_select]:[border-radius:5px] [&_select]:[padding:0_30px_0_12px] [&_select]:[font-size:12px] [&_select]:w-full [&_select]:min-w-0 [&_select]:[max-width:100%]",
   "semester-list":
     "[&_a]:[border:1px_solid_#dedbd5] [&_a]:[height:42px] [&_a]:grid [&_a]:[place-items:center] [&_a]:[border-radius:22px] [&_a]:[font-size:12px] [&_a]:[font-weight:600] [&_a:hover]:text-white [&_a:hover]:[background:#102a4c] [&_a:hover]:[border-color:#102a4c] [&_.active]:text-white [&_.active]:[background:#102a4c] [&_.active]:[border-color:#102a4c] max-[560px]:[&_a]:[min-width:60px] max-[560px]:[&_a]:[height:36px]",
   "seo-checks":
