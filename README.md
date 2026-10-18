@@ -27,9 +27,9 @@ Toppershelf is an online shop for exam-focused nursing study material. Students 
 
 | Area | Status |
 | --- | --- |
-| Design (home, About, Founders, Study Smarter, cart and wishlist) | Done |
+| Design (home, About, Founders, Study Smarter and cart) | Done |
 | Sign-in with Google and email code | Done |
-| Browse page: search, filters and sorting | Done. Filters: course, semester or year, resource type. Sort by: newest, price, or a category (that category first). There is no price filter. |
+| Browse page: search, filters and sorting | Done. Filters: course, semester or year, resource type. Results are always newest first. There is no sort control and no price filter. |
 | Legal pages (privacy, terms, refund, contact) | Done |
 | Database tables and security rules | Done |
 | Admin page: upload PDFs, set price, publish | Done |

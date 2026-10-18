@@ -4,7 +4,6 @@ import { accentFor, coverHeading } from "@/lib/design/catalog";
 import { courseLabel, termText, typeLabelOf } from "@/lib/catalog-config";
 import type { Product } from "@/lib/product-types";
 import CartButton from "@/components/cart/CartButton";
-import WishButton from "@/components/cart/WishButton";
 import Cover from "@/components/ui/Cover";
 
 export default function ProductRow({ p }: { p: Product }) {
@@ -37,7 +36,6 @@ export default function ProductRow({ p }: { p: Product }) {
         </p>
         <strong className={cn("row-price")}>₹ {p.price}</strong>
       </div>
-      <WishButton slug={p.slug} variant="row" />
       <CartButton slug={p.slug} variant="row" />
     </article>
   );

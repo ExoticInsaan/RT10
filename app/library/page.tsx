@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import cn from "@/lib/design/twStyles";
 import LibraryClient from "@/components/LibraryClient";
-import SavedItems from "@/components/cart/SavedItems";
 import SectionLabel from "@/components/ui/SectionLabel";
 
 export const metadata: Metadata = { title: "My Library" };
@@ -17,7 +16,6 @@ export default function LibraryPage() {
       <Suspense fallback={<p className="text-muted">Loading…</p>}>
         <LibraryClient />
       </Suspense>
-      <SavedItems />
     </main>
   );
 }

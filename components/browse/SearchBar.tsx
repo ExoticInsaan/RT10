@@ -1,20 +1,14 @@
 import cn from "@/lib/design/twStyles";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
-import type { Filters, Sort } from "@/lib/browse";
+import type { Filters } from "@/lib/browse";
 
 /**
  * Search box for the results page. A plain GET form, so it works without JavaScript.
  * Students type words from the document name and matching PDFs appear.
  * The current filters are carried along as hidden fields.
  */
-export default function SearchBar({
-  filters,
-  sort,
-}: {
-  filters: Filters;
-  sort: Sort;
-}) {
+export default function SearchBar({ filters }: { filters: Filters }) {
   return (
     <form className={cn("hero-search")} action="/browse" method="get" role="search" style={{ marginBottom: 20 }}>
       <Icon name="search" size={18} />
@@ -35,7 +29,6 @@ export default function SearchBar({
       {filters.types.map((v) => (
         <input key={`type-${v}`} type="hidden" name="type" value={v} />
       ))}
-      {sort !== "featured" && <input type="hidden" name="sort" value={sort} />}
       <Button type="submit" ariaLabel="Search">
         <Icon name="search" size={18} />
       </Button>
