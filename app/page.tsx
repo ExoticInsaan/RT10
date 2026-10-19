@@ -19,6 +19,8 @@ const structuredData = {
       url: SITE_URL,
       logo: `${SITE_URL}/icon.png`,
       email: "support@toppershelf.online",
+      // Official profiles, so Google links them to the Toppershelf brand.
+      sameAs: ["https://www.instagram.com/toppershelf_official"],
       description:
         "Exam-focused study material for B.Sc. Nursing, GNM and Post Basic students: notes, important questions, care plans, case studies, flashcards and assignments.",
     },
