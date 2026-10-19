@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import AuthPanel from "@/components/AuthPanel";
 import { slug as toSlug } from "@/lib/design/catalog";
+import FileDropField from "@/components/admin/FileDropField";
 import { coverUrlFor } from "@/lib/product-types";
 import {
   contentTypes,
@@ -17,6 +18,7 @@ import {
 } from "@/lib/catalog-config";
 
 const MAX_FILE_MB = 50;
+const MAX_IMAGE_MB = 12; // pictures are shrunk in the browser before upload
 const BUCKET = "notes";
 
 type Row = {
@@ -76,6 +78,31 @@ function validPdf(file: File | null) {
   return null;
 }
 
+function validImage(file: File | null) {
+  if (!file) return null;
+  if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) return `"${file.name}" is not a PNG, JPG or WebP picture.`;
+  if (file.size > MAX_IMAGE_MB * 1024 * 1024) return `"${file.name}" is larger than ${MAX_IMAGE_MB} MB.`;
+  return null;
+}
+
+// Redraws a picture at most 1280 px wide as a JPEG (white behind see-through areas), so uploads stay small.
+async function shrinkImage(file: File): Promise<Blob> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 1280 / bitmap.width);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("no canvas");
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.9));
+  if (!blob) throw new Error("could not encode");
+  return blob;
+}
+
 export default function AdminClient() {
   const { user, ready } = useAuth();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -83,6 +110,7 @@ export default function AdminClient() {
   const [form, setForm] = useState<Form>(emptyForm);
   const [pdf, setPdf] = useState<File | null>(null);
   const [sample, setSample] = useState<File | null>(null);
+  const [cover, setCover] = useState<File | null>(null);
   const [removeSample, setRemoveSample] = useState(false);
   const [fileKey, setFileKey] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -126,13 +154,14 @@ export default function AdminClient() {
 
   function changeCourse(value: CourseValue) {
     const next = courses.find((c) => c.value === value) ?? courses[0];
-    setForm((f) => ({ ...f, course: value, term: Number(f.term) > next.terms ? "1" : f.term }));
+    setForm((f) => ({ ...f, course: value, term: Number(f.term) > next.terms ? "" : f.term }));
   }
 
   function resetForm() {
     setForm(emptyForm);
     setPdf(null);
     setSample(null);
+    setCover(null);
     setRemoveSample(false);
     setFileKey((k) => k + 1);
   }
@@ -142,7 +171,7 @@ export default function AdminClient() {
       id: row.id,
       title: row.title,
       course: (row.course ?? "bsc-nursing") as CourseValue,
-      term: String(row.term ?? 1),
+      term: row.term ? String(row.term) : "",
       type: row.type,
       price: String(row.price),
       pages: row.pages ? String(row.pages) : "",
@@ -151,6 +180,7 @@ export default function AdminClient() {
     });
     setPdf(null);
     setSample(null);
+    setCover(null);
     setRemoveSample(false);
     setFileKey((k) => k + 1);
     setNotice(null);
@@ -163,15 +193,17 @@ export default function AdminClient() {
     if (!form.price || !Number.isFinite(price) || price <= 0 || price > 99999) {
       return "Enter a price in rupees between 1 and 99999.";
     }
-    const term = Number(form.term);
-    if (!Number.isInteger(term) || term < 1 || term > course.terms) {
-      return `Choose a ${course.termLabel.toLowerCase()} between 1 and ${course.terms}.`;
+    if (form.term !== "") {
+      const term = Number(form.term);
+      if (!Number.isInteger(term) || term < 1 || term > course.terms) {
+        return `Choose a ${course.termLabel.toLowerCase()} between 1 and ${course.terms}, or None.`;
+      }
     }
     if (form.pages && (!/^\d+$/.test(form.pages) || Number(form.pages) < 1)) {
       return "Pages must be a whole number, or leave it empty.";
     }
     if (!form.id && !pdf) return "Choose the PDF to sell.";
-    return validPdf(pdf) ?? validPdf(sample);
+    return validPdf(pdf) ?? validPdf(sample) ?? validImage(cover);
   }
 
   // Ask the server to make the cover from page 1 of the PDF. Returns an error message, or null.
@@ -187,6 +219,22 @@ export default function AdminClient() {
       return data.error ?? `The server answered ${res.status}.`;
     } catch {
       return "Could not reach the server.";
+    }
+  }
+
+  // Sends the admin's own picture (shrunk first, so a big screenshot still uploads). Returns an error message, or null.
+  async function uploadCoverImage(id: string, picture: File): Promise<string | null> {
+    try {
+      const small = await shrinkImage(picture);
+      const body = new FormData();
+      body.append("productId", id);
+      body.append("image", small, "cover.jpg");
+      const res = await fetch("/api/admin/cover-image", { method: "POST", body });
+      if (res.ok) return null;
+      const data = await res.json().catch(() => ({}));
+      return data.error ?? `The server answered ${res.status}.`;
+    } catch {
+      return "Could not read or send the picture.";
     }
   }
 
@@ -252,7 +300,7 @@ export default function AdminClient() {
         title: form.title.trim(),
         type: form.type,
         course: form.course,
-        term: Number(form.term),
+        term: form.term === "" ? null : Number(form.term),
         price: Number(form.price),
         pages: form.pages ? Number(form.pages) : null,
         description: form.description.trim() || null,
@@ -276,11 +324,13 @@ export default function AdminClient() {
         : form.published
           ? "Added and published. It shows on the site within about a minute."
           : "Added as a draft. Tick Published when you want it on the site.";
-      const coverProblem = pdf ? await makeCover(id) : null;
+      // A picture the admin pasted or dropped is the cover; otherwise it is made from the PDF's first page.
+      const coverProblem = cover ? await uploadCoverImage(id, cover) : pdf ? await makeCover(id) : null;
+      const coverMade = cover ? "Your picture is now the cover." : "The cover was made from the first page.";
       setNotice(
         coverProblem
-          ? { kind: "error", text: `${saved} But the cover could not be made (${coverProblem}). Use "Create cover" in the list.` }
-          : { kind: "ok", text: pdf ? `${saved} The cover was made from the first page.` : saved },
+          ? { kind: "error", text: `${saved} But the cover could not be made (${coverProblem}). Use "Create cover" in the list, or add the picture again by editing.` }
+          : { kind: "ok", text: cover || pdf ? `${saved} ${coverMade}` : saved },
       );
       resetForm();
       await load();
@@ -395,6 +445,7 @@ export default function AdminClient() {
           <div>
             <label className={label} htmlFor="term">{course.termLabel}</label>
             <select id="term" className={input} value={form.term} onChange={(e) => set("term", e.target.value)}>
+              <option value="">None</option>
               {Array.from({ length: course.terms }, (_, i) => i + 1).map((n) => (
                 <option key={n} value={n}>{course.termLabel} {n}</option>
               ))}
@@ -429,13 +480,13 @@ export default function AdminClient() {
             <label className={label} htmlFor="pdf">
               {form.id ? "Replace the PDF (optional)" : "PDF to sell"}
             </label>
-            <input key={`pdf-${fileKey}`} id="pdf" type="file" accept="application/pdf,.pdf" className={`${input} file:mr-3 file:rounded-full file:border-0 file:bg-navy file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white`} onChange={(e) => setPdf(e.target.files?.[0] ?? null)} />
-            <p className="mt-1 text-xs text-muted">PDF only, up to {MAX_FILE_MB} MB.</p>
+            <FileDropField key={`pdf-${fileKey}`} id="pdf" kind="pdf" file={pdf} onFile={setPdf} disabled={busy} />
+            <p className="mt-1 text-xs text-muted">PDF only, up to {MAX_FILE_MB} MB. Choose it, drag it in, or paste a copied file.</p>
           </div>
 
           <div>
             <label className={label} htmlFor="sample">Free sample PDF (optional)</label>
-            <input key={`sample-${fileKey}`} id="sample" type="file" accept="application/pdf,.pdf" className={`${input} file:mr-3 file:rounded-full file:border-0 file:bg-navy file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white`} onChange={(e) => setSample(e.target.files?.[0] ?? null)} />
+            <FileDropField key={`sample-${fileKey}`} id="sample" kind="pdf" file={sample} onFile={setSample} disabled={busy} />
             <p className="mt-1 text-xs text-muted">
               A few pages anyone can read before buying.
               {form.id && rows.find((r) => r.id === form.id)?.sample_path ? (
@@ -443,6 +494,14 @@ export default function AdminClient() {
                   <input type="checkbox" checked={removeSample} onChange={(e) => setRemoveSample(e.target.checked)} /> Remove current sample
                 </label>
               ) : null}
+            </p>
+          </div>
+
+          <div>
+            <label className={label} htmlFor="cover">Cover picture (optional)</label>
+            <FileDropField key={`cover-${fileKey}`} id="cover" kind="image" file={cover} onFile={setCover} disabled={busy} />
+            <p className="mt-1 text-xs text-muted">
+              Paste a screenshot, drag a picture in, or choose one. Leave it empty and the cover is made from the PDF&apos;s first page.
             </p>
           </div>
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { forgetPdf, renderPage } from "@/lib/reader-server";
+import { saveCover } from "@/lib/cover-store";
 
 // Admin only. Draws the first page of a resource's PDF (no watermark), stores it in the public
 // "covers" bucket, and saves its path on the product. Everyone then sees it as the cover.
@@ -50,21 +51,7 @@ export async function POST(request: Request) {
   }
   if (!image) return no(422, "empty_pdf", "The PDF has no pages.");
 
-  // A new file name each time, so browsers and the CDN never show an old cover.
-  const coverPath = `${id}-${Date.now()}.webp`;
-  const { error: upErr } = await admin.storage.from("covers").upload(coverPath, image, {
-    contentType: "image/webp",
-    cacheControl: "31536000",
-    upsert: false,
-  });
-  if (upErr) return no(500, "upload_failed", `Could not save the cover: ${upErr.message}`);
-
-  const { error: dbErr } = await admin.from("products").update({ cover_path: coverPath }).eq("id", id);
-  if (dbErr) {
-    await admin.storage.from("covers").remove([coverPath]);
-    return no(500, "save_failed", `Could not save the cover: ${dbErr.message}`);
-  }
-
-  if (product.cover_path) await admin.storage.from("covers").remove([product.cover_path]);
-  return NextResponse.json({ coverPath });
+  const saved = await saveCover(admin, id, image, product.cover_path);
+  if ("error" in saved) return no(500, saved.code, saved.error);
+  return NextResponse.json({ coverPath: saved.coverPath });
 }

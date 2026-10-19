@@ -8,7 +8,8 @@ export type TypeValue =
   | "case-studies"
   | "flashcards"
   | "notes"
-  | "assignments";
+  | "assignments"
+  | "others";
 
 export const courses: {
   value: CourseValue;
@@ -28,6 +29,7 @@ export const contentTypes: { value: TypeValue; label: string }[] = [
   { value: "flashcards", label: "Flashcards" },
   { value: "notes", label: "Notes" },
   { value: "assignments", label: "Assignments" },
+  { value: "others", label: "Others" },
 ];
 
 export function courseLabel(value: string | null) {

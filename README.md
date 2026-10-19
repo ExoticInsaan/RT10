@@ -6,7 +6,7 @@ Toppershelf is an online shop for exam-focused nursing study material. Students 
 
 - **Live site:** https://www.toppershelf.online
 - **Courses:** B.Sc. Nursing (semesters 1 to 8), GNM (years 1 to 3), Post Basic (years 1 to 2)
-- **Content types:** Important Questions, Care Plans, Case Studies, Flashcards, Notes, Assignments
+- **Content types:** Important Questions, Care Plans, Case Studies, Flashcards, Notes, Assignments, Others
 - **Price:** every PDF is currently sold at **₹49**. The price is stored on each resource, so it can be changed per item in the admin page.
 - **Support:** support@toppershelf.online
 
@@ -92,7 +92,7 @@ Copy `.env.example` to `.env.local` and fill it in. On Vercel, add the same name
 | `app/api/webhooks/razorpay` | Checks the payment signature, then marks the purchase as paid. |
 | `app/auth/callback` | Finishes Google sign-in. |
 | `components/` | `home/`, `browse/`, `cart/`, `admin/`, `ui/`, plus sign-in and header parts |
-| `lib/catalog-config.ts` | The courses and the six content types. The database enforces the same values, so change both together (add a migration). |
+| `lib/catalog-config.ts` | The courses and the seven content types. The database enforces the same values, so change both together (add a migration). |
 | `lib/supabase/` | Browser, server and admin (service role) clients |
 | `lib/products.ts` | Reads published resources from Supabase (cached for about a minute) |
 | `lib/browse.ts` | Search, filters and sorting for `/browse` (sort options include one entry per content type) |
@@ -114,6 +114,7 @@ Run the files in `supabase/migrations/` in order, using the Supabase SQL Editor:
 5. `0006_covers.sql`: cover pictures (`cover_path` and the public `covers` bucket).
 6. `0007_notes_type.sql`: adds the `notes` content type.
 7. `0008_multi_item_orders.sql`: lets one payment cover several resources (cart checkout).
+8. `0009_others_type.sql`: adds the `others` content type.
 
 There is no `0002` file. It was an experiment that was rolled back.
 
@@ -135,6 +136,8 @@ There is no `0002` file. It was an experiment that was rolled back.
 ## Admin page
 
 Open `/admin` and sign in. Only emails listed in the `admins` table can use it. Everyone else sees "Admin only".
+
+In the form, the PDF, free sample and cover picture boxes each accept a file three ways: the **Choose file** button, drag and drop, or paste (hover over the box or click it, then press Ctrl+V; copied files and screenshots both work). A cover picture you add is used instead of the PDF's first page. **Semester** can be set to **None** and **Type** has an **Others** option.
 
 To add another admin, run this in the Supabase SQL Editor (use lowercase):
 
