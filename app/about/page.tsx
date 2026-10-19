@@ -6,7 +6,11 @@ import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import SectionLabel from "@/components/ui/SectionLabel";
 
-export const metadata: Metadata = { title: "About" };
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Toppershelf helps B.Sc. Nursing, GNM and Post Basic students find exam-focused study resources in one organized place, from semester-wise notes to subject-focused revision material.",
+};
 
 export default function AboutPage() {
   return (

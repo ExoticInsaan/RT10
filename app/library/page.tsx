@@ -4,7 +4,7 @@ import cn from "@/lib/design/twStyles";
 import LibraryClient from "@/components/LibraryClient";
 import SectionLabel from "@/components/ui/SectionLabel";
 
-export const metadata: Metadata = { title: "My Library" };
+export const metadata: Metadata = { title: "My Library", robots: { index: false, follow: false } };
 
 export default function LibraryPage() {
   return (

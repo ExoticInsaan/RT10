@@ -14,7 +14,11 @@ import { activeChips, filterProducts, getFacets, parseParams, toQuery } from "@/
 import { courseLabel, typeLabelOf } from "@/lib/catalog-config";
 import { getProducts } from "@/lib/products";
 
-export const metadata: Metadata = { title: "Browse" };
+export const metadata: Metadata = {
+  title: "Browse BSc Nursing, GNM & Post Basic Study Material",
+  description:
+    "Find nursing notes, important questions, care plans, case studies, flashcards and assignments. Filter by course, semester or year, and type, or search by document name.",
+};
 
 // Reading the URL filters must happen inside <Suspense> (Cache Components), so the page shell
 // renders instantly and the results stream in.

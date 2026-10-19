@@ -7,6 +7,7 @@ import AuthProvider from "@/components/AuthProvider";
 import { CartProvider } from "@/components/cart/CartProvider";
 import CartDrawer from "@/components/cart/CartDrawer";
 import Analytics from "@/components/Analytics";
+import { SITE_URL } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const dmSerif = DM_Serif_Display({
@@ -18,13 +19,26 @@ const dmSerif = DM_Serif_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.toppershelf.online"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Toppershelf: Nursing study notes, important questions and flashcards",
+    default: "Toppershelf: BSc Nursing Notes, Important Questions & Flashcards",
     template: "%s | Toppershelf",
   },
   description:
-    "Exam-focused nursing study material: important questions, care plans, case studies, flashcards, notes and assignments, organized by course and semester.",
+    "Exam-focused nursing study material for B.Sc. Nursing, GNM and Post Basic: important questions, care plans, case studies, flashcards, notes and assignments, organized by course and semester.",
+  applicationName: "Toppershelf",
+  keywords: [
+    "Toppershelf",
+    "BSc nursing notes",
+    "GNM notes",
+    "Post Basic nursing notes",
+    "nursing important questions",
+    "nursing flashcards",
+    "nursing care plans",
+    "nursing case studies",
+  ],
+  // Every page names itself as the one official address (query strings like ?course=gnm are dropped).
+  alternates: { canonical: "./" },
   openGraph: {
     siteName: "Toppershelf",
     type: "website",
@@ -33,6 +47,11 @@ export const metadata: Metadata = {
     description:
       "Important questions, care plans, case studies, flashcards, notes and assignments for nursing students.",
   },
+  twitter: { card: "summary_large_image" },
+  // Optional: paste the Google Search Console HTML-tag code into this Vercel variable if you verify that way.
+  verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION }
+    : undefined,
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#FFFBF7" };

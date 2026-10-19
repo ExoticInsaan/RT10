@@ -1,52 +1,29 @@
 import type { MetadataRoute } from "next";
-import { createPublicClient } from "@/lib/supabase/public";
+import { getProducts } from "@/lib/products";
+import { SITE_URL } from "@/lib/site";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL?.startsWith("https://")
-  ? process.env.NEXT_PUBLIC_SITE_URL
-  : "https://toppershelf.online"
-).replace(/\/$/, "");
-
-// Rebuild at most once an hour so new products show up quickly.
-export const revalidate = 3600;
-
+// Public, indexable pages only. Private or noindex pages (/admin, /read, /library, /welcome,
+// /login, /auth, /api) are left out on purpose.
+// getProducts() is already cached for a minute, so new resources show up here quickly.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
-
-  // Public, indexable pages only. Private or noindex pages (/admin, /read,
-  // /library, /welcome, /auth, /api) are left out on purpose.
   const staticPages: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}/`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
-    { url: `${BASE_URL}/browse`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
-    { url: `${BASE_URL}/study-smarter`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
-    { url: `${BASE_URL}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE_URL}/founders`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${BASE_URL}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
-    { url: `${BASE_URL}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${BASE_URL}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${BASE_URL}/refund`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE_URL}/`, changeFrequency: "daily", priority: 1.0 },
+    { url: `${SITE_URL}/browse`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/study-smarter`, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE_URL}/about`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE_URL}/founders`, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${SITE_URL}/contact`, changeFrequency: "yearly", priority: 0.4 },
+    { url: `${SITE_URL}/privacy`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE_URL}/terms`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE_URL}/refund`, changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  // One URL per published product. The anon key plus RLS only returns published rows.
-  let productPages: MetadataRoute.Sitemap = [];
-  try {
-    const supabase = createPublicClient();
-    const { data, error } = await supabase
-      .from("products")
-      .select("slug, created_at")
-      .eq("published", true);
-
-    if (error) throw error;
-
-    productPages = (data ?? []).map((p) => ({
-      url: `${BASE_URL}/p/${p.slug}`,
-      lastModified: p.created_at ? new Date(p.created_at) : now,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    }));
-  } catch (err) {
-    // If the database is unreachable, still serve the static pages.
-    console.error("sitemap: could not load products", err);
-  }
+  const products = await getProducts();
+  const productPages: MetadataRoute.Sitemap = products.map((p) => ({
+    url: `${SITE_URL}/p/${p.slug}`,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
 
   return [...staticPages, ...productPages];
 }

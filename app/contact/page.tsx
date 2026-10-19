@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = { title: "Contact" };
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Contact Toppershelf support for payment or access problems, refund requests, mistakes in the material, or account and data deletion.",
+};
 
 // ---- DETAILS USED ON THIS PAGE ---------------------------------------------
 const BUSINESS = "TopperShelf";

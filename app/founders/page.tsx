@@ -5,7 +5,11 @@ import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import SectionLabel from "@/components/ui/SectionLabel";
 
-export const metadata: Metadata = { title: "Founders" };
+export const metadata: Metadata = {
+  title: "Founders",
+  description:
+    "Meet the people behind Toppershelf, built to make finding the right nursing study material easier.",
+};
 
 export default function FoundersPage() {
   return (

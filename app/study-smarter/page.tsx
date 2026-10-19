@@ -4,7 +4,11 @@ import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import SectionLabel from "@/components/ui/SectionLabel";
 
-export const metadata: Metadata = { title: "Study smarter" };
+export const metadata: Metadata = {
+  title: "Study Smarter, Not Longer",
+  description:
+    "Simple, evidence-informed strategies to help nursing students revise with confidence.",
+};
 
 export default function StudySmarterPage() {
   return (
