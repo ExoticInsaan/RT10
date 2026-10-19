@@ -87,7 +87,7 @@ Copy `.env.example` to `.env.local` and fill it in. On Vercel, add the same name
 
 | Path | What it is |
 | --- | --- |
-| `app/` | Pages and routes: `/`, `/browse`, `/p/[slug]`, `/library`, `/admin`, `/about`, `/founders`, `/study-smarter`, `/privacy`, `/terms`, `/refund`, `/contact`, `/login` |
+| `app/` | Pages and routes: `/`, `/browse`, `/p/[slug]`, `/library`, `/admin`, `/about`, `/founders`, `/blog`, `/privacy`, `/terms`, `/refund`, `/contact`, `/login` |
 | `app/api/checkout` | Creates one Razorpay order for one or many resources (the cart). Prices are read from the database, never from the browser. |
 | `app/api/webhooks/razorpay` | Checks the payment signature, then marks the purchase as paid. |
 | `app/auth/callback` | Finishes Google sign-in. |
