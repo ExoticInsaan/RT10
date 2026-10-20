@@ -18,7 +18,7 @@ export async function GET(_request: Request, { params }: RouteContext<"/api/read
 
   try {
     const { sizes } = await getPdf(access.filePath);
-    return reply(200, { title: access.title, email: access.email, pages: sizes });
+    return reply(200, { title: access.title, email: access.free ? "" : access.email, pages: sizes });
   } catch (err) {
     console.error("Reader: could not open PDF", slug, err);
     return reply(500, { code: "file_error", error: "Could not open the PDF. Please try again." });

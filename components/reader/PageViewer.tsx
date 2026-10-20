@@ -179,7 +179,7 @@ export default function PageViewer({
               </button>
             </div>
           </div>
-          <p className="m-0 mt-1 truncate text-xs text-muted">This copy is licensed to {email} only.</p>
+          {email ? <p className="m-0 mt-1 truncate text-xs text-muted">This copy is licensed to {email} only.</p> : null}
         </div>
 
         <div ref={boxRef} className="w-full overflow-x-auto pb-10 pt-4">

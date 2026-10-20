@@ -6,10 +6,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 // A short memory of recent answers saves two database calls per page (a student opening a
 // 50-page PDF asks for 50 pages). The sign-in check itself is never skipped.
 const REMEMBER_MS = 60_000;
-const remembered = new Map<string, { until: number; filePath: string; title: string }>();
+const remembered = new Map<string, { until: number; filePath: string; title: string; free: boolean }>();
 
 export type Access =
-  | { ok: true; filePath: string; title: string; email: string; userId: string }
+  // free = a free resource: the reader draws its pages without the student's email watermark.
+  | { ok: true; filePath: string; title: string; email: string; userId: string; free: boolean }
   | { ok: false; status: number; code: string; error: string };
 
 const no = (status: number, code: string, error: string): Access => ({ ok: false, status, code, error });
@@ -25,7 +26,7 @@ export async function authorizeRead(slug: string): Promise<Access> {
   const key = `${user.id}:${slug}`;
   const hit = remembered.get(key);
   if (hit && hit.until > Date.now()) {
-    return { ok: true, filePath: hit.filePath, title: hit.title, email, userId: user.id };
+    return { ok: true, filePath: hit.filePath, title: hit.title, email, userId: user.id, free: hit.free };
   }
 
   const admin = createAdminClient();
@@ -34,7 +35,7 @@ export async function authorizeRead(slug: string): Promise<Access> {
   // later unpublishes the resource.
   const { data: product } = await admin
     .from("products")
-    .select("id, title, file_path")
+    .select("id, title, file_path, price")
     .eq("slug", slug)
     .maybeSingle();
   if (!product) return no(404, "not_found", "This resource does not exist.");
@@ -56,6 +57,7 @@ export async function authorizeRead(slug: string): Promise<Access> {
   if (!product.file_path) return no(404, "file_missing", "The PDF for this resource is not uploaded yet.");
 
   if (remembered.size > 500) remembered.clear();
-  remembered.set(key, { until: Date.now() + REMEMBER_MS, filePath: product.file_path, title: product.title });
-  return { ok: true, filePath: product.file_path, title: product.title, email, userId: user.id };
+  const free = Number(product.price) <= 0;
+  remembered.set(key, { until: Date.now() + REMEMBER_MS, filePath: product.file_path, title: product.title, free });
+  return { ok: true, filePath: product.file_path, title: product.title, email, userId: user.id, free };
 }
