@@ -7,6 +7,7 @@ import AuthPanel from "@/components/AuthPanel";
 import { slug as toSlug } from "@/lib/design/catalog";
 import FileDropField from "@/components/admin/FileDropField";
 import { coverUrlFor } from "@/lib/product-types";
+import { MAX_PDF_MB, checkDocumentFiles, documentToPdf } from "@/lib/documents";
 import {
   contentTypes,
   courseLabel,
@@ -20,7 +21,6 @@ import {
   type TypeValue,
 } from "@/lib/catalog-config";
 
-const MAX_FILE_MB = 50;
 const MAX_IMAGE_MB = 12; // pictures are shrunk in the browser before upload
 const BUCKET = "notes";
 
@@ -76,14 +76,6 @@ const label = "mb-1 block text-sm font-semibold text-navy";
 const button =
   "rounded-full px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60";
 
-function validPdf(file: File | null) {
-  if (!file) return null;
-  const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-  if (!isPdf) return `"${file.name}" is not a PDF.`;
-  if (file.size > MAX_FILE_MB * 1024 * 1024) return `"${file.name}" is larger than ${MAX_FILE_MB} MB.`;
-  return null;
-}
-
 function validImage(file: File | null) {
   if (!file) return null;
   if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) return `"${file.name}" is not a PNG, JPG or WebP picture.`;
@@ -114,8 +106,8 @@ export default function AdminClient() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [rows, setRows] = useState<Row[]>([]);
   const [form, setForm] = useState<Form>(emptyForm);
-  const [pdf, setPdf] = useState<File | null>(null);
-  const [sample, setSample] = useState<File | null>(null);
+  const [pdfFiles, setPdfFiles] = useState<File[]>([]);
+  const [sampleFiles, setSampleFiles] = useState<File[]>([]);
   const [cover, setCover] = useState<File | null>(null);
   const [removeSample, setRemoveSample] = useState(false);
   const [fileKey, setFileKey] = useState(0);
@@ -165,8 +157,8 @@ export default function AdminClient() {
 
   function resetForm() {
     setForm(emptyForm);
-    setPdf(null);
-    setSample(null);
+    setPdfFiles([]);
+    setSampleFiles([]);
     setCover(null);
     setRemoveSample(false);
     setFileKey((k) => k + 1);
@@ -185,8 +177,8 @@ export default function AdminClient() {
       description: row.description ?? "",
       published: row.published,
     });
-    setPdf(null);
-    setSample(null);
+    setPdfFiles([]);
+    setSampleFiles([]);
     setCover(null);
     setRemoveSample(false);
     setFileKey((k) => k + 1);
@@ -209,8 +201,8 @@ export default function AdminClient() {
     if (form.pages && (!/^\d+$/.test(form.pages) || Number(form.pages) < 1)) {
       return "Pages must be a whole number, or leave it empty.";
     }
-    if (!form.id && !pdf) return "Choose the PDF to sell.";
-    return validPdf(pdf) ?? validPdf(sample) ?? validImage(cover);
+    if (!form.id && pdfFiles.length === 0) return "Choose the PDF or pictures to sell.";
+    return checkDocumentFiles(pdfFiles) ?? checkDocumentFiles(sampleFiles) ?? validImage(cover);
   }
 
   // Ask the server to make the cover from page 1 of the PDF. Returns an error message, or null.
@@ -278,6 +270,21 @@ export default function AdminClient() {
 
     setBusy(true);
     try {
+      // Pictures are joined into one PDF here, because the shop stores and reads everything as PDF.
+      let pdf: File | null = null;
+      let sample: File | null = null;
+      try {
+        pdf = pdfFiles.length ? await documentToPdf(pdfFiles) : null;
+        sample = sampleFiles.length ? await documentToPdf(sampleFiles) : null;
+      } catch {
+        throw new Error("Could not turn the pictures into a PDF. Try different pictures.");
+      }
+      for (const made of [pdf, sample]) {
+        if (made && made.size > MAX_PDF_MB * 1024 * 1024) {
+          throw new Error(`The PDF made from your pictures is ${(made.size / 1024 / 1024).toFixed(1)} MB, more than the ${MAX_PDF_MB} MB limit. Use fewer or smaller pictures.`);
+        }
+      }
+
       let nextFilePath = existing?.file_path ?? null;
       let nextSamplePath = existing?.sample_path ?? null;
 
@@ -495,15 +502,15 @@ export default function AdminClient() {
 
           <div>
             <label className={label} htmlFor="pdf">
-              {form.id ? "Replace the PDF (optional)" : "PDF to sell"}
+              {form.id ? "Replace the main file (optional)" : "Main file to sell (PDF or pictures)"}
             </label>
-            <FileDropField key={`pdf-${fileKey}`} id="pdf" kind="pdf" file={pdf} onFile={setPdf} disabled={busy} />
-            <p className="mt-1 text-xs text-muted">PDF only, up to {MAX_FILE_MB} MB. Choose it, drag it in, or paste a copied file.</p>
+            <FileDropField key={`pdf-${fileKey}`} id="pdf" kind="document" files={pdfFiles} onFiles={setPdfFiles} disabled={busy} />
+            <p className="mt-1 text-xs text-muted">One PDF (up to {MAX_PDF_MB} MB), or one or more pictures (PNG, JPG, WebP) that are joined into a PDF, one picture per page. Choose, drag in, or paste.</p>
           </div>
 
           <div>
-            <label className={label} htmlFor="sample">Free sample PDF (optional)</label>
-            <FileDropField key={`sample-${fileKey}`} id="sample" kind="pdf" file={sample} onFile={setSample} disabled={busy} />
+            <label className={label} htmlFor="sample">Free sample, PDF or pictures (optional)</label>
+            <FileDropField key={`sample-${fileKey}`} id="sample" kind="document" files={sampleFiles} onFiles={setSampleFiles} disabled={busy} />
             <p className="mt-1 text-xs text-muted">
               A few pages anyone can read before buying.
               {form.id && rows.find((r) => r.id === form.id)?.sample_path ? (

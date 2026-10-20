@@ -238,3 +238,8 @@ After a student's **first sign-in** the site sends them to `/welcome` once:
 3. **Later:** on tablets and desktops the header shows **Hi, Priya**. Tapping it opens `/welcome?edit=1` to change the name.
 
 Details: the name is saved in `profiles.name` and the one-time flag in `profiles.welcomed_at` (migration `0009_profile_welcome.sql`). The check lives in `components/welcome/WelcomeGate.tsx`. Pages such as privacy, terms, refund, contact, login and admin are never interrupted. The `next` address is only followed if it is a path inside this site.
+
+
+## Admin uploads: PDF or pictures
+
+The main file and the free sample can each be a PDF, or one or more pictures (PNG, JPG, WebP). Pictures are joined into one PDF in the browser (one per page, in the order shown, which can be changed with the arrow buttons) before upload, so the shop, reader and cover work the same as for any PDF. See `lib/documents.ts`. No database change is needed.
