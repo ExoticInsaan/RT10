@@ -18,8 +18,12 @@ export function isPictureFile(f: File) {
 }
 
 /** What is wrong with the chosen file(s), or null when they are fine. */
-export function checkDocumentFiles(files: File[]): string | null {
+export function checkDocumentFiles(files: File[], picturesOnly = false): string | null {
   if (files.length === 0) return null;
+  if (picturesOnly) {
+    const pdf = files.find(isPdfFile);
+    if (pdf) return `"${pdf.name}" is a PDF. Only pictures (PNG, JPG or WebP) can be used here.`;
+  }
   const pdfs = files.filter(isPdfFile);
   if (pdfs.length > 0 && files.length > 1) return "Choose either one PDF, or pictures only. They cannot be mixed.";
   if (pdfs.length === 1) {

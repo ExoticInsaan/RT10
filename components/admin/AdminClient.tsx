@@ -202,7 +202,7 @@ export default function AdminClient() {
       return "Pages must be a whole number, or leave it empty.";
     }
     if (!form.id && pdfFiles.length === 0) return "Choose the PDF or pictures to sell.";
-    return checkDocumentFiles(pdfFiles) ?? checkDocumentFiles(sampleFiles) ?? validImage(cover);
+    return checkDocumentFiles(pdfFiles) ?? checkDocumentFiles(sampleFiles, true) ?? validImage(cover);
   }
 
   // Ask the server to make the cover from page 1 of the PDF. Returns an error message, or null.
@@ -509,13 +509,13 @@ export default function AdminClient() {
           </div>
 
           <div>
-            <label className={label} htmlFor="sample">Free sample, PDF or pictures (optional)</label>
-            <FileDropField key={`sample-${fileKey}`} id="sample" kind="document" files={sampleFiles} onFiles={setSampleFiles} disabled={busy} />
+            <label className={label} htmlFor="sample">Preview pictures (optional)</label>
+            <FileDropField key={`sample-${fileKey}`} id="sample" kind="pictures" files={sampleFiles} onFiles={setSampleFiles} disabled={busy} />
             <p className="mt-1 text-xs text-muted">
-              A few pages anyone can read before buying.
+              Pictures only (PNG, JPG, WebP, up to 12 MB each). They show as swipeable preview slides on the product page, in the order listed. Adding new ones replaces the current previews.
               {form.id && rows.find((r) => r.id === form.id)?.sample_path ? (
                 <label className="ml-2 inline-flex items-center gap-1 font-semibold text-navy">
-                  <input type="checkbox" checked={removeSample} onChange={(e) => setRemoveSample(e.target.checked)} /> Remove current sample
+                  <input type="checkbox" checked={removeSample} onChange={(e) => setRemoveSample(e.target.checked)} /> Remove current previews
                 </label>
               ) : null}
             </p>

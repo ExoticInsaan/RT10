@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { MAX_PICTURES, isPdfFile, isPictureFile } from "@/lib/documents";
 
-// "document" takes a PDF or pictures (PNG, JPG, WebP). Several pictures can be added; they become pages in order.
-type Kind = "pdf" | "image" | "document";
+// "document" takes a PDF or pictures (PNG, JPG, WebP); "pictures" takes pictures only. Several pictures can be
+// added to either; they become pages in order.
+type Kind = "pdf" | "image" | "document" | "pictures";
 
 const RULES: Record<Kind, { accept: string; noun: string; ok: (f: File) => boolean }> = {
   pdf: {
@@ -16,6 +17,11 @@ const RULES: Record<Kind, { accept: string; noun: string; ok: (f: File) => boole
     accept: "image/png,image/jpeg,image/webp",
     noun: "a PNG, JPG or WebP picture",
     ok: (f) => ["image/png", "image/jpeg", "image/webp"].includes(f.type),
+  },
+  pictures: {
+    accept: "image/png,image/jpeg,image/webp",
+    noun: "a PNG, JPG or WebP picture",
+    ok: (f) => isPictureFile(f),
   },
   document: {
     accept: "application/pdf,.pdf,image/png,image/jpeg,image/webp",
