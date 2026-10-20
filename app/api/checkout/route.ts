@@ -58,6 +58,16 @@ export async function POST(request: Request) {
       { unavailable: slugs.filter((s) => !have.has(s)) },
     );
   }
+  // Free resources are never paid for. They are added to the library from their own page (/api/claim).
+  const freeOnes = products.filter((p) => Number(p.price) <= 0);
+  if (freeOnes.length) {
+    return fail(
+      409,
+      "items_changed",
+      "Free resources cannot be bought, so we removed them from your cart. Open them from their page to add them to your library.",
+      { unavailable: freeOnes.map((p) => p.slug) },
+    );
+  }
   const ids = products.map((p) => p.id);
 
   // Never charge for something the student already owns.

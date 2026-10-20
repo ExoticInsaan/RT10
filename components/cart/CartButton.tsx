@@ -6,6 +6,7 @@ import Icon from "@/components/ui/Icon";
 import { useCart } from "@/components/cart/CartProvider";
 import { trackAddToCart, trackRemoveFromCart } from "@/lib/analytics";
 import type { Product } from "@/lib/product-types";
+import { isFree } from "@/lib/price";
 
 /** Add/remove a product from the cart. `row` = product list row, `icon` = card icon, `detail` = product page. */
 export default function CartButton({
@@ -25,6 +26,23 @@ export default function CartButton({
     if (product) (inCart ? trackRemoveFromCart : trackAddToCart)(product);
   };
 
+  // Free resources are not bought, so there is no cart. Lists link to the page where it is claimed.
+  if (product && isFree(product.price)) {
+    if (variant === "detail") return null;
+    if (variant === "icon") {
+      return (
+        <Button variant="icon" href={`/p/${slug}`} ariaLabel="Get this free resource">
+          <Icon name="arrow" size={19} />
+        </Button>
+      );
+    }
+    return (
+      <Button className={cn("row-cart")} href={`/p/${slug}`} ariaLabel="Get this free resource">
+        Get it free
+        <Icon name="arrow" size={15} />
+      </Button>
+    );
+  }
   if (variant === "icon") {
     return (
       <Button

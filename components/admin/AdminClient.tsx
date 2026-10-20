@@ -48,6 +48,7 @@ type Form = {
   course: CourseValue;
   term: string;
   type: TypeValue;
+  pricing: "paid" | "free";
   price: string;
   pages: string;
   language: LanguageValue;
@@ -61,6 +62,7 @@ const emptyForm: Form = {
   course: "bsc-nursing",
   term: "1",
   type: "important-questions",
+  pricing: "paid",
   price: "",
   pages: "",
   language: "english",
@@ -171,7 +173,8 @@ export default function AdminClient() {
       course: (row.course ?? "bsc-nursing") as CourseValue,
       term: row.term ? String(row.term) : "",
       type: row.type,
-      price: String(row.price),
+      pricing: Number(row.price) === 0 ? "free" : "paid",
+      price: Number(row.price) === 0 ? "" : String(row.price),
       pages: row.pages ? String(row.pages) : "",
       language: row.language ?? "english",
       description: row.description ?? "",
@@ -188,9 +191,11 @@ export default function AdminClient() {
 
   function checkForm(): string | null {
     if (!form.title.trim()) return "Enter a title.";
-    const price = Number(form.price);
-    if (!form.price || !Number.isFinite(price) || price <= 0 || price > 99999) {
-      return "Enter a price in rupees between 1 and 99999.";
+    if (form.pricing === "paid") {
+      const price = Number(form.price);
+      if (!form.price || !Number.isFinite(price) || price <= 0 || price > 99999) {
+        return "Enter a price in rupees between 1 and 99999, or choose Free.";
+      }
     }
     if (form.term !== "") {
       const term = Number(form.term);
@@ -315,7 +320,7 @@ export default function AdminClient() {
         type: form.type,
         course: form.course,
         term: form.term === "" ? null : Number(form.term),
-        price: Number(form.price),
+        price: form.pricing === "free" ? 0 : Number(form.price),
         pages: form.pages ? Number(form.pages) : null,
         language: form.language,
         description: form.description.trim() || null,
@@ -477,9 +482,19 @@ export default function AdminClient() {
           </div>
 
           <div>
-            <label className={label} htmlFor="price">Price (₹)</label>
-            <input id="price" className={input} inputMode="decimal" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="49" />
+            <label className={label} htmlFor="pricing">Free or Paid</label>
+            <select id="pricing" className={input} value={form.pricing} onChange={(e) => set("pricing", e.target.value as "paid" | "free")}>
+              <option value="paid">Paid</option>
+              <option value="free">Free</option>
+            </select>
           </div>
+
+          {form.pricing === "paid" && (
+            <div>
+              <label className={label} htmlFor="price">Price (₹)</label>
+              <input id="price" className={input} inputMode="decimal" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="49" />
+            </div>
+          )}
 
           <div>
             <label className={label} htmlFor="pages">Pages (optional)</label>
@@ -576,7 +591,7 @@ export default function AdminClient() {
                     {typeLabelOf(r.type)} · {courseLabel(r.course)} {termText(r.course, r.term) && `· ${termText(r.course, r.term)}`}
                   </p>
                   <p className="mt-1 text-sm text-muted">
-                    ₹{r.price}
+                    {Number(r.price) === 0 ? "Free" : `₹${r.price}`}
                     {r.pages ? ` · ${r.pages} pages` : ""}{r.language ? ` · ${languageLabel(r.language)}` : " · Language not set"} · PDF {r.file_path ? "✓" : "missing"} · Sample {r.sample_path ? "✓" : "none"}
                   </p>
                 </div>

@@ -89,7 +89,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
           if (cancelled || error || !data) return;
           const found = data.map(toProduct);
           setCatalog((prev) => ({ ...prev, ...Object.fromEntries(found.map((p) => [p.slug, p])) }));
-          const gone = new Set(slugs.filter((s) => !found.some((p) => p.slug === s)));
+          // Free resources do not go in the cart: they are added to the library from their page.
+          const gone = new Set(slugs.filter((s) => !found.some((p) => p.slug === s && p.price > 0)));
           if (gone.size) {
             setCart((items) => items.filter((s) => !gone.has(s)));
           }

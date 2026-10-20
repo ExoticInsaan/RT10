@@ -9,6 +9,7 @@ import Icon from "@/components/ui/Icon";
 import { createClient } from "@/lib/supabase/client";
 import { failedPaymentText, loadRazorpay } from "@/lib/razorpay-client";
 import { trackBeginCheckout } from "@/lib/analytics";
+import { isFree } from "@/lib/price";
 
 type Note = { tone: "error" | "info"; text: string; libraryLink?: boolean };
 
@@ -18,6 +19,7 @@ export default function BuyButton({ slug, price, title = slug }: { slug: string;
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<Note | null>(null);
   const [owned, setOwned] = useState(false);
+  const free = isFree(price);
 
   // Does this student already own it? Then show "In your library" instead of a Buy button.
   useEffect(() => {
@@ -85,13 +87,36 @@ export default function BuyButton({ slug, price, title = slug }: { slug: string;
     }
   }, [slug, price, title, user, router, openSignIn]);
 
-  // After signing in, carry on with the purchase the student started.
+  // A free resource goes straight into the library, no payment window.
+  const claimFree = useCallback(async () => {
+    setBusy(true);
+    setNote(null);
+    try {
+      const res = await fetch("/api/claim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok || data.code === "already_owned") setOwned(true);
+      else if (data.code === "login_required") openSignIn();
+      else setNote({ tone: "error", text: data.error ?? "Could not add it to your library." });
+    } catch {
+      setNote({ tone: "error", text: "Something went wrong. Please try again." });
+    } finally {
+      setBusy(false);
+    }
+  }, [slug, openSignIn]);
+
+  const start = free ? claimFree : startPayment;
+
+  // After signing in, carry on with what the student started (buying, or getting it free).
   useEffect(() => {
     if (ready && user && sessionStorage.getItem("pendingBuy") === slug) {
       sessionStorage.removeItem("pendingBuy");
-      Promise.resolve().then(startPayment);
+      Promise.resolve().then(start);
     }
-  }, [ready, user, slug, startPayment]);
+  }, [ready, user, slug, start]);
 
   function onClick() {
     if (!user) {
@@ -99,7 +124,7 @@ export default function BuyButton({ slug, price, title = slug }: { slug: string;
       openSignIn();
       return;
     }
-    startPayment();
+    start();
   }
 
   if (owned) {
@@ -113,7 +138,7 @@ export default function BuyButton({ slug, price, title = slug }: { slug: string;
   return (
     <div className="flex flex-col items-start gap-2">
       <Button onClick={onClick} disabled={busy}>
-        {busy ? "Please wait…" : `Buy now · ₹${price}`} <Icon name="cart" />
+        {busy ? "Please wait…" : free ? "Get it free" : `Buy now · ₹${price}`} <Icon name={free ? "book" : "cart"} />
       </Button>
       {note && (
         <p className={`m-0 max-w-[21rem] text-sm leading-snug ${note.tone === "error" ? "text-red-600" : "text-muted"}`} role="status">

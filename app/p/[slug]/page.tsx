@@ -17,6 +17,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import Icon from "@/components/ui/Icon";
 import SectionLabel from "@/components/ui/SectionLabel";
+import { isFree, priceText } from "@/lib/price";
 
 // Products come from the database, so there is no fixed list of pages to build ahead of time.
 // Each page is rendered the first time it is opened.
@@ -163,21 +164,23 @@ async function ProductDetail({ params }: { params: PageProps<"/p/[slug]">["param
           ) : null}
           <ul>
             <li>
-              <Icon name="check" /> Instant access after payment
+              <Icon name="check" /> {isFree(p.price) ? "Free: instant access in your library" : "Instant access after payment"}
             </li>
             <li>
               <Icon name="check" /> Read on mobile, tablet or desktop
             </li>
-            <li>
-              <Icon name="check" /> Secure payment by Razorpay (UPI, cards, net banking)
-            </li>
+            {isFree(p.price) ? null : (
+              <li>
+                <Icon name="check" /> Secure payment by Razorpay (UPI, cards, net banking)
+              </li>
+            )}
           </ul>
-          <strong className={cn("detail-price")}>₹ {p.price}</strong>
+          <strong className={cn("detail-price")}>{priceText(p.price)}</strong>
           <div className={cn("detail-actions")}>
             <BuyButton slug={p.slug} price={p.price} title={p.title} />
             <CartButton slug={p.slug} variant="detail" product={p} />
           </div>
-          <p>You will be asked to sign in before paying.</p>
+          <p>{isFree(p.price) ? "You will be asked to sign in to add it to your library." : "You will be asked to sign in before paying."}</p>
         </div>
       </div>
     </main>

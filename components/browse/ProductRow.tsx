@@ -5,6 +5,7 @@ import { courseLabel, termText, typeLabelOf } from "@/lib/catalog-config";
 import type { Product } from "@/lib/product-types";
 import CartButton from "@/components/cart/CartButton";
 import Cover from "@/components/ui/Cover";
+import { priceText } from "@/lib/price";
 
 export default function ProductRow({ p }: { p: Product }) {
   const href = `/p/${p.slug}`;
@@ -34,7 +35,7 @@ export default function ProductRow({ p }: { p: Product }) {
             </>
           ) : null}
         </p>
-        <strong className={cn("row-price")}>₹ {p.price}</strong>
+        <strong className={cn("row-price")}>{priceText(p.price)}</strong>
       </div>
       <CartButton slug={p.slug} variant="row" product={p} />
     </article>

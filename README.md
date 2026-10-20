@@ -117,6 +117,7 @@ Run the files in `supabase/migrations/` in order, using the Supabase SQL Editor:
 8. `0009_profile_welcome.sql`: the first sign-in welcome (`profiles.name` and `profiles.welcomed_at`).
 9. `0010_others_type.sql`: adds the `others` content type.
 10. `0011_language.sql`: adds the language of a resource (Hindi Medium, English Medium or Hinglish).
+11. `0012_free_resources.sql`: lets a resource be free (price 0). Run it before choosing Free in Admin.
 
 There is no `0002` file. It was an experiment that was rolled back.
 
@@ -247,3 +248,7 @@ The main file can be a PDF, or one or more pictures (PNG, JPG, WebP). Pictures a
 ## Product page pictures (swipe gallery)
 
 The product page shows a swipeable picture strip with dots below (like Flipkart or Meesho): slide 1 is the cover, the next slides are the free preview pages. The preview pages come from the optional **Preview pictures** field in Admin (pictures only; the browser joins them into a PDF, which the server then draws back as slides). The server draws them from the sample PDF through `/api/preview/<slug>` (page count) and `/api/preview/<slug>/<n>` (one page), see `lib/preview-server.ts` and `components/product/PreviewGallery.tsx`. Only published resources have previews, and at most the first 12 pages are served. No database change is needed.
+
+## Free and paid resources
+
+In Admin, **Free or Paid** decides the pricing. Paid shows the price box. Free saves price 0. On a free resource the button says "Get it free": it asks the student to sign in, then `/api/claim` adds it to My Library (a `purchases` row with status `paid` and amount 0). Free resources never go in the cart, and `/api/checkout` refuses them. Needs migration `0012_free_resources.sql`.
