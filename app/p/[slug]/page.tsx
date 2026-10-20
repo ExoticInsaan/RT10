@@ -154,15 +154,15 @@ async function ProductDetail({ params }: { params: PageProps<"/p/[slug]">["param
             {p.pages ? ` · ${p.pages} pages` : ""}
           </span>
           {p.description ? <p>{p.description}</p> : null}
-          {p.language ? (
-            <div
-              className="my-4 inline-flex items-center gap-2 rounded-xl border-2 border-blue bg-blue/10 px-4 py-2.5 text-base font-bold text-navy shadow-sm"
-              aria-label={`Language: ${languageLabel(p.language)}`}
-            >
-              <Icon name="check" /> Language: <span className="text-blue">{languageLabel(p.language)}</span>
-            </div>
-          ) : null}
           <ul>
+            {p.language ? (
+              <li>
+                <Icon name="check" /> Language:
+                <span className="rounded-[3px] bg-[#edf5fa] px-2 py-1 text-xs font-semibold text-[#47718f]">
+                  {languageLabel(p.language)}
+                </span>
+              </li>
+            ) : null}
             <li>
               <Icon name="check" /> {isFree(p.price) ? "Free: instant access in your library" : "Instant access after payment"}
             </li>
