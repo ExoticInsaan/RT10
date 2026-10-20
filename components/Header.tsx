@@ -19,7 +19,7 @@ const navLinks = [
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { cart, openCart } = useCart();
+  const { cart, openCart, cartTip, dismissCartTip } = useCart();
   return (
     <header className={cn("site-header")}>
       <div className={cn("header-inner")}>
@@ -45,10 +45,26 @@ export default function Header() {
           <Link href="/browse" className={cn("icon-link")} aria-label="Search">
             <Icon name="search" />
           </Link>
-          <Button variant="icon" ariaLabel={`Cart with ${cart.length} items`} onClick={openCart}>
-            <Icon name="cart" />
-            {cart.length > 0 && <span className={cn("count")}>{cart.length}</span>}
-          </Button>
+          <div className={cn("cart-anchor", cartTip ? "cart-anchor--pulse" : "")}>
+            <Button variant="icon" ariaLabel={`Cart with ${cart.length} items`} onClick={openCart}>
+              <Icon name="cart" />
+              {cart.length > 0 && <span className={cn("count")}>{cart.length}</span>}
+            </Button>
+            {cartTip && (
+              <div className="cart-tip" role="status">
+                <p className="cart-tip__title">Added to your cart! 🎉</p>
+                <p className="cart-tip__text">Tap the cart icon up here anytime to see your items and check out.</p>
+                <div className="cart-tip__actions">
+                  <button type="button" className="cart-tip__open" onClick={openCart}>
+                    View cart
+                  </button>
+                  <button type="button" className="cart-tip__ok" onClick={dismissCartTip}>
+                    Got it
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
           <HeaderAuth />
         </div>
       </div>

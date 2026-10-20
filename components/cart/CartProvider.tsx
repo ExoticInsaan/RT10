@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PRODUCT_COLUMNS, toProduct, type Product } from "@/lib/product-types";
 
@@ -10,11 +10,15 @@ import { PRODUCT_COLUMNS, toProduct, type Product } from "@/lib/product-types";
 
 const CART_KEY = "ts-cart";
 const OLD_WISH_KEY = "ts-wish"; // the wishlist was removed; clear what it left behind
+const TIP_KEY = "ts-cart-tip-seen"; // set once the first-time "your cart is here" guide has been shown
 
 type CartContextValue = {
   cart: string[];
   cartItems: Product[];
   cartOpen: boolean;
+  /** True while the first-time guide pointing at the cart icon is showing. */
+  cartTip: boolean;
+  dismissCartTip: () => void;
   toggleCart: (slug: string) => void;
   removeFromCart: (slugs: string[]) => void;
   openCart: () => void;
@@ -25,6 +29,8 @@ const CartContext = createContext<CartContextValue>({
   cart: [],
   cartItems: [],
   cartOpen: false,
+  cartTip: false,
+  dismissCartTip: () => {},
   toggleCart: () => {},
   removeFromCart: () => {},
   openCart: () => {},
@@ -54,6 +60,8 @@ const toggle = (items: string[], item: string) =>
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<string[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [cartTip, setCartTip] = useState(false);
+  const cartRef = useRef<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [catalog, setCatalog] = useState<Record<string, Product>>({});
 
@@ -70,8 +78,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    cartRef.current = cart;
     if (hydrated) write(CART_KEY, cart);
   }, [cart, hydrated]);
+
+  // The guide hides itself after a while if the student ignores it.
+  useEffect(() => {
+    if (!cartTip) return;
+    const t = setTimeout(() => setCartTip(false), 12000);
+    return () => clearTimeout(t);
+  }, [cartTip]);
 
   // Look up the saved products. Anything no longer published is removed from the cart.
   const slugKey = Array.from(new Set(cart)).sort().join(",");
@@ -105,17 +121,34 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const cartItems = useMemo(() => cart.map((s) => catalog[s]).filter(Boolean), [cart, catalog]);
 
-  const toggleCart = useCallback((slug: string) => setCart((items) => toggle(items, slug)), []);
+  const toggleCart = useCallback((slug: string) => {
+    // First time ever adding something: show the guide pointing at the cart icon (once per browser).
+    if (!cartRef.current.includes(slug)) {
+      try {
+        if (!localStorage.getItem(TIP_KEY)) {
+          localStorage.setItem(TIP_KEY, "1");
+          setCartTip(true);
+        }
+      } catch {
+        // Storage blocked: skip the guide rather than show it every time.
+      }
+    }
+    setCart((items) => toggle(items, slug));
+  }, []);
+  const dismissCartTip = useCallback(() => setCartTip(false), []);
   const removeFromCart = useCallback(
     (slugs: string[]) => setCart((items) => items.filter((s) => !slugs.includes(s))),
     [],
   );
-  const openCart = useCallback(() => setCartOpen(true), []);
+  const openCart = useCallback(() => {
+    setCartTip(false);
+    setCartOpen(true);
+  }, []);
   const closeCart = useCallback(() => setCartOpen(false), []);
 
   const value = useMemo(
-    () => ({ cart, cartItems, cartOpen, toggleCart, removeFromCart, openCart, closeCart }),
-    [cart, cartItems, cartOpen, toggleCart, removeFromCart, openCart, closeCart],
+    () => ({ cart, cartItems, cartOpen, cartTip, dismissCartTip, toggleCart, removeFromCart, openCart, closeCart }),
+    [cart, cartItems, cartOpen, cartTip, dismissCartTip, toggleCart, removeFromCart, openCart, closeCart],
   );
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

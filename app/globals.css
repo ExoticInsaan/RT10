@@ -245,3 +245,103 @@ select:focus-visible {
     animation: none;
   }
 }
+
+/* First-time cart guide: a pulse on the header cart icon and a bubble pointing up at it. */
+.cart-anchor {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cart-anchor--pulse .button-icon {
+  animation: cart-pulse 1.4s ease-out infinite;
+  border-radius: 999px;
+}
+
+.cart-tip {
+  position: absolute;
+  top: calc(100% + 0.7rem);
+  right: -0.5rem;
+  z-index: 60;
+  width: min(16.5rem, calc(100vw - 1.5rem));
+  padding: 0.85rem 0.95rem;
+  color: var(--color-navy);
+  background: #fff;
+  border: 1px solid #b9dcf5;
+  border-radius: 0.9rem;
+  box-shadow: 0 14px 34px rgb(16 42 76 / 20%);
+  animation: cart-tip-in 0.28s ease-out both;
+}
+
+/* Little arrow pointing at the cart icon */
+.cart-tip::before {
+  content: "";
+  position: absolute;
+  top: -0.4rem;
+  right: 1.1rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: #fff;
+  border-top: 1px solid #b9dcf5;
+  border-left: 1px solid #b9dcf5;
+  transform: rotate(45deg);
+}
+
+.cart-tip__title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.cart-tip__text {
+  margin: 0.25rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.cart-tip__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.cart-tip__open,
+.cart-tip__ok {
+  padding: 0.4rem 0.8rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.cart-tip__open {
+  color: #fff;
+  background: var(--color-navy);
+  border: 1px solid var(--color-navy);
+}
+
+.cart-tip__ok {
+  color: var(--color-navy);
+  background: var(--color-blue-soft);
+  border: 1px solid #b9dcf5;
+}
+
+@keyframes cart-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(96 165 250 / 65%); }
+  100% { box-shadow: 0 0 0 0.8rem rgb(96 165 250 / 0%); }
+}
+
+@keyframes cart-tip-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-anchor--pulse .button-icon,
+  .cart-tip {
+    animation: none;
+  }
+}
