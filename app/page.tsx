@@ -4,6 +4,7 @@ import Semesters from "@/components/home/Semesters";
 import Popular from "@/components/home/Popular";
 import Trust from "@/components/home/Trust";
 import Faq from "@/components/home/Faq";
+import StudyBuddy from "@/components/home/StudyBuddy";
 import JsonLd from "@/components/seo/JsonLd";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -50,6 +51,7 @@ export default function Home() {
       <Popular />
       <Trust />
       <Faq />
+      <StudyBuddy />
     </>
   );
 }
