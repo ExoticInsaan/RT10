@@ -50,7 +50,6 @@ type Form = {
   type: TypeValue;
   pricing: "paid" | "free";
   price: string;
-  pages: string;
   language: LanguageValue;
   description: string;
   published: boolean;
@@ -64,7 +63,6 @@ const emptyForm: Form = {
   type: "important-questions",
   pricing: "paid",
   price: "",
-  pages: "",
   language: "english",
   description: "",
   published: false,
@@ -175,7 +173,6 @@ export default function AdminClient() {
       type: row.type,
       pricing: Number(row.price) === 0 ? "free" : "paid",
       price: Number(row.price) === 0 ? "" : String(row.price),
-      pages: row.pages ? String(row.pages) : "",
       language: row.language ?? "english",
       description: row.description ?? "",
       published: row.published,
@@ -202,9 +199,6 @@ export default function AdminClient() {
       if (!Number.isInteger(term) || term < 1 || term > course.terms) {
         return `Choose a ${course.termLabel.toLowerCase()} between 1 and ${course.terms}, or None.`;
       }
-    }
-    if (form.pages && (!/^\d+$/.test(form.pages) || Number(form.pages) < 1)) {
-      return "Pages must be a whole number, or leave it empty.";
     }
     if (!form.id && pdfFiles.length === 0) return "Choose the PDF or pictures to sell.";
     return checkDocumentFiles(pdfFiles) ?? checkDocumentFiles(sampleFiles, true) ?? validImage(cover);
@@ -321,7 +315,6 @@ export default function AdminClient() {
         course: form.course,
         term: form.term === "" ? null : Number(form.term),
         price: form.pricing === "free" ? 0 : Number(form.price),
-        pages: form.pages ? Number(form.pages) : null,
         language: form.language,
         description: form.description.trim() || null,
         file_path: nextFilePath,
@@ -497,11 +490,6 @@ export default function AdminClient() {
           )}
 
           <div>
-            <label className={label} htmlFor="pages">Pages (optional)</label>
-            <input id="pages" className={input} inputMode="numeric" value={form.pages} onChange={(e) => set("pages", e.target.value)} placeholder="24" />
-          </div>
-
-          <div>
             <label className={label} htmlFor="language">Language</label>
             <select id="language" className={input} value={form.language} onChange={(e) => set("language", e.target.value as LanguageValue)}>
               {languages.map((l) => (
@@ -592,7 +580,7 @@ export default function AdminClient() {
                   </p>
                   <p className="mt-1 text-sm text-muted">
                     {Number(r.price) === 0 ? "Free" : `₹${r.price}`}
-                    {r.pages ? ` · ${r.pages} pages` : ""}{r.language ? ` · ${languageLabel(r.language)}` : " · Language not set"} · PDF {r.file_path ? "✓" : "missing"} · Sample {r.sample_path ? "✓" : "none"}
+                    {r.language ? ` · ${languageLabel(r.language)}` : " · Language not set"} · PDF {r.file_path ? "✓" : "missing"} · Sample {r.sample_path ? "✓" : "none"}
                   </p>
                 </div>
                 </div>
