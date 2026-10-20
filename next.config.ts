@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
       "./node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs",
       "./node_modules/pdfjs-dist/standard_fonts/**/*",
     ],
+    "/api/preview/**": [
+      "./lib/fonts/**/*",
+      "./node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs",
+      "./node_modules/pdfjs-dist/standard_fonts/**/*",
+    ],
     "/api/admin/**": [
       "./lib/fonts/**/*",
       "./node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs",

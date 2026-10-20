@@ -12,6 +12,7 @@ import CartButton from "@/components/cart/CartButton";
 import TrackEvent from "@/components/analytics/TrackEvent";
 import { itemOf } from "@/lib/analytics";
 import Cover from "@/components/ui/Cover";
+import PreviewGallery from "@/components/product/PreviewGallery";
 import JsonLd from "@/components/seo/JsonLd";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import Icon from "@/components/ui/Icon";
@@ -128,13 +129,19 @@ async function ProductDetail({ params }: { params: PageProps<"/p/[slug]">["param
       </div>
       <div className={cn("product-detail")}>
         <div className={cn("detail-cover")}>
-          <Cover
+          <PreviewGallery
+            slug={p.slug}
             title={p.title}
-            heading={coverHeading(p.title)}
-            accent={accentFor(p.title)}
-            coverLine={typeLabelOf(p.type)}
-            image={p.coverUrl}
-            large
+            cover={
+              <Cover
+                title={p.title}
+                heading={coverHeading(p.title)}
+                accent={accentFor(p.title)}
+                coverLine={typeLabelOf(p.type)}
+                image={p.coverUrl}
+                large
+              />
+            }
           />
         </div>
         <div className={cn("detail-copy")}>

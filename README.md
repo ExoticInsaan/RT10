@@ -243,3 +243,7 @@ Details: the name is saved in `profiles.name` and the one-time flag in `profiles
 ## Admin uploads: PDF or pictures
 
 The main file and the free sample can each be a PDF, or one or more pictures (PNG, JPG, WebP). Pictures are joined into one PDF in the browser (one per page, in the order shown, which can be changed with the arrow buttons) before upload, so the shop, reader and cover work the same as for any PDF. See `lib/documents.ts`. No database change is needed.
+
+## Product page pictures (swipe gallery)
+
+The product page shows a swipeable picture strip with dots below (like Flipkart or Meesho): slide 1 is the cover, the next slides are the free preview pages. The preview pages come from the optional **free sample** file in Admin (a PDF, or pictures joined into a PDF). The server draws them from the sample PDF through `/api/preview/<slug>` (page count) and `/api/preview/<slug>/<n>` (one page), see `lib/preview-server.ts` and `components/product/PreviewGallery.tsx`. Only published resources have previews, and at most the first 12 pages are served. No database change is needed.
