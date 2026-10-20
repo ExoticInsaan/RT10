@@ -37,7 +37,7 @@ export default function PrivacyPage() {
 
       <h2 className={h2}>2. Data we collect</h2>
       <ul className={ul}>
-        <li><b>Sign-in data:</b> if you continue with Google, your name, email address and profile picture, as shared by Google. If you continue with email, your email address and the one-time code you enter. On your first sign-in we also ask what name we should call you; you can change it at any time.</li>
+        <li><b>Sign-in data:</b> if you continue with Google, your name, email address and profile picture, as shared by Google. On your first sign-in we also ask what name we should call you; you can change it at any time.</li>
         <li><b>Purchase data:</b> the items you buy, order and payment reference numbers, amount and date.</li>
         <li><b>Quiz and test data:</b> your answers, scores and attempt times, so we can show your results.</li>
         <li><b>Technical data:</b> device, browser, IP address and pages visited, collected through cookies and analytics (see section 6).</li>
@@ -68,7 +68,7 @@ export default function PrivacyPage() {
       </p>
       <ul className={ul}>
         <li><b>Vercel Inc.</b> hosts the website and its server code.</li>
-        <li><b>Supabase Inc.</b> provides our database, sign-in system (including the one-time email codes) and private file storage for purchased material.</li>
+        <li><b>Supabase Inc.</b> provides our database, sign-in system and private file storage for purchased material.</li>
         <li><b>Cloudflare, Inc.</b> manages our domain name (DNS) and email forwarding.</li>
         <li><b>Google LLC</b> provides Google sign-in and Google Analytics.</li>
         <li><b>Razorpay Software Private Limited</b> processes payments. Payment details you enter go directly to Razorpay and are governed by its own privacy policy.</li>
