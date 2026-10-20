@@ -1,96 +1,76 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { firstName } from "@/lib/profile";
 
-const STORAGE_KEY = "toppershelf-study-buddy-dismissed";
+const POOF_MS = 950;
 
-const studyMessages = [
-  "Let's find your next study resource! 📚",
-  "Important questions, notes and PDFs, all in one place!",
-  "Ready to ace your exams? 💙",
-  "Pick your course and semester to get started!",
-  "Your next study session starts here! ✨",
+// Puffs of smoke: where each one drifts to, and when it starts.
+const puffs = [
+  { x: "-2.2rem", y: "-3.2rem", delay: "0s" },
+  { x: "2.4rem", y: "-3.6rem", delay: "0.05s" },
+  { x: "0rem", y: "-4.4rem", delay: "0.1s" },
+  { x: "-3rem", y: "-1.2rem", delay: "0.12s" },
+  { x: "3rem", y: "-1.6rem", delay: "0.16s" },
+  { x: "-1rem", y: "-2.4rem", delay: "0.2s" },
 ];
 
-/** Owl mascot in the corner of the home page. Greets the signed-in student by name. */
+/**
+ * Owl mascot in the corner of the home page. Greets the signed-in student by name.
+ * Tapping it makes it vanish in a puff of smoke. It is not remembered: it comes back on reload.
+ */
 export default function StudyBuddy() {
   const { profile } = useAuth();
-  const [isReady, setIsReady] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [messageIndex, setMessageIndex] = useState(-1);
+  const [phase, setPhase] = useState<"idle" | "poof" | "gone">("idle");
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    let dismissed = false;
-    try {
-      dismissed = localStorage.getItem(STORAGE_KEY) === "true";
-    } catch {
-      // Storage unavailable: just show the buddy.
-    }
-    Promise.resolve().then(() => {
-      setIsVisible(!dismissed);
-      setIsReady(true);
-    });
-  }, []);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
 
-  if (!isReady) return null;
+  if (phase === "gone") return null;
 
   const name = firstName(profile?.name);
   const greeting = name ? `Welcome, ${name} !!` : "Welcome !!";
 
-  const dismiss = () => {
-    setIsVisible(false);
-    try {
-      localStorage.setItem(STORAGE_KEY, "true");
-    } catch {
-      // Dismissal still holds for this visit.
-    }
+  const poof = () => {
+    if (phase !== "idle") return;
+    setPhase("poof");
+    timer.current = setTimeout(() => setPhase("gone"), POOF_MS);
   };
-
-  const show = () => {
-    setMessageIndex(-1);
-    setIsVisible(true);
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // Works for this visit either way.
-    }
-  };
-
-  if (!isVisible) {
-    return (
-      <button className="study-buddy-restore" type="button" onClick={show}>
-        Show study buddy
-      </button>
-    );
-  }
 
   return (
-    <aside className="study-buddy" aria-label="Toppershelf study buddy">
+    <aside
+      className={`study-buddy${phase === "poof" ? " study-buddy--poof" : ""}`}
+      aria-label="Toppershelf study buddy"
+    >
       <div className="study-buddy__bubble" aria-live="polite">
-        <button
-          className="study-buddy__close"
-          type="button"
-          aria-label="Dismiss study buddy"
-          onClick={dismiss}
-        >
-          ×
-        </button>
-        <p className="study-buddy__title">
-          {messageIndex === -1 ? greeting : studyMessages[messageIndex]}
-        </p>
+        <p className="study-buddy__title">{greeting}</p>
       </div>
 
-      <button
-        className="study-buddy__mascot"
-        type="button"
-        aria-label="Hear another message from your study buddy"
-        onClick={() => setMessageIndex((current) => (current + 1) % studyMessages.length)}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/toppershelf-owl.png" alt="" width={200} height={200} draggable={false} />
-      </button>
+      <div className="study-buddy__stage">
+        <button
+          className="study-buddy__mascot"
+          type="button"
+          aria-label="Dismiss the study buddy"
+          onClick={poof}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/toppershelf-owl.png" alt="" width={200} height={200} draggable={false} />
+        </button>
+        {puffs.map((p, i) => (
+          <span
+            key={i}
+            className="study-buddy__smoke"
+            aria-hidden="true"
+            style={{ "--x": p.x, "--y": p.y, "--delay": p.delay } as React.CSSProperties}
+          />
+        ))}
+      </div>
     </aside>
   );
 }
