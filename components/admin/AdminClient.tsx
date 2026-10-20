@@ -11,9 +11,12 @@ import {
   contentTypes,
   courseLabel,
   courses,
+  languageLabel,
+  languages,
   termText,
   typeLabelOf,
   type CourseValue,
+  type LanguageValue,
   type TypeValue,
 } from "@/lib/catalog-config";
 
@@ -30,6 +33,7 @@ type Row = {
   term: number | null;
   price: number | string;
   pages: number | null;
+  language: LanguageValue | null;
   description: string | null;
   file_path: string | null;
   sample_path: string | null;
@@ -46,6 +50,7 @@ type Form = {
   type: TypeValue;
   price: string;
   pages: string;
+  language: LanguageValue;
   description: string;
   published: boolean;
 };
@@ -58,6 +63,7 @@ const emptyForm: Form = {
   type: "important-questions",
   price: "",
   pages: "",
+  language: "english",
   description: "",
   published: false,
 };
@@ -175,6 +181,7 @@ export default function AdminClient() {
       type: row.type,
       price: String(row.price),
       pages: row.pages ? String(row.pages) : "",
+      language: row.language ?? "english",
       description: row.description ?? "",
       published: row.published,
     });
@@ -303,6 +310,7 @@ export default function AdminClient() {
         term: form.term === "" ? null : Number(form.term),
         price: Number(form.price),
         pages: form.pages ? Number(form.pages) : null,
+        language: form.language,
         description: form.description.trim() || null,
         file_path: nextFilePath,
         sample_path: nextSamplePath,
@@ -471,6 +479,15 @@ export default function AdminClient() {
             <input id="pages" className={input} inputMode="numeric" value={form.pages} onChange={(e) => set("pages", e.target.value)} placeholder="24" />
           </div>
 
+          <div>
+            <label className={label} htmlFor="language">Language</label>
+            <select id="language" className={input} value={form.language} onChange={(e) => set("language", e.target.value as LanguageValue)}>
+              {languages.map((l) => (
+                <option key={l.value} value={l.value}>{l.label}</option>
+              ))}
+            </select>
+          </div>
+
           <div className="sm:col-span-2">
             <label className={label} htmlFor="description">Short description (optional)</label>
             <textarea id="description" className={`${input} min-h-24`} value={form.description} onChange={(e) => set("description", e.target.value)} placeholder="What is covered, and who it helps." maxLength={600} />
@@ -553,7 +570,7 @@ export default function AdminClient() {
                   </p>
                   <p className="mt-1 text-sm text-muted">
                     ₹{r.price}
-                    {r.pages ? ` · ${r.pages} pages` : ""} · PDF {r.file_path ? "✓" : "missing"} · Sample {r.sample_path ? "✓" : "none"}
+                    {r.pages ? ` · ${r.pages} pages` : ""}{r.language ? ` · ${languageLabel(r.language)}` : " · Language not set"} · PDF {r.file_path ? "✓" : "missing"} · Sample {r.sample_path ? "✓" : "none"}
                   </p>
                 </div>
                 </div>

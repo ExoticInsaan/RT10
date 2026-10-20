@@ -1,4 +1,4 @@
-import type { CourseValue, TypeValue } from "@/lib/catalog-config";
+import type { CourseValue, LanguageValue, TypeValue } from "@/lib/catalog-config";
 
 // A published resource as the shop shows it. Safe to import from client components.
 // The paid PDF path is never included here.
@@ -11,18 +11,20 @@ export type Product = {
   term: number | null;
   price: number; // rupees
   pages: number | null;
+  language: LanguageValue | null; // Hindi Medium, English Medium or Hinglish
   description: string | null;
   coverUrl: string | null; // first page of the PDF, public
 };
 
 export const PRODUCT_COLUMNS =
-  "id, slug, title, type, course, term, price, pages, description, cover_path";
+  "id, slug, title, type, course, term, price, pages, language, description, cover_path";
 
 type ProductRow = Omit<Product, "price" | "term" | "pages" | "coverUrl"> & {
   cover_path?: string | null;
   price: number | string;
   term: number | null;
   pages: number | null;
+  language: LanguageValue | null;
 };
 
 // Public address of a cover picture (the "covers" bucket is public).

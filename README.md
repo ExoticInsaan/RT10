@@ -116,6 +116,7 @@ Run the files in `supabase/migrations/` in order, using the Supabase SQL Editor:
 7. `0008_multi_item_orders.sql`: lets one payment cover several resources (cart checkout).
 8. `0009_profile_welcome.sql`: the first sign-in welcome (`profiles.name` and `profiles.welcomed_at`).
 9. `0010_others_type.sql`: adds the `others` content type.
+10. `0011_language.sql`: adds the language of a resource (Hindi Medium, English Medium or Hinglish).
 
 There is no `0002` file. It was an experiment that was rolled back.
 

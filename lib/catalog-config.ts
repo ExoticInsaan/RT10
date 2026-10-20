@@ -11,6 +11,18 @@ export type TypeValue =
   | "assignments"
   | "others";
 
+export type LanguageValue = "hindi" | "english" | "hinglish";
+
+export const languages: { value: LanguageValue; label: string }[] = [
+  { value: "hindi", label: "Hindi Medium" },
+  { value: "english", label: "English Medium" },
+  { value: "hinglish", label: "Hinglish" },
+];
+
+export function languageLabel(value: string | null | undefined) {
+  return languages.find((l) => l.value === value)?.label ?? "";
+}
+
 export const courses: {
   value: CourseValue;
   label: string;
