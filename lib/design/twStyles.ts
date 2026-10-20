@@ -100,7 +100,7 @@ const tailwindStyles: Record<string, string> = {
     "[width:100px] [height:136px] [padding:8px_7px] max-[560px]:[width:78px] max-[560px]:[height:112px]",
   "detail-actions": "flex [gap:10px] flex-wrap",
   "detail-cover":
-    "[background:#f1e9df] [padding:35px] [border-radius:8px] max-[560px]:[padding:28px_50px]",
+    "[background:#f1e9df] [padding:16px] [border-radius:8px] max-[560px]:[padding:10px]",
   "detail-price": "[color:#102a4c] [font-size:28px] block [margin:28px_0_16px]",
   "drawer-backdrop":
     "fixed [inset:0] [background:rgba(10,_27,_45,_.3)] [z-index:60] flex justify-end",

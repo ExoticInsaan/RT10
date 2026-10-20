@@ -56,7 +56,7 @@ export default function PreviewGallery({ slug, title, cover }: { slug: string; t
           role="region"
           aria-roledescription="carousel"
           aria-label={`${title} pictures`}
-          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain py-3 outline-none [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-2 focus-visible:ring-blue/40 [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain pb-3 pt-1 outline-none [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-2 focus-visible:ring-blue/40 [&::-webkit-scrollbar]:hidden"
         >
           <div className="w-full shrink-0 snap-center">{cover}</div>
           {previews.map((n) => (
