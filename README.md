@@ -28,7 +28,7 @@ Toppershelf is an online shop for exam-focused nursing study material. Students 
 | Area | Status |
 | --- | --- |
 | Design (home, About, Founders, Study Smarter and cart) | Done |
-| Sign-in with Google and email code | Done |
+| Sign-in with Google only | Done |
 | Browse page: search, filters and sorting | Done. Filters: course, semester or year, resource type. Results are always newest first. There is no sort control and no price filter. |
 | Legal pages (privacy, terms, refund, contact) | Done |
 | Database tables and security rules | Done |
@@ -178,7 +178,7 @@ After paying, a student opens the PDF at `/read/<slug>` and reads it in the brow
 
 ## Sign-in
 
-Students sign in with Google, or with an email code (no passwords).
+Students sign in with Google only (no passwords, no email codes). The email option was removed from the sign-in window. To also block it at the source, turn off the Email provider in Supabase (Authentication → Sign In / Providers).
 
 In Supabase, under **Authentication → URL Configuration**:
 

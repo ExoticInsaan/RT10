@@ -56,7 +56,7 @@ export default function PreviewGallery({ slug, title, cover }: { slug: string; t
           role="region"
           aria-roledescription="carousel"
           aria-label={`${title} pictures`}
-          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain py-3 outline-none [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-2 focus-visible:ring-blue/40 [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain outline-none [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-2 focus-visible:ring-blue/40 [&::-webkit-scrollbar]:hidden"
         >
           <div className="w-full shrink-0 snap-center">{cover}</div>
           {previews.map((n) => (
@@ -100,26 +100,28 @@ export default function PreviewGallery({ slug, title, cover }: { slug: string; t
             ›
           </button>
         )}
-      </div>
-
-      {total > 1 && (
-        <>
-          <div className="mt-3 flex items-center justify-center gap-1.5" role="tablist" aria-label="Choose picture">
-            {Array.from({ length: total }, (_, i) => (
-              <button
-                key={i}
-                type="button"
-                role="tab"
-                aria-selected={i === active}
-                aria-label={i === 0 ? "Cover" : `Sample page ${i}`}
-                onClick={() => goTo(i)}
-                className={`h-2 rounded-full transition-all duration-200 ${i === active ? "w-5 bg-navy" : "w-2 bg-navy/25 hover:bg-navy/45"}`}
-              />
-            ))}
+        {total > 1 && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center">
+            <div
+              className="pointer-events-auto flex items-center gap-1.5 rounded-full bg-black/35 px-2.5 py-1.5 backdrop-blur-sm"
+              role="tablist"
+              aria-label="Choose picture"
+            >
+              {Array.from({ length: total }, (_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  role="tab"
+                  aria-selected={i === active}
+                  aria-label={i === 0 ? "Cover" : `Sample page ${i}`}
+                  onClick={() => goTo(i)}
+                  className={`h-2 rounded-full transition-all duration-200 ${i === active ? "w-5 bg-white" : "w-2 bg-white/60 hover:bg-white/80"}`}
+                />
+              ))}
+            </div>
           </div>
-          <p className="mt-2 text-center text-xs text-muted">Swipe to see the free sample pages</p>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 }
