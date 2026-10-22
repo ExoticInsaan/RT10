@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { authorizeRead } from "@/lib/reader-access";
-import { getPdf } from "@/lib/reader-server";
+import { getPageSizes } from "@/lib/reader-server";
 
 // GET /api/read/<slug>
 // For a student who PAID: the title, their email, and the size of every page.
@@ -17,7 +17,7 @@ export async function GET(_request: Request, { params }: RouteContext<"/api/read
   if (!access.ok) return reply(access.status, { code: access.code, error: access.error });
 
   try {
-    const { sizes } = await getPdf(access.filePath);
+    const sizes = await getPageSizes(access.filePath);
     return reply(200, { title: access.title, email: access.email, pages: sizes });
   } catch (err) {
     console.error("Reader: could not open PDF", slug, err);

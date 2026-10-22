@@ -7,7 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 // the browser only ever receives pictures with the reader's email already burned in.
 
 export type PageSize = { w: number; h: number };
-type Loaded = { doc: PDFDocumentProxy; sizes: PageSize[] };
+type Loaded = { doc: PDFDocumentProxy; sizes?: Promise<PageSize[]> };
 
 const WATERMARK_FONT = "WM";
 let fontReady = false;
@@ -44,12 +44,7 @@ async function open(filePath: string): Promise<Loaded> {
     isEvalSupported: false,
     standardFontDataUrl: path.join(process.cwd(), "node_modules/pdfjs-dist/standard_fonts/") + path.sep,
   }).promise;
-  const sizes: PageSize[] = [];
-  for (let i = 1; i <= doc.numPages; i++) {
-    const v = (await doc.getPage(i)).getViewport({ scale: 1 });
-    sizes.push({ w: v.width, h: v.height });
-  }
-  return { doc, sizes };
+  return { doc };
 }
 
 // Forget the in-memory copy of a PDF (used when an admin has replaced the file).
@@ -76,6 +71,23 @@ export async function getPdf(filePath: string): Promise<Loaded> {
   }
   entry.at = now;
   return entry.loading;
+}
+
+// Size of every page, measured all at once and only when asked (the page list needs it; drawing one
+// page does not). Remembered with the opened PDF so it is measured once.
+export async function getPageSizes(filePath: string): Promise<PageSize[]> {
+  const loaded = await getPdf(filePath);
+  loaded.sizes ??= (async () => {
+    const pages = await Promise.all(
+      Array.from({ length: loaded.doc.numPages }, (_, i) => loaded.doc.getPage(i + 1)),
+    );
+    return pages.map((page) => {
+      const v = page.getViewport({ scale: 1 });
+      return { w: v.width, h: v.height };
+    });
+  })();
+  loaded.sizes.catch(() => (loaded.sizes = undefined)); // do not remember a failed measurement
+  return loaded.sizes;
 }
 
 // ---- Draw at most two pages at a time (each one uses real memory and CPU) ---------------------
