@@ -12,8 +12,8 @@ export async function GET(_request: Request, { params }: RouteContext<"/api/prev
   try {
     const path = await samplePathFor(slug);
     if (!path) return NextResponse.json({ pages: 0 }, { headers: cached });
-    const { sizes } = await getPdf(path);
-    return NextResponse.json({ pages: Math.min(sizes.length, MAX_PREVIEW_PAGES) }, { headers: cached });
+    const { doc } = await getPdf(path); // only the page count is needed, no need to measure every page
+    return NextResponse.json({ pages: Math.min(doc.numPages, MAX_PREVIEW_PAGES) }, { headers: cached });
   } catch (err) {
     console.error("Preview: could not open sample", slug, err);
     return NextResponse.json({ pages: 0 }, { status: 500, headers: { "Cache-Control": "no-store" } });

@@ -23,7 +23,11 @@ export async function GET(request: Request, { params }: RouteContext<"/api/read/
   try {
     const picture = await renderPage(access.filePath, Number(n), pickWidth(wanted), access.free ? "" : access.email);
     if (!picture) return NextResponse.json({ code: "no_such_page", error: "No such page." }, { status: 404, headers });
-    return new Response(new Uint8Array(picture), { headers: { ...headers, "Content-Type": "image/webp" } });
+    // A drawn page is kept in this browser only (private) for 5 minutes, so scrolling back, zooming
+    // back or reopening is instant. Errors above keep no-store.
+    return new Response(new Uint8Array(picture), {
+      headers: { ...headers, "Cache-Control": "private, max-age=300", "Content-Type": "image/webp" },
+    });
   } catch (err) {
     console.error("Reader: could not draw page", slug, n, err);
     return NextResponse.json({ code: "file_error", error: "Could not draw this page." }, { status: 500, headers });
