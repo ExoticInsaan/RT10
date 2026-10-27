@@ -154,6 +154,30 @@ export function FavoriteButton({ id, className = "absolute right-3 top-3" }: { i
   );
 }
 
+/** The labelled version of FavoriteButton for a tool's own page. `onDark` is for the Fun Zone's colourful header. */
+export function SaveButton({ id, onDark = false }: { id: string; onDark?: boolean }) {
+  const [favourites, setFavourites] = useStoredList(FAVOURITES_KEY);
+  const saved = favourites.includes(id);
+  const look = onDark
+    ? saved
+      ? "bg-white text-purple-700"
+      : "bg-white/15 text-white ring-1 ring-white/50 hover:bg-white/25"
+    : saved
+      ? "bg-red-50 text-red-600 ring-1 ring-red-200"
+      : "bg-white text-navy ring-1 ring-line hover:ring-blue";
+  return (
+    <button
+      type="button"
+      aria-pressed={saved}
+      onClick={() => setFavourites((current) => (saved ? current.filter((x) => x !== id) : [id, ...current]))}
+      className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border-0 px-4 text-sm font-bold transition ${look}`}
+    >
+      <ToolIcon name="heart" size={17} filled={saved} />
+      {saved ? "Saved to My Shelf" : "Save to My Shelf"}
+    </button>
+  );
+}
+
 export function ToolCard({ tool, compact = false }: { tool: Tool; compact?: boolean }) {
   return (
     <article

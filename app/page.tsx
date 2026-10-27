@@ -5,6 +5,7 @@ import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
 import FunSticker from "@/components/tools/FunSticker";
 import HomeSearch from "@/components/tools/HomeSearch";
+import ShelfViewAll from "@/components/tools/ShelfViewAll";
 import ToolIcon from "@/components/tools/ToolIcon";
 import { ShelfGrid } from "@/components/tools/ToolsBrowser";
 import { tools } from "@/lib/tools/registry";
@@ -150,25 +151,7 @@ export default function Home() {
           </Link>
         </div>
         <ShelfGrid list={shelfPicks}>
-          {/* Fills the empty fourth slot when the row has two columns; three columns are already full. */}
-          <Link href="/the-shelf" className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-hover lg:hidden">
-            <div className="shelf-object relative mx-2 flex aspect-[4/3] flex-col items-center justify-end overflow-hidden rounded-t-2xl rounded-b-md border-2 border-dashed border-blue/50 bg-blue-soft">
-              {/* The TopperShelf owl peeks up from the bottom of the frame and points people to the full shelf. */}
-              <span className="relative mb-2 rounded-2xl bg-white px-3 py-1.5 text-xs font-extrabold text-blue-hover shadow-sm transition-colors group-hover:bg-blue-hover group-hover:text-white sm:text-sm">
-                View all {shelfCount}
-                <span
-                  className="absolute -bottom-1 left-1/2 size-2.5 -translate-x-1/2 rotate-45 bg-inherit"
-                  aria-hidden="true"
-                />
-              </span>
-              <Image src="/mascot/owl-peek.webp" alt="" width={360} height={282} className="h-auto w-[52%]" />
-            </div>
-            <div className="shelf-plank" aria-hidden="true" />
-            <div className="px-1 pt-3 sm:px-2 sm:pt-4">
-              <h3 className="m-0 text-sm font-bold leading-5 tracking-tight text-navy sm:text-base">More on The Shelf</h3>
-              <p className="m-0 mt-1 text-[0.8rem] leading-5 text-muted sm:text-sm sm:leading-6">QR codes, flashcards, reminders and more.</p>
-            </div>
-          </Link>
+          <ShelfViewAll />
         </ShelfGrid>
       </section>
 
