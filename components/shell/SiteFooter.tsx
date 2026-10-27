@@ -108,7 +108,7 @@ export default function SiteFooter() {
       {/* Bottom bar */}
       <div className="border-t border-white/10 py-4">
         <div className="container-app flex flex-col items-center justify-center gap-1 text-center text-xs text-slate-500 sm:flex-row sm:gap-3">
-          <span>© {new Date().getFullYear()} TopperShelf. All rights reserved.</span>
+          <span>© 2026 TopperShelf. All rights reserved.</span>
           <span aria-hidden="true" className="hidden sm:inline">·</span>
           <span>Made in India 🇮🇳 · Your files stay on your device wherever possible.</span>
         </div>
