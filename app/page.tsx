@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
-import ToolIcon from "@/components/tools/ToolIcon";
+import FunSticker from "@/components/tools/FunSticker";
 import HomeSearch from "@/components/tools/HomeSearch";
-import { IconTile, SectionHead, ToolCard } from "@/components/tools/ui";
-import { categories, tools } from "@/lib/tools/registry";
+import ToolIcon from "@/components/tools/ToolIcon";
+import { ShelfGrid } from "@/components/tools/ToolsBrowser";
+import { tools } from "@/lib/tools/registry";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 // The home page is one address: "/" (never /index).
@@ -48,58 +49,64 @@ const structuredData = {
 };
 
 const trust: [Parameters<typeof ToolIcon>[0]["name"], string, string][] = [
-  ["zap", "Free to use", "No surprise paywalls"],
-  ["shield", "Private", "Files stay yours"],
-  ["lock", "One quick signup", "Use every tool"],
+  ["zap", "Free, every tool", "No paywalls, no watermarks, nothing to install."],
+  ["shield", "Your files stay with you", "File tools work right in your browser wherever they can."],
+  ["lock", "One quick sign-in", "Sign in once with Google and every tool is yours."],
 ];
 
-// Clickable spots over the shelf picture (percent of the image). Update hrefs as new tools go live.
+// Straight links for the most-searched jobs, shown under the search box.
+const quickLinks: [string, string][] = [
+  ["CGPA to %", "/tool/cgpa-calculator"],
+  ["Compress an image", "/tool/image-compressor"],
+  ["Attendance", "/tool/attendance-calculator"],
+  ["QR code", "/tool/qr-code-generator"],
+];
+
+// Clickable spots over the shelf picture (percent of the image), matched to what each drawn icon shows.
 const shelfLinks = [
-  { label: "PDF toolkit", href: "/tool/pdf-toolkit", x: 22.2, y: 41.4, w: 12.2, h: 18.4 },
-  { label: "Days countdown", href: "/tool/days-countdown", x: 37.2, y: 41.4, w: 12.2, h: 18.4 },
-  { label: "All tools on The Shelf", href: "/the-shelf", x: 52, y: 41.4, w: 12.2, h: 18.4 },
-  { label: "More tools", href: "/the-shelf", x: 66.5, y: 41.4, w: 12.2, h: 18.4 },
-  { label: "How Cooked Are You?", href: "/tool/how-cooked", x: 24.1, y: 71.8, w: 11.8, h: 17.8 },
-  { label: "Instant vibe check", href: "/tool/vibe-check", x: 38, y: 71.8, w: 11.8, h: 17.8 },
-  { label: "Roast my timetable", href: "/tool/roast-my-timetable", x: 51.8, y: 71.8, w: 11.8, h: 17.8 },
+  { label: "PDF Toolkit", href: "/tool/pdf-toolkit", x: 22.2, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "Reminder", href: "/tool/reminder", x: 37.2, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "Focus Timer", href: "/tool/focus-timer", x: 52, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "More on The Shelf", href: "/the-shelf", x: 66.5, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "Decision Wheel", href: "/tool/decision-wheel", x: 24.1, y: 71.8, w: 11.8, h: 17.8 },
+  { label: "Friendship Score", href: "/tool/friendship-score", x: 38, y: 71.8, w: 11.8, h: 17.8 },
+  { label: "How Well Do You Know Me?", href: "/tool/how-well-do-you-know-me", x: 51.8, y: 71.8, w: 11.8, h: 17.8 },
   { label: "More in the Fun Zone", href: "/fun", x: 65.5, y: 71.8, w: 11.8, h: 17.8 },
 ];
 
 export default function Home() {
-  const popular = tools.filter((tool) => tool.popular && tool.category === "The Shelf").slice(0, 8);
-  const funTools = tools
-    .filter((tool) => tool.category === "Fun Zone")
-    .sort((a, b) => Number(!!b.ready) - Number(!!a.ready))
-    .slice(0, 3);
+  const shelfPicks = tools.filter((tool) => tool.category === "The Shelf" && tool.popular).slice(0, 3);
+  const shelfCount = tools.filter((tool) => tool.category === "The Shelf").length;
+  const fun = tools.filter((tool) => tool.category === "Fun Zone");
+  const funPicks = [...fun].sort((a, b) => Number(!!b.popular) - Number(!!a.popular)).slice(0, 5);
+  const tilts = [-2, 1.5, -1, 2, -1.5];
   return (
     <>
       <JsonLd data={structuredData} />
-      <section className="container-app grid gap-8 pb-10 pt-12 lg:grid-cols-[1fr_30rem] xl:grid-cols-[1fr_36rem] lg:items-center lg:pb-14 lg:pt-18">
+
+      <section className="container-app grid gap-10 pb-16 pt-12 lg:grid-cols-[1fr_32rem] lg:items-center lg:pb-20 lg:pt-20 xl:grid-cols-[1fr_36rem]">
         <div>
-          <span className="eyebrow">
-            <ToolIcon name="sparkles" size={14} /> Free online tools for everyone
-          </span>
-          <h1 className="mb-5 mt-5 max-w-3xl text-5xl font-extrabold leading-none tracking-hero text-navy sm:text-6xl lg:text-7xl">
+          <h1 className="m-0 max-w-2xl font-display text-5xl font-normal leading-[1.02] tracking-tight text-navy sm:text-6xl lg:text-7xl">
             Useful tools.
             <br />A few silly ones.
-            <br />
-            <span className="font-display font-normal italic text-blue-hover">All free.</span>
+            <br />All free.
           </h1>
-          <p className="mb-7 max-w-2xl text-base leading-7 text-muted sm:text-lg">
-            Two shelves, one simple site. The Shelf has the useful tools for real jobs. The Fun Zone has the silly ones worth
-            sharing. Nothing to install, no confusing steps.
+          <p className="mb-8 mt-5 max-w-xl text-base leading-7 text-muted sm:text-lg">
+            Shrink a photo for a form, work out your CGPA, or find out how cooked you are. Open a tool, get it done, get on
+            with your day.
           </p>
           <HomeSearch />
-          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
-            <span className="inline-flex items-center gap-1.5">
-              <ToolIcon name="zap" size={14} /> Quick to use
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <ToolIcon name="shield" size={14} /> Private by design
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <ToolIcon name="lock" size={14} /> One simple sign-in
-            </span>
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+            <span className="mr-1 text-muted">Popular:</span>
+            {quickLinks.map(([label, href]) => (
+              <Link
+                key={href}
+                href={href}
+                className="rounded-full border border-line bg-white px-3 py-1.5 font-semibold text-navy transition hover:border-blue hover:bg-blue-soft"
+              >
+                {label}
+              </Link>
+            ))}
           </div>
         </div>
         <div className="shelf-stage hidden lg:block">
@@ -110,7 +117,7 @@ export default function Home() {
               width={1536}
               height={1024}
               priority
-              sizes="(min-width: 1280px) 40rem, 34rem"
+              sizes="(min-width: 1280px) 36rem, 32rem"
               className="shelf-image"
               draggable={false}
             />
@@ -127,107 +134,59 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-app pb-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {categories.map((category) => {
-            const count = tools.filter((tool) => tool.category === category.name).length;
-            const fun = category.name === "Fun Zone";
-            return (
-              <Link
-                key={category.name}
-                href={category.href}
-                className={`group flex items-start gap-4 rounded-2xl border p-5 transition hover:-translate-y-0.5 hover:shadow-card ${
-                  fun ? "border-purple-200 bg-purple-50" : "border-line bg-white hover:border-blue/60"
-                }`}
-              >
-                <span
-                  className={`grid size-12 shrink-0 place-items-center rounded-xl ${
-                    fun ? "bg-purple-100 text-purple-600" : "bg-blue-soft text-blue-hover"
-                  }`}
-                >
-                  <ToolIcon name={category.icon} size={22} />
-                </span>
-                <span className="flex-1">
-                  <span className="flex items-center justify-between gap-3">
-                    <strong className="text-lg font-extrabold text-navy">{category.name}</strong>
-                    <span className="text-xs font-semibold text-muted">{count} tools</span>
-                  </span>
-                  <span className="mt-1 block text-sm leading-6 text-muted">{category.blurb}</span>
-                  <span className="mt-2 inline-flex items-center gap-1.5 text-sm font-bold text-navy">
-                    Open {category.name} <ToolIcon name="arrow" size={14} />
-                  </span>
-                </span>
-              </Link>
-            );
-          })}
+      <section className="container-app pb-20" aria-labelledby="home-shelf">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 id="home-shelf" className="m-0 font-display text-4xl font-normal tracking-tight text-navy sm:text-5xl">
+              The Shelf
+            </h2>
+            <p className="mb-0 mt-2 max-w-lg text-muted">Tools for the jobs that keep coming back. Here are the favourites.</p>
+          </div>
+          <Link href="/the-shelf" className="inline-flex items-center gap-2 text-sm font-bold text-blue-hover">
+            See all {shelfCount} tools <ToolIcon name="arrow" size={16} />
+          </Link>
         </div>
+        <ShelfGrid list={shelfPicks} />
       </section>
 
-      <section className="container-app section-space">
-        <SectionHead
-          eyebrow="From The Shelf"
-          title="Popular tools"
-          description="The useful favourites people come back to."
-          href="/the-shelf"
-        />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {popular.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} compact />
-          ))}
-        </div>
-      </section>
-
-      <section className="container-app pb-16">
-        <div className="overflow-hidden rounded-3xl bg-fun-gradient p-6 sm:p-9">
-          <div className="mb-7 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+      <section className="fun-field py-16 sm:py-20" aria-labelledby="home-fun">
+        <div className="container-app">
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span className="inline-flex rounded-full bg-white/70 px-3 py-1 text-xs font-bold uppercase tracking-widest text-purple-700">
+              <h2 id="home-fun" className="m-0 font-display text-5xl font-normal tracking-tight text-white sm:text-6xl">
                 Fun Zone
-              </span>
-              <h2 className="mb-2 mt-4 text-3xl font-extrabold tracking-tight text-navy sm:text-4xl">
-                Serious tools can take five.
               </h2>
-              <p className="m-0 text-sm text-slate-700">Playful results made for group chats and story shares.</p>
+              <p className="mb-0 mt-2 max-w-lg text-white/90">Silly tests and small games with a result card made for your story.</p>
             </div>
-            <Link href="/fun" className="inline-flex items-center gap-2 text-sm font-bold text-navy">
-              Enter Fun Zone <ToolIcon name="arrow" size={16} />
+            <Link
+              href="/fun"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-bold text-navy transition hover:bg-navy hover:text-white"
+            >
+              Open the Fun Zone <ToolIcon name="arrow" size={16} />
             </Link>
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {funTools.map((tool, index) => (
-              <Link
-                key={tool.id}
-                href={`/tool/${tool.id}`}
-                className={`rounded-2xl border border-white/70 p-5 shadow-sm transition hover:-translate-y-1 ${
-                  ["bg-orange-100", "bg-sky-100", "bg-purple-100"][index]
-                }`}
-              >
-                <IconTile tool={tool} large />
-                <h3 className="mb-1 mt-6 text-lg font-extrabold text-navy">{tool.name}</h3>
-                <p className="m-0 text-sm leading-6 text-slate-600">{tool.description}</p>
-              </Link>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-5">
+            {funPicks.map((tool, index) => (
+              <FunSticker key={tool.id} tool={tool} tilt={tilts[index % tilts.length]} />
             ))}
           </div>
         </div>
       </section>
 
-      <section className="border-y border-line bg-white py-7">
-        <div className="container-app grid gap-5 text-center sm:grid-cols-3">
+      <section className="container-app py-16">
+        <ul className="m-0 grid list-none gap-8 p-0 sm:grid-cols-3">
           {trust.map(([icon, title, text]) => (
-            <div
-              key={title}
-              className="flex items-center justify-center gap-3 sm:border-r sm:border-line sm:last:border-0"
-            >
-              <span className="text-blue-hover">
-                <ToolIcon name={icon} />
+            <li key={title} className="flex gap-4">
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-blue-soft text-blue-hover">
+                <ToolIcon name={icon} size={20} />
               </span>
-              <span className="text-left">
-                <strong className="block text-sm text-navy">{title}</strong>
-                <small className="text-xs text-muted">{text}</small>
+              <span>
+                <strong className="block text-base text-navy">{title}</strong>
+                <span className="mt-1 block text-sm leading-6 text-muted">{text}</span>
               </span>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
     </>
   );
