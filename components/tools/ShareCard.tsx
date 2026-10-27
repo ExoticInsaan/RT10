@@ -22,23 +22,31 @@ export default function ShareCard({
         <Image src="/logo-mark.png" alt="" width={28} height={28} className="size-7" />
         TopperShelf
       </div>
-      <div className="absolute inset-x-4 top-[20%]">
-        <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-white/60 text-coral shadow-sm">
-          <ToolIcon name={icon} size={30} />
+      <div className={`absolute inset-x-4 ${miniature ? "top-[15%]" : "top-[20%]"}`}>
+        <span
+          className={`mx-auto grid place-items-center rounded-2xl bg-white/60 text-coral shadow-sm ${miniature ? "size-11" : "size-16"}`}
+        >
+          <ToolIcon name={icon} size={miniature ? 22 : 30} />
         </span>
-        <p className="mb-1 mt-6 text-xs font-bold uppercase tracking-widest text-purple-700">{result.kicker}</p>
+        <p className={`mb-1 font-bold uppercase tracking-widest text-purple-700 ${miniature ? "mt-3 text-[0.6rem]" : "mt-6 text-xs"}`}>
+          {result.kicker}
+        </p>
         {result.subject && (
           <p className={`mx-auto mb-1 truncate font-semibold text-slate-600 ${miniature ? "max-w-32 text-[0.6rem]" : "max-w-64 text-sm"}`}>
             {result.subject}
           </p>
         )}
-        <strong className={`block font-extrabold tracking-tight ${miniature ? "text-4xl" : "text-6xl"}`}>{result.big}</strong>
-        <h2 className={`m-0 mt-1 font-extrabold ${miniature ? "text-lg" : "text-3xl"}`}>{result.title}</h2>
-        <p className={`mx-auto mt-2 leading-5 text-slate-700 ${miniature ? "text-[0.6rem]" : "max-w-64 text-sm"}`}>
+        <strong className={`block font-extrabold tracking-tight ${miniature ? "text-3xl" : "text-6xl"}`}>{result.big}</strong>
+        <h2 className={`m-0 mt-1 font-extrabold ${miniature ? "text-base leading-5" : "text-3xl"}`}>{result.title}</h2>
+        <p className={`mx-auto mt-2 text-slate-700 ${miniature ? "text-[0.6rem] leading-4" : "max-w-64 text-sm leading-5"}`}>
           {result.message}
         </p>
       </div>
-      <div className="absolute inset-x-5 bottom-5 border-t border-navy/10 pt-3 text-[0.6rem] font-bold uppercase tracking-widest">
+      <div
+        className={`absolute border-t border-navy/10 font-bold uppercase tracking-widest ${
+          miniature ? "inset-x-4 bottom-3 pt-2 text-[0.5rem]" : "inset-x-5 bottom-5 pt-3 text-[0.6rem]"
+        }`}
+      >
         Try yours at toppershelf.online
       </div>
     </div>

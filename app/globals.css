@@ -224,3 +224,37 @@ select:focus-visible {
     transform: none;
   }
 }
+
+/* Fun Zone page: a bright violet-to-orange field with a faint halftone dot texture, and tilted sticker cards. */
+.fun-field {
+  background:
+    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 16%) 1.2px, transparent 1.7px) 0 0 / 18px 18px,
+    linear-gradient(150deg, #6d28d9 0%, #a21caf 38%, #e11d48 70%, #f97316 100%);
+}
+.fun-sticker {
+  rotate: var(--tilt, 0deg);
+  box-shadow: 0 22px 44px -18px rgb(60 8 40 / 55%);
+  transition:
+    rotate 200ms ease,
+    translate 200ms ease;
+}
+.fun-sticker:hover,
+.fun-sticker:focus-within {
+  rotate: 0deg;
+  translate: 0 -6px;
+}
+/* Wide stickers on narrow screens swing a long way at full tilt, so tone it down there. */
+@media (max-width: 767px) {
+  .fun-sticker {
+    rotate: calc(var(--tilt, 0deg) * 0.4);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fun-sticker {
+    transition: none;
+  }
+  .fun-sticker:hover,
+  .fun-sticker:focus-within {
+    translate: none;
+  }
+}

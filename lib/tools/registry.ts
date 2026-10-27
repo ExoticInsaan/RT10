@@ -14,7 +14,7 @@ export type Tool = {
   icon: ToolIconName
   tone: string
   popular?: boolean
-  /** Illustration in /public/shelf (not /public/tools: /tools/* redirects to The Shelf), shown on The Shelf and as the tool's tile. */
+  /** Illustration in /public/shelf or /public/fun-zone (not /public/tools: /tools/* redirects to The Shelf), shown on The Shelf and as the tool's tile. */
   image?: string
   /** Background behind the illustration, matched to the image's own edges so it sits seamlessly. */
   imageBg?: string
@@ -129,13 +129,82 @@ export const tools: Tool[] = [
     imageFit: "cover",
   },
   {
+    id: "decision-wheel",
+    name: "Decision Wheel",
+    description: "Can't choose? Add your options and let the wheel pick for you.",
+    category: "Fun Zone",
+    icon: "sparkles",
+    tone: "blue",
+    image: "/fun-zone/decision-wheel.webp",
+    imageBg: "#cfe0fe",
+    imageFit: "cover",
+  },
+  {
+    id: "would-you-rather",
+    name: "Would You Rather",
+    description: "Two impossible choices, one answer. Then see what everyone else picked.",
+    category: "Fun Zone",
+    icon: "message",
+    tone: "violet",
+    image: "/fun-zone/would-you-rather.webp",
+    imageBg: "#e8d8fd",
+    imageFit: "cover",
+  },
+  {
+    id: "grow-a-sapling",
+    name: "Grow a Sapling",
+    description: "Water a tiny plant every day and watch it grow as long as your streak lasts.",
+    category: "Fun Zone",
+    icon: "heart",
+    tone: "green",
+    image: "/fun-zone/grow-a-sapling.webp",
+    imageBg: "#d0f5d8",
+    imageFit: "cover",
+  },
+  {
+    id: "friendship-score",
+    name: "Friendship Score",
+    description: "Rate your friendship in a few questions and get a card to send them.",
+    category: "Fun Zone",
+    icon: "heart",
+    tone: "sky",
+    image: "/fun-zone/friendship-score.webp",
+    imageBg: "#b6ddfd",
+    imageFit: "cover",
+  },
+  {
+    id: "what-am-i-to-you",
+    name: "What Am I to You?",
+    description: "Share a link and find out how your friends really see you.",
+    category: "Fun Zone",
+    icon: "user",
+    tone: "purple",
+    image: "/fun-zone/what-am-i-to-you.webp",
+    imageBg: "#dccefd",
+    imageFit: "cover",
+  },
+  {
+    id: "how-well-do-you-know-me",
+    name: "How Well Do You Know Me?",
+    description: "Make a quiz about yourself and see which friend scores highest.",
+    category: "Fun Zone",
+    icon: "sparkles",
+    tone: "blue",
+    image: "/fun-zone/how-well-do-you-know-me.webp",
+    imageBg: "#b6dafd",
+    imageFit: "cover",
+  },
+  {
     id: "how-cooked",
-    name: "How cooked are you?",
+    name: "How Cooked Are You?",
     description: "Get your highly scientific chaos score.",
     category: "Fun Zone",
     ready: true,
     icon: "flame",
     tone: "coral",
+    image: "/fun-zone/how-cooked.webp",
+    imageBg: "#fed1bb",
+    imageFit: "cover",
     popular: true,
   },
   {
@@ -146,6 +215,9 @@ export const tools: Tool[] = [
     ready: true,
     icon: "message",
     tone: "sky",
+    image: "/fun-zone/excuse-generator.webp",
+    imageBg: "#cfcbfc",
+    imageFit: "cover",
     popular: true,
   },
   {
@@ -156,6 +228,9 @@ export const tools: Tool[] = [
     ready: true,
     icon: "sparkles",
     tone: "purple",
+    image: "/fun-zone/roast-my-timetable.webp",
+    imageBg: "#feeaac",
+    imageFit: "cover",
     popular: true,
   },
   {
@@ -166,6 +241,9 @@ export const tools: Tool[] = [
     ready: true,
     icon: "zap",
     tone: "lime",
+    image: "/fun-zone/vibe-check.webp",
+    imageBg: "#bac0fd",
+    imageFit: "cover",
   },
 ]
 

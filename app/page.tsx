@@ -59,7 +59,7 @@ const shelfLinks = [
   { label: "Days countdown", href: "/tool/days-countdown", x: 37.2, y: 41.4, w: 12.2, h: 18.4 },
   { label: "All tools on The Shelf", href: "/the-shelf", x: 52, y: 41.4, w: 12.2, h: 18.4 },
   { label: "More tools", href: "/the-shelf", x: 66.5, y: 41.4, w: 12.2, h: 18.4 },
-  { label: "How cooked are you?", href: "/tool/how-cooked", x: 24.1, y: 71.8, w: 11.8, h: 17.8 },
+  { label: "How Cooked Are You?", href: "/tool/how-cooked", x: 24.1, y: 71.8, w: 11.8, h: 17.8 },
   { label: "Instant vibe check", href: "/tool/vibe-check", x: 38, y: 71.8, w: 11.8, h: 17.8 },
   { label: "Roast my timetable", href: "/tool/roast-my-timetable", x: 51.8, y: 71.8, w: 11.8, h: 17.8 },
   { label: "More in the Fun Zone", href: "/fun", x: 65.5, y: 71.8, w: 11.8, h: 17.8 },
@@ -67,7 +67,10 @@ const shelfLinks = [
 
 export default function Home() {
   const popular = tools.filter((tool) => tool.popular && tool.category === "The Shelf").slice(0, 8);
-  const funTools = tools.filter((tool) => tool.category === "Fun Zone").slice(0, 3);
+  const funTools = tools
+    .filter((tool) => tool.category === "Fun Zone")
+    .sort((a, b) => Number(!!b.ready) - Number(!!a.ready))
+    .slice(0, 3);
   return (
     <>
       <JsonLd data={structuredData} />
