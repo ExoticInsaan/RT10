@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { parseShare } from "@/lib/tools/fun";
 
 // Draws the result card as a 1080x1920 PNG (a full phone screen, ready for a story).
@@ -9,6 +11,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const shared = parseShare(id, url.searchParams.get("n"), url.searchParams.get("s"));
   if (!shared) return new Response("Not found", { status: 404 });
   const { result } = shared;
+  const logo = `data:image/png;base64,${(await readFile(join(process.cwd(), "public/logo-mark.png"))).toString("base64")}`;
   const bigSize = result.big.length > 4 ? 280 : 340;
 
   return new ImageResponse(
@@ -27,21 +30,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 52, fontWeight: 800 }}>
-          <div
-            style={{
-              display: "flex",
-              width: 76,
-              height: 76,
-              borderRadius: 20,
-              background: "#102a4c",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="#ffffff">
-              <path d="M12 2l2.6 6.9L22 10l-5.5 4.6L18 22l-6-3.8L6 22l1.5-7.4L2 10l7.4-1.1z" />
-            </svg>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={logo} width={92} height={92} alt="" />
           TopperShelf
         </div>
 

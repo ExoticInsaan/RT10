@@ -1,3 +1,4 @@
+import Image from "next/image";
 import ToolIcon, { type ToolIconName } from "@/components/tools/ToolIcon";
 import type { FunResult } from "@/lib/tools/fun";
 
@@ -18,9 +19,7 @@ export default function ShareCard({
       }`}
     >
       <div className="flex items-center justify-center gap-2 text-sm font-extrabold">
-        <span className="grid size-7 place-items-center rounded-lg bg-navy text-white">
-          <ToolIcon name="sparkles" size={14} />
-        </span>
+        <Image src="/logo-mark.png" alt="" width={28} height={28} className="size-7" />
         TopperShelf
       </div>
       <div className="absolute inset-x-4 top-[20%]">

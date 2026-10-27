@@ -1,11 +1,14 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 // The picture shown when a link to the site is shared (WhatsApp, Instagram, X, LinkedIn and so on).
 export const alt = "TopperShelf: Useful tools. A few silly ones. All free.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpengraphImage() {
+export default async function OpengraphImage() {
+  const logo = `data:image/png;base64,${(await readFile(join(process.cwd(), "public/logo-mark.png"))).toString("base64")}`;
   return new ImageResponse(
     (
       <div
@@ -21,23 +24,7 @@ export default function OpengraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-              width: 110,
-              height: 110,
-              borderRadius: 28,
-              background: "#102a4c",
-            }}
-          >
-            <div style={{ display: "flex", width: 58, height: 12, borderRadius: 6, background: "#2f8ee8" }} />
-            <div style={{ display: "flex", width: 58, height: 12, borderRadius: 6, background: "#7c3aed" }} />
-            <div style={{ display: "flex", width: 58, height: 12, borderRadius: 6, background: "#0f9f8f" }} />
-          </div>
+          <img src={logo} width={130} height={130} alt="" />
           <div style={{ display: "flex", fontSize: 84, fontWeight: 800, letterSpacing: -2 }}>
             Topper<span style={{ color: "#146db0" }}>Shelf</span>
           </div>
