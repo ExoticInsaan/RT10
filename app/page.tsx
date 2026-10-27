@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
 import ToolIcon from "@/components/tools/ToolIcon";
@@ -52,13 +53,25 @@ const trust: [Parameters<typeof ToolIcon>[0]["name"], string, string][] = [
   ["lock", "One quick signup", "Use every tool"],
 ];
 
+// Clickable spots over the shelf picture (percent of the image). Update hrefs as new tools go live.
+const shelfLinks = [
+  { label: "PDF tools", href: "/tool/image-to-pdf", x: 22.2, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "Exam countdown", href: "/tool/exam-countdown", x: 37.2, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "All student tools", href: "/tools?category=Students", x: 52, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "More tools", href: "/tools", x: 66.5, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "How cooked are you?", href: "/tool/how-cooked", x: 24.1, y: 71.8, w: 11.8, h: 17.8 },
+  { label: "Instant vibe check", href: "/tool/vibe-check", x: 38, y: 71.8, w: 11.8, h: 17.8 },
+  { label: "Roast my timetable", href: "/tool/roast-my-timetable", x: 51.8, y: 71.8, w: 11.8, h: 17.8 },
+  { label: "More in the Fun Zone", href: "/fun", x: 65.5, y: 71.8, w: 11.8, h: 17.8 },
+];
+
 export default function Home() {
   const popular = tools.filter((tool) => tool.popular && tool.category !== "Fun").slice(0, 8);
   const funTools = tools.filter((tool) => tool.category === "Fun").slice(0, 3);
   return (
     <>
       <JsonLd data={structuredData} />
-      <section className="container-app grid gap-8 pb-10 pt-12 lg:grid-cols-[1fr_23rem] lg:items-center lg:pb-14 lg:pt-18">
+      <section className="container-app grid gap-8 pb-10 pt-12 lg:grid-cols-[1fr_30rem] xl:grid-cols-[1fr_36rem] lg:items-center lg:pb-14 lg:pt-18">
         <div>
           <span className="eyebrow">
             <ToolIcon name="sparkles" size={14} /> Free online tools for everyone
@@ -85,22 +98,28 @@ export default function Home() {
             </span>
           </div>
         </div>
-        <div className="relative hidden min-h-80 lg:block" aria-hidden="true">
-          <div className="absolute left-7 top-4 w-64 -rotate-5 rounded-3xl border border-line bg-white p-5 shadow-card dark:border-slate-700 dark:bg-slate-900">
-            <IconTile tool={tools[0]} large />
-            <span className="mt-12 block h-3 w-28 rounded-full bg-slate-100 dark:bg-slate-700" />
-            <span className="mt-3 block h-3 w-44 rounded-full bg-slate-100 dark:bg-slate-700" />
+        <div className="shelf-stage hidden lg:block">
+          <div className="shelf">
+            <Image
+              src="/toppershelf-board.webp"
+              alt="TopperShelf wooden bookshelf with a graduation owl, The Shelf tools, and Fun Zone"
+              width={1536}
+              height={1024}
+              priority
+              sizes="(min-width: 1280px) 40rem, 34rem"
+              className="shelf-image"
+              draggable={false}
+            />
+            {shelfLinks.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                aria-label={item.label}
+                className="toggle-key"
+                style={{ left: `${item.x}%`, top: `${item.y}%`, width: `${item.w}%`, height: `${item.h}%` }}
+              />
+            ))}
           </div>
-          <div className="absolute bottom-2 right-1 w-64 rotate-4 rounded-3xl bg-navy p-5 text-white shadow-float">
-            <span className="grid size-14 place-items-center rounded-2xl bg-violet text-white">
-              <ToolIcon name="sparkles" size={27} />
-            </span>
-            <strong className="mt-12 block text-xl">70% cooked.</strong>
-            <span className="mt-2 block text-sm text-slate-300">Still enough hope for a comeback.</span>
-          </div>
-          <span className="absolute right-2 top-8 grid size-12 place-items-center rounded-full bg-teal text-white shadow-lg">
-            <ToolIcon name="checkCircle" />
-          </span>
         </div>
       </section>
 
