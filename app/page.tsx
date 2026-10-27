@@ -9,9 +9,9 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 // The home page is one address: "/" (never /index).
 export const metadata: Metadata = {
-  title: { absolute: "TopperShelf: Free Online Tools for PDF, Image, Calculators & More" },
+  title: { absolute: "TopperShelf: Free Online Tools for Students, Exams & Forms" },
   description:
-    "Free, fast online tools: compress and merge PDFs, resize images, EMI, age and GST calculators, QR codes and more. One quick sign-in, nothing to install.",
+    "Free, fast online tools for students: exam photo and signature resizer, CGPA converter, attendance calculator, leave letters and more. One quick sign-in, nothing to install.",
   alternates: { canonical: "/" },
 };
 

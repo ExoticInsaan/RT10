@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Project: TopperShelf (free tools website)
 
-TopperShelf is a free, fast tools website (PDF, image, calculators, text, India tools, student tools, and a Fun Zone of witty shareable tools). Positioning: **Useful tools. A few silly ones. All free, one quick signup.** Read `README.md` for status, routes and the product plan.
+TopperShelf is a free, fast tools website (student tools, document tools for exam forms, and a Fun Zone of witty shareable tools). Positioning: **Useful tools. A few silly ones. All free, one quick signup.** Read `README.md` for status, routes and the product plan.
 
 ### What the user experience must feel like
 
@@ -25,11 +25,11 @@ TopperShelf is a free, fast tools website (PDF, image, calculators, text, India 
 2. Build the tool UI and plug it into `components/tools/ToolGate.tsx` (shown after sign-in). Fun tools instead add a config and logic in `lib/tools/fun.ts` and use `FunRunner` and the share card.
 3. Follow the tool page template in `app/tool/[id]/page.tsx`: H1 matching the search phrase, tool above the fold, result with Download, Copy or Share, 3-step how-to, 3 to 5 FAQs (with FAQ structured data), related tools, breadcrumbs.
 4. Add a new icon to `components/tools/ToolIcon.tsx` only if none fits.
-5. Heavy file work (PDF, image) runs client-side with lazy-loaded libraries so pages stay light. Check size limits and give clear errors.
+5. Heavy file work (photo resizing, PDF) runs client-side with lazy-loaded libraries so pages stay light. Check size limits and give clear errors.
 
 ### Conventions
 
-- **Routes:** tool pages are `/tool/[id]`, categories are `/tools?category=Name`. Do not introduce nested `/tools/pdf/...` URLs without a decision, because sitemap and canonicals use the current form.
+- **Routes:** tool pages are `/tool/[id]`, categories are `/tools?category=Name`. Do not introduce nested `/tools/documents/...` URLs without a decision, because sitemap and canonicals use the current form.
 - **Sign-in gate:** anyone can open and read a tool page; signing in is required to run it. The sign-in popup opens from `useAuth().openSignIn`, and after sign-in the tool should run with the input still in place. Collect only name and email.
 - **One component set:** every page uses `components/tools/*` (`ui.tsx`, `ToolIcon`) and `components/shell/*`.
 - **Styling:** Tailwind 4 with theme tokens in `app/globals.css` (`navy`, `blue`, `violet`, `teal`, `coral`, `line`, `muted`). Every new component needs `dark:` variants. Keep form fields 16px on phones.
@@ -46,7 +46,7 @@ TopperShelf is a free, fast tools website (PDF, image, calculators, text, India 
 
 ### Build order (from the product plan)
 
-Foundation (done) → first real tools (one PDF, one image) → launch set of about 10 tools, Fun Zone polish, About, Contact, Legal → PWA (install prompt, offline for simple tools, My Tools in the account) → Play Store via TWA → growth (2 to 3 new tools a week, guides for SEO, tool-request leaderboard, ads once traffic is steady).
+Foundation (done) → first real tools (photo and signature resizer, CGPA converter) → launch set of about 10 tools, Fun Zone polish, About, Contact, Legal → PWA (install prompt, offline for simple tools, My Tools in the account) → Play Store via TWA → growth (2 to 3 new tools a week, guides for SEO, tool-request leaderboard, ads once traffic is steady).
 
 ### Before finishing any change
 

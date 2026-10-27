@@ -190,7 +190,7 @@ export function SearchBox({
         className="min-w-0 flex-1 border-0 bg-transparent text-sm text-ink outline-none placeholder:text-muted dark:text-white"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        placeholder="Search tools: PDF, image, calculator..."
+        placeholder="Search tools: CGPA, attendance, photo resizer..."
       />
       <Button
         type="submit"

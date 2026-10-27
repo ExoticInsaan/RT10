@@ -21,24 +21,21 @@ export default function SiteFooter() {
         <div>
           <Logo />
           <p className="mt-5 max-w-sm text-sm leading-6 text-slate-400">
-            Useful tools for files, numbers, words and everyday life. Fast, private and free.
+            Useful tools for students, forms and everyday life. Fast, private and free.
           </p>
         </div>
         <FooterLinks
           title="Tools"
           links={[
             ["All Tools", "/tools"],
-            ["PDF Tools", "/tools/pdf"],
-            ["Image Tools", "/tools/image"],
-            ["Calculators", "/tools/calculators"],
+            ["Document Tools", "/tools/documents"],
+            ["Student Tools", "/tools/students"],
           ]}
         />
         <FooterLinks
           title="Explore"
           links={[
             ["Fun Zone", "/fun"],
-            ["Student Tools", "/tools/students"],
-            ["India Tools", "/tools/india-tools"],
             ["My Tools", "/my-tools"],
           ]}
         />

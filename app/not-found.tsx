@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import StatusPage from "@/components/shell/StatusPage";
 import { ButtonLink } from "@/components/tools/ui";
-import { tools } from "@/lib/tools/registry";
+import { isReady, tools } from "@/lib/tools/registry";
 import Link from "next/link";
 
 export const metadata: Metadata = { title: "Page not found" };
 
 // Shown for any address that does not exist. Instead of a dead end it suggests popular tools.
 export default function NotFound() {
-  const popular = tools.filter((tool) => tool.popular).slice(0, 4);
+  const popular = tools.filter((tool) => tool.popular && isReady(tool)).slice(0, 4);
   return (
     <StatusPage
       label="Error 404"

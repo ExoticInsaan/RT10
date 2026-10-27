@@ -2,7 +2,7 @@
 
 **Useful tools. A few silly ones. All free, one quick signup.**
 
-TopperShelf is a free, fast tools website for everyone: PDF, image, calculators, text utilities, India-specific tools, student tools and a Fun Zone of witty, shareable tools. A visitor should land (usually from Google or an Instagram story), find a tool in seconds, sign in once, use it in the browser and leave with the job done.
+TopperShelf is a free, fast tools website for everyone: student tools, document tools for exam forms and a Fun Zone of witty, shareable tools. A visitor should land (usually from Google or an Instagram story), find a tool in seconds, sign in once, use it in the browser and leave with the job done.
 
 - **Live site:** https://www.toppershelf.online
 - **Support:** support@toppershelf.online
@@ -58,7 +58,7 @@ TopperShelf is a free, fast tools website for everyone: PDF, image, calculators,
 
 ### How a user sees the site
 
-1. They arrive from Google (for example "compress pdf to 200kb") or an Instagram story card.
+1. They arrive from Google (for example "resize photo to 50kb for exam form") or an Instagram story card.
 2. They land on a **tool page**, not the homepage. Every tool page is its own entry point.
 3. They sign in once (Google), then use the tool in one screen: input, one main button, result.
 4. "More tools you may need" under the result is how they discover the rest of the site.
@@ -77,7 +77,7 @@ TopperShelf is a free, fast tools website for everyone: PDF, image, calculators,
 | `/login`, `/auth/callback` | Sign-in |
 | `/about`, `/founders`, `/contact`, `/privacy`, `/terms` | Info and legal pages. |
 
-The plan document sketches nested URLs such as `/tools/pdf/compress-pdf`. The build uses the flatter `/tool/[id]` plus category pages at `/tools/[category]` (`/tools?category=` still works as a filter on the All Tools page). Keep the flat form unless there is a deliberate decision to change it, because the sitemap and canonicals already use it.
+The plan document sketches nested URLs such as `/tools/documents/image-to-pdf`. The build uses the flatter `/tool/[id]` plus category pages at `/tools/[category]` (`/tools?category=` still works as a filter on the All Tools page). Keep the flat form unless there is a deliberate decision to change it, because the sitemap and canonicals already use it.
 
 ### Tool page template
 
@@ -100,27 +100,27 @@ Every tool page follows one template so new tools are quick to add: H1 that matc
 | Search | `components/tools/ui.tsx` (`SearchBox`) and `ToolsBrowser`. Plain text match today; typo and Hinglish tolerance still to do. |
 | Tool page template | `app/tool/[id]/page.tsx` plus `ToolGate` |
 | Share-card generator | `components/tools/ShareCard.tsx`, `app/share/[id]/image/route.tsx`, `lib/tools/fun.ts` |
-| File handler (PDF and image processing in the browser) | To build |
+| File handler (photo, signature and PDF processing in the browser) | To build |
 | Favourites and recents | `useStoredList` (local now, account later) |
 | SEO engine | Metadata on each page, `app/sitemap.ts` (lists only ready tools and categories with a ready tool), `components/seo/JsonLd.tsx` |
 | Accounts and sign-in | `components/AuthProvider.tsx`, `AuthPanel.tsx`, `lib/supabase/` |
 | PWA layer, feedback form, ad slots | To build |
 
-### Launch set (about 10 tools, then 2 to 3 new tools a week)
+### Launch set (11 tools, then new ones regularly)
 
-- **PDF:** merge, compress, split, image to PDF
-- **Image:** compress, resize
-- **India tools:** compress PDF or image to an exact size (100 KB, 200 KB), passport or Aadhaar-size photo, GST calculator
-- **Calculators:** EMI, age and date
-- **Text and utilities:** word counter, case converter, QR generator
-- **Fun Zone:** How cooked are you?, excuse generator, roast-my-something
-- **Students (second wave):** CGPA to percentage, attendance and bunk calculator, nursing calculators (IV drip rate, BMI)
+Only the Fun Zone tools work today. The others are listed as "Soon" until they are built, in this order:
+
+- **Documents:** Photo & Signature Resizer (exact pixels and KB for exam forms), Leave & Application Letter Maker, Image to PDF
+- **Students:** CGPA & Percentage Converter, Attendance Calculator, Marks Needed Calculator, Exam Countdown
+- **Fun Zone (live):** How cooked are you?, Excuse Generator, Roast My Timetable, Instant Vibe Check
+
+Later ideas: Merge and Compress PDF, assignment cover page maker, resume maker, syllabus planner, flashcards.
 
 ### Build phases
 
 1. Foundation: layout, registry, tool template, search, SEO, sign-in. *(done)*
-2. First tools: one PDF, one image, one witty tool to prove the template. *(witty done; PDF and image next)*
-3. Launch set: remaining tools to about 10, Fun Zone, About, Contact, Legal.
+2. First tools: one document tool, one student tool and the witty tools to prove the template. *(witty done; photo resizer and CGPA converter next)*
+3. Launch set: the remaining tools in the list above, Fun Zone, About, Contact, Legal.
 4. PWA: install support, offline for simple tools, My Tools saved to the account.
 5. Play Store: wrap the PWA as a TWA, closed testing, then release.
 6. Growth: 2 to 3 tools a week, guides for SEO, a tool-request leaderboard, ads once traffic is steady.

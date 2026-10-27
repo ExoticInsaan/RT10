@@ -27,8 +27,7 @@ export default function FoundersPage() {
               Meet the founder of TopperShelf
             </h1>
             <p className="m-0 max-w-xl text-base leading-7 text-slate-700 dark:text-slate-300">
-              TopperShelf is a free tools website for the small things people need done fast: shrink a PDF, resize a photo, work out an
-              EMI. We are building the shelf that has all of it.
+              TopperShelf is a free tools website for the small things students need done fast: resize an exam photo, convert a CGPA, check attendance. We are building the shelf that has all of it.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <ButtonLink href="/tools">

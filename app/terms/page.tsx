@@ -55,9 +55,8 @@ export default function TermsPage() {
 
       <H2>5. Results are for information only</H2>
       <UL>
-        <li><b>Calculators</b> (EMI, GST, age and date, CGPA, attendance and others) give estimates based on what you enter. Banks, tax authorities and universities may use different rules or rounding, so please confirm important figures with the official source.</li>
-        <li><b>Student and health-related tools</b> (for example IV drip rate and BMI) are learning aids. They are not medical advice and must not be used to make clinical decisions. Always follow your institution&apos;s protocols and a qualified professional&apos;s judgement.</li>
-        <li><b>Photo and document tools</b> (such as compress to an exact size, or passport-size photos) help you meet a size or format. We cannot promise that any office, exam portal or website will accept the result.</li>
+        <li><b>Student calculators</b> (CGPA and percentage, attendance, marks needed and exam countdown) give estimates based on what you enter. Banks, tax authorities and universities may use different rules or rounding, so please confirm important figures with the official source.</li>
+        <li><b>Photo and document tools</b> (such as the photo and signature resizer, letter maker and image to PDF) help you meet a size or format. We cannot promise that any office, exam portal or website will accept the result.</li>
         <li><b>Fun Zone tools</b> are entertainment. Scores, roasts and excuses are made up for fun and are not about you or anyone in real life.</li>
       </UL>
 

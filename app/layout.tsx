@@ -21,21 +21,21 @@ const dmSerif = DM_Serif_Display({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "TopperShelf: Free Online Tools for PDF, Image, Calculators & More",
+    default: "TopperShelf: Free Online Tools for Students, Exams & Forms",
     template: "%s | Toppershelf",
   },
   description:
-    "Free, fast online tools: compress and merge PDFs, resize images, EMI, age and GST calculators, QR codes, student tools and a few fun ones.",
+    "Free, fast online tools for students: exam photo and signature resizer, CGPA converter, attendance calculator, leave letters and more, plus a few fun ones to share.",
   applicationName: "Toppershelf",
   keywords: [
     "TopperShelf",
     "free online tools",
-    "compress pdf",
-    "merge pdf",
-    "resize image",
-    "emi calculator",
-    "gst calculator",
-    "qr code generator",
+    "student tools",
+    "cgpa to percentage",
+    "attendance calculator",
+    "exam photo resizer",
+    "leave application letter",
+    "image to pdf",
   ],
   // No default canonical here: a relative "./" default made the home page canonical resolve to
   // /index. Each public page now sets its own absolute-path canonical (resolved against

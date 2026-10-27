@@ -3,7 +3,7 @@ import type { ToolIconName } from "@/components/tools/ToolIcon";
 // Tool registry: the single list every page reads (home, all tools, tool page, fun zone, search, sitemap).
 // To add a tool, add one entry here and one tool component later; nothing else needs to change.
 
-export type Category = "PDF" | "Image" | "Calculators" | "Text" | "India Tools" | "Students" | "Fun"
+export type Category = "Documents" | "Students" | "Fun"
 
 export type Tool = {
   id: string
@@ -19,124 +19,64 @@ export type Tool = {
 
 export const tools: Tool[] = [
   {
-    id: "compress-pdf",
-    name: "Compress PDF",
-    description: "Reduce PDF size without losing quality.",
-    category: "PDF",
-    icon: "file",
-    tone: "red",
-    popular: true,
-  },
-  {
-    id: "merge-pdf",
-    name: "Merge PDF",
-    description: "Combine multiple PDFs into one file.",
-    category: "PDF",
-    icon: "layers",
-    tone: "red",
-  },
-  {
-    id: "pdf-to-word",
-    name: "PDF to Word",
-    description: "Turn PDF files into editable documents.",
-    category: "PDF",
-    icon: "fileText",
-    tone: "blue",
-  },
-  {
-    id: "resize-image",
-    name: "Resize Image",
-    description: "Change image dimensions in seconds.",
-    category: "Image",
-    icon: "image",
-    tone: "blue",
-    popular: true,
-  },
-  {
-    id: "compress-image",
-    name: "Compress Image",
-    description: "Shrink images while keeping them sharp.",
-    category: "Image",
-    icon: "minimize",
-    tone: "teal",
-    popular: true,
-  },
-  {
-    id: "passport-photo",
-    name: "Passport Photo Maker",
-    description: "Create compliant photos from any selfie.",
-    category: "Image",
+    id: "photo-signature-resizer",
+    name: "Photo & Signature Resizer",
+    description: "Resize photos and signatures to the exact pixels and KB exam forms ask for.",
+    category: "Documents",
     icon: "user",
     tone: "violet",
-  },
-  {
-    id: "emi-calculator",
-    name: "EMI Calculator",
-    description: "Plan monthly loan payments instantly.",
-    category: "Calculators",
-    icon: "calculator",
-    tone: "green",
     popular: true,
   },
   {
-    id: "age-calculator",
-    name: "Age Calculator",
-    description: "Find your exact age down to the day.",
-    category: "Calculators",
-    icon: "calendar",
+    id: "leave-letter-maker",
+    name: "Leave & Application Letter Maker",
+    description: "Ready formats for leave, fee concession, bonafide and NOC letters.",
+    category: "Documents",
+    icon: "fileText",
     tone: "blue",
     popular: true,
   },
   {
-    id: "gst-calculator",
-    name: "GST Calculator",
-    description: "Add or remove GST from any amount.",
-    category: "India Tools",
-    icon: "receipt",
-    tone: "amber",
-    popular: true,
+    id: "image-to-pdf",
+    name: "Image to PDF",
+    description: "Turn photos and scans into a single PDF.",
+    category: "Documents",
+    icon: "file",
+    tone: "red",
   },
   {
-    id: "qr-generator",
-    name: "QR Code Generator",
-    description: "Make a downloadable QR code for anything.",
-    category: "India Tools",
-    icon: "qr",
-    tone: "navy",
-    popular: true,
-  },
-  {
-    id: "word-counter",
-    name: "Word Counter",
-    description: "Count words, characters and reading time.",
-    category: "Text",
-    icon: "type",
-    tone: "violet",
-    popular: true,
-  },
-  {
-    id: "case-converter",
-    name: "Case Converter",
-    description: "Switch text between upper, lower and title case.",
-    category: "Text",
-    icon: "case",
-    tone: "blue",
-  },
-  {
-    id: "cgpa-calculator",
-    name: "CGPA to Percentage",
-    description: "Convert your CGPA to percentage.",
+    id: "cgpa-converter",
+    name: "CGPA & Percentage Converter",
+    description: "Convert CGPA or SGPA to percentage, and back.",
     category: "Students",
     icon: "graduation",
     tone: "violet",
+    popular: true,
   },
   {
     id: "attendance-calculator",
     name: "Attendance Calculator",
-    description: "Check how many classes you can safely miss.",
+    description: "See how many classes you can skip, or must attend, to reach 75%.",
     category: "Students",
     icon: "checkCircle",
     tone: "teal",
+    popular: true,
+  },
+  {
+    id: "marks-needed-calculator",
+    name: "Marks Needed Calculator",
+    description: "Enter your internal marks and a target to see what you need in the final exam.",
+    category: "Students",
+    icon: "calculator",
+    tone: "green",
+  },
+  {
+    id: "exam-countdown",
+    name: "Exam Countdown",
+    description: "Days left to your exam and a daily target to stay on track.",
+    category: "Students",
+    icon: "clock",
+    tone: "amber",
   },
   {
     id: "how-cooked",
@@ -180,11 +120,7 @@ export const tools: Tool[] = [
 ]
 
 export const categories: { name: Category; icon: ToolIconName }[] = [
-  { name: "PDF", icon: "file" },
-  { name: "Image", icon: "image" },
-  { name: "Calculators", icon: "calculator" },
-  { name: "Text", icon: "type" },
-  { name: "India Tools", icon: "india" },
+  { name: "Documents", icon: "file" },
   { name: "Students", icon: "graduation" },
   { name: "Fun", icon: "sparkles" },
 ]
@@ -195,6 +131,6 @@ export const toolById = (id: string) => tools.find((t) => t.id === id);
 export const isReady = (tool: Tool) => tool.ready === true
 export const readyTools = () => tools.filter(isReady)
 
-/** Public address of a category page, for example "India Tools" becomes /tools/india-tools. */
+/** Public address of a category page, for example "Documents" becomes /tools/documents. */
 export const categoryHref = (name: string) => `/tools/${name.toLowerCase().replace(/\s+/g, "-")}`
 export const categoryFromSlug = (slug: string) => categories.find((c) => categorySlug(c.name) === slug)

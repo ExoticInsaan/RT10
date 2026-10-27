@@ -19,12 +19,6 @@ const iconPaths = {
       <path d="M14 2v5h5M9 12h6M9 16h6" />
     </>
   ),
-  layers: (
-    <>
-      <path d="m12 2 9 5-9 5-9-5z" />
-      <path d="m3 12 9 5 9-5M3 17l9 5 9-5" />
-    </>
-  ),
   image: (
     <>
       <rect x="3" y="4" width="18" height="16" rx="2" />
@@ -32,7 +26,6 @@ const iconPaths = {
       <path d="m4 17 5-5 4 4 2-2 5 5" />
     </>
   ),
-  minimize: <path d="M8 3v5H3M16 3v5h5M8 21v-5H3M16 21v-5h5" />,
   user: (
     <>
       <circle cx="12" cy="8" r="4" />
@@ -51,21 +44,6 @@ const iconPaths = {
       <path d="M8 3v4M16 3v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01" />
     </>
   ),
-  receipt: (
-    <>
-      <path d="M6 2v20l3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2z" />
-      <path d="M9 9h6M9 13h6M9 17h4" />
-    </>
-  ),
-  qr: (
-    <>
-      <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h3v3h-3zM18 18h3v3h-3zM18 13h3" />
-    </>
-  ),
-  type: <path d="M4 6V3h16v3M9 21h6M12 3v18" />,
-  case: (
-    <path d="M4 18 9 6l5 12M6 14h6M15 12c4-2 6 0 5 3v3M15 18c0-3 5-3 5-1" />
-  ),
   graduation: (
     <>
       <path d="m2 9 10-5 10 5-10 5zM6 11v5c3 3 9 3 12 0v-5M22 9v7" />
@@ -75,13 +53,6 @@ const iconPaths = {
     <>
       <circle cx="12" cy="12" r="9" />
       <path d="m8 12 3 3 5-6" />
-    </>
-  ),
-  india: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M3 9h18M3 15h18" />
-      <circle cx="12" cy="12" r="2" />
     </>
   ),
   flame: (

@@ -35,7 +35,7 @@ export default function PrivacyPage() {
 
       <H2>3. Your files</H2>
       <P>
-        Our PDF, image and other file tools are built to work inside your browser, so your files are processed on your own
+        Our photo, signature, PDF and other file tools are built to work inside your browser, so your files are processed on your own
         device. A tool shows the line &quot;Your files never leave your device&quot; only when that is true for that tool. If a
         tool ever needs to send a file to a server, it will say so on that tool&apos;s page before you use it. We do not read,
         keep or sell the files you work on.

@@ -4,7 +4,7 @@ import ToolsBrowser from "@/components/tools/ToolsBrowser";
 
 export const metadata: Metadata = {
   title: "All Tools",
-  description: "Every TopperShelf tool in one place: PDF, image, calculators, text, India tools, student tools and fun.",
+  description: "Every TopperShelf tool in one place: document tools for exam forms, student tools and fun.",
   alternates: { canonical: "/tools" },
 };
 

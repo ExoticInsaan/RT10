@@ -81,29 +81,13 @@ export const toolContent: Record<string, ToolContent> = {
 };
 
 export const categoryContent: Record<Category, { title: string; intro: string }> = {
-  PDF: {
-    title: "PDF Tools",
-    intro: "Tools for everyday PDF jobs: making files smaller, putting several together, and turning images into PDFs.",
-  },
-  Image: {
-    title: "Image Tools",
-    intro: "Tools for photos and pictures: shrinking file size, changing dimensions and getting images ready for forms and uploads.",
-  },
-  Calculators: {
-    title: "Calculators",
-    intro: "Quick calculators for money, dates and everyday numbers, so you do not have to work them out by hand.",
-  },
-  Text: {
-    title: "Text Tools",
-    intro: "Small tools for words and codes: counting, changing case and making QR codes.",
-  },
-  "India Tools": {
-    title: "India Tools",
-    intro: "Tools made for common Indian tasks, such as meeting exact file-size limits on form uploads, preparing photos and working out GST.",
+  Documents: {
+    title: "Document Tools",
+    intro: "Tools for the paperwork students deal with every term: exam form photos and signatures, application letters and turning images into PDFs.",
   },
   Students: {
     title: "Student Tools",
-    intro: "Helpful tools for college life: converting grades, tracking attendance and other study-time calculations.",
+    intro: "Helpful tools for college life: converting grades, tracking attendance, working out the marks you need and counting down to exams.",
   },
   Fun: {
     title: "Fun Zone",

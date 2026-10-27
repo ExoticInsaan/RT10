@@ -7,7 +7,7 @@ import { categoryHref, isReady, tools, type Category } from "@/lib/tools/registr
 export const metadata: Metadata = {
   title: "About TopperShelf",
   description:
-    "TopperShelf is a free, fast tools website: PDF, image, calculators, text, India tools, student tools and a few silly ones. One quick signup, no watermark.",
+    "TopperShelf is a free, fast tools website for students: exam photo resizer, CGPA converter, attendance calculator, leave letters and a few silly tools. One quick signup, no watermark.",
   alternates: { canonical: "/about" },
 };
 
@@ -30,16 +30,13 @@ const promises: { icon: ToolIconName; title: string; text: string }[] = [
 ];
 
 const shelves: { category: Category; icon: ToolIconName; text: string }[] = [
-  { category: "PDF", icon: "file", text: "Merge, compress, split and convert PDFs." },
-  { category: "Image", icon: "image", text: "Compress and resize photos in seconds." },
-  { category: "Calculators", icon: "calculator", text: "EMI, age, dates and other everyday sums." },
-  { category: "Text", icon: "type", text: "Word counter, case converter, QR codes." },
-  { category: "India Tools", icon: "india", text: "Exact-size files for forms, GST and photo sizes." },
-  { category: "Students", icon: "graduation", text: "CGPA, attendance and nursing calculators." },
+  { category: "Documents", icon: "file", text: "Exam form photos and signatures, application letters and image to PDF." },
+  { category: "Students", icon: "graduation", text: "CGPA, attendance, marks needed and exam countdown." },
+  { category: "Fun", icon: "sparkles", text: "Silly tools that make a result card you can share." },
 ];
 
 const roadmap: { icon: ToolIconName; title: string; text: string }[] = [
-  { icon: "zap", title: "New tools, regularly", text: "The PDF, image, calculator, text and India tools are being built now, and more follow after that." },
+  { icon: "zap", title: "New tools, regularly", text: "The student and document tools are being built now, and more follow after that." },
   { icon: "download", title: "Install it like an app", text: "Add TopperShelf to your home screen from the browser, with simple tools working offline." },
   { icon: "home", title: "An Android app", text: "The same site, wrapped for Google Play, so there is still just one TopperShelf to keep updated." },
   { icon: "heart", title: "Favourites that follow you", text: "Starred and recently used tools saved to your account, so they appear on every device you sign in on." },
