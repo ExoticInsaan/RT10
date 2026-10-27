@@ -75,7 +75,9 @@ const shelfLinks = [
 ];
 
 export default function Home() {
-  const shelfPicks = tools.filter((tool) => tool.category === "The Shelf" && tool.popular).slice(0, 3);
+  const shelfPicks = ["pdf-toolkit", "focus-timer", "image-compressor"]
+    .map((id) => tools.find((tool) => tool.id === id))
+    .filter((tool): tool is (typeof tools)[number] => Boolean(tool));
   const shelfCount = tools.filter((tool) => tool.category === "The Shelf").length;
   const fun = tools.filter((tool) => tool.category === "Fun Zone");
   const funPicks = [...fun].sort((a, b) => Number(!!b.popular) - Number(!!a.popular)).slice(0, 5);
@@ -149,23 +151,23 @@ export default function Home() {
         <ShelfGrid list={shelfPicks} />
       </section>
 
-      <section className="fun-field py-16 sm:py-20" aria-labelledby="home-fun">
-        <div className="container-app">
+      <section className="container-app pb-6" aria-labelledby="home-fun">
+        <div className="rounded-[2rem] bg-fun-gradient px-5 py-10 sm:px-10 sm:py-12">
           <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 id="home-fun" className="m-0 font-display text-5xl font-normal tracking-tight text-white sm:text-6xl">
+              <h2 id="home-fun" className="m-0 font-display text-5xl font-normal tracking-tight text-navy sm:text-6xl">
                 Fun Zone
               </h2>
-              <p className="mb-0 mt-2 max-w-lg text-white/90">Silly tests and small games with a result card made for your story.</p>
+              <p className="mb-0 mt-2 max-w-lg text-slate-700">Silly tests and small games with a result card made for your story.</p>
             </div>
             <Link
               href="/fun"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-bold text-navy transition hover:bg-navy hover:text-white"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-navy px-5 text-sm font-bold text-white transition hover:bg-purple-600"
             >
               Open the Fun Zone <ToolIcon name="arrow" size={16} />
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-5">
+          <div className="fun-light grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-5">
             {funPicks.map((tool, index) => (
               <FunSticker key={tool.id} tool={tool} tilt={tilts[index % tilts.length]} />
             ))}

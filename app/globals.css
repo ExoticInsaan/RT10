@@ -243,6 +243,10 @@ select:focus-visible {
   rotate: 0deg;
   translate: 0 -6px;
 }
+/* On the homepage's light Fun Zone card, a softer shadow so stickers don't look heavy on the pale background. */
+.fun-light .fun-sticker {
+  box-shadow: 0 16px 34px -18px rgb(76 29 149 / 40%);
+}
 /* Wide stickers on narrow screens swing a long way at full tilt, so tone it down there. */
 @media (max-width: 767px) {
   .fun-sticker {
