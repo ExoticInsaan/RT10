@@ -2,12 +2,14 @@
 
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Logo from "@/components/shell/Logo";
 import ToolIcon from "@/components/tools/ToolIcon";
 import { Button } from "@/components/tools/ui";
 import { useAuth } from "@/components/AuthProvider";
 
 const navLinks = [
+  { href: "/", label: "Home" },
   { href: "/the-shelf", label: "The Shelf" },
   { href: "/fun", label: "Fun Zone" },
   { href: "/my-shelf", label: "My Shelf" },
@@ -39,6 +41,8 @@ function useTheme() {
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const path = usePathname();
+  const isActive = (href: string) => (href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`));
   const { dark, toggle } = useTheme();
   const { user, ready, openSignIn, signOut } = useAuth();
   return (
@@ -54,7 +58,15 @@ export default function SiteHeader() {
           }`}
         >
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              aria-current={isActive(link.href) ? "page" : undefined}
+              className={`transition hover:text-blue-hover dark:hover:text-blue ${
+                isActive(link.href) ? "text-blue-hover underline decoration-2 underline-offset-8 dark:text-blue" : ""
+              }`}
+            >
               {link.label}
             </Link>
           ))}
