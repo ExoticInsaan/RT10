@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { Suspense, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "@/components/shell/Logo";
@@ -39,10 +39,38 @@ function useTheme() {
   return { dark, toggle };
 }
 
+function isActive(path: string | null, href: string) {
+  if (!path) return false;
+  return href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`);
+}
+
+// The links themselves. `path` is null while the current address is not known yet (static prerender).
+function NavLinks({ path, onNavigate }: { path: string | null; onNavigate: () => void }) {
+  return navLinks.map((link) => {
+    const active = isActive(path, link.href);
+    return (
+      <Link
+        key={link.href}
+        href={link.href}
+        onClick={onNavigate}
+        aria-current={active ? "page" : undefined}
+        className={`transition hover:text-blue-hover dark:hover:text-blue ${
+          active ? "text-blue-hover underline decoration-2 underline-offset-8 dark:text-blue" : ""
+        }`}
+      >
+        {link.label}
+      </Link>
+    );
+  });
+}
+
+// Reading the address needs <Suspense> with Cache Components; the plain links show until it resolves.
+function ActiveNavLinks({ onNavigate }: { onNavigate: () => void }) {
+  return <NavLinks path={usePathname()} onNavigate={onNavigate} />;
+}
+
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
-  const path = usePathname();
-  const isActive = (href: string) => (href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`));
   const { dark, toggle } = useTheme();
   const { user, ready, openSignIn, signOut } = useAuth();
   return (
@@ -57,19 +85,9 @@ export default function SiteHeader() {
               : "hidden"
           }`}
         >
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              aria-current={isActive(link.href) ? "page" : undefined}
-              className={`transition hover:text-blue-hover dark:hover:text-blue ${
-                isActive(link.href) ? "text-blue-hover underline decoration-2 underline-offset-8 dark:text-blue" : ""
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          <Suspense fallback={<NavLinks path={null} onNavigate={() => setOpen(false)} />}>
+            <ActiveNavLinks onNavigate={() => setOpen(false)} />
+          </Suspense>
         </nav>
         <div className="flex items-center gap-1">
           <Button variant="icon" ariaLabel={dark ? "Use light mode" : "Use dark mode"} onClick={toggle}>
