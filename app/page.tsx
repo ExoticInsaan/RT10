@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -148,7 +149,24 @@ export default function Home() {
             See all {shelfCount} tools <ToolIcon name="arrow" size={16} />
           </Link>
         </div>
-        <ShelfGrid list={shelfPicks} />
+        <ShelfGrid list={shelfPicks}>
+          {/* Fills the empty fourth slot when the row has two columns; three columns are already full. */}
+          <Link href="/the-shelf" className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-hover lg:hidden">
+            <div className="shelf-object mx-2 grid aspect-[4/3] place-items-center rounded-t-2xl rounded-b-md border-2 border-dashed border-blue/50 bg-blue-soft text-blue-hover">
+              <span className="grid justify-items-center gap-2 text-center">
+                <span className="grid size-11 place-items-center rounded-full bg-white shadow-sm">
+                  <ToolIcon name="arrow" size={20} />
+                </span>
+                <span className="text-sm font-bold">See all {shelfCount}</span>
+              </span>
+            </div>
+            <div className="shelf-plank" aria-hidden="true" />
+            <div className="px-1 pt-3 sm:px-2 sm:pt-4">
+              <h3 className="m-0 text-sm font-bold leading-5 tracking-tight text-navy sm:text-base">More on The Shelf</h3>
+              <p className="m-0 mt-1 text-[0.8rem] leading-5 text-muted sm:text-sm sm:leading-6">QR codes, flashcards, reminders and more.</p>
+            </div>
+          </Link>
+        </ShelfGrid>
       </section>
 
       <section className="container-app pb-6" aria-labelledby="home-fun">
@@ -171,6 +189,18 @@ export default function Home() {
             {funPicks.map((tool, index) => (
               <FunSticker key={tool.id} tool={tool} tilt={tilts[index % tilts.length]} />
             ))}
+            {/* Sixth sticker evens out the grid at two and three columns; five columns are already full. */}
+            <Link
+              href="/fun"
+              className="fun-sticker group flex flex-col items-center justify-center gap-3 rounded-[1.75rem] border-2 border-dashed border-purple-300 bg-white/70 p-6 text-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-600 lg:hidden"
+              style={{ "--tilt": "1.5deg" } as CSSProperties}
+            >
+              <span className="grid size-12 place-items-center rounded-full bg-purple-600 text-white transition-colors group-hover:bg-navy">
+                <ToolIcon name="arrow" size={20} />
+              </span>
+              <span className="text-base font-extrabold text-navy">See all {fun.length}</span>
+              <span className="text-sm text-muted">More games and silly tests</span>
+            </Link>
           </div>
         </div>
       </section>

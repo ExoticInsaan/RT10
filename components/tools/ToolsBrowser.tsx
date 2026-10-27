@@ -14,12 +14,13 @@ const matches = (tool: Tool, needle: string) =>
 export const shelfTools = () => tools.filter((tool) => tool.category === "The Shelf");
 
 /** The rows of shelves. The column gap comes from --shelf-gap, which the planks in ShelfItem also read. */
-export function ShelfGrid({ list }: { list: Tool[] }) {
+export function ShelfGrid({ list, children }: { list: Tool[]; children?: ReactNode }) {
   return (
     <div className="grid grid-cols-2 gap-x-(--shelf-gap) gap-y-10 [--shelf-gap:1rem] sm:gap-y-12 sm:[--shelf-gap:1.5rem] lg:grid-cols-3">
       {list.map((tool, index) => (
         <ShelfItem key={tool.id} tool={tool} priority={index < 3} />
       ))}
+      {children}
     </div>
   );
 }
