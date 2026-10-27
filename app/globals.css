@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+/* Toppershelf design system: tokens from the new website experience. */
+@theme inline {
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", sans-serif;
+  --font-display: var(--font-dm-serif), Georgia, serif;
+}
+
+@theme {
+  --color-ivory: #fffbf7;
+  --color-surface: #f7f0e6;
+  --color-blue-soft: #e9f4fc;
+  --color-blue: #60a5fa;
+  --color-blue-hover: #3b82f6;
+  --color-navy: #102a4c;
+  --color-ink: #1f2937;
+  --color-muted: #687483;
+  --color-line: #dedbd5;
+  /* Tools experience: accent colours and shadows from the new design. */
+  --color-violet: #7c3aed;
+  --color-teal: #0f9f8f;
+  --color-coral: #f97355;
+  --shadow-search: 0 12px 36px rgba(16, 42, 76, 0.08);
+  --shadow-card: 0 16px 40px rgba(16, 42, 76, 0.09);
+  --shadow-float: 0 24px 70px rgba(16, 42, 76, 0.2);
+}
+
+/* Dark mode is switched by a "dark" class on <html> (used by the new tools pages). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --tracking-hero: -0.055em;
+}
+
+html {
+  max-width: 100%;
+  overflow-x: clip;
+  background: #fffbf7;
+  color: #1f2937;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  max-width: 100%;
+  overflow-x: clip;
+  background: #fffbf7;
+  color: #1f2937;
+  @apply antialiased;
+}
+
+/* In the base layer so component utilities (e.g. the .button font-size) can override it.
+   Unlayered rules always beat Tailwind's layered utilities. */
+@layer base {
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+}
+
+/* Keep form fields at 16px on phones: smaller text makes iOS Safari zoom the page on focus. */
+@media (max-width: 560px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(96, 165, 250, 0.38);
+  outline-offset: 2px;
+}
+
+/* Utilities used by the new tools pages (from the new design). */
+@utility container-app {
+  width: min(1180px, calc(100% - 3rem));
+  margin-inline: auto;
+  @media (max-width: 40rem) {
+    width: calc(100% - 1.75rem);
+  }
+}
+
+@utility section-space {
+  padding-block: 4.5rem;
+  @media (max-width: 40rem) {
+    padding-block: 3.5rem;
+  }
+}
+
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: max-content;
+  max-width: 100%;
+  border: 1px solid #d6eaf5;
+  border-radius: 9999px;
+  background: #e9f4fc;
+  padding: 0.4rem 0.75rem;
+  color: #146db0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@utility hide-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility bg-fun-gradient {
+  background:
+    radial-gradient(circle at 8% 18%, rgba(251, 146, 60, 0.2), transparent 24%),
+    radial-gradient(circle at 92% 12%, rgba(139, 92, 246, 0.22), transparent 27%),
+    linear-gradient(135deg, #fff1e9, #e8f5ff 48%, #f3e8ff);
+}
+
+@utility bg-share-gradient {
+  background:
+    radial-gradient(circle at 15% 12%, rgba(255, 255, 255, 0.85), transparent 22%),
+    radial-gradient(circle at 85% 82%, rgba(96, 165, 250, 0.35), transparent 30%),
+    linear-gradient(155deg, #ffedd5, #e9d5ff 55%, #bae6fd);
+}
+
+@utility bg-auth-pattern {
+  background-color: #fffbf7;
+  background-image: radial-gradient(#cfe1ed 1px, transparent 1px);
+  background-size: 20px 20px;
+}
