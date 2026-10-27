@@ -21,7 +21,7 @@ const dmSerif = DM_Serif_Display({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "TopperShelf: Free Online Tools for Students, Exams & Forms",
+    default: "TopperShelf: Free Online Tools for Students & Everyday Life",
     template: "%s | Toppershelf",
   },
   description:
