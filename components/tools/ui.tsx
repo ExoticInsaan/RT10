@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import ToolIcon, { type ToolIconName } from "@/components/tools/ToolIcon";
 import { toneClasses } from "@/components/tools/toneStyles";
@@ -74,7 +75,29 @@ export function ButtonLink({
   );
 }
 
-export function IconTile({ tool, large = false }: { tool: Pick<Tool, "icon" | "tone">; large?: boolean }) {
+export function IconTile({
+  tool,
+  large = false,
+}: {
+  tool: Pick<Tool, "icon" | "tone" | "image" | "imageBg" | "imageFit">;
+  large?: boolean;
+}) {
+  if (tool.image) {
+    return (
+      <span
+        className={`relative block shrink-0 overflow-hidden rounded-xl ring-1 ring-black/5 ${large ? "size-14" : "size-11"}`}
+        style={{ backgroundColor: tool.imageBg }}
+      >
+        <Image
+          src={tool.image}
+          alt=""
+          fill
+          sizes={large ? "56px" : "44px"}
+          className={tool.imageFit === "cover" ? "object-cover" : "object-contain p-1"}
+        />
+      </span>
+    );
+  }
   return (
     <span
       className={`grid shrink-0 place-items-center rounded-xl ${toneClasses[tool.tone] ?? toneClasses.blue} ${
@@ -114,13 +137,13 @@ export function SectionHead({
 }
 
 /** Heart button that saves a tool to this browser's favourites. */
-export function FavoriteButton({ id }: { id: string }) {
+export function FavoriteButton({ id, className = "absolute right-3 top-3" }: { id: string; className?: string }) {
   const [favourites, setFavourites] = useStoredList(FAVOURITES_KEY);
   const active = favourites.includes(id);
   return (
     <Button
       variant="icon"
-      className={`absolute right-3 top-3 size-9 min-h-9 ${active ? "bg-red-50 text-red-500" : "text-muted"}`}
+      className={`${className} size-9 min-h-9 ${active ? "bg-red-50 text-red-500" : "text-muted"}`}
       ariaLabel={active ? "Remove from favourites" : "Add to favourites"}
       onClick={() =>
         setFavourites((current) => (current.includes(id) ? current.filter((x) => x !== id) : [id, ...current]))
@@ -190,11 +213,11 @@ export function SearchBox({
         className="min-w-0 flex-1 border-0 bg-transparent text-sm text-ink outline-none placeholder:text-muted"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        placeholder="Search tools: CGPA, attendance, photo resizer..."
+        placeholder="Search tools: PDF, CGPA, QR code..."
       />
       <Button
         type="submit"
-        className={compact ? "size-9 min-h-9 rounded-lg px-0" : "max-sm:size-10 max-sm:min-h-10 max-sm:px-0"}
+        className={compact ? "size-9 min-h-9! rounded-lg px-0!" : "max-sm:size-10 max-sm:min-h-10 max-sm:px-0"}
         ariaLabel="Search"
       >
         <ToolIcon name="arrow" size={18} />

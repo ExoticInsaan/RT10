@@ -198,3 +198,29 @@ select:focus-visible {
     transition: none;
   }
 }
+
+/* The Shelf page: each tool stands on an oak plank. A plank reaches half the grid gap (--shelf-gap) past both
+   sides of its item, so the planks in one row meet and read as a single shelf at any column count. */
+.shelf-plank {
+  position: relative;
+  height: 14px;
+  margin-inline: calc(var(--shelf-gap, 1.5rem) / -2);
+  background: linear-gradient(to bottom, #f0d9b5 0 4px, #cf9f68 4px 11px, #b8854f 11px 100%);
+  box-shadow: 0 12px 16px -10px rgb(84 52 22 / 45%);
+}
+.shelf-object {
+  transition: transform 180ms ease;
+}
+.group:hover .shelf-object,
+.group:focus-within .shelf-object {
+  transform: translateY(-4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .shelf-object {
+    transition: none;
+  }
+  .group:hover .shelf-object,
+  .group:focus-within .shelf-object {
+    transform: none;
+  }
+}

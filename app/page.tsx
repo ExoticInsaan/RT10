@@ -55,8 +55,8 @@ const trust: [Parameters<typeof ToolIcon>[0]["name"], string, string][] = [
 
 // Clickable spots over the shelf picture (percent of the image). Update hrefs as new tools go live.
 const shelfLinks = [
-  { label: "PDF tools", href: "/tool/image-to-pdf", x: 22.2, y: 41.4, w: 12.2, h: 18.4 },
-  { label: "Exam countdown", href: "/tool/exam-countdown", x: 37.2, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "PDF toolkit", href: "/tool/pdf-toolkit", x: 22.2, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "Days countdown", href: "/tool/days-countdown", x: 37.2, y: 41.4, w: 12.2, h: 18.4 },
   { label: "All tools on The Shelf", href: "/the-shelf", x: 52, y: 41.4, w: 12.2, h: 18.4 },
   { label: "More tools", href: "/the-shelf", x: 66.5, y: 41.4, w: 12.2, h: 18.4 },
   { label: "How cooked are you?", href: "/tool/how-cooked", x: 24.1, y: 71.8, w: 11.8, h: 17.8 },

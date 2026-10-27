@@ -1,52 +1,47 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import ToolsBrowser from "@/components/tools/ToolsBrowser";
-import { ToolCard } from "@/components/tools/ui";
+import ToolsBrowser, { ShelfGrid, ShelfHeader } from "@/components/tools/ToolsBrowser";
 import { tools } from "@/lib/tools/registry";
 
 export const metadata: Metadata = {
   title: "The Shelf",
   description:
-    "Useful free tools in one place: exam form photo and signature resizer, leave letters, image to PDF, CGPA converter, attendance calculator and more.",
+    "Free tools for real jobs: PDF toolkit, image compressor, focus timer, flashcards, CGPA calculator, QR codes, attendance, reminders and countdowns.",
   alternates: { canonical: "/the-shelf" },
 };
 
+const intro = (
+  <div>
+    <h1 className="m-0 font-display text-5xl font-normal leading-none tracking-tight text-navy sm:text-6xl">The Shelf</h1>
+    <p className="mb-0 mt-4 max-w-xl text-base leading-7 text-muted sm:text-lg">
+      Tools for the jobs that keep coming back: shrinking a file, timing a study session, checking your attendance.
+      Pick one and get it done in your browser. Looking for something sillier?{" "}
+      <Link href="/fun" className="font-semibold text-blue-hover underline-offset-4 hover:underline">
+        Try the Fun Zone
+      </Link>
+      .
+    </p>
+  </div>
+);
+
 export default function TheShelfPage() {
-  // Shown straight away (and to search engines) until the search box is ready; same grid, no search applied.
-  const shelf = tools
-    .filter((tool) => tool.category === "The Shelf")
-    .sort((a, b) => Number(!!b.ready) - Number(!!a.ready));
+  const shelf = tools.filter((tool) => tool.category === "The Shelf");
+  // Shown straight away (and to search engines) until the search box is ready: the same layout, nothing filtered.
   const fallback = (
     <>
-      {/* Same height as the search box, so nothing jumps when it appears. */}
-      <div className="h-12 rounded-xl border border-line bg-white" aria-hidden="true" />
-      <div className="mt-8">
-        <p className="mb-4 text-sm font-semibold text-navy">{shelf.length} tools</p>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {shelf.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} />
-          ))}
-        </div>
-      </div>
+      <ShelfHeader
+        intro={intro}
+        search={<div className="h-12 rounded-xl border border-line bg-white" aria-hidden="true" />}
+        count={`${shelf.length} tools, all free`}
+      />
+      <ShelfGrid list={shelf} />
     </>
   );
   return (
-    <div className="container-app pb-20 pt-10">
-      <div className="mb-8">
-        <span className="eyebrow">Useful tools</span>
-        <h1 className="mb-2 mt-4 text-4xl font-extrabold tracking-tight text-navy sm:text-5xl">The Shelf</h1>
-        <p className="m-0 max-w-2xl text-muted">
-          Every useful tool in one place, for the small jobs that take too long: forms, letters, PDFs, grades and more.
-          Want something lighter?{" "}
-          <Link href="/fun" className="font-bold text-blue-hover">
-            Visit the Fun Zone
-          </Link>
-          .
-        </p>
-      </div>
+    <div className="container-app pb-24 pt-12 sm:pt-16">
       <Suspense fallback={fallback}>
-        <ToolsBrowser />
+        <ToolsBrowser intro={intro} />
       </Suspense>
     </div>
   );
