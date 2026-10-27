@@ -18,7 +18,7 @@ export default function FunSticker({ tool, tilt = 0 }: { tool: Tool; tilt?: numb
   );
 
   return (
-    <article className="fun-sticker group relative flex flex-col rounded-[1.75rem] bg-white p-2.5 sm:p-3" style={style}>
+    <article className="fun-sticker group relative flex w-full flex-col rounded-[1.75rem] bg-white p-2.5 sm:p-3" style={style}>
       <Link
         href={`/tool/${tool.id}`}
         className="flex flex-1 flex-col rounded-[1.4rem] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"

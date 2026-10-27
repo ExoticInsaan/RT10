@@ -4,12 +4,9 @@ import MyToolsClient from "@/components/tools/MyToolsClient";
 // Personal to each visitor, so search engines have nothing to index here.
 export const metadata: Metadata = { title: "My Shelf", robots: { index: false, follow: true } };
 
-export default function MyToolsPage() {
+export default function MyShelfPage() {
   return (
-    <div className="container-app min-h-[75vh] pb-20 pt-10">
-      <span className="eyebrow">Your personal shelf</span>
-      <h1 className="mb-2 mt-4 text-4xl font-extrabold tracking-tight text-navy sm:text-5xl">My Shelf</h1>
-      <p className="m-0 text-muted">Your favourites and recently used tools, all in one place.</p>
+    <div className="container-app min-h-[75vh] pb-24 pt-12 sm:pt-16">
       <MyToolsClient />
     </div>
   );
