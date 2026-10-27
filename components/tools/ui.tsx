@@ -166,16 +166,11 @@ export function ToolCard({ tool, compact = false }: { tool: Tool; compact?: bool
         <IconTile tool={tool} />
         <h3 className="mb-1 mt-4 text-base font-bold tracking-tight text-navy">
           {tool.name}
-          {!tool.ready && (
-            <span className="ml-2 inline-block rounded-full bg-slate-100 px-2 py-0.5 align-middle text-[0.65rem] font-bold uppercase tracking-wide text-muted">
-              Soon
-            </span>
-          )}
         </h3>
         <p className="m-0 text-sm leading-6 text-muted">{tool.description}</p>
         {!compact && (
           <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-blue-hover">
-            {tool.ready ? "Open tool" : "See details"} <ToolIcon name="arrow" size={14} />
+            Open tool <ToolIcon name="arrow" size={14} />
           </span>
         )}
       </Link>

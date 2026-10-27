@@ -37,15 +37,9 @@ export default function ShelfItem({ tool, priority = false }: { tool: Tool; prio
               <ToolIcon name={tool.icon} size={56} />
             </span>
           )}
-          {!tool.ready && (
-            <span className="absolute left-3 top-3 hidden rounded-full bg-white/95 px-2.5 py-1 text-[0.7rem] font-semibold text-navy shadow-sm sm:inline">
-              Coming soon
-            </span>
-          )}
         </div>
         <div className="shelf-plank" aria-hidden="true" />
         <div className="px-1 pt-3 sm:px-2 sm:pt-4">
-          {!tool.ready && <p className="m-0 mb-0.5 text-[0.7rem] font-semibold text-blue-hover sm:hidden">Coming soon</p>}
           <h3 className="m-0 text-sm font-bold leading-5 tracking-tight text-navy sm:text-base transition-colors group-hover:text-blue-hover">
             {tool.name}
           </h3>

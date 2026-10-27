@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ToolIcon, { type ToolIconName } from "@/components/tools/ToolIcon";
-import { ButtonLink, SectionHead, ToolCard } from "@/components/tools/ui";
-import { categories, isReady, tools } from "@/lib/tools/registry";
+import { ButtonLink, SectionHead } from "@/components/tools/ui";
+import { categories, tools } from "@/lib/tools/registry";
 
 export const metadata: Metadata = {
   title: "About TopperShelf",
@@ -47,26 +47,12 @@ const faqs: [string, string][] = [
   ["Is it really free?", "Yes. Every tool is free to use, with no watermark. You only need a quick Google signup to run a tool."],
   ["Why do I need to sign in?", "Signing in once lets us keep your favourites and recent tools with you across visits and helps us keep the site fast and free of abuse. We collect only your name and email."],
   ["Are my files uploaded anywhere?", "Our file tools are built to work in your browser, so your files stay on your device. Each tool page tells you if that is true for that tool."],
-  ["Which tools work right now?", "WORKING_ANSWER"],
   ["Is there an app?", "Not yet. The website is the product today. An installable version you can add from your browser, and an Android app, are planned."],
   ["How can I ask for a new tool?", "Use the Request a tool option on the Contact page. The tools people ask for most get built first."],
 ];
 
 export default function AboutPage() {
-  const liveTools = tools.filter(isReady);
-  const soonTools = tools.filter((tool) => !isReady(tool));
-  const soonByCategory = soonTools.reduce<Record<string, string[]>>((groups, tool) => {
-    (groups[tool.category] ||= []).push(tool.name);
-    return groups;
-  }, {});
-  const faqList = faqs.map(([question, answer]): [string, string] =>
-    answer === "WORKING_ANSWER"
-      ? [
-          question,
-          `${liveTools.length} ${liveTools.length === 1 ? "tool is" : "tools are"} live today: ${liveTools.map((tool) => tool.name).join(", ")}. The other ${soonTools.length} are being built and show a “Soon” badge until they work. This page updates itself as each one goes live.`,
-        ]
-      : [question, answer],
-  );
+  const faqList = faqs;
   return (
     <>
       <section className="bg-blue-soft/60 py-14 sm:py-20">
@@ -77,7 +63,7 @@ export default function AboutPage() {
           </h1>
           <p className="mx-auto max-w-2xl text-base leading-7 text-slate-700">
             TopperShelf is a fast tools website for everyone. Find a tool in seconds, sign in once, use it in your browser and get on
-            with your day. {liveTools.length} {liveTools.length === 1 ? "tool is" : "tools are"} live today and {soonTools.length} more are on the way.
+            with your day. {tools.length} free tools, split between The Shelf and the Fun Zone.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <ButtonLink href="/the-shelf">
@@ -93,8 +79,8 @@ export default function AboutPage() {
       <section className="container-app -mt-6 sm:-mt-8">
         <dl className="m-0 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
-            [String(liveTools.length), "tools live today"],
-            [String(soonTools.length), "more on the way"],
+            [String(tools.length), "free tools"],
+            ["2", "shelves: useful and fun"],
             ["Free", "every tool, no payment"],
             ["1 signup", "then you stay signed in"],
           ].map(([value, label]) => (
@@ -161,33 +147,10 @@ export default function AboutPage() {
               <h3 className="mb-1 mt-4 text-base font-bold text-navy">{shelf.name}</h3>
               <p className="m-0 text-sm leading-6 text-muted">{shelf.blurb}</p>
               <p className="mb-0 mt-3 text-xs font-bold text-blue-hover">
-                {tools.filter((tool) => tool.category === shelf.name && isReady(tool)).length} of{" "}
-                {tools.filter((tool) => tool.category === shelf.name).length} live
+                {tools.filter((tool) => tool.category === shelf.name).length} tools
               </p>
             </Link>
           ))}
-        </div>
-      </section>
-
-      <section className="bg-surface/60 py-14">
-        <div className="container-app">
-          <SectionHead eyebrow="Where we are today" title="Live now, and what is coming" href="/the-shelf" />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {liveTools.map((tool) => (
-              <ToolCard key={tool.id} tool={tool} compact />
-            ))}
-          </div>
-          <div className="mt-8 rounded-2xl border border-line bg-white p-6">
-            <h3 className="m-0 text-base font-bold text-navy">Coming soon</h3>
-            <dl className="m-0 mt-4 grid gap-4 sm:grid-cols-2">
-              {Object.entries(soonByCategory).map(([category, names]) => (
-                <div key={category}>
-                  <dt className="text-xs font-bold uppercase tracking-widest text-blue-hover">{category}</dt>
-                  <dd className="m-0 mt-1 text-sm leading-6 text-slate-700">{names.join(", ")}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
         </div>
       </section>
 

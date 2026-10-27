@@ -20,7 +20,7 @@ export type Tool = {
   imageBg?: string
   /** "cover" for pictures that fill their frame, "contain" for objects on a plain background. */
   imageFit?: "cover" | "contain"
-  /** true once the tool really works. Tools that are not ready show a "Soon" badge, are kept out of the sitemap and are not indexed by Google. */
+  /** true once the tool really works. Until then a tool is kept out of the sitemap and not indexed by Google (nothing changes visually). */
   ready?: boolean
 }
 
