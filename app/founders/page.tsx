@@ -30,7 +30,7 @@ export default function FoundersPage() {
               TopperShelf is a free tools website for the small things students need done fast: resize an exam photo, convert a CGPA, check attendance. We are building the shelf that has all of it.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <ButtonLink href="/tools">
+              <ButtonLink href="/the-shelf">
                 Explore tools <ToolIcon name="arrow" size={16} />
               </ButtonLink>
               <ButtonLink href="/about" variant="secondary">

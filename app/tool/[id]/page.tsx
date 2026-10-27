@@ -58,7 +58,7 @@ export default async function ToolPage({ params }: PageProps<"/tool/[id]">) {
             "@type": "BreadcrumbList",
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-              { "@type": "ListItem", position: 2, name: "Tools", item: `${SITE_URL}/tools` },
+              { "@type": "ListItem", position: 2, name: "Tools", item: `${SITE_URL}/the-shelf` },
               { "@type": "ListItem", position: 3, name: tool.category, item: `${SITE_URL}${categoryHref(tool.category)}` },
               { "@type": "ListItem", position: 4, name: tool.name, item: url },
             ],
@@ -83,7 +83,7 @@ export default async function ToolPage({ params }: PageProps<"/tool/[id]">) {
     <div className="container-app pb-20 pt-10">
       {structuredData && <JsonLd data={structuredData} />}
       <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted dark:text-slate-400">
-        <Link href="/">Home</Link> › <Link href="/tools">Tools</Link> ›{" "}
+        <Link href="/">Home</Link> › <Link href="/the-shelf">Tools</Link> ›{" "}
         <Link href={categoryHref(tool.category)}>{tool.category}</Link> › {tool.name}
       </nav>
       <div className="mb-8 flex items-start gap-4">

@@ -11,6 +11,15 @@ const nextConfig: NextConfig = {
   // - HTTPS only for a year.
   // A strict Content-Security-Policy (which scripts may run) is NOT set on purpose: it can easily break
   // Google sign-in and Google Analytics, so it needs testing on a preview first.
+  // Old addresses keep working: they send people (and Google) to the renamed pages.
+  // Query strings such as ?q= and ?category= are carried over automatically.
+  async redirects() {
+    return [
+      { source: "/tools", destination: "/the-shelf", permanent: true },
+      { source: "/tools/:category", destination: "/the-shelf/:category", permanent: true },
+      { source: "/my-tools", destination: "/my-shelf", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

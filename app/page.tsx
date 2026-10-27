@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-// Tells Google the brand name, the logo and that the site has a search box (/tools?q=...).
+// Tells Google the brand name, the logo and that the site has a search box (/the-shelf?q=...).
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
@@ -40,7 +40,7 @@ const structuredData = {
       publisher: { "@id": `${SITE_URL}/#organization` },
       potentialAction: {
         "@type": "SearchAction",
-        target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/tools?q={search_term_string}` },
+        target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/the-shelf?q={search_term_string}` },
         "query-input": "required name=search_term_string",
       },
     },
@@ -57,8 +57,8 @@ const trust: [Parameters<typeof ToolIcon>[0]["name"], string, string][] = [
 const shelfLinks = [
   { label: "PDF tools", href: "/tool/image-to-pdf", x: 22.2, y: 41.4, w: 12.2, h: 18.4 },
   { label: "Exam countdown", href: "/tool/exam-countdown", x: 37.2, y: 41.4, w: 12.2, h: 18.4 },
-  { label: "All student tools", href: "/tools?category=Students", x: 52, y: 41.4, w: 12.2, h: 18.4 },
-  { label: "More tools", href: "/tools", x: 66.5, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "All student tools", href: "/the-shelf?category=Students", x: 52, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "More tools", href: "/the-shelf", x: 66.5, y: 41.4, w: 12.2, h: 18.4 },
   { label: "How cooked are you?", href: "/tool/how-cooked", x: 24.1, y: 71.8, w: 11.8, h: 17.8 },
   { label: "Instant vibe check", href: "/tool/vibe-check", x: 38, y: 71.8, w: 11.8, h: 17.8 },
   { label: "Roast my timetable", href: "/tool/roast-my-timetable", x: 51.8, y: 71.8, w: 11.8, h: 17.8 },
@@ -143,7 +143,7 @@ export default function Home() {
           eyebrow="Made for real life"
           title="Popular tools"
           description="The everyday favourites people come back to."
-          href="/tools"
+          href="/the-shelf"
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {popular.map((tool) => (

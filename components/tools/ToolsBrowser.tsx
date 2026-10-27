@@ -24,7 +24,7 @@ export default function ToolsBrowser() {
     const next = new URLSearchParams();
     if (nextSearch) next.set("q", nextSearch);
     if (nextCategory !== "All") next.set("category", nextCategory);
-    router.replace(`/tools${next.size ? `?${next}` : ""}`, { scroll: false });
+    router.replace(`/the-shelf${next.size ? `?${next}` : ""}`, { scroll: false });
   };
 
   const results = useMemo(() => {

@@ -29,11 +29,11 @@ TopperShelf is a free, fast tools website (student tools, document tools for exa
 
 ### Conventions
 
-- **Routes:** tool pages are `/tool/[id]`, categories are `/tools?category=Name`. Do not introduce nested `/tools/documents/...` URLs without a decision, because sitemap and canonicals use the current form.
+- **Routes:** tool pages are `/tool/[id]`, categories are `/the-shelf?category=Name`. Do not introduce nested `/the-shelf/documents/...` URLs without a decision, because sitemap and canonicals use the current form.
 - **Sign-in gate:** anyone can open and read a tool page; signing in is required to run it. The sign-in popup opens from `useAuth().openSignIn`, and after sign-in the tool should run with the input still in place. Collect only name and email.
 - **One component set:** every page uses `components/tools/*` (`ui.tsx`, `ToolIcon`) and `components/shell/*`.
 - **Styling:** Tailwind 4 with theme tokens in `app/globals.css` (`navy`, `blue`, `violet`, `teal`, `coral`, `line`, `muted`). Every new component needs `dark:` variants. Keep form fields 16px on phones.
-- **Metadata:** every public page sets its own `alternates.canonical` with an absolute path. Result and share pages and personal pages (`/my-tools`, `/login`) are `noindex`.
+- **Metadata:** every public page sets its own `alternates.canonical` with an absolute path. Result and share pages and personal pages (`/my-shelf`, `/login`) are `noindex`.
 - **Favourites and recents:** `useStoredList` currently uses `localStorage`. The planned change is to back it with the signed-in Supabase account without changing callers.
 - **Fun tools:** results are deterministic (same input and salt give the same card) so a share link rebuilds the exact result. Share cards are 9:16 (1080x1920) with the user's result and the TopperShelf name. Keep jokes friendly: no content that targets real groups or people.
 - **Supabase:** browser client in `lib/supabase/client.ts`, server client in `lib/supabase/server.ts`. New tables need Row Level Security so users only read and write their own rows. Never expose the service role key to client code. New SQL goes in a numbered file in `supabase/migrations/`.

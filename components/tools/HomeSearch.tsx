@@ -11,7 +11,7 @@ export default function HomeSearch() {
     <SearchBox
       value={value}
       onChange={setValue}
-      onSubmit={() => router.push(`/tools${value.trim() ? `?q=${encodeURIComponent(value.trim())}` : ""}`)}
+      onSubmit={() => router.push(`/the-shelf${value.trim() ? `?q=${encodeURIComponent(value.trim())}` : ""}`)}
     />
   );
 }

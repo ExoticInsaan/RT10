@@ -15,7 +15,7 @@ export default function NotFound() {
       title="We couldn’t find that page"
       actions={
         <>
-          <ButtonLink href="/tools">Browse all tools</ButtonLink>
+          <ButtonLink href="/the-shelf">Browse all tools</ButtonLink>
           <ButtonLink href="/" variant="secondary">
             Go to home
           </ButtonLink>

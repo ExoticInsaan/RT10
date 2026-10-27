@@ -6,9 +6,9 @@ import ToolIcon, { type ToolIconName } from "@/components/tools/ToolIcon";
 
 const items: [string, string, ToolIconName][] = [
   ["Home", "/", "home"],
-  ["Tools", "/tools", "grid"],
+  ["Shelf", "/the-shelf", "grid"],
   ["Fun", "/fun", "sparkles"],
-  ["My Tools", "/my-tools", "heart"],
+  ["My Shelf", "/my-shelf", "heart"],
 ];
 
 export default function MobileNav() {

@@ -86,7 +86,7 @@ export default function AboutPage() {
             with your day. {liveTools.length} {liveTools.length === 1 ? "tool is" : "tools are"} live today and {soonTools.length} more are on the way.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
-            <ButtonLink href="/tools">
+            <ButtonLink href="/the-shelf">
               Explore all tools <ToolIcon name="arrow" size={16} />
             </ButtonLink>
             <ButtonLink href="/fun" variant="secondary">
@@ -153,7 +153,7 @@ export default function AboutPage() {
       </section>
 
       <section className="container-app pb-14">
-        <SectionHead eyebrow="What you will find" title="Everything on one shelf" href="/tools" />
+        <SectionHead eyebrow="What you will find" title="Everything on one shelf" href="/the-shelf" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {shelves.map((shelf) => (
             <Link
@@ -177,7 +177,7 @@ export default function AboutPage() {
 
       <section className="bg-surface/60 py-14 dark:bg-slate-900/40">
         <div className="container-app">
-          <SectionHead eyebrow="Where we are today" title="Live now, and what is coming" href="/tools" />
+          <SectionHead eyebrow="Where we are today" title="Live now, and what is coming" href="/the-shelf" />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {liveTools.map((tool) => (
               <ToolCard key={tool.id} tool={tool} compact />
@@ -262,7 +262,7 @@ export default function AboutPage() {
             <p className="mb-0 mt-2 text-sm text-slate-300">Open a tool and be done in a minute. Meet the person behind it on the Founders page.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <ButtonLink href="/tools" variant="secondary">
+            <ButtonLink href="/the-shelf" variant="secondary">
               Explore tools
             </ButtonLink>
             <Link href="/founders" className="inline-flex min-h-12 items-center px-3 text-sm font-bold text-white underline">

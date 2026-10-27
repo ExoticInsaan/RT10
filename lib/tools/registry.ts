@@ -131,6 +131,6 @@ export const toolById = (id: string) => tools.find((t) => t.id === id);
 export const isReady = (tool: Tool) => tool.ready === true
 export const readyTools = () => tools.filter(isReady)
 
-/** Public address of a category page, for example "Documents" becomes /tools/documents. */
-export const categoryHref = (name: string) => `/tools/${name.toLowerCase().replace(/\s+/g, "-")}`
+/** Public address of a category page, for example "Documents" becomes /the-shelf/documents. */
+export const categoryHref = (name: string) => `/the-shelf/${name.toLowerCase().replace(/\s+/g, "-")}`
 export const categoryFromSlug = (slug: string) => categories.find((c) => categorySlug(c.name) === slug)

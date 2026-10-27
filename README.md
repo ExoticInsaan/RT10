@@ -44,7 +44,7 @@ TopperShelf is a free, fast tools website for everyone: student tools, document 
 | Real tool UIs (PDF, image, calculators, text, India, students) | **Not built.** Non-fun tools show "coming soon" after sign-in. |
 | Favourites and recents saved to the user's account | **Not built.** Currently saved in this browser's `localStorage` (`lib/tools/useStoredList.ts`). |
 | Per-tool SEO template (how-to steps, FAQ, FAQ and app structured data, trust note, breadcrumbs) | Done. It fills in from `lib/tools/content.ts`; only the four Fun tools have content so far |
-| Category pages (`/tools/pdf`, `/tools/india-tools` and so on) | Done |
+| Category pages (`/the-shelf/pdf`, `/the-shelf/india-tools` and so on) | Done |
 | `/search` page, feedback and "Request a tool" form | Not built. Contact is a mailto page. |
 | Unfinished tools kept out of Google ("Soon" badge, noindex, not in the sitemap) | Done, controlled by `ready: true` in the registry |
 | Link-preview image | Done (`app/opengraph-image.tsx`) |
@@ -69,15 +69,15 @@ TopperShelf is a free, fast tools website for everyone: student tools, document 
 | Route | Purpose |
 | --- | --- |
 | `/` | Home: search, categories, popular tools, Fun Zone teaser, trust strip |
-| `/tools` | All Tools, filter by `?category=` and search with `?q=` |
+| `/the-shelf` | All Tools, filter by `?category=` and search with `?q=` |
 | `/tool/[id]` | One tool page (open to view, sign-in needed to run) |
 | `/fun` | Fun Zone grid |
 | `/share/[id]` and `/share/[id]/image` | Result page and downloadable story card (noindex) |
-| `/my-tools` | Favourites and recently used (noindex) |
+| `/my-shelf` | Favourites and recently used (noindex) |
 | `/login`, `/auth/callback` | Sign-in |
 | `/about`, `/founders`, `/contact`, `/privacy`, `/terms` | Info and legal pages. |
 
-The plan document sketches nested URLs such as `/tools/documents/image-to-pdf`. The build uses the flatter `/tool/[id]` plus category pages at `/tools/[category]` (`/tools?category=` still works as a filter on the All Tools page). Keep the flat form unless there is a deliberate decision to change it, because the sitemap and canonicals already use it.
+The plan document sketches nested URLs such as `/the-shelf/documents/image-to-pdf`. The build uses the flatter `/tool/[id]` plus category pages at `/the-shelf/[category]` (`/the-shelf?category=` still works as a filter on the All Tools page). Keep the flat form unless there is a deliberate decision to change it, because the sitemap and canonicals already use it.
 
 ### Tool page template
 

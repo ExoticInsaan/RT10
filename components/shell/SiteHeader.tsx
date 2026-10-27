@@ -8,9 +8,9 @@ import { Button } from "@/components/tools/ui";
 import { useAuth } from "@/components/AuthProvider";
 
 const navLinks = [
-  { href: "/tools", label: "All Tools" },
+  { href: "/the-shelf", label: "The Shelf" },
   { href: "/fun", label: "Fun Zone" },
-  { href: "/my-tools", label: "My Tools" },
+  { href: "/my-shelf", label: "My Shelf" },
   { href: "/founders", label: "Founders" },
   { href: "/about", label: "About" },
 ];

@@ -9,7 +9,7 @@ export function generateStaticParams() {
   return categories.map((category) => ({ category: categorySlug(category.name) }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/tools/[category]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/the-shelf/[category]">): Promise<Metadata> {
   const { category: slug } = await params;
   const category = categoryFromSlug(slug);
   if (!category) return {};
@@ -19,13 +19,13 @@ export async function generateMetadata({ params }: PageProps<"/tools/[category]"
     title: content.title,
     description: content.intro,
     // The Fun Zone has its own richer page at /fun, so Google is told that one is the main version.
-    alternates: { canonical: slug === "fun" ? "/fun" : `/tools/${slug}` },
+    alternates: { canonical: slug === "fun" ? "/fun" : `/the-shelf/${slug}` },
     // A category page is only worth indexing once at least one of its tools really works.
     robots: hasReadyTools ? undefined : { index: false, follow: true },
   };
 }
 
-export default async function CategoryPage({ params }: PageProps<"/tools/[category]">) {
+export default async function CategoryPage({ params }: PageProps<"/the-shelf/[category]">) {
   const { category: slug } = await params;
   const category = categoryFromSlug(slug);
   if (!category) notFound();
@@ -36,7 +36,7 @@ export default async function CategoryPage({ params }: PageProps<"/tools/[catego
   return (
     <div className="container-app pb-20 pt-10">
       <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted dark:text-slate-400">
-        <Link href="/">Home</Link> › <Link href="/tools">Tools</Link> › {content.title}
+        <Link href="/">Home</Link> › <Link href="/the-shelf">Tools</Link> › {content.title}
       </nav>
       <span className="eyebrow">Category</span>
       <h1 className="mb-3 mt-4 text-4xl font-extrabold tracking-tight text-navy dark:text-white sm:text-5xl">{content.title}</h1>
@@ -47,7 +47,7 @@ export default async function CategoryPage({ params }: PageProps<"/tools/[catego
         ))}
       </div>
       <p className="mt-10 text-sm text-muted dark:text-slate-400">
-        Looking for something else? <Link href="/tools" className="font-bold text-blue-hover">Browse all tools</Link>.
+        Looking for something else? <Link href="/the-shelf" className="font-bold text-blue-hover">Browse all tools</Link>.
       </p>
     </div>
   );
