@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ToolIcon, { type ToolIconName } from "@/components/tools/ToolIcon";
 import { ButtonLink, SectionHead, ToolCard } from "@/components/tools/ui";
-import { categoryHref, isReady, tools, type Category } from "@/lib/tools/registry";
+import { categories, isReady, tools } from "@/lib/tools/registry";
 
 export const metadata: Metadata = {
   title: "About TopperShelf",
   description:
-    "TopperShelf is a free, fast tools website for students: exam photo resizer, CGPA converter, attendance calculator, leave letters and a few silly tools. One quick signup, no watermark.",
+    "TopperShelf is a free, fast tools website in two parts: The Shelf for useful tools like the exam photo resizer, CGPA converter and leave letters, and the Fun Zone for shareable fun. One quick signup, no watermark.",
   alternates: { canonical: "/about" },
 };
 
@@ -29,14 +29,8 @@ const promises: { icon: ToolIconName; title: string; text: string }[] = [
   },
 ];
 
-const shelves: { category: Category; icon: ToolIconName; text: string }[] = [
-  { category: "Documents", icon: "file", text: "Exam form photos and signatures, application letters and image to PDF." },
-  { category: "Students", icon: "graduation", text: "CGPA, attendance, marks needed and exam countdown." },
-  { category: "Fun", icon: "sparkles", text: "Silly tools that make a result card you can share." },
-];
-
 const roadmap: { icon: ToolIconName; title: string; text: string }[] = [
-  { icon: "zap", title: "New tools, regularly", text: "The student and document tools are being built now, and more follow after that." },
+  { icon: "zap", title: "New tools, regularly", text: "More useful tools for The Shelf are being built now, with new Fun Zone tools in between." },
   { icon: "download", title: "Install it like an app", text: "Add TopperShelf to your home screen from the browser, with simple tools working offline." },
   { icon: "home", title: "An Android app", text: "The same site, wrapped for Google Play, so there is still just one TopperShelf to keep updated." },
   { icon: "heart", title: "Favourites that follow you", text: "Starred and recently used tools saved to your account, so they appear on every device you sign in on." },
@@ -49,7 +43,7 @@ const steps = [
 ];
 
 const faqs: [string, string][] = [
-  ["What is TopperShelf?", "A free website of fast online tools for files, numbers, words and everyday life, plus a Fun Zone of witty tools you can share."],
+  ["What is TopperShelf?", "A free website with two parts: The Shelf, with fast, useful tools for forms, letters, PDFs, grades and more, and the Fun Zone, with witty tools whose results you can share."],
   ["Is it really free?", "Yes. Every tool is free to use, with no watermark. You only need a quick Google signup to run a tool."],
   ["Why do I need to sign in?", "Signing in once lets us keep your favourites and recent tools with you across visits and helps us keep the site fast and free of abuse. We collect only your name and email."],
   ["Are my files uploaded anywhere?", "Our file tools are built to work in your browser, so your files stay on your device. Each tool page tells you if that is true for that tool."],
@@ -153,22 +147,22 @@ export default function AboutPage() {
       </section>
 
       <section className="container-app pb-14">
-        <SectionHead eyebrow="What you will find" title="Everything on one shelf" href="/the-shelf" />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {shelves.map((shelf) => (
+        <SectionHead eyebrow="What you will find" title="Two shelves, one site" />
+        <div className="grid gap-4 sm:grid-cols-2">
+          {categories.map((shelf) => (
             <Link
-              key={shelf.category}
-              href={categoryHref(shelf.category)}
+              key={shelf.name}
+              href={shelf.href}
               className="group rounded-2xl border border-line bg-white p-5 transition hover:-translate-y-1 hover:border-blue/60 hover:shadow-card"
             >
               <span className="grid size-11 place-items-center rounded-xl bg-blue-soft text-blue-hover">
                 <ToolIcon name={shelf.icon} size={20} />
               </span>
-              <h3 className="mb-1 mt-4 text-base font-bold text-navy">{shelf.category}</h3>
-              <p className="m-0 text-sm leading-6 text-muted">{shelf.text}</p>
+              <h3 className="mb-1 mt-4 text-base font-bold text-navy">{shelf.name}</h3>
+              <p className="m-0 text-sm leading-6 text-muted">{shelf.blurb}</p>
               <p className="mb-0 mt-3 text-xs font-bold text-blue-hover">
-                {tools.filter((tool) => tool.category === shelf.category && isReady(tool)).length} of{" "}
-                {tools.filter((tool) => tool.category === shelf.category).length} live
+                {tools.filter((tool) => tool.category === shelf.name && isReady(tool)).length} of{" "}
+                {tools.filter((tool) => tool.category === shelf.name).length} live
               </p>
             </Link>
           ))}

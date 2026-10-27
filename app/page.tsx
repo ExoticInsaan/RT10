@@ -5,14 +5,14 @@ import JsonLd from "@/components/seo/JsonLd";
 import ToolIcon from "@/components/tools/ToolIcon";
 import HomeSearch from "@/components/tools/HomeSearch";
 import { IconTile, SectionHead, ToolCard } from "@/components/tools/ui";
-import { categories, categoryHref, tools } from "@/lib/tools/registry";
+import { categories, tools } from "@/lib/tools/registry";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 // The home page is one address: "/" (never /index).
 export const metadata: Metadata = {
   title: { absolute: "TopperShelf: Free Online Tools for Students & Everyday Life" },
   description:
-    "Free, fast online tools for students: exam photo and signature resizer, CGPA converter, attendance calculator, leave letters and more. One quick sign-in, nothing to install.",
+    "Free, fast online tools in two places: The Shelf for useful jobs like exam photo resizing, letters, PDFs and CGPA, and the Fun Zone for shareable fun. One quick sign-in, nothing to install.",
   alternates: { canonical: "/" },
 };
 
@@ -57,7 +57,7 @@ const trust: [Parameters<typeof ToolIcon>[0]["name"], string, string][] = [
 const shelfLinks = [
   { label: "PDF tools", href: "/tool/image-to-pdf", x: 22.2, y: 41.4, w: 12.2, h: 18.4 },
   { label: "Exam countdown", href: "/tool/exam-countdown", x: 37.2, y: 41.4, w: 12.2, h: 18.4 },
-  { label: "All student tools", href: "/the-shelf?category=Students", x: 52, y: 41.4, w: 12.2, h: 18.4 },
+  { label: "All tools on The Shelf", href: "/the-shelf", x: 52, y: 41.4, w: 12.2, h: 18.4 },
   { label: "More tools", href: "/the-shelf", x: 66.5, y: 41.4, w: 12.2, h: 18.4 },
   { label: "How cooked are you?", href: "/tool/how-cooked", x: 24.1, y: 71.8, w: 11.8, h: 17.8 },
   { label: "Instant vibe check", href: "/tool/vibe-check", x: 38, y: 71.8, w: 11.8, h: 17.8 },
@@ -66,8 +66,8 @@ const shelfLinks = [
 ];
 
 export default function Home() {
-  const popular = tools.filter((tool) => tool.popular && tool.category !== "Fun").slice(0, 8);
-  const funTools = tools.filter((tool) => tool.category === "Fun").slice(0, 3);
+  const popular = tools.filter((tool) => tool.popular && tool.category === "The Shelf").slice(0, 8);
+  const funTools = tools.filter((tool) => tool.category === "Fun Zone").slice(0, 3);
   return (
     <>
       <JsonLd data={structuredData} />
@@ -83,7 +83,8 @@ export default function Home() {
             <span className="font-display font-normal italic text-blue-hover">All free.</span>
           </h1>
           <p className="mb-7 max-w-2xl text-base leading-7 text-muted sm:text-lg">
-            Fast, simple tools for files, numbers, words and everyday life. Nothing to install. No confusing steps.
+            Two shelves, one simple site. The Shelf has the useful tools for real jobs. The Fun Zone has the silly ones worth
+            sharing. Nothing to install, no confusing steps.
           </p>
           <HomeSearch />
           <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
@@ -123,26 +124,47 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-y border-line bg-surface/70 py-5">
-        <div className="container-app hide-scrollbar flex gap-3 overflow-x-auto">
-          {categories.map((category) => (
-            <Link
-              key={category.name}
-              href={categoryHref(category.name)}
-              className="flex min-w-max items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-semibold text-navy transition hover:border-blue hover:bg-blue-soft"
-            >
-              <ToolIcon name={category.icon} size={16} />
-              {category.name}
-            </Link>
-          ))}
+      <section className="container-app pb-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          {categories.map((category) => {
+            const count = tools.filter((tool) => tool.category === category.name).length;
+            const fun = category.name === "Fun Zone";
+            return (
+              <Link
+                key={category.name}
+                href={category.href}
+                className={`group flex items-start gap-4 rounded-2xl border p-5 transition hover:-translate-y-0.5 hover:shadow-card ${
+                  fun ? "border-purple-200 bg-purple-50" : "border-line bg-white hover:border-blue/60"
+                }`}
+              >
+                <span
+                  className={`grid size-12 shrink-0 place-items-center rounded-xl ${
+                    fun ? "bg-purple-100 text-purple-600" : "bg-blue-soft text-blue-hover"
+                  }`}
+                >
+                  <ToolIcon name={category.icon} size={22} />
+                </span>
+                <span className="flex-1">
+                  <span className="flex items-center justify-between gap-3">
+                    <strong className="text-lg font-extrabold text-navy">{category.name}</strong>
+                    <span className="text-xs font-semibold text-muted">{count} tools</span>
+                  </span>
+                  <span className="mt-1 block text-sm leading-6 text-muted">{category.blurb}</span>
+                  <span className="mt-2 inline-flex items-center gap-1.5 text-sm font-bold text-navy">
+                    Open {category.name} <ToolIcon name="arrow" size={14} />
+                  </span>
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
       <section className="container-app section-space">
         <SectionHead
-          eyebrow="Made for real life"
+          eyebrow="From The Shelf"
           title="Popular tools"
-          description="The everyday favourites people come back to."
+          description="The useful favourites people come back to."
           href="/the-shelf"
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

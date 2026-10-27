@@ -16,7 +16,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/tools", destination: "/the-shelf", permanent: true },
-      { source: "/tools/:category", destination: "/the-shelf/:category", permanent: true },
+      // The old category pages (documents, students, fun) were folded into the two sections.
+      { source: "/tools/fun", destination: "/fun", permanent: true },
+      { source: "/tools/:category", destination: "/the-shelf", permanent: true },
+      { source: "/the-shelf/fun", destination: "/fun", permanent: true },
+      { source: "/the-shelf/:category", destination: "/the-shelf", permanent: true },
       { source: "/my-tools", destination: "/my-shelf", permanent: true },
     ];
   },

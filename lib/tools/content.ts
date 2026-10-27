@@ -1,10 +1,8 @@
-// Written content for tool pages and category pages. It feeds the "How to use" steps, the FAQ, the trust note and the
+// Written content for tool pages. It feeds the "How to use" steps, the FAQ, the trust note and the
 // structured data Google reads. A tool with no entry here simply shows no extra sections, so nothing is invented.
 //
 // To add content for a new tool, add an entry to `toolContent` keyed by the tool id from registry.ts. Only write what is
 // true: for example, only add `privacyNote` saying files stay on the device if the tool really works that way.
-
-import type { Category } from "@/lib/tools/registry";
 
 export type ToolContent = {
   /** 3 to 5 short steps. */
@@ -77,20 +75,5 @@ export const toolContent: Record<string, ToolContent> = {
       { q: "Do you save my name?", a: "No. Your name only appears in the result link that you choose to share." },
     ],
     privacyNote: funNote,
-  },
-};
-
-export const categoryContent: Record<Category, { title: string; intro: string }> = {
-  Documents: {
-    title: "Document Tools",
-    intro: "Tools for the paperwork students deal with every term: exam form photos and signatures, application letters and turning images into PDFs.",
-  },
-  Students: {
-    title: "Student Tools",
-    intro: "Helpful tools for college life: converting grades, tracking attendance, working out the marks you need and counting down to exams.",
-  },
-  Fun: {
-    title: "Fun Zone",
-    intro: "Silly little tools that give you a result card to share. Nothing here is meant to be taken seriously.",
   },
 };

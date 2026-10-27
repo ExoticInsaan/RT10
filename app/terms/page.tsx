@@ -22,8 +22,8 @@ export default function TermsPage() {
 
       <H2>1. What TopperShelf offers</H2>
       <P>
-        TopperShelf is a free website of online tools: PDF and image tools, calculators, text utilities, India-specific tools,
-        student tools and a Fun Zone of light-hearted tools (together, the &quot;Tools&quot;). We may add, change or remove Tools
+        TopperShelf is a free website of online tools in two sections: The Shelf, with useful tools such as photo, PDF,
+        letter and grade tools, and the Fun Zone, with light-hearted tools (together, the &quot;Tools&quot;). We may add, change or remove Tools
         at any time. The Tools are free. We do not charge for them, and there is nothing to buy or refund.
       </P>
 

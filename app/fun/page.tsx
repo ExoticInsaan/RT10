@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const cardTones = ["bg-orange-100", "bg-sky-100", "bg-purple-100", "bg-lime-100"];
 
 export default function FunZonePage() {
-  const fun = tools.filter((tool) => tool.category === "Fun");
+  const fun = tools.filter((tool) => tool.category === "Fun Zone");
   const sample = runFunTool("how-cooked", "Alex", 0)!;
   return (
     <>

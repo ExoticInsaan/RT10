@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
-import { categories, categoryHref, readyTools } from "@/lib/tools/registry";
+import { readyTools } from "@/lib/tools/registry";
 import { SITE_URL } from "@/lib/site";
 
 // Public, indexable pages only. Private or noindex pages (/login, /auth, /api) are left out on purpose.
-// Only tools marked `ready: true` in lib/tools/registry.ts (and categories that contain one) are listed,
+// Only tools marked `ready: true` in lib/tools/registry.ts are listed,
 // so Google never sees "coming soon" pages.
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
@@ -23,14 +23,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  const readyCategories = new Set(readyTools().map((tool) => tool.category));
-  const categoryPages: MetadataRoute.Sitemap = categories
-    .filter((category) => readyCategories.has(category.name) && category.name !== "Fun") // /fun is listed above
-    .map((category) => ({
-      url: `${SITE_URL}${categoryHref(category.name)}`,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    }));
-
-  return [...staticPages, ...categoryPages, ...toolPages];
+  // The two sections (/the-shelf and /fun) are listed with the static pages above.
+  return [...staticPages, ...toolPages];
 }
