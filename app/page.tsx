@@ -76,17 +76,17 @@ export default function Home() {
           <span className="eyebrow">
             <ToolIcon name="sparkles" size={14} /> Free online tools for everyone
           </span>
-          <h1 className="mb-5 mt-5 max-w-3xl text-5xl font-extrabold leading-none tracking-hero text-navy dark:text-white sm:text-6xl lg:text-7xl">
+          <h1 className="mb-5 mt-5 max-w-3xl text-5xl font-extrabold leading-none tracking-hero text-navy sm:text-6xl lg:text-7xl">
             Useful tools.
             <br />A few silly ones.
             <br />
             <span className="font-display font-normal italic text-blue-hover">All free.</span>
           </h1>
-          <p className="mb-7 max-w-2xl text-base leading-7 text-muted dark:text-slate-400 sm:text-lg">
+          <p className="mb-7 max-w-2xl text-base leading-7 text-muted sm:text-lg">
             Fast, simple tools for files, numbers, words and everyday life. Nothing to install. No confusing steps.
           </p>
           <HomeSearch />
-          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted dark:text-slate-400">
+          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
             <span className="inline-flex items-center gap-1.5">
               <ToolIcon name="zap" size={14} /> Quick to use
             </span>
@@ -123,13 +123,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-y border-line bg-surface/70 py-5 dark:border-slate-800 dark:bg-slate-900/60">
+      <section className="border-y border-line bg-surface/70 py-5">
         <div className="container-app hide-scrollbar flex gap-3 overflow-x-auto">
           {categories.map((category) => (
             <Link
               key={category.name}
               href={categoryHref(category.name)}
-              className="flex min-w-max items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-semibold text-navy transition hover:border-blue hover:bg-blue-soft dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+              className="flex min-w-max items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-semibold text-navy transition hover:border-blue hover:bg-blue-soft"
             >
               <ToolIcon name={category.icon} size={16} />
               {category.name}
@@ -186,19 +186,19 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-y border-line bg-white py-7 dark:border-slate-800 dark:bg-slate-900">
+      <section className="border-y border-line bg-white py-7">
         <div className="container-app grid gap-5 text-center sm:grid-cols-3">
           {trust.map(([icon, title, text]) => (
             <div
               key={title}
-              className="flex items-center justify-center gap-3 sm:border-r sm:border-line sm:last:border-0 dark:sm:border-slate-700"
+              className="flex items-center justify-center gap-3 sm:border-r sm:border-line sm:last:border-0"
             >
               <span className="text-blue-hover">
                 <ToolIcon name={icon} />
               </span>
               <span className="text-left">
-                <strong className="block text-sm text-navy dark:text-white">{title}</strong>
-                <small className="text-xs text-muted dark:text-slate-400">{text}</small>
+                <strong className="block text-sm text-navy">{title}</strong>
+                <small className="text-xs text-muted">{text}</small>
               </span>
             </div>
           ))}

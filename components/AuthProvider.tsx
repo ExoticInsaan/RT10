@@ -80,14 +80,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
           aria-modal="true"
         >
           <div
-            className="relative w-full max-w-md rounded-t-3xl bg-white p-6 pb-8 text-slate-900 shadow-xl dark:bg-slate-900 dark:text-white sm:rounded-3xl"
+            className="relative w-full max-w-md rounded-t-3xl bg-white p-6 pb-8 text-slate-900 shadow-xl sm:rounded-3xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Close"
-              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-xl text-slate-500 hover:bg-slate-100"
             >
               ×
             </button>

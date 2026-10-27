@@ -60,7 +60,7 @@ export default function ToolsBrowser() {
         ))}
       </div>
       <div className="grid gap-7 lg:grid-cols-[13rem_1fr]">
-        <aside className="hidden h-max rounded-2xl border border-line bg-white p-4 dark:border-slate-800 dark:bg-slate-900 lg:block">
+        <aside className="hidden h-max rounded-2xl border border-line bg-white p-4 lg:block">
           <strong className="mb-3 block px-3 text-xs uppercase tracking-widest text-muted">Browse by category</strong>
           {allCategories.map((item) => (
             <button
@@ -68,8 +68,8 @@ export default function ToolsBrowser() {
               type="button"
               className={`flex w-full cursor-pointer items-center justify-between rounded-xl border-0 px-3 py-3 text-left text-sm font-semibold transition ${
                 category === item
-                  ? "bg-blue-soft text-blue-hover dark:bg-blue-950"
-                  : "bg-transparent text-muted hover:bg-surface dark:text-slate-400 dark:hover:bg-slate-800"
+                  ? "bg-blue-soft text-blue-hover"
+                  : "bg-transparent text-muted hover:bg-surface"
               }`}
               onClick={() => update(search.trim(), item)}
             >
@@ -82,7 +82,7 @@ export default function ToolsBrowser() {
         </aside>
         <section aria-live="polite">
           <div className="mb-4 flex items-center justify-between">
-            <p className="m-0 text-sm font-semibold text-navy dark:text-white">
+            <p className="m-0 text-sm font-semibold text-navy">
               {results.length} {results.length === 1 ? "tool" : "tools"}
             </p>
           </div>
@@ -93,11 +93,11 @@ export default function ToolsBrowser() {
               ))}
             </div>
           ) : (
-            <div className="rounded-3xl border border-dashed border-line py-24 text-center dark:border-slate-700">
+            <div className="rounded-3xl border border-dashed border-line py-24 text-center">
               <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-blue-soft text-blue-hover">
                 <ToolIcon name="search" />
               </span>
-              <h2 className="mb-2 mt-5 text-xl text-navy dark:text-white">No tool found</h2>
+              <h2 className="mb-2 mt-5 text-xl text-navy">No tool found</h2>
               <p className="text-sm text-muted">Try a simpler search or choose another category.</p>
               <Button
                 variant="secondary"

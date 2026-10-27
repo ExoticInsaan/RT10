@@ -71,7 +71,7 @@ export default function PrivacyPage() {
 
       <H2>6. Cookies and analytics</H2>
       <P>
-        We use essential cookies and similar storage to keep you signed in and to remember your dark mode choice, favourites and
+        We use essential cookies and similar storage to keep you signed in and to remember your favourites and
         recent tools. We also use Google Analytics 4 to measure visits (pages visited, how you found the Site, device type).
         Google&apos;s advertising features are switched off, and we do not send your name, email or account ID to Google. For
         visitors in the EEA, the UK and Switzerland, analytics storage is off by default. We do not currently show ads. If we add

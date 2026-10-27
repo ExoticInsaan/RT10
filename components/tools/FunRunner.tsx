@@ -24,7 +24,7 @@ export default function FunRunner({ toolId }: { toolId: string }) {
   }
 
   const fieldClass =
-    "mt-2 w-full rounded-xl border border-line bg-white px-4 text-sm text-navy outline-none focus:border-purple-400 dark:border-slate-700 dark:bg-slate-950 dark:text-white";
+    "mt-2 w-full rounded-xl border border-line bg-white px-4 text-sm text-navy outline-none focus:border-purple-400";
 
   return (
     <form
@@ -34,9 +34,9 @@ export default function FunRunner({ toolId }: { toolId: string }) {
         submit();
       }}
     >
-      <h2 className="mb-2 mt-2 text-3xl font-extrabold text-navy dark:text-white">{config.heading}</h2>
-      <p className="mx-auto max-w-md text-sm leading-6 text-muted dark:text-slate-400">{config.intro}</p>
-      <label className="mt-5 block text-left text-xs font-semibold text-navy dark:text-slate-200">
+      <h2 className="mb-2 mt-2 text-3xl font-extrabold text-navy">{config.heading}</h2>
+      <p className="mx-auto max-w-md text-sm leading-6 text-muted">{config.intro}</p>
+      <label className="mt-5 block text-left text-xs font-semibold text-navy">
         {config.label}
         {config.multiline ? (
           <textarea
@@ -61,7 +61,7 @@ export default function FunRunner({ toolId }: { toolId: string }) {
           {error}
         </p>
       )}
-      <Button type="submit" className="mt-4 w-full bg-purple-600 hover:bg-purple-700 dark:hover:bg-purple-500">
+      <Button type="submit" className="mt-4 w-full bg-purple-600 hover:bg-purple-700">
         {config.cta} <ToolIcon name="sparkles" size={17} />
       </Button>
     </form>

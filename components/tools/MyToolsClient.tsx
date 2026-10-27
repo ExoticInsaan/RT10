@@ -10,15 +10,15 @@ const toTools = (ids: string[]) => ids.map(toolById).filter((tool): tool is Tool
 
 function EmptyShelf({ icon, title, text }: { icon: ToolIconName; title: string; text: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-line py-12 text-center dark:border-slate-700">
+    <div className="rounded-2xl border border-dashed border-line py-12 text-center">
       <span className="mx-auto grid size-12 place-items-center rounded-full bg-blue-soft text-blue-hover">
         <ToolIcon name={icon} />
       </span>
-      <h3 className="mb-1 mt-4 text-lg text-navy dark:text-white">{title}</h3>
+      <h3 className="mb-1 mt-4 text-lg text-navy">{title}</h3>
       <p className="mt-1 text-sm text-muted">{text}</p>
       <Link
         href="/the-shelf"
-        className="mt-3 inline-flex min-h-12 items-center justify-center rounded-xl border border-line bg-white px-5 text-sm font-semibold text-navy hover:border-blue hover:bg-blue-soft dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        className="mt-3 inline-flex min-h-12 items-center justify-center rounded-xl border border-line bg-white px-5 text-sm font-semibold text-navy hover:border-blue hover:bg-blue-soft"
       >
         Explore tools
       </Link>

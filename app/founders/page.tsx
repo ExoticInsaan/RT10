@@ -19,14 +19,14 @@ const beliefs: { icon: ToolIconName; title: string; text: string }[] = [
 export default function FoundersPage() {
   return (
     <>
-      <section className="bg-blue-soft/60 py-14 dark:bg-slate-900/60 sm:py-20">
+      <section className="bg-blue-soft/60 py-14 sm:py-20">
         <div className="container-app grid items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
           <div>
             <span className="eyebrow">The person behind it</span>
-            <h1 className="mb-4 mt-5 text-4xl font-extrabold tracking-tight text-navy dark:text-white sm:text-6xl">
+            <h1 className="mb-4 mt-5 text-4xl font-extrabold tracking-tight text-navy sm:text-6xl">
               Meet the founder of TopperShelf
             </h1>
-            <p className="m-0 max-w-xl text-base leading-7 text-slate-700 dark:text-slate-300">
+            <p className="m-0 max-w-xl text-base leading-7 text-slate-700">
               TopperShelf is a free tools website for the small things students need done fast: resize an exam photo, convert a CGPA, check attendance. We are building the shelf that has all of it.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
@@ -39,18 +39,18 @@ export default function FoundersPage() {
             </div>
           </div>
           <div
-            className="rounded-3xl border border-line bg-white p-8 shadow-card dark:border-slate-800 dark:bg-slate-900"
+            className="rounded-3xl border border-line bg-white p-8 shadow-card"
             role="img"
             aria-label="Jatin Sinsinwar, Founder of TopperShelf"
           >
             <span className="grid size-20 place-items-center rounded-2xl bg-navy text-2xl font-extrabold text-white">JS</span>
             <p className="mb-0 mt-5 text-xs font-bold uppercase tracking-widest text-blue-hover">Founder</p>
-            <p className="m-0 mt-1 text-3xl font-extrabold leading-tight tracking-tight text-navy dark:text-white">
+            <p className="m-0 mt-1 text-3xl font-extrabold leading-tight tracking-tight text-navy">
               Jatin
               <br />
               Sinsinwar
             </p>
-            <p className="mb-0 mt-3 text-sm text-muted dark:text-slate-400">TopperShelf · Bharatpur, Rajasthan</p>
+            <p className="mb-0 mt-3 text-sm text-muted">TopperShelf · Bharatpur, Rajasthan</p>
           </div>
         </div>
       </section>
@@ -58,11 +58,11 @@ export default function FoundersPage() {
       <section className="container-app grid gap-8 py-14 lg:grid-cols-[0.8fr_1.2fr]">
         <div>
           <span className="text-xs font-bold uppercase tracking-widest text-blue-hover">Our mission</span>
-          <h2 className="mb-0 mt-2 text-3xl font-extrabold tracking-tight text-navy dark:text-white">
+          <h2 className="mb-0 mt-2 text-3xl font-extrabold tracking-tight text-navy">
             Make small tasks feel smaller
           </h2>
         </div>
-        <div className="space-y-4 leading-7 text-slate-700 dark:text-slate-300">
+        <div className="space-y-4 leading-7 text-slate-700">
           <p className="m-0">
             Most people do not want another app. They want to land on a page, get the job done and leave. So TopperShelf is built
             around speed: tools that run in your browser, no waiting in a queue, no watermark on your file.
@@ -74,20 +74,20 @@ export default function FoundersPage() {
         </div>
       </section>
 
-      <section className="bg-surface/60 py-14 dark:bg-slate-900/40">
+      <section className="bg-surface/60 py-14">
         <div className="container-app">
           <SectionHead eyebrow="What we believe" title="Principles we build by" />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {beliefs.map((belief) => (
               <article
                 key={belief.title}
-                className="rounded-2xl border border-line bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+                className="rounded-2xl border border-line bg-white p-6"
               >
-                <span className="grid size-11 place-items-center rounded-xl bg-blue-soft text-blue-hover dark:bg-slate-800">
+                <span className="grid size-11 place-items-center rounded-xl bg-blue-soft text-blue-hover">
                   <ToolIcon name={belief.icon} size={20} />
                 </span>
-                <h3 className="mb-2 mt-4 text-base font-bold text-navy dark:text-white">{belief.title}</h3>
-                <p className="m-0 text-sm leading-6 text-muted dark:text-slate-400">{belief.text}</p>
+                <h3 className="mb-2 mt-4 text-base font-bold text-navy">{belief.title}</h3>
+                <p className="m-0 text-sm leading-6 text-muted">{belief.text}</p>
               </article>
             ))}
           </div>
@@ -95,13 +95,13 @@ export default function FoundersPage() {
       </section>
 
       <section className="container-app py-14">
-        <div className="flex items-start gap-4 rounded-2xl border border-line bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-          <span className="grid size-11 shrink-0 place-items-center rounded-full bg-blue-soft text-blue-hover dark:bg-slate-800">
+        <div className="flex items-start gap-4 rounded-2xl border border-line bg-white p-6">
+          <span className="grid size-11 shrink-0 place-items-center rounded-full bg-blue-soft text-blue-hover">
             <ToolIcon name="user" size={20} />
           </span>
           <div>
-            <h2 className="m-0 text-lg font-bold text-navy dark:text-white">Currently founder-led</h2>
-            <p className="mb-0 mt-1 text-sm leading-6 text-muted dark:text-slate-400">
+            <h2 className="m-0 text-lg font-bold text-navy">Currently founder-led</h2>
+            <p className="mb-0 mt-1 text-sm leading-6 text-muted">
               TopperShelf is being built by Jatin. Team profiles will be added here as the team grows.
             </p>
           </div>

@@ -35,18 +35,18 @@ export default async function CategoryPage({ params }: PageProps<"/the-shelf/[ca
   const sorted = [...list].sort((a, b) => Number(!!b.ready) - Number(!!a.ready));
   return (
     <div className="container-app pb-20 pt-10">
-      <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted dark:text-slate-400">
+      <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted">
         <Link href="/">Home</Link> › <Link href="/the-shelf">Tools</Link> › {content.title}
       </nav>
       <span className="eyebrow">Category</span>
-      <h1 className="mb-3 mt-4 text-4xl font-extrabold tracking-tight text-navy dark:text-white sm:text-5xl">{content.title}</h1>
-      <p className="mb-8 max-w-2xl text-base leading-7 text-muted dark:text-slate-400">{content.intro}</p>
+      <h1 className="mb-3 mt-4 text-4xl font-extrabold tracking-tight text-navy sm:text-5xl">{content.title}</h1>
+      <p className="mb-8 max-w-2xl text-base leading-7 text-muted">{content.intro}</p>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sorted.map((tool) => (
           <ToolCard key={tool.id} tool={tool} />
         ))}
       </div>
-      <p className="mt-10 text-sm text-muted dark:text-slate-400">
+      <p className="mt-10 text-sm text-muted">
         Looking for something else? <Link href="/the-shelf" className="font-bold text-blue-hover">Browse all tools</Link>.
       </p>
     </div>

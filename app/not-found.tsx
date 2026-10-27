@@ -28,7 +28,7 @@ export default function NotFound() {
           <li key={tool.id}>
             <Link
               href={`/tool/${tool.id}`}
-              className="inline-block rounded-full border border-line px-4 py-2 text-sm font-semibold text-navy transition hover:border-blue hover:bg-blue-soft dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800"
+              className="inline-block rounded-full border border-line px-4 py-2 text-sm font-semibold text-navy transition hover:border-blue hover:bg-blue-soft"
             >
               {tool.name}
             </Link>

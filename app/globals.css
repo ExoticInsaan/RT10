@@ -25,8 +25,6 @@
   --shadow-float: 0 24px 70px rgba(16, 42, 76, 0.2);
 }
 
-/* Dark mode is switched by a "dark" class on <html> (used by the new tools pages). */
-@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --tracking-hero: -0.055em;

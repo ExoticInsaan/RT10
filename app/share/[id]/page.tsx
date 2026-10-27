@@ -50,10 +50,10 @@ async function ShareContent({ params, searchParams }: PageProps<"/share/[id]">) 
     <div className="container-app grid items-center gap-10 py-12 lg:min-h-[calc(100vh-4.5rem)] lg:grid-cols-2">
       <div>
         <span className="eyebrow">Your result is ready</span>
-        <h1 className="mb-4 mt-5 text-4xl font-extrabold tracking-tight text-navy dark:text-white sm:text-5xl">
+        <h1 className="mb-4 mt-5 text-4xl font-extrabold tracking-tight text-navy sm:text-5xl">
           Too good to keep to yourself.
         </h1>
-        <p className="max-w-lg text-base leading-7 text-muted dark:text-slate-400">
+        <p className="max-w-lg text-base leading-7 text-muted">
           Download your story-ready card, share it with friends, or copy a link to the result.
         </p>
         <ShareActions imageUrl={`/share/${id}/image?${qs}`} title={`${shared.result.big} ${shared.result.title}`} />
@@ -71,7 +71,7 @@ async function ShareContent({ params, searchParams }: PageProps<"/share/[id]">) 
           </Link>
         </div>
       </div>
-      <div className="rounded-3xl bg-surface p-6 dark:bg-slate-900 sm:p-10">
+      <div className="rounded-3xl bg-surface p-6 sm:p-10">
         <ShareCard result={shared.result} icon={tool.icon} />
       </div>
     </div>

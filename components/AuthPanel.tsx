@@ -37,10 +37,10 @@ export default function AuthPanel({
 
   return (
     <div>
-      <h2 className="text-center text-2xl font-extrabold text-slate-900 dark:text-white">
+      <h2 className="text-center text-2xl font-extrabold text-slate-900">
         One sign-in. Every tool.
       </h2>
-      <p className="mt-1 text-center text-sm text-slate-600 dark:text-slate-300">
+      <p className="mt-1 text-center text-sm text-slate-600">
         Free to use. Sign in once with Google to run any tool and keep your favourites.
       </p>
 

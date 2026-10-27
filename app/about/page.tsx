@@ -75,13 +75,13 @@ export default function AboutPage() {
   );
   return (
     <>
-      <section className="bg-blue-soft/60 py-14 dark:bg-slate-900/60 sm:py-20">
+      <section className="bg-blue-soft/60 py-14 sm:py-20">
         <div className="container-app max-w-4xl text-center">
           <span className="eyebrow">About TopperShelf</span>
-          <h1 className="mx-auto mb-4 mt-5 max-w-3xl text-4xl font-extrabold tracking-tight text-navy dark:text-white sm:text-6xl">
+          <h1 className="mx-auto mb-4 mt-5 max-w-3xl text-4xl font-extrabold tracking-tight text-navy sm:text-6xl">
             Useful tools. A few silly ones. <span className="text-blue-hover">All free.</span>
           </h1>
-          <p className="mx-auto max-w-2xl text-base leading-7 text-slate-700 dark:text-slate-300">
+          <p className="mx-auto max-w-2xl text-base leading-7 text-slate-700">
             TopperShelf is a fast tools website for everyone. Find a tool in seconds, sign in once, use it in your browser and get on
             with your day. {liveTools.length} {liveTools.length === 1 ? "tool is" : "tools are"} live today and {soonTools.length} more are on the way.
           </p>
@@ -106,10 +106,10 @@ export default function AboutPage() {
           ].map(([value, label]) => (
             <div
               key={label}
-              className="rounded-2xl border border-line bg-white p-4 text-center shadow-card dark:border-slate-800 dark:bg-slate-900"
+              className="rounded-2xl border border-line bg-white p-4 text-center shadow-card"
             >
-              <dt className="text-xl font-extrabold text-navy dark:text-white sm:text-2xl">{value}</dt>
-              <dd className="m-0 mt-1 text-xs text-muted dark:text-slate-400">{label}</dd>
+              <dt className="text-xl font-extrabold text-navy sm:text-2xl">{value}</dt>
+              <dd className="m-0 mt-1 text-xs text-muted">{label}</dd>
             </div>
           ))}
         </dl>
@@ -118,11 +118,11 @@ export default function AboutPage() {
       <section className="container-app grid gap-8 py-14 lg:grid-cols-[0.8fr_1.2fr]">
         <div>
           <span className="text-xs font-bold uppercase tracking-widest text-blue-hover">Why TopperShelf</span>
-          <h2 className="mb-0 mt-2 text-3xl font-extrabold tracking-tight text-navy dark:text-white">
+          <h2 className="mb-0 mt-2 text-3xl font-extrabold tracking-tight text-navy">
             Small jobs, done fast
           </h2>
         </div>
-        <div className="space-y-4 leading-7 text-slate-700 dark:text-slate-300">
+        <div className="space-y-4 leading-7 text-slate-700">
           <p className="m-0">
             TopperShelf is a free tools website for everyone: a place to land from a search, get one small job done and leave,
             without installing anything or waiting in a queue.
@@ -140,13 +140,13 @@ export default function AboutPage() {
           {promises.map((item) => (
             <article
               key={item.title}
-              className="rounded-2xl border border-line bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+              className="rounded-2xl border border-line bg-white p-6"
             >
-              <span className="grid size-12 place-items-center rounded-xl bg-blue-soft text-blue-hover dark:bg-slate-800">
+              <span className="grid size-12 place-items-center rounded-xl bg-blue-soft text-blue-hover">
                 <ToolIcon name={item.icon} size={22} />
               </span>
-              <h3 className="mb-2 mt-4 text-lg font-bold text-navy dark:text-white">{item.title}</h3>
-              <p className="m-0 text-sm leading-6 text-muted dark:text-slate-400">{item.text}</p>
+              <h3 className="mb-2 mt-4 text-lg font-bold text-navy">{item.title}</h3>
+              <p className="m-0 text-sm leading-6 text-muted">{item.text}</p>
             </article>
           ))}
         </div>
@@ -159,13 +159,13 @@ export default function AboutPage() {
             <Link
               key={shelf.category}
               href={categoryHref(shelf.category)}
-              className="group rounded-2xl border border-line bg-white p-5 transition hover:-translate-y-1 hover:border-blue/60 hover:shadow-card dark:border-slate-800 dark:bg-slate-900"
+              className="group rounded-2xl border border-line bg-white p-5 transition hover:-translate-y-1 hover:border-blue/60 hover:shadow-card"
             >
-              <span className="grid size-11 place-items-center rounded-xl bg-blue-soft text-blue-hover dark:bg-slate-800">
+              <span className="grid size-11 place-items-center rounded-xl bg-blue-soft text-blue-hover">
                 <ToolIcon name={shelf.icon} size={20} />
               </span>
-              <h3 className="mb-1 mt-4 text-base font-bold text-navy dark:text-white">{shelf.category}</h3>
-              <p className="m-0 text-sm leading-6 text-muted dark:text-slate-400">{shelf.text}</p>
+              <h3 className="mb-1 mt-4 text-base font-bold text-navy">{shelf.category}</h3>
+              <p className="m-0 text-sm leading-6 text-muted">{shelf.text}</p>
               <p className="mb-0 mt-3 text-xs font-bold text-blue-hover">
                 {tools.filter((tool) => tool.category === shelf.category && isReady(tool)).length} of{" "}
                 {tools.filter((tool) => tool.category === shelf.category).length} live
@@ -175,7 +175,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-surface/60 py-14 dark:bg-slate-900/40">
+      <section className="bg-surface/60 py-14">
         <div className="container-app">
           <SectionHead eyebrow="Where we are today" title="Live now, and what is coming" href="/the-shelf" />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -183,13 +183,13 @@ export default function AboutPage() {
               <ToolCard key={tool.id} tool={tool} compact />
             ))}
           </div>
-          <div className="mt-8 rounded-2xl border border-line bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-            <h3 className="m-0 text-base font-bold text-navy dark:text-white">Coming soon</h3>
+          <div className="mt-8 rounded-2xl border border-line bg-white p-6">
+            <h3 className="m-0 text-base font-bold text-navy">Coming soon</h3>
             <dl className="m-0 mt-4 grid gap-4 sm:grid-cols-2">
               {Object.entries(soonByCategory).map(([category, names]) => (
                 <div key={category}>
                   <dt className="text-xs font-bold uppercase tracking-widest text-blue-hover">{category}</dt>
-                  <dd className="m-0 mt-1 text-sm leading-6 text-slate-700 dark:text-slate-300">{names.join(", ")}</dd>
+                  <dd className="m-0 mt-1 text-sm leading-6 text-slate-700">{names.join(", ")}</dd>
                 </div>
               ))}
             </dl>
@@ -203,28 +203,28 @@ export default function AboutPage() {
           {roadmap.map((item) => (
             <article
               key={item.title}
-              className="rounded-2xl border border-line bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+              className="rounded-2xl border border-line bg-white p-6"
             >
-              <span className="grid size-11 place-items-center rounded-xl bg-blue-soft text-blue-hover dark:bg-slate-800">
+              <span className="grid size-11 place-items-center rounded-xl bg-blue-soft text-blue-hover">
                 <ToolIcon name={item.icon} size={20} />
               </span>
-              <h3 className="mb-2 mt-4 text-base font-bold text-navy dark:text-white">{item.title}</h3>
-              <p className="m-0 text-sm leading-6 text-muted dark:text-slate-400">{item.text}</p>
+              <h3 className="mb-2 mt-4 text-base font-bold text-navy">{item.title}</h3>
+              <p className="m-0 text-sm leading-6 text-muted">{item.text}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="bg-surface/60 py-14 dark:bg-slate-900/40">
+      <section className="bg-surface/60 py-14">
         <div className="container-app">
           <SectionHead eyebrow="How it works" title="Three steps, no maze" />
           <ol className="m-0 grid list-none gap-4 p-0 md:grid-cols-3">
             {steps.map((step, index) => (
-              <li key={step} className="rounded-2xl border border-line bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+              <li key={step} className="rounded-2xl border border-line bg-white p-6">
                 <span className="grid size-9 place-items-center rounded-full bg-navy text-sm font-extrabold text-white">
                   {index + 1}
                 </span>
-                <p className="mb-0 mt-4 text-sm leading-6 text-slate-700 dark:text-slate-300">{step}</p>
+                <p className="mb-0 mt-4 text-sm leading-6 text-slate-700">{step}</p>
               </li>
             ))}
           </ol>
@@ -234,8 +234,8 @@ export default function AboutPage() {
       <section className="container-app grid gap-10 py-14 lg:grid-cols-[0.8fr_1.2fr]">
         <div>
           <span className="text-xs font-bold uppercase tracking-widest text-blue-hover">Good to know</span>
-          <h2 className="mb-2 mt-2 text-3xl font-extrabold tracking-tight text-navy dark:text-white">Questions, answered</h2>
-          <p className="m-0 text-sm leading-6 text-muted dark:text-slate-400">
+          <h2 className="mb-2 mt-2 text-3xl font-extrabold tracking-tight text-navy">Questions, answered</h2>
+          <p className="m-0 text-sm leading-6 text-muted">
             Still stuck? <Link href="/contact" className="font-bold text-blue-hover underline">Write to us</Link>.
           </p>
         </div>
@@ -243,13 +243,13 @@ export default function AboutPage() {
           {faqList.map(([question, answer]) => (
             <details
               key={question}
-              className="group rounded-2xl border border-line bg-white px-5 py-4 dark:border-slate-800 dark:bg-slate-900"
+              className="group rounded-2xl border border-line bg-white px-5 py-4"
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-bold text-navy dark:text-white">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-bold text-navy">
                 {question}
                 <span aria-hidden="true" className="text-lg text-blue-hover transition group-open:rotate-45">+</span>
               </summary>
-              <p className="mb-0 mt-3 text-sm leading-6 text-muted dark:text-slate-400">{answer}</p>
+              <p className="mb-0 mt-3 text-sm leading-6 text-muted">{answer}</p>
             </details>
           ))}
         </div>

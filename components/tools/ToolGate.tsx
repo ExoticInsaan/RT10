@@ -21,10 +21,10 @@ export default function ToolGate({ toolId, toolName }: { toolId: string; toolNam
   }, [toolId, setRecent]);
 
   return (
-    <section className="rounded-3xl border border-line bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900 sm:p-10">
+    <section className="rounded-3xl border border-line bg-white p-6 shadow-card sm:p-10">
       <div className="mx-auto max-w-xl text-center">
         {!(ready && user && isFunTool(toolId)) && (
-          <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-blue-soft text-blue-hover dark:bg-blue-950">
+          <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-blue-soft text-blue-hover">
             <ToolIcon name={ready && user ? "zap" : "lock"} size={26} />
           </span>
         )}
@@ -32,15 +32,15 @@ export default function ToolGate({ toolId, toolName }: { toolId: string; toolNam
           <FunRunner toolId={toolId} />
         ) : ready && user ? (
           <>
-            <h2 className="mb-2 mt-5 text-xl font-extrabold text-navy dark:text-white">{toolName} is coming soon</h2>
-            <p className="m-0 text-sm leading-6 text-muted dark:text-slate-400">
+            <h2 className="mb-2 mt-5 text-xl font-extrabold text-navy">{toolName} is coming soon</h2>
+            <p className="m-0 text-sm leading-6 text-muted">
               You are signed in and ready. This tool is being built and will appear here shortly.
             </p>
           </>
         ) : (
           <>
-            <h2 className="mb-2 mt-5 text-xl font-extrabold text-navy dark:text-white">Sign in to use {toolName}</h2>
-            <p className="mb-5 mt-0 text-sm leading-6 text-muted dark:text-slate-400">
+            <h2 className="mb-2 mt-5 text-xl font-extrabold text-navy">Sign in to use {toolName}</h2>
+            <p className="mb-5 mt-0 text-sm leading-6 text-muted">
               It takes one tap with Google. Free, no watermark, and your files stay on your device.
             </p>
             <Button onClick={openSignIn}>Continue with Google</Button>

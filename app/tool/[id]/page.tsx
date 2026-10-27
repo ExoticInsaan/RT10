@@ -82,15 +82,15 @@ export default async function ToolPage({ params }: PageProps<"/tool/[id]">) {
   return (
     <div className="container-app pb-20 pt-10">
       {structuredData && <JsonLd data={structuredData} />}
-      <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted dark:text-slate-400">
+      <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted">
         <Link href="/">Home</Link> › <Link href="/the-shelf">Tools</Link> ›{" "}
         <Link href={categoryHref(tool.category)}>{tool.category}</Link> › {tool.name}
       </nav>
       <div className="mb-8 flex items-start gap-4">
         <IconTile tool={tool} large />
         <div>
-          <h1 className="m-0 text-3xl font-extrabold tracking-tight text-navy dark:text-white sm:text-4xl">{tool.name}</h1>
-          <p className="mb-0 mt-2 text-muted dark:text-slate-400">{tool.description}</p>
+          <h1 className="m-0 text-3xl font-extrabold tracking-tight text-navy sm:text-4xl">{tool.name}</h1>
+          <p className="mb-0 mt-2 text-muted">{tool.description}</p>
         </div>
       </div>
       <ToolGate toolId={tool.id} toolName={tool.name} />
@@ -99,11 +99,11 @@ export default async function ToolPage({ params }: PageProps<"/tool/[id]">) {
         <div className="mt-14 grid gap-10 lg:grid-cols-[1fr_20rem] lg:items-start">
           <div className="grid gap-10">
             <section>
-              <h2 className="mb-4 text-xl font-extrabold text-navy dark:text-white">How to use {tool.name}</h2>
+              <h2 className="mb-4 text-xl font-extrabold text-navy">How to use {tool.name}</h2>
               <ol className="m-0 grid list-none gap-3 p-0">
                 {content.howTo.map((step, index) => (
-                  <li key={step} className="flex gap-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
-                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-blue-soft text-xs font-bold text-blue-hover dark:bg-blue-950">
+                  <li key={step} className="flex gap-3 text-sm leading-6 text-slate-700">
+                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-blue-soft text-xs font-bold text-blue-hover">
                       {index + 1}
                     </span>
                     {step}
@@ -112,32 +112,32 @@ export default async function ToolPage({ params }: PageProps<"/tool/[id]">) {
               </ol>
             </section>
             <section>
-              <h2 className="mb-4 text-xl font-extrabold text-navy dark:text-white">Frequently asked questions</h2>
+              <h2 className="mb-4 text-xl font-extrabold text-navy">Frequently asked questions</h2>
               <div className="grid gap-3">
                 {content.faq.map((item) => (
                   <details
                     key={item.q}
-                    className="group rounded-2xl border border-line bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+                    className="group rounded-2xl border border-line bg-white p-4"
                   >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-navy dark:text-white">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-navy">
                       {item.q}
                       <span className="transition group-open:rotate-90">
                         <ToolIcon name="chevron" size={16} />
                       </span>
                     </summary>
-                    <p className="mb-0 mt-3 text-sm leading-6 text-slate-700 dark:text-slate-300">{item.a}</p>
+                    <p className="mb-0 mt-3 text-sm leading-6 text-slate-700">{item.a}</p>
                   </details>
                 ))}
               </div>
             </section>
           </div>
           {content.privacyNote && (
-            <aside className="rounded-2xl border border-line bg-surface p-5 dark:border-slate-800 dark:bg-slate-900">
-              <span className="grid size-10 place-items-center rounded-xl bg-blue-soft text-blue-hover dark:bg-blue-950">
+            <aside className="rounded-2xl border border-line bg-surface p-5">
+              <span className="grid size-10 place-items-center rounded-xl bg-blue-soft text-blue-hover">
                 <ToolIcon name="shield" size={19} />
               </span>
-              <strong className="mb-1 mt-4 block text-sm text-navy dark:text-white">Good to know</strong>
-              <p className="m-0 text-sm leading-6 text-slate-700 dark:text-slate-300">{content.privacyNote}</p>
+              <strong className="mb-1 mt-4 block text-sm text-navy">Good to know</strong>
+              <p className="m-0 text-sm leading-6 text-slate-700">{content.privacyNote}</p>
             </aside>
           )}
         </div>
@@ -145,16 +145,16 @@ export default async function ToolPage({ params }: PageProps<"/tool/[id]">) {
 
       {related.length > 0 && (
         <section className="mt-14">
-          <h2 className="mb-4 text-xl font-extrabold text-navy dark:text-white">More tools you may need</h2>
+          <h2 className="mb-4 text-xl font-extrabold text-navy">More tools you may need</h2>
           <div className="grid gap-4 sm:grid-cols-3">
             {related.map((t) => (
               <Link
                 key={t.id}
                 href={`/tool/${t.id}`}
-                className="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 transition hover:border-blue/60 dark:border-slate-800 dark:bg-slate-900"
+                className="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 transition hover:border-blue/60"
               >
                 <IconTile tool={t} />
-                <span className="text-sm font-bold text-navy dark:text-white">{t.name}</span>
+                <span className="text-sm font-bold text-navy">{t.name}</span>
                 <ToolIcon name="chevron" size={16} />
               </Link>
             ))}

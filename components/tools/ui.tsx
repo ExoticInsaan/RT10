@@ -12,12 +12,12 @@ export const RECENT_KEY = "toppershelf-recent";
 
 const buttonStyles = {
   primary:
-    "bg-blue-hover text-white shadow-sm hover:bg-navy dark:hover:bg-blue min-h-12 px-5 rounded-xl",
+    "bg-blue-hover text-white shadow-sm hover:bg-navy min-h-12 px-5 rounded-xl",
   secondary:
-    "border border-line bg-white text-navy hover:border-blue hover:bg-blue-soft dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 min-h-12 px-5 rounded-xl",
+    "border border-line bg-white text-navy hover:border-blue hover:bg-blue-soft min-h-12 px-5 rounded-xl",
   ghost:
-    "text-muted hover:bg-blue-soft hover:text-navy dark:text-slate-300 dark:hover:bg-slate-800 min-h-11 px-3 rounded-xl",
-  icon: "size-11 text-navy hover:bg-blue-soft dark:text-slate-100 dark:hover:bg-slate-800 rounded-full",
+    "text-muted hover:bg-blue-soft hover:text-navy min-h-11 px-3 rounded-xl",
+  icon: "size-11 text-navy hover:bg-blue-soft rounded-full",
 };
 
 export type ButtonVariant = keyof typeof buttonStyles;
@@ -101,8 +101,8 @@ export function SectionHead({
     <div className="mb-7 flex items-end justify-between gap-5">
       <div>
         {eyebrow && <span className="text-xs font-bold uppercase tracking-widest text-blue-hover">{eyebrow}</span>}
-        <h2 className="mb-1 mt-2 text-3xl font-extrabold tracking-tight text-navy dark:text-white">{title}</h2>
-        {description && <p className="m-0 text-sm text-muted dark:text-slate-400">{description}</p>}
+        <h2 className="mb-1 mt-2 text-3xl font-extrabold tracking-tight text-navy">{title}</h2>
+        {description && <p className="m-0 text-sm text-muted">{description}</p>}
       </div>
       {href && (
         <Link href={href} className="hidden items-center gap-1 text-sm font-bold text-blue-hover sm:inline-flex">
@@ -120,7 +120,7 @@ export function FavoriteButton({ id }: { id: string }) {
   return (
     <Button
       variant="icon"
-      className={`absolute right-3 top-3 size-9 min-h-9 ${active ? "bg-red-50 text-red-500 dark:bg-red-950" : "text-muted"}`}
+      className={`absolute right-3 top-3 size-9 min-h-9 ${active ? "bg-red-50 text-red-500" : "text-muted"}`}
       ariaLabel={active ? "Remove from favourites" : "Add to favourites"}
       onClick={() =>
         setFavourites((current) => (current.includes(id) ? current.filter((x) => x !== id) : [id, ...current]))
@@ -134,22 +134,22 @@ export function FavoriteButton({ id }: { id: string }) {
 export function ToolCard({ tool, compact = false }: { tool: Tool; compact?: boolean }) {
   return (
     <article
-      className={`group relative rounded-2xl border border-line bg-white transition hover:-translate-y-1 hover:border-blue/60 hover:shadow-card dark:border-slate-800 dark:bg-slate-900 ${
+      className={`group relative rounded-2xl border border-line bg-white transition hover:-translate-y-1 hover:border-blue/60 hover:shadow-card ${
         compact ? "p-4" : "p-5"
       }`}
     >
       <FavoriteButton id={tool.id} />
       <Link href={`/tool/${tool.id}`} className="block pr-8">
         <IconTile tool={tool} />
-        <h3 className="mb-1 mt-4 text-base font-bold tracking-tight text-navy dark:text-white">
+        <h3 className="mb-1 mt-4 text-base font-bold tracking-tight text-navy">
           {tool.name}
           {!tool.ready && (
-            <span className="ml-2 inline-block rounded-full bg-slate-100 px-2 py-0.5 align-middle text-[0.65rem] font-bold uppercase tracking-wide text-muted dark:bg-slate-800 dark:text-slate-400">
+            <span className="ml-2 inline-block rounded-full bg-slate-100 px-2 py-0.5 align-middle text-[0.65rem] font-bold uppercase tracking-wide text-muted">
               Soon
             </span>
           )}
         </h3>
-        <p className="m-0 text-sm leading-6 text-muted dark:text-slate-400">{tool.description}</p>
+        <p className="m-0 text-sm leading-6 text-muted">{tool.description}</p>
         {!compact && (
           <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-blue-hover">
             {tool.ready ? "Open tool" : "See details"} <ToolIcon name="arrow" size={14} />
@@ -174,7 +174,7 @@ export function SearchBox({
   return (
     <form
       role="search"
-      className={`flex items-center gap-3 border border-line bg-white shadow-search transition focus-within:border-blue dark:border-slate-700 dark:bg-slate-900 ${
+      className={`flex items-center gap-3 border border-line bg-white shadow-search transition focus-within:border-blue ${
         compact ? "h-12 rounded-xl px-4" : "h-16 rounded-2xl px-5"
       }`}
       onSubmit={(event) => {
@@ -187,7 +187,7 @@ export function SearchBox({
       </span>
       <input
         aria-label="Search all tools"
-        className="min-w-0 flex-1 border-0 bg-transparent text-sm text-ink outline-none placeholder:text-muted dark:text-white"
+        className="min-w-0 flex-1 border-0 bg-transparent text-sm text-ink outline-none placeholder:text-muted"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder="Search tools: CGPA, attendance, photo resizer..."

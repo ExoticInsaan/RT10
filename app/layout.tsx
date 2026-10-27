@@ -56,16 +56,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#FFFBF7" };
 
-// Sets dark mode before the first paint so the page never flashes light. Reads the saved choice, else the device setting.
-const themeScript = `try{var t=localStorage.getItem("toppershelf-theme");if(t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches)){document.documentElement.classList.add("dark")}}catch(e){}`;
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`h-full ${inter.variable} ${dmSerif.variable}`} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
-      <body className="flex min-h-full flex-col bg-ivory font-sans text-ink antialiased transition-colors dark:bg-slate-950 dark:text-slate-200">
+    <html lang="en" className={`h-full ${inter.variable} ${dmSerif.variable}`}>
+      <body className="flex min-h-full flex-col bg-ivory font-sans text-ink antialiased">
         <AuthProvider>
           <SiteHeader />
           <main className="flex-1">{children}</main>

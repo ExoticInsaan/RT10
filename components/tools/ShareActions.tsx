@@ -34,7 +34,7 @@ export default function ShareActions({ imageUrl, title }: { imageUrl: string; ti
         <a
           href={imageUrl}
           download="toppershelf-result.png"
-          className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-hover px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-navy dark:hover:bg-blue"
+          className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-hover px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-navy"
         >
           <ToolIcon name="download" size={17} /> Download card
         </a>
