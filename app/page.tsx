@@ -152,13 +152,16 @@ export default function Home() {
         <ShelfGrid list={shelfPicks}>
           {/* Fills the empty fourth slot when the row has two columns; three columns are already full. */}
           <Link href="/the-shelf" className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-hover lg:hidden">
-            <div className="shelf-object mx-2 grid aspect-[4/3] place-items-center rounded-t-2xl rounded-b-md border-2 border-dashed border-blue/50 bg-blue-soft text-blue-hover">
-              <span className="grid justify-items-center gap-2 text-center">
-                <span className="grid size-11 place-items-center rounded-full bg-white shadow-sm">
-                  <ToolIcon name="arrow" size={20} />
-                </span>
-                <span className="text-sm font-bold">See all {shelfCount}</span>
+            <div className="shelf-object relative mx-2 flex aspect-[4/3] flex-col items-center justify-end overflow-hidden rounded-t-2xl rounded-b-md border-2 border-dashed border-blue/50 bg-blue-soft">
+              {/* The TopperShelf owl peeks up from the bottom of the frame and points people to the full shelf. */}
+              <span className="relative mb-2 rounded-2xl bg-white px-3 py-1.5 text-xs font-extrabold text-blue-hover shadow-sm transition-colors group-hover:bg-blue-hover group-hover:text-white sm:text-sm">
+                View all {shelfCount}
+                <span
+                  className="absolute -bottom-1 left-1/2 size-2.5 -translate-x-1/2 rotate-45 bg-inherit"
+                  aria-hidden="true"
+                />
               </span>
+              <Image src="/mascot/owl-peek.webp" alt="" width={360} height={282} className="h-auto w-[52%]" />
             </div>
             <div className="shelf-plank" aria-hidden="true" />
             <div className="px-1 pt-3 sm:px-2 sm:pt-4">
