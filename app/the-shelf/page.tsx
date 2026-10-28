@@ -7,7 +7,7 @@ import { tools } from "@/lib/tools/registry";
 export const metadata: Metadata = {
   title: "The Shelf",
   description:
-    "Free tools for real jobs: PDF toolkit, image compressor, focus timer, flashcards, CGPA calculator, QR codes, attendance, reminders and countdowns.",
+    "Free tools for real jobs: PDF toolkit, image compressor, focus timer, flashcards, CGPA calculator, attendance, reminders and countdowns.",
   alternates: { canonical: "/the-shelf" },
 };
 

@@ -6,7 +6,7 @@ import { tools } from "@/lib/tools/registry";
  * A "view all" tile for a row of three ShelfItems: the TopperShelf owl peeks up and points to the full shelf.
  * Only shown below the lg breakpoint, where rows have two columns and this fills the empty fourth slot.
  */
-export default function ShelfViewAll({ text = "QR codes, flashcards, reminders and more." }: { text?: string }) {
+export default function ShelfViewAll({ text = "Flashcards, reminders and more." }: { text?: string }) {
   const count = tools.filter((tool) => tool.category === "The Shelf").length;
   return (
     <Link

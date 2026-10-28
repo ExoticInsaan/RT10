@@ -232,7 +232,7 @@ export function SearchBox({
         className="min-w-0 flex-1 border-0 bg-transparent text-sm text-ink outline-none placeholder:text-muted"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        placeholder="Search tools: PDF, CGPA, QR code..."
+        placeholder="Search tools: PDF, CGPA, attendance..."
       />
       <Button
         type="submit"

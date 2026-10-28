@@ -89,18 +89,6 @@ export const tools: Tool[] = [
     popular: true,
   },
   {
-    id: "qr-code-generator",
-    name: "QR Code Generator",
-    description: "Make a QR code for a link or some text and download it as an image.",
-    category: "The Shelf",
-    ready: true,
-    icon: "grid",
-    tone: "blue",
-    image: "/shelf/qr-code-generator.webp",
-    imageBg: "#f8f8f8",
-    imageFit: "contain",
-  },
-  {
     id: "attendance-calculator",
     name: "Attendance Calculator",
     description: "See how many classes you can skip, or must attend, to stay above 75%.",

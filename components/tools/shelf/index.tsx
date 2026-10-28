@@ -15,7 +15,6 @@ export const shelfTools: Record<string, ComponentType> = {
   "days-countdown": dynamic(() => import("./DaysCountdown"), { loading, ssr: false }),
   "image-compressor": dynamic(() => import("./ImageCompressor"), { loading, ssr: false }),
   "pdf-toolkit": dynamic(() => import("./PdfToolkit"), { loading, ssr: false }),
-  "qr-code-generator": dynamic(() => import("./QrCodeGenerator"), { loading, ssr: false }),
   "focus-timer": dynamic(() => import("./FocusTimer"), { loading, ssr: false }),
   "flashcard-maker": dynamic(() => import("./FlashcardMaker"), { loading, ssr: false }),
   reminder: dynamic(() => import("./Reminder"), { loading, ssr: false }),

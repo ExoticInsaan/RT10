@@ -61,7 +61,6 @@ const quickLinks: [string, string][] = [
   ["CGPA to %", "/tool/cgpa-calculator"],
   ["Compress an image", "/tool/image-compressor"],
   ["Attendance", "/tool/attendance-calculator"],
-  ["QR code", "/tool/qr-code-generator"],
 ];
 
 // Clickable spots over the shelf picture (percent of the image), matched to what each drawn icon shows.

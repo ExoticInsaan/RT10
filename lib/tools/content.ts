@@ -158,21 +158,6 @@ const shelfContent: Record<string, ToolContent> = {
     ],
     privacyNote: typedNote,
   },
-  "qr-code-generator": {
-    howTo: [
-      "Sign in with Google (one tap, free).",
-      "Choose Link, Text, Wi-Fi or UPI payment and fill in the details.",
-      "Pick colours if you like. The code updates as you type.",
-      "Download it as a PNG, or SVG for printing at any size.",
-    ],
-    faq: [
-      { q: "Do these QR codes expire?", a: "No. The information is inside the code itself, so it works for as long as the link, network or UPI ID does." },
-      { q: "How does the Wi-Fi QR code work?", a: "Phones that scan it are offered to join the network without typing the password. It works with the built-in camera on most Android phones and iPhones." },
-      { q: "Can I make a QR code to receive UPI payments?", a: "Yes. Enter your UPI ID, and optionally a name, amount and note. GPay, PhonePe, Paytm and other UPI apps can scan it. Double-check the UPI ID before sharing." },
-      { q: "Which colours scan best?", a: "A dark code on a light background. Very light codes or low contrast can stop some phones from scanning." },
-    ],
-    privacyNote: typedNote,
-  },
   "attendance-calculator": {
     howTo: [
       "Sign in with Google (one tap, free).",
