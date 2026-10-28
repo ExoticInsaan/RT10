@@ -97,8 +97,8 @@ export const tools: Tool[] = [
     icon: "checkCircle",
     tone: "blue",
     image: "/shelf/attendance-calculator.webp",
-    imageBg: "#ffffff",
-    imageFit: "contain",
+    imageBg: "#adeadc",
+    imageFit: "cover",
     popular: true,
   },
   {
