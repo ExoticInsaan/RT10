@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 
-export type AccountToolId = "flashcard-maker" | "reminder" | "days-countdown";
+export type AccountToolId = "flashcard-maker" | "reminder" | "days-countdown" | "grow-a-sapling";
 export type AccountStatus = "loading" | "ready" | "error";
 
 // Browser copies from before tools were tied to accounts. They are deleted, never imported.

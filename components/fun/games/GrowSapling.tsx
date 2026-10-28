@@ -2,6 +2,7 @@
 
 import { useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
+import { useGardenSync } from "@/components/fun/useGardenSync";
 import { FitBox, GameShell, copyText, loadJSON, rng, saveJSON, useTimers } from "@/components/fun/kit";
 
 /* ---------- garden data ---------- */
@@ -175,6 +176,7 @@ function GardenGame() {
   const [nudge, setNudge] = useState("");
   const [copied, setCopied] = useState(false);
   const later = useTimers();
+  useGardenSync(g, setG, KEY);
   const nudgeTimer = useRef(0);
 
   const set = (patch: Partial<Garden>) => {
