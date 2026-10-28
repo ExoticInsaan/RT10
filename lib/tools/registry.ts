@@ -78,7 +78,7 @@ export const tools: Tool[] = [
   {
     id: "cgpa-calculator",
     name: "CGPA & Percentage Calculator",
-    description: "Convert CGPA or SGPA to percentage, and back.",
+    description: "Convert CGPA or SGPA to percentage and back, or get your percentage from marks.",
     category: "The Shelf",
     ready: true,
     icon: "calculator",

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Field, Hint, NumberField, ResultPanel, Segmented, inputClass, toNumber } from "@/components/tools/kit";
 import ToolIcon from "@/components/tools/ToolIcon";
+import { ModeCards, ModeHeader, type ModeCard } from "@/components/tools/ModeCards";
 
 /*
  * Conversion formulas in common use in India. A board's or university's own rule (printed on the marksheet or in its
@@ -47,8 +48,65 @@ const formulas: Formula[] = [
   },
 ];
 
-type Mode = "to-percent" | "to-cgpa" | "sgpa";
+type Mode = "to-percent" | "to-cgpa" | "sgpa" | "marks";
 type Semester = { sgpa: string; credits: string };
+type Subject = { name: string; got: string; max: string };
+
+const newSubject = (): Subject => ({ name: "", got: "", max: "100" });
+
+/** The jobs, shown as cards on phones and tablets and as pills on desktop. */
+const cards: ModeCard[] = [
+  {
+    value: "to-percent",
+    label: "CGPA → %",
+    intro: "Turn your CGPA or SGPA into a percentage.",
+    tone: "bg-blue-soft text-blue-hover",
+    icon: (
+      <>
+        <path d="M5 19 19 5" />
+        <circle cx="7" cy="7" r="2.5" />
+        <circle cx="17" cy="17" r="2.5" />
+      </>
+    ),
+  },
+  {
+    value: "to-cgpa",
+    label: "% → CGPA",
+    intro: "Turn a percentage back into a CGPA.",
+    tone: "bg-emerald-50 text-emerald-600",
+    icon: (
+      <>
+        <path d="M4 12h13M13 7l5 5-5 5" />
+        <path d="M4 5v4M4 15v4" />
+      </>
+    ),
+  },
+  {
+    value: "sgpa",
+    label: "SGPAs → CGPA",
+    intro: "Combine your semester SGPAs into one CGPA.",
+    tone: "bg-violet-50 text-violet",
+    icon: (
+      <>
+        <rect x="3" y="12" width="4" height="8" rx="1" />
+        <rect x="10" y="8" width="4" height="12" rx="1" />
+        <rect x="17" y="4" width="4" height="16" rx="1" />
+      </>
+    ),
+  },
+  {
+    value: "marks",
+    label: "Marks → %",
+    intro: "Get the percentage for each subject and your total.",
+    tone: "bg-orange-50 text-orange-500",
+    icon: (
+      <>
+        <rect x="5" y="3" width="14" height="18" rx="2" />
+        <path d="M9 8h6M9 12h6M9 16h3" />
+      </>
+    ),
+  },
+];
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
@@ -63,6 +121,10 @@ export default function CgpaCalculator() {
     { sgpa: "", credits: "" },
     { sgpa: "", credits: "" },
   ]);
+  const [subjects, setSubjects] = useState<Subject[]>([newSubject(), newSubject(), newSubject()]);
+  // Phones and tablets start on the cards; desktop always shows the pills and the calculator.
+  const [picked, setPicked] = useState(false);
+  const currentCard = cards.find((c) => c.value === mode)!;
 
   const multiplier = toNumber(custom);
   const formula: Formula =
@@ -79,18 +141,30 @@ export default function CgpaCalculator() {
 
   return (
     <div className="mx-auto grid max-w-3xl gap-6">
-      <Segmented
-        label="What do you want to work out?"
-        value={mode}
-        onChange={setMode}
-        options={[
-          { value: "to-percent", label: "CGPA → %" },
-          { value: "to-cgpa", label: "% → CGPA" },
-          { value: "sgpa", label: "SGPAs → CGPA" },
-        ]}
-      />
+      {!picked && (
+        <ModeCards
+          title="What do you want to work out?"
+          cards={cards}
+          onPick={(value) => {
+            setMode(value as Mode);
+            setPicked(true);
+          }}
+        />
+      )}
 
-      {mode !== "sgpa" && (
+      <div className={`grid gap-6 ${picked ? "" : "max-lg:hidden"}`}>
+      {picked && <ModeHeader card={currentCard} onBack={() => setPicked(false)} backLabel="Back to all calculators" />}
+      {picked && <p className="m-0 text-sm text-muted lg:hidden">{currentCard.intro}</p>}
+      <div className="max-lg:hidden">
+        <Segmented
+          label="What do you want to work out?"
+          value={mode}
+          onChange={setMode}
+          options={cards.map(({ value, label }) => ({ value: value as Mode, label }))}
+        />
+      </div>
+
+      {(mode === "to-percent" || mode === "to-cgpa") && (
         <div className="grid gap-4 sm:grid-cols-2">
           {mode === "to-percent" ? (
             <NumberField label="Your CGPA" value={cgpa} onChange={setCgpa} min={0} max={10} placeholder="e.g. 8.4" hint="On a 10-point scale." />
@@ -123,6 +197,8 @@ export default function CgpaCalculator() {
       {mode === "to-percent" && <ToPercent cgpa={toNumber(cgpa)} formula={formula} customMissing={customMissing} />}
       {mode === "to-cgpa" && <ToCgpa percent={toNumber(percent)} formula={formula} customMissing={customMissing} />}
       {mode === "sgpa" && <SgpaToCgpa semesters={semesters} setSemesters={setSemesters} />}
+      {mode === "marks" && <MarksToPercent subjects={subjects} setSubjects={setSubjects} />}
+      </div>
     </div>
   );
 }
@@ -227,6 +303,99 @@ function SgpaToCgpa({
             ? `Weighted by ${totalCredits} total credits.`
             : "Simple average. Add credits for every semester to weight it by credits."}
         </ResultPanel>
+      )}
+    </div>
+  );
+}
+
+function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSubjects: (next: Subject[]) => void }) {
+  const update = (index: number, patch: Partial<Subject>) => setSubjects(subjects.map((s, i) => (i === index ? { ...s, ...patch } : s)));
+
+  const rows = subjects.map((s, index) => {
+    const got = toNumber(s.got);
+    const max = toNumber(s.max);
+    const filled = Number.isFinite(got);
+    const bad = filled && (!(max > 0) || got < 0 || got > max);
+    return { index, name: s.name.trim() || `Subject ${index + 1}`, got, max, filled, bad };
+  });
+  const used = rows.filter((r) => r.filled && !r.bad);
+  const anyBad = rows.some((r) => r.bad);
+  const totalGot = used.reduce((sum, r) => sum + r.got, 0);
+  const totalMax = used.reduce((sum, r) => sum + r.max, 0);
+
+  return (
+    <div className="grid gap-5">
+      <p className="m-0 text-sm leading-6 text-muted max-lg:hidden">
+        Add the marks you got in each subject and what it was out of. You get the percentage for every subject and your overall percentage.
+      </p>
+      <ol className="m-0 grid list-none gap-3 p-0">
+        {subjects.map((s, index) => (
+          <li key={index} className="grid gap-3 rounded-2xl border border-line bg-white p-3 sm:grid-cols-[1.2fr_1fr_1fr_auto] sm:items-end">
+            <div className="flex items-end gap-2 sm:contents">
+              <Field label={`Subject ${index + 1}`}>
+                <input
+                  className={inputClass}
+                  value={s.name}
+                  maxLength={40}
+                  placeholder="e.g. Physics (optional)"
+                  onChange={(e) => update(index, { name: e.target.value })}
+                />
+              </Field>
+              <button
+                type="button"
+                aria-label={`Remove subject ${index + 1}`}
+                disabled={subjects.length <= 1}
+                onClick={() => setSubjects(subjects.filter((_, i) => i !== index))}
+                className="mb-1 grid size-10 shrink-0 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-muted hover:bg-surface hover:text-navy disabled:cursor-not-allowed disabled:opacity-40 sm:order-last"
+              >
+                <ToolIcon name="close" size={18} />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:contents">
+              <NumberField label="Marks got" value={s.got} onChange={(v) => update(index, { got: v })} min={0} placeholder="e.g. 78" />
+              <NumberField label="Out of" value={s.max} onChange={(v) => update(index, { max: v })} min={0} placeholder="100" />
+            </div>
+          </li>
+        ))}
+      </ol>
+      <button
+        type="button"
+        disabled={subjects.length >= 15}
+        onClick={() => setSubjects([...subjects, newSubject()])}
+        className="min-h-11 cursor-pointer justify-self-start rounded-xl border border-dashed border-line bg-white px-4 text-sm font-semibold text-navy hover:border-blue-hover disabled:opacity-50"
+      >
+        + Add a subject
+      </button>
+
+      {anyBad ? (
+        <Hint error>Marks should be between 0 and the “Out of” value, and “Out of” should be more than 0.</Hint>
+      ) : used.length === 0 ? (
+        <Hint>Enter your marks in at least one subject to see the percentages.</Hint>
+      ) : (
+        <div className="grid gap-4">
+          <ResultPanel label={`Total percentage · ${round2(totalGot)} out of ${round2(totalMax)}`} value={`${round2((totalGot / totalMax) * 100)}%`}>
+            {used.length === 1 ? "Based on 1 subject." : `Added up over ${used.length} subjects, not an average of the subject percentages.`}
+          </ResultPanel>
+          <ul className="m-0 grid list-none gap-2 p-0">
+            {used.map((r) => {
+              const pct = (r.got / r.max) * 100;
+              return (
+                <li key={r.index} className="rounded-2xl border border-line bg-white px-4 py-3">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="min-w-0 truncate text-sm font-semibold text-navy">{r.name}</span>
+                    <span className="shrink-0 text-base font-extrabold text-navy">{round2(pct)}%</span>
+                  </div>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface">
+                    <div className="h-full rounded-full bg-blue-hover" style={{ width: `${clamp(pct, 0, 100)}%` }} />
+                  </div>
+                  <div className="mt-1.5 text-xs text-muted">
+                    {round2(r.got)} out of {round2(r.max)}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       )}
     </div>
   );
