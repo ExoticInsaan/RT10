@@ -9,16 +9,16 @@ import { resultLink } from "@/lib/fun/results";
 type Phase = "input" | "loading" | "result";
 
 const VIBES = [
-  { n: "Main Character", a: "#f9a8d4", b: "#db2777", bg: "#be185d", l: "The universe cast you as the lead today. Walk slower, look out of windows." },
-  { n: "Chaotic Good", a: "#fdba74", b: "#ea580c", bg: "#c2410c", l: "You will cause problems, but helpful ones. Chaos with a good heart." },
-  { n: "Sleepy Genius", a: "#c4b5fd", b: "#7c3aed", bg: "#6d28d9", l: "Brain at 200%, eyelids at 12%. Your best idea arrives at 2am." },
+  { n: "Main Character", a: "#f9a8d4", b: "#db2777", bg: "#be185d", l: "You're the main character today. Walk slow, stare out of windows, no cap." },
+  { n: "Chaotic Good", a: "#fdba74", b: "#ea580c", bg: "#c2410c", l: "You'll cause problems, but the helpful kind. Chaos with a good heart." },
+  { n: "Sleepy Genius", a: "#c4b5fd", b: "#7c3aed", bg: "#6d28d9", l: "Brain at 200%, eyes at 12%. Your best idea hits at 2am." },
   { n: "Unbothered Royalty", a: "#fde68a", b: "#d97706", bg: "#b45309", l: "Nothing can shake you today. Not even a surprise test." },
-  { n: "Golden Retriever", a: "#fef08a", b: "#eab308", bg: "#a16207", l: "Pure sunshine. You will hype up at least three people today." },
+  { n: "Golden Retriever", a: "#fef08a", b: "#eab308", bg: "#a16207", l: "Pure sunshine energy. You'll hype up at least 3 people today." },
   { n: "Lo-fi Focus", a: "#99f6e4", b: "#0d9488", bg: "#0f766e", l: "Headphones on, world off. Today you actually finish the thing." },
-  { n: "Chai Philosopher", a: "#fed7aa", b: "#b45309", bg: "#92400e", l: "Deep thoughts, one cup at a time. Avoid debates before noon." },
-  { n: "Plot Twist Pending", a: "#a5f3fc", b: "#0284c7", bg: "#0369a1", l: "Something unexpected is loading. Keep your phone charged." },
-  { n: "Soft Launch", a: "#fbcfe8", b: "#c026d3", bg: "#a21caf", l: "Quietly levelling up. Nobody knows yet, and that is the point." },
-  { n: "Villain Arc (Productive)", a: "#fca5a5", b: "#dc2626", bg: "#b91c1c", l: "Revenge served as a perfect assignment. Petty, but efficient." },
+  { n: "Chai Philosopher", a: "#fed7aa", b: "#b45309", bg: "#92400e", l: "Deep thoughts, one cup at a time. Skip the debates before noon." },
+  { n: "Plot Twist Pending", a: "#a5f3fc", b: "#0284c7", bg: "#0369a1", l: "Something wild is loading. Keep your phone charged." },
+  { n: "Soft Launch", a: "#fbcfe8", b: "#c026d3", bg: "#a21caf", l: "Quietly levelling up. Nobody knows yet and that's the point." },
+  { n: "Villain Arc (Productive)", a: "#fca5a5", b: "#dc2626", bg: "#b91c1c", l: "Revenge, but make it a perfect assignment. Petty but it works." },
 ];
 const STARS = Array.from({ length: 16 }, (_, i) => ({
   x: (((i * 73) % 330) + 8) / 350 * 100,
@@ -108,7 +108,7 @@ export default function VibeCheck() {
           }}
         />
         <div className="absolute inset-x-0 bottom-4 text-center font-display text-[22px] text-white">
-          {phase === "loading" ? "Reading your aura…" : "Your aura is waiting"}
+          {phase === "loading" ? "Reading your aura, hold up…" : "Your aura is waiting fr"}
         </div>
       </div>
     ) : (

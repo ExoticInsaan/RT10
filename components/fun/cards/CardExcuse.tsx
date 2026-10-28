@@ -8,7 +8,7 @@ export type ExcuseCardData = { situation: string; text: string; believe: number 
 
 export const excuseSample: ExcuseCardData = {
   situation: "missing the 8am class",
-  text: "A very confident pigeon sat on my notebook, so I followed protocol and stayed calm.",
+  text: "A very confident pigeon sat on my notebook, so I followed the rules and ngl, respect.",
   believe: 34,
 };
 

@@ -9,9 +9,9 @@ export type RoastCardData = { day: string; lines: string[]; level: string; score
 export const roastSample: RoastCardData = {
   day: "6 classes, no breaks, coaching, sleep at 2am, self study",
   lines: [
-    "6 classes? That is not a timetable, that is a hostage situation.",
-    "No breaks. Your bladder has filed a formal complaint with the principal.",
-    "Self study is a beautiful fiction, like unicorns and free periods.",
+    "6 classes? That's not a timetable bro, that's a hostage situation.",
+    "No breaks? Your bladder just filed a complaint, no cap.",
+    "Self study is lowkey a myth, like unicorns and free periods.",
   ],
   level: "VOLCANIC",
   score: 8,

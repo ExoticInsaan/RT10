@@ -11,7 +11,7 @@ export const cookedSample: CookedCardData = {
   score: 87,
   tier: "WELL DONE",
   bg: "#d6401b",
-  verdict: "Well done. Your brain has 47 tabs open and one is playing music.",
+  verdict: "Well done bro, you're cooked. 47 tabs open and one is playing music.",
 };
 
 /** 9:16 story card (drawn at 540x960, exported at 1080x1920). The colours follow the result. */

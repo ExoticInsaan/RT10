@@ -7,9 +7,9 @@ import { GameShell, hash, useTimers } from "@/components/fun/kit";
 import { resultLink } from "@/lib/fun/results";
 
 const LISTS = [
-  ["My neighbour’s goat", "A rogue auto-rickshaw", "Nani’s WhatsApp group", "The Wi-Fi router", "A very confident pigeon", "My little cousin", "Mercury in retrograde", "The building lift", "My phone’s autocorrect", "A suspicious monsoon cloud"],
-  ["ate my charger", "kidnapped my alarm", "sent a 40-min voice note", "locked the bathroom door", "started a staring contest", "hid my left shoe", "updated itself overnight", "declared a holiday", "sat on my notebook", "got stuck between floors"],
-  ["so I had to negotiate", "and I’m still recovering", "so time stopped working", "and police were almost called", "so I went via Bhopal", "and honestly, respect", "so I followed protocol", "my horoscope warned me", "so I waited for justice", "and nobody believes me"],
+  ["My neighbour’s goat", "A random auto driver", "Nani’s WhatsApp group", "The wifi router", "A very confident pigeon", "My little cousin", "Mercury in retrograde", "The building lift", "My phone’s autocorrect", "A sus monsoon cloud"],
+  ["ate my charger", "kidnapped my alarm", "sent a 40 min voice note", "locked the bathroom door", "started a staring contest", "hid my left shoe", "updated itself overnight", "declared a holiday", "sat on my notebook", "got stuck between floors"],
+  ["so I had to negotiate", "and I'm still not okay", "so time just stopped", "and they almost called the police", "so I took the long way via Bhopal", "and ngl, respect", "so I followed the rules", "my horoscope literally warned me", "so I waited for justice", "and nobody believes me fr"],
 ];
 const LABELS = ["WHO", "DID WHAT", "AND THEN"];
 const DURS = [1.6, 1.9, 2.2];
@@ -146,7 +146,7 @@ export default function ExcuseGenerator() {
         </div>
       ) : (
         <div className="rounded-[20px] border-2 border-dashed border-[#d6ccff] p-4 text-center text-[15px] leading-[1.4] text-[#5b4f86]">
-          {spinning ? "Consulting the excuse machine…" : "Describe the situation, then pull the lever."}
+          {spinning ? "Cooking up an excuse…" : "Tell me what happened, then pull the lever."}
         </div>
       )}
     </div>
@@ -179,7 +179,7 @@ export default function ExcuseGenerator() {
       icon="/fun-zone/excuse-generator.webp"
       iconBg="#cfcbfc"
       title="Excuse Generator"
-      subtitle="Silly excuses for oddly specific situations."
+      subtitle="Funny excuses for super specific situations, lowkey believable."
       status="LIVE"
       panelClass="bg-[#f3f0ff] px-5 text-[#1d1340] sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:content-center lg:gap-x-10 lg:gap-y-4"
       rootClass="bg-[#f3f0ff]"

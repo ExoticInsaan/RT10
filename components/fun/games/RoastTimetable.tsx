@@ -9,12 +9,12 @@ import { resultLink } from "@/lib/fun/results";
 type Phase = "input" | "roasting" | "result";
 
 const GENERIC = [
-  "This timetable was clearly designed by someone who hates you, and that someone is you.",
-  "Even Google Calendar looked at this and quietly logged out.",
-  "Your free time is a myth passed down through generations.",
-  "The only thing this schedule is consistent at is chaos.",
-  "Somewhere a sleep scientist just felt a cold shiver.",
-  "This is not time management, this is time hostage negotiations.",
+  "This timetable was made by someone who hates you, and that someone is you.",
+  "Even Google Calendar looked at this and logged out.",
+  "Free time? Never heard of her.",
+  "The only thing consistent here is the chaos.",
+  "A sleep doctor somewhere just got chills.",
+  "This isn't time management, it's pure chaos with extra steps.",
 ];
 const LEVELS = ["MILD", "MILD", "MILD", "WARM", "WARM", "SPICY", "SPICY", "HOT", "EXTRA HOT", "VOLCANIC", "VOLCANIC"];
 const TIMES = ["7:00", "9:30", "1:00", "6:00", "11:45"];
@@ -32,21 +32,21 @@ export function roastFor(day: string) {
   if (m1) {
     const n = +m1[1];
     hits += n >= 5 ? 3 : 1;
-    out.push(n >= 5 ? `${n} classes? That is not a timetable, that is a hostage situation.` : `${n} classes and you are already tired? The bench is more tired of you.`);
+    out.push(n >= 5 ? `${n} classes? That's not a timetable bro, that's a hostage situation.` : `${n} classes and you're already tired? Even the bench is tired of you.`);
   }
-  if (/no\s*break/.test(d)) { hits += 2; out.push("No breaks. Your bladder has filed a formal complaint with the principal."); }
+  if (/no\s*break/.test(d)) { hits += 2; out.push("No breaks? Your bladder just filed a complaint, no cap."); }
   const m2 = d.match(/(sleep|bed|sleeping)\D{0,10}(\d{1,2})\s*(am)/);
   if (m2) {
     const hr = +m2[2];
     hits += hr <= 5 ? 3 : 1;
-    out.push(`Sleeping at ${hr}am is not a schedule, it is a lifestyle sponsored by your Wi-Fi.`);
+    out.push(`Sleeping at ${hr}am isn't a schedule, it's a lifestyle sponsored by your wifi.`);
   }
-  if (/gym|workout/.test(d)) { hits += 1; out.push('You wrote "gym" in the timetable. The gym has never heard of you.'); }
-  if (/netflix|reels|insta|youtube|scroll|phone/.test(d)) { hits += 2; out.push('That "quick scroll" has been running for three business days.'); }
-  if (/coaching|tuition/.test(d)) { hits += 2; out.push("School, then coaching, then tuition. Even your shadow is asking for a holiday."); }
-  if (/\b(6|7|8)\s*am\b/.test(d) && !m2) { hits += 1; out.push("An early morning class. Your alarm now has trust issues."); }
-  if (/self.?study|revision|study/.test(d)) { hits += 1; out.push('"Self study" is a beautiful fiction, like unicorns and free periods.'); }
-  if (/chai|coffee|tea|maggi/.test(d)) { hits += 1; out.push("Caffeine and Maggi are now officially subjects. Respect."); }
+  if (/gym|workout/.test(d)) { hits += 1; out.push('You wrote "gym" in the timetable. The gym has no idea who you are.'); }
+  if (/netflix|reels|insta|youtube|scroll|phone/.test(d)) { hits += 2; out.push('That "quick scroll" has been going for 3 days straight.'); }
+  if (/coaching|tuition/.test(d)) { hits += 2; out.push("School, then coaching, then tuition. Even your shadow wants a break."); }
+  if (/\b(6|7|8)\s*am\b/.test(d) && !m2) { hits += 1; out.push("Early morning class? Your alarm has trust issues now."); }
+  if (/self.?study|revision|study/.test(d)) { hits += 1; out.push('"Self study" is lowkey a myth, like unicorns and free periods.'); }
+  if (/chai|coffee|tea|maggi/.test(d)) { hits += 1; out.push("Chai and Maggi are officially subjects now. Respect."); }
   const finisher = GENERIC[h % GENERIC.length];
   const lines = out.slice(0, 2);
   if (lines.length < 2) lines.push(GENERIC[(h >>> 5) % GENERIC.length] === finisher ? GENERIC[(h + 1) % GENERIC.length] : GENERIC[(h >>> 5) % GENERIC.length]);
@@ -163,7 +163,7 @@ export default function RoastTimetable() {
   );
 
   const heat = roasting && (
-    <div className="text-center font-display text-[26px] font-normal text-[#c73a1d] lg:col-start-2 lg:row-start-3">Turning up the heat…</div>
+    <div className="text-center font-display text-[26px] font-normal text-[#c73a1d] lg:col-start-2 lg:row-start-3">Getting the roast ready…</div>
   );
 
   const result = isResult && (

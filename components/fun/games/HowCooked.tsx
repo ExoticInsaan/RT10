@@ -9,11 +9,11 @@ import { resultLink } from "@/lib/fun/results";
 type Phase = "input" | "loading" | "result";
 
 const TIERS = [
-  { max: 20, tier: "RAW", bg: "#2f9e6e", v: ["Raw. Suspiciously well-rested. Teach us your ways.", "Barely warm. Do you even have deadlines?", "Uncooked and thriving. The pot is confused."] },
-  { max: 40, tier: "TOASTED", bg: "#d69a0f", v: ["Lightly toasted. Still has hope and a working sleep schedule.", "Golden brown. One more assignment and you turn crispy.", "Warm, not hot. You have opened the syllabus at least once."] },
-  { max: 60, tier: "MEDIUM", bg: "#e8701f", v: ["Medium. Running purely on chai and vibes.", "Half cooked. Your to-do list has a to-do list.", "Simmering. You said \"just 5 more minutes\" four hours ago."] },
-  { max: 80, tier: "WELL DONE", bg: "#d6401b", v: ["Well done. Your brain has 47 tabs open and one is playing music.", "Crispy edges. You replied \"ok\" to a message from last week.", "Sizzling. Your alarm has started setting its own alarms."] },
-  { max: 100, tier: "CHARCOAL", bg: "#8a1c1c", v: ["Fully cooked. Charcoal. Absolute legend energy.", "Burnt to a crisp. The smoke alarm knows your name.", "Beyond cooked. Scientists want to study you."] },
+  { max: 20, tier: "RAW", bg: "#2f9e6e", v: ["Raw. You're actually well-rested?? Teach us your ways bro.", "Barely warm. Do you even have deadlines? Lucky you fr.", "Not cooked at all. Main character with free time, no cap."] },
+  { max: 40, tier: "TOASTED", bg: "#d69a0f", v: ["Lightly toasted. Still got hope and a sleep schedule, no cap.", "Golden brown. One more assignment and you're crispy.", "Just warm. You opened the syllabus once, that counts."] },
+  { max: 60, tier: "MEDIUM", bg: "#e8701f", v: ["Medium cooked. Running on chai and vibes only.", "Half cooked. Your to-do list needs its own to-do list.", "Simmering. You said \"5 more mins\" like 4 hours ago."] },
+  { max: 80, tier: "WELL DONE", bg: "#d6401b", v: ["Well done bro, you're cooked. 47 tabs open and one is playing music.", "Crispy edges. You left your bestie on read for a week.", "Sizzling. Even your alarm gave up on you."] },
+  { max: 100, tier: "CHARCOAL", bg: "#8a1c1c", v: ["Fully cooked fr. Charcoal. Absolute legend tho.", "Burnt to a crisp. Even the smoke alarm knows your name.", "Beyond cooked. It's over, but make it iconic."] },
 ];
 
 /** Same name, same result: the score comes from a hash of the name. */
@@ -24,7 +24,7 @@ export function cookedResult(name: string) {
   return { score, tier: t.tier, bg: t.bg, verdict: t.v[(h >>> 8) % t.v.length] };
 }
 
-const MSGS = ["Heating the pot…", "Counting open tabs…", "Checking sleep debt…", "Almost cooked…"];
+const MSGS = ["Heating the pot…", "Counting your open tabs…", "Checking your sleep debt…", "Lowkey almost cooked…"];
 const SPARK_COLORS = ["#ffb52e", "#ff5b1f", "#2f9e6e", "#7b5cff", "#fff"];
 const BUBBLES = [
   { x: 130, y: 136, r: 5, d: 0 }, { x: 160, y: 140, r: 3.5, d: 0.4 }, { x: 192, y: 134, r: 6, d: 0.8 }, { x: 222, y: 139, r: 4, d: 0.2 },
