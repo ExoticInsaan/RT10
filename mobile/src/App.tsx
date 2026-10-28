@@ -7,6 +7,7 @@ import FunZone from "./screens/FunZone";
 import Home from "./screens/Home";
 import MyShelf from "./screens/MyShelf";
 import { Onboard1, Onboard2 } from "./screens/Onboard";
+import Settings from "./screens/Settings";
 import Shelf from "./screens/Shelf";
 import SignIn from "./screens/SignIn";
 import Splash from "./screens/Splash";
@@ -29,6 +30,8 @@ function Screen({ path }: { path: string }) {
       return <FunZone />;
     case "/my-shelf":
       return <MyShelf />;
+    case "/settings":
+      return <Settings />;
     default:
       return <Splash />;
   }
