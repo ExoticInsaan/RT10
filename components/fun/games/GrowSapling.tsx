@@ -3,7 +3,9 @@
 import { useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { useAuth } from "@/components/AuthProvider";
+import { useGardenBuddy } from "@/components/fun/useGardenBuddy";
 import { useGardenSync } from "@/components/fun/useGardenSync";
+import { linkLabel, linkUrl, nativeShare, whatsappHref } from "@/lib/fun/friends";
 import { Button } from "@/components/tools/ui";
 import { FitBox, GameShell, copyText, loadJSON, rng, saveJSON, useTimers } from "@/components/fun/kit";
 
@@ -46,6 +48,13 @@ const epoch = () => {
   const n = new Date();
   return Math.floor((n.getTime() - n.getTimezoneOffset() * 60000) / 86400000);
 };
+/** How a garden with this many waterings looks: which tree, which day of its 365, and its stage. Used by the buddy page too. */
+export function gardenView(cared: number) {
+  const comp = cared > 0 ? Math.floor((cared - 1) / 365) : 0;
+  const day = cared - comp * 365;
+  return { species: SPECIES[comp % 5].name, day, stage: stageOf(day), trees: comp + (day >= 365 ? 1 : 0) };
+}
+export const dayNumber = epoch;
 const newCode = () => Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)]).join("");
 const trimLog = (log: Record<string, Who>, today: number) => {
   const o: Record<string, Who> = {};
@@ -153,7 +162,7 @@ const sheetInput =
 
 function loadGarden(): Garden {
   const s = loadJSON<Partial<Garden>>(KEY);
-  return { offset: 0, cared: 0, streak: 0, best: 0, lastW: null, names: { a: "", b: "" }, me: "a", log: {}, code: newCode(), ...(s || {}) };
+  return { offset: 0, cared: 0, streak: 0, best: 0, lastW: null, names: { a: "", b: "" }, log: {}, code: newCode(), ...(s || {}), me: "a" };
 }
 
 /* ---------- component ---------- */
@@ -191,13 +200,14 @@ function GardenGame() {
   const [boing, setBoing] = useState(false);
   const [plus, setPlus] = useState(false);
   const [toast, setToast] = useState("");
-  const [sheet, setSheet] = useState<"" | "invite" | "join" | "manage">("");
+  const [sheet, setSheet] = useState<"" | "invite" | "manage">("");
   const [draftA, setDraftA] = useState("");
-  const [draftB, setDraftB] = useState("");
   const [nudge, setNudge] = useState("");
   const [copied, setCopied] = useState(false);
   const later = useTimers();
   useGardenSync(g, setG, KEY);
+  const buddy = useGardenBuddy(g, setG, KEY);
+  const [confirmReset, setConfirmReset] = useState(false);
   const nudgeTimer = useRef(0);
 
   const set = (patch: Partial<Garden>) => {
@@ -227,7 +237,8 @@ function GardenGame() {
   const paired = !!g.names.b;
   const waterer = wateredToday ? g.log[today] : null;
   const totalTrees = comp + (d >= 365 ? 1 : 0);
-  const link = "toppershelf.online/fun/garden/" + g.code;
+  const link = linkLabel("grow-a-sapling", g.code);
+  const inviteUrl = linkUrl("grow-a-sapling", g.code);
 
   const front = tree(si, d, 195, 256, 0.92, wilted, 1000 + comp * 77);
   const back = { paths: [] as PathSpec[], circles: [] as CircleSpec[] };
@@ -296,28 +307,6 @@ function GardenGame() {
       if (msg) later(() => setToast(""), 3000);
     }, 1400);
   }
-  function jump(n: number) {
-    const alive = g.lastW !== null && g.lastW >= today - 1;
-    const offset = g.offset + (wateredToday ? n : n - 1);
-    const cared = g.cared + n;
-    const streak = (alive ? g.streak : 0) + n;
-    const c2 = Math.floor((cared - 1) / 365);
-    const dd = cared - c2 * 365;
-    const end = epoch() + offset;
-    const log = { ...g.log };
-    for (let i = 0; i < Math.min(n, 14); i++) log[end - i] = paired ? (i % 3 === 1 ? (g.me === "a" ? "b" : "a") : g.me) : "a";
-    set({ offset, cared, streak, best: Math.max(g.best, streak), lastW: end, log: trimLog(log, end) });
-    flash(`Day ${dd}: ${stageOf(dd).toLowerCase()}`);
-  }
-  function joinNow() {
-    const n = draftB.trim();
-    if (!n) return;
-    set({ names: { ...g.names, b: n }, me: "b" });
-    setSheet("");
-    setDraftB("");
-    flash(`Welcome to the garden, ${n}!`);
-  }
-
   const wilting = wilted;
   const sky = wilting ? "#cbd5e1" : "#bae6fd";
   const sceneLabel = `${S.name} tree, day ${d}, garden of ${totalTrees} trees`;
@@ -428,7 +417,7 @@ function GardenGame() {
           </div>
         </div>
         {paired ? (
-          <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("manage")} aria-label={`Garden buddies, viewing as ${nm(g.me)}`}>As {nm(g.me)}</button>
+          <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => { setConfirmReset(false); setSheet("manage"); }}>Garden crew</button>
         ) : (
           <button type="button" className={buddyBtn} onClick={() => setSheet("invite")}>Add a buddy</button>
         )}
@@ -478,19 +467,8 @@ function GardenGame() {
           {waterLabel}
         </button>
       </div>
-      <div className="flex items-center gap-[5px]">
-        <span className="text-[11px] font-extrabold text-[#047857]">Preview</span>
-        <button type="button" className={mini} onClick={() => set({ offset: g.offset + 1 })}>Next day</button>
-        <button type="button" className={mini} onClick={() => jump(30)}>+30</button>
-        <button type="button" className={mini} onClick={() => jump(365)}>+365</button>
-        <button type="button" className={mini} onClick={() => set({ offset: g.offset + (wateredToday ? 2 : 1) })}>Miss</button>
-        <button
-          type="button"
-          className={mini}
-          onClick={() => { set({ offset: 0, cared: 0, streak: 0, best: 0, lastW: null, log: {}, names: { a: "", b: "" }, me: "a" }); setToast(""); setSheet(""); }}
-        >
-          Reset
-        </button>
+      <div className="flex items-center justify-center">
+        <button type="button" className={`${mini} !flex-none px-4`} onClick={() => { setConfirmReset(false); setSheet("manage"); }}>Garden options</button>
       </div>
     </>
   );
@@ -498,6 +476,21 @@ function GardenGame() {
   const handle = <div className="h-[5px] w-11 self-center rounded-sm bg-[#d1fae5]" />;
   const sheetCls =
     "fixed inset-x-0 bottom-0 z-[51] mx-auto box-border flex max-h-[92dvh] w-full max-w-[28rem] animate-fz-sheet flex-col gap-3 overflow-y-auto rounded-t-[28px] bg-white px-5 pb-6 pt-3.5 text-[#064e3b]";
+
+  const nameForInvite = (draftA || g.names.a).trim();
+  async function createInvite() {
+    if (!nameForInvite) return;
+    set({ names: { ...g.names, a: nameForInvite } });
+    await buddy.invite(nameForInvite);
+  }
+  async function startOver() {
+    const ok = !buddy.linked || (await buddy.unlink());
+    if (!ok) return;
+    set({ offset: 0, cared: 0, streak: 0, best: 0, lastW: null, log: {}, names: { a: g.names.a, b: "" }, me: "a", code: newCode() });
+    setConfirmReset(false);
+    setToast("");
+    setSheet("");
+  }
 
   const overlay = (
     <>
@@ -516,20 +509,21 @@ function GardenGame() {
             </div>
           </div>
           <div className="text-[15px] leading-[1.45] text-[#25483a]">Invite one friend. Either of you can water each day, and one watering keeps your streak alive.</div>
-          {!g.names.a ? (
+          {!buddy.linked ? (
             <>
               <label htmlFor="g-name" className="text-[13px] font-extrabold text-[#3f6b55]">Your name</label>
               <input
                 id="g-name"
                 className={`${sheetInput} -mt-1.5`}
-                value={draftA}
+                value={draftA || g.names.a}
                 onChange={(e) => setDraftA(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && draftA.trim() && set({ names: { ...g.names, a: draftA.trim() } })}
+                onKeyDown={(e) => e.key === "Enter" && void createInvite()}
                 placeholder="e.g. Priya"
                 maxLength={20}
                 autoComplete="off"
               />
-              <button type="button" className={bigBtn} onClick={() => set({ names: { ...g.names, a: draftA.trim() } })} disabled={!draftA.trim()}>Create invite link</button>
+              {buddy.error && <div role="alert" className="text-sm font-bold text-[#b91c1c]">{buddy.error}</div>}
+              <button type="button" className={bigBtn} onClick={() => void createInvite()} disabled={!nameForInvite}>Create invite link</button>
             </>
           ) : (
             <>
@@ -538,92 +532,82 @@ function GardenGame() {
                 <button
                   type="button"
                   className={`${buddyBtn} ${buddyGhost} !min-h-10`}
-                  onClick={() => { copyText("https://" + link); setCopied(true); later(() => setCopied(false), 1600); }}
+                  onClick={() => { copyText(inviteUrl); setCopied(true); later(() => setCopied(false), 1600); }}
                 >
                   {copied ? "Copied" : "Copy"}
                 </button>
               </div>
               <a
                 className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-[#25a244] text-base font-black text-white no-underline shadow-[0_5px_0_#17762f] active:translate-y-[3px] active:shadow-[0_2px_0_#17762f]"
-                href={"https://wa.me/?text=" + encodeURIComponent(`Help me grow our ${S.name.toLowerCase()} tree on TopperShelf! Water it on days I forget so our streak never breaks: https://${link}`)}
+                href={whatsappHref(`Help me grow our ${S.name.toLowerCase()} tree on TopperShelf! Water it on days I forget so our streak never breaks:`, inviteUrl)}
                 target="_blank"
                 rel="noopener"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.3 7.9L3 21l1.2-4.5A9 9 0 1 1 21 12z" /></svg>
                 Send on WhatsApp
               </a>
-              <button type="button" className={`${mini} !flex-none`} onClick={() => setSheet("join")}>Preview: open the link as your friend</button>
+              <button
+                type="button"
+                className={`${mini} !flex-none`}
+                onClick={async () => { if (!(await nativeShare("Grow a Sapling", `Help me grow our ${S.name.toLowerCase()} tree on TopperShelf!`, inviteUrl))) { copyText(inviteUrl); setCopied(true); later(() => setCopied(false), 1600); } }}
+              >
+                Share another way
+              </button>
+              <button type="button" className={`${mini} !flex-none`} onClick={() => window.open(inviteUrl, "_blank", "noopener")}>Preview as your friend</button>
             </>
           )}
           <div className="flex items-center justify-between gap-2.5">
-            <span className="text-[13px] leading-[1.35] text-[#3f6b55]">No buddy yet? Keep growing solo. You can invite anytime.</span>
+            <span className="text-[13px] leading-[1.35] text-[#3f6b55]">{paired ? `${nm("b")} is in your garden.` : "No buddy yet? Keep growing solo. You can invite anytime."}</span>
             <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("")}>Close</button>
           </div>
         </div>
       )}
-      {sheet === "join" && (
-        <div className={sheetCls} role="dialog" aria-label="Join a garden">
-          {handle}
-          <div className="text-[11px] font-black tracking-[.14em] text-[#059669]">FRIEND VIEW · INVITE LINK</div>
-          <div className="flex items-center gap-3">
-            <Image src="/mascot/owl-peek.webp" alt="" width={84} height={66} className="block h-auto w-[84px]" />
-            <div className="font-display text-[26px] leading-[1.1]">{nm("a")} invited you to grow a garden together</div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-[#f0fdf4] px-3 py-1.5 text-[13px] font-extrabold">{S.name} tree · day {d}</span>
-            <span className="rounded-full bg-[#fff7ed] px-3 py-1.5 text-[13px] font-extrabold text-[#9a3412]">{streakNow} day streak</span>
-          </div>
-          <label htmlFor="g-buddy" className="text-[13px] font-extrabold text-[#3f6b55]">Your name</label>
-          <input
-            id="g-buddy"
-            className={`${sheetInput} -mt-1.5`}
-            value={draftB}
-            onChange={(e) => setDraftB(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && joinNow()}
-            placeholder="e.g. Rohan"
-            maxLength={20}
-            autoComplete="off"
-          />
-          <button type="button" className={bigBtn} onClick={joinNow} disabled={!draftB.trim()}>Join garden</button>
-          <div className="flex items-center justify-between gap-2.5">
-            <span className="text-[13px] text-[#3f6b55]">No sign-up needed. Gardens fit 2 people.</span>
-            <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("")}>Not now</button>
-          </div>
-        </div>
-      )}
       {sheet === "manage" && (
-        <div className={sheetCls} role="dialog" aria-label="Garden buddies">
+        <div className={sheetCls} role="dialog" aria-label="Garden options">
           {handle}
           <div className="font-display text-[28px] leading-none">Your garden crew</div>
-          {(["a", "b"] as Who[]).map((k) => (
-            <div key={k} className="flex items-center gap-3 rounded-2xl bg-[#f0fdf4] px-3 py-2.5">
-              <div className={avatar} style={{ background: k === "a" ? "#f59e0b" : "#8b5cf6" }}>{(g.names[k][0] || "?").toUpperCase()}</div>
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-[15px] font-black">{nm(k) + (k === g.me ? " (you)" : "")}</div>
-                <div className="text-xs text-[#3f6b55]">{k === "a" ? "Planted the garden" : "Joined with your link"}</div>
-              </div>
-              <button type="button" className={`${buddyBtn} ${buddyGhost} disabled:opacity-60`} disabled={k === g.me} onClick={() => { set({ me: k }); setSheet(""); }}>
-                {k === g.me ? "Viewing" : "Preview as"}
-              </button>
+          <div className="flex items-center gap-3 rounded-2xl bg-[#f0fdf4] px-3 py-2.5">
+            <div className={avatar} style={{ background: "#f59e0b" }}>{(g.names.a[0] || "Y").toUpperCase()}</div>
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-[15px] font-black">{nm("a")} (you)</div>
+              <div className="text-xs text-[#3f6b55]">Planted the garden</div>
             </div>
-          ))}
-          <div className="text-xs text-[#3f6b55]">Preview tip: switch who you are viewing as to try watering from both phones.</div>
-          <div className="flex gap-2.5">
+          </div>
+          <div className="flex items-center gap-3 rounded-2xl bg-[#f0fdf4] px-3 py-2.5">
+            <div className={avatar} style={{ background: paired ? "#8b5cf6" : "#cbd5e1" }}>{(g.names.b[0] || "?").toUpperCase()}</div>
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-[15px] font-black">{paired ? nm("b") : "No buddy yet"}</div>
+              <div className="text-xs text-[#3f6b55]">{paired ? "Waters when you forget" : buddy.linked ? "Waiting for them to open the link" : "Invite one friend"}</div>
+            </div>
+            {!paired && <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("invite")}>{buddy.linked ? "Link" : "Invite"}</button>}
+          </div>
+          {buddy.error && <div role="alert" className="text-sm font-bold text-[#b91c1c]">{buddy.error}</div>}
+          {paired && (
             <button
               type="button"
-              className={`${buddyBtn} ${buddyGhost} flex-1 !border-[#fecaca] !text-[#b91c1c] !shadow-[0_3px_0_#fecaca]`}
-              onClick={() => {
-                const gone = nm("b");
-                const leaving = g.me === "b";
-                set({ names: { ...g.names, b: "" }, me: "a" });
+              className={`${buddyBtn} ${buddyGhost} !border-[#fecaca] !text-[#b91c1c] !shadow-[0_3px_0_#fecaca]`}
+              onClick={async () => {
+                if (!(await buddy.unlink())) return;
+                set({ names: { ...g.names, b: "" }, code: newCode() });
+                flash(`${nm("b")} was removed`);
                 setSheet("");
-                flash(leaving ? "You left the garden" : `${gone} was removed`);
               }}
             >
-              {g.me === "a" ? `Remove ${nm("b")}` : "Leave garden"}
+              Remove {nm("b")}
             </button>
-            <button type="button" className={`${buddyBtn} flex-1`} onClick={() => setSheet("")}>Done</button>
+          )}
+          <div className="mt-1 border-t border-[#d1fae5] pt-3">
+            <div className="text-[13px] leading-[1.4] text-[#3f6b55]">Want a fresh start? This resets your trees and streak, and removes your buddy.</div>
+            {confirmReset ? (
+              <div className="mt-2 grid grid-cols-2 gap-2.5">
+                <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setConfirmReset(false)}>Keep my garden</button>
+                <button type="button" className={`${buddyBtn} !bg-[#b91c1c] !shadow-[0_3px_0_#7f1d1d]`} onClick={() => void startOver()}>Yes, start over</button>
+              </div>
+            ) : (
+              <button type="button" className={`${buddyBtn} ${buddyGhost} mt-2 !border-[#fecaca] !text-[#b91c1c] !shadow-[0_3px_0_#fecaca]`} onClick={() => setConfirmReset(true)}>Start a new garden</button>
+            )}
           </div>
+          <button type="button" className={buddyBtn} onClick={() => setSheet("")}>Done</button>
         </div>
       )}
     </>

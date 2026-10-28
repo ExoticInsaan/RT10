@@ -234,6 +234,49 @@ Object.assign(toolContent, {
     ],
     privacyNote: "We don’t save your answers. They only stay on screen while you play.",
   },
+  "friendship-score": {
+    howTo: [
+      "Sign in with Google (one tap, free).",
+      "Type your name and press the button to make your link.",
+      "Send the link to a friend on WhatsApp or anywhere else.",
+      "Your friend answers 8 quick questions (no account needed). Open “See who answered” to find their score.",
+    ],
+    faq: [
+      { q: "Does my friend need an account?", a: "No. They open the link, type a name and answer. Only you need to sign in." },
+      { q: "Who can see the answers?", a: "Only you. Your friend sees their own score and nothing else." },
+      { q: "Can many friends use one link?", a: "Yes. Every friend who answers appears in your list, highest score first." },
+      { q: "Is the score real?", a: "It is for fun. It is not a real measure of your friendship." },
+    ],
+    privacyNote: "Your link and your friends’ answers are saved in your TopperShelf account. Only you can see them, and you can delete the link any time.",
+  },
+  "what-am-i-to-you": {
+    howTo: [
+      "Sign in with Google (one tap, free).",
+      "Type your name and make your link.",
+      "Send it to friends. Each one picks a label and can add a short note.",
+      "Open your inbox to see what everyone really thinks.",
+    ],
+    faq: [
+      { q: "Does my friend need an account?", a: "No. They only type a name and pick an answer." },
+      { q: "Who can read the notes?", a: "Only you. Notes are limited to 140 characters." },
+      { q: "Can a friend change their answer?", a: "Yes. Answering again with the same name replaces the earlier answer." },
+    ],
+    privacyNote: "Answers on your link are saved in your TopperShelf account. Only you can read them, and you can delete the link any time.",
+  },
+  "how-well-do-you-know-me": {
+    howTo: [
+      "Sign in with Google (one tap, free).",
+      "Answer 10 questions about yourself. This is the answer key.",
+      "Send your link to friends. They guess your answers.",
+      "See who scored highest on your leaderboard.",
+    ],
+    faq: [
+      { q: "Can friends see my answers before guessing?", a: "No. The key stays on our server. A friend only learns the right answer to a question after they have picked." },
+      { q: "Does my friend need an account?", a: "No. They open the link, type a name and play." },
+      { q: "Can a friend retry?", a: "Yes. Playing again with the same name replaces their earlier score." },
+    ],
+    privacyNote: "Your answers and your friends’ scores are saved in your TopperShelf account. Only you can see the leaderboard.",
+  },
   "grow-a-sapling": {
     howTo: [
       "Sign in with Google (one tap, free).",

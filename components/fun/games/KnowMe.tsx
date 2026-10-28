@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useAuth } from "@/components/AuthProvider";
 import { GameShell, copyText, useTimers } from "@/components/fun/kit";
+import { createLink, getLink, knowCheck, latestLink, linkLabel, linkUrl, listResponses, nativeShare, submitResponse, whatsappHref } from "@/lib/fun/friends";
 
-type Phase = "name" | "quiz" | "share" | "friendName" | "board";
+type Phase = "loading" | "missing" | "name" | "quiz" | "saving" | "saveFail" | "share" | "friendName" | "score" | "board";
 type Mode = "own" | "guess";
 type Entry = { name: string; score: number };
 
@@ -28,8 +31,6 @@ const POD = [
   { i: 2, h: 70, c: "#c2763a", top: "#e7a56a", d: 0.45 },
 ];
 
-const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-
 const fzBtn =
   "min-h-14 w-full cursor-pointer rounded-[18px] border-0 bg-[#0f9f8f] px-[18px] py-3.5 text-[17px] font-black text-white shadow-[0_6px_0_#0b6f64,0_14px_24px_rgba(11,111,100,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#0b6f64] disabled:cursor-default disabled:opacity-50";
 const ghost =
@@ -38,50 +39,132 @@ const input =
   "box-border w-full rounded-2xl border-2 border-[#b8e6f0] bg-white px-4 py-[15px] text-base font-medium text-[#102a4c] outline-none placeholder:text-[#8ab0be] focus:border-[#0f9f8f] focus:shadow-[0_0_0_4px_rgba(15,159,143,.15)] sm:text-[17px]";
 const card = "flex animate-fz-pop flex-col items-center gap-3 rounded-[26px] bg-white p-[22px] text-center shadow-[0_8px_0_#b8e6f0]";
 
-export default function KnowMe() {
-  const [phase, setPhase] = useState<Phase>("name");
+/**
+ * Owner (signed in): answers 10 questions about themselves, makes a link and reads the leaderboard of friends who guessed.
+ * Friend (opens the link, no account): guesses the owner's answers and gets a score. `friendCode` switches to this side.
+ * The owner's answers stay on the server; a friend only learns the right answer to a question after guessing it.
+ */
+export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
+  const { user, ready } = useAuth();
+  const [rawPhase, setPhase] = useState<Phase>("loading");
   const [me, setMe] = useState("");
   const [friend, setFriend] = useState("");
-  const [mode, setMode] = useState<Mode>("own");
+  const [mode, setMode] = useState<Mode>(friendCode ? "guess" : "own");
   const [q, setQ] = useState(0);
   const [key, setKey] = useState<number[]>([]);
   const [guesses, setGuesses] = useState<number[]>([]);
+  const [revealed, setRevealed] = useState<number[]>([]);
   const [sel, setSel] = useState(-1);
   const [board, setBoard] = useState<Entry[]>([]);
   const [copied, setCopied] = useState(false);
   const [last, setLast] = useState<Entry | null>(null);
+  const [code, setCode] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [sent, setSent] = useState<"sending" | "sent" | "error">("sending");
   const later = useTimers();
+
+  // Friend side: who made this quiz?
+  useEffect(() => {
+    if (!friendCode) return;
+    let cancelled = false;
+    getLink(friendCode).then((r) => {
+      if (cancelled) return;
+      if (!r.ok) { setError(r.error); setPhase("missing"); return; }
+      if (!r.data || r.data.game !== "how-well-do-you-know-me") { setPhase("missing"); return; }
+      setMe(r.data.owner_name);
+      setPhase("friendName");
+    });
+    return () => { cancelled = true; };
+  }, [friendCode]);
+
+  // Owner side: find the quiz they already made.
+  const userId = user?.id ?? null;
+  // A signed-out owner has nothing to load, so they go straight to the first screen.
+  const phase: Phase = rawPhase === "loading" && !friendCode && ready && !userId ? "name" : rawPhase;
+  useEffect(() => {
+    if (friendCode || !ready) return;
+    if (!userId) return;
+    let cancelled = false;
+    latestLink("how-well-do-you-know-me").then((r) => {
+      if (cancelled) return;
+      if (r.ok && r.data) { setCode(r.data.code); setMe(r.data.owner_name); setPhase("share"); } else setPhase("name");
+    });
+    return () => { cancelled = true; };
+  }, [friendCode, ready, userId]);
 
   const meName = me.trim() || "You";
   const own = mode === "own";
   const cur = QS[Math.min(q, 9)];
-  const correct = key[q];
-  const link = "toppershelf.online/fun/know-me/" + slug(meName);
+  const correct = own ? key[q] : revealed[q];
+  const url = code ? linkUrl("how-well-do-you-know-me", code) : "";
+  const shareText = `How well do you know ${meName}? Guess 10 answers and see your score:`;
+  const friendName = friend.trim();
+
+  async function makeQuizLink(answers: number[]) {
+    setPhase("saving");
+    setError("");
+    const r = await createLink("how-well-do-you-know-me", me, { secret: { key: answers } });
+    if (!r.ok) { setError(r.error); setPhase("saveFail"); return; }
+    setCode(r.data);
+    setBoard([]);
+    setPhase("share");
+  }
+  async function showBoard() {
+    if (!code) return;
+    setBusy(true);
+    setError("");
+    const r = await listResponses(code);
+    setBusy(false);
+    if (!r.ok) { setError(r.error); return; }
+    setBoard(r.data.map((x) => ({ name: x.responder_name, score: Math.round((x.score ?? 0) / 10) })));
+    setLast(null);
+    setPhase("board");
+  }
+  async function sendGuesses(all: number[]) {
+    if (!friendCode) return;
+    setSent("sending");
+    const r = await submitResponse(friendCode, friendName, { guesses: all });
+    if (r.ok) {
+      setSent("sent");
+      setLast({ name: friendName, score: Math.round((r.data.score ?? 0) / 10) });
+    } else {
+      setSent("error");
+      setLast({ name: friendName, score: all.filter((g, j) => g === revealed[j]).length });
+    }
+  }
 
   function pick(i: number) {
     if (sel >= 0) return;
     setSel(i);
-    later(() => {
-      if (own) {
+    if (own) {
+      later(() => {
         const next = [...key, i];
         setKey(next);
-        if (next.length >= 10) { setPhase("share"); setSel(-1); } else { setQ(q + 1); setSel(-1); }
-      } else {
-        const next = [...guesses, i];
-        setGuesses(next);
-        if (next.length >= 10) {
-          const score = next.filter((g, j) => g === key[j]).length;
-          const name = friend.trim();
-          setBoard([...board.filter((b) => b.name !== name), { name, score }]);
-          setLast({ name, score });
-          setPhase("board");
-          setSel(-1);
-        } else { setQ(q + 1); setSel(-1); }
-      }
-    }, own ? 380 : 1100);
+        setSel(-1);
+        if (next.length >= 10) void makeQuizLink(next);
+        else setQ(q + 1);
+      }, 380);
+      return;
+    }
+    const at = q;
+    if (friendCode) {
+      void knowCheck(friendCode, at, i).then((r) => {
+        const right = r.ok && r.data !== null ? r.data : -1;
+        setRevealed((a) => { const n = [...a]; n[at] = right; return n; });
+      });
+    }
+    later(() => {
+      const next = [...guesses, i];
+      setGuesses(next);
+      setSel(-1);
+      if (next.length >= 10) {
+        void sendGuesses(next);
+        setPhase("score");
+      } else setQ(q + 1);
+    }, 1100);
   }
-  const startGuess = () => { setPhase("quiz"); setMode("guess"); setQ(0); setGuesses([]); setSel(-1); };
-  const asFriend = () => { setPhase("friendName"); setFriend(""); };
+  const startGuess = () => { setPhase("quiz"); setMode("guess"); setQ(0); setGuesses([]); setRevealed([]); setSel(-1); };
 
   const shell = (body: ReactNode) => (
     <GameShell
@@ -97,6 +180,35 @@ export default function KnowMe() {
       body={<div className="mx-auto flex w-full max-w-[34rem] flex-col gap-3.5 lg:col-span-2">{body}</div>}
     />
   );
+
+  if (phase === "loading" || phase === "saving") {
+    return shell(<p className="m-0 py-16 text-center text-[15px] font-bold text-[#3d5a80]" role="status">{phase === "saving" ? "Making your link…" : "Loading…"}</p>);
+  }
+
+  if (phase === "saveFail") {
+    return shell(
+      <>
+        <div className={card}>
+          <div className="font-display text-[28px] leading-[1.1]">Could not save your quiz</div>
+          <div className="text-[15px] leading-[1.4] text-[#3d5a80]">{error}</div>
+        </div>
+        <button type="button" className={fzBtn} onClick={() => void makeQuizLink(key)}>Try again</button>
+      </>,
+    );
+  }
+
+  if (phase === "missing") {
+    return shell(
+      <>
+        <div className={card}>
+          <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
+          <div className="font-display text-[28px] leading-[1.1]">{error || "This quiz does not exist"}</div>
+          <div className="text-[15px] leading-[1.4] text-[#3d5a80]">It may have been typed wrong. Ask your friend to send it again, or make your own.</div>
+        </div>
+        <Link className={`${fzBtn} flex items-center justify-center no-underline`} href="/tool/how-well-do-you-know-me">Make my own quiz</Link>
+      </>,
+    );
+  }
 
   if (phase === "name") {
     return shell(
@@ -126,7 +238,7 @@ export default function KnowMe() {
     const qText = own ? cur[0] : cur[0].replace(/\bMy\b/, meName + "’s").replace(/\bI\b/, meName).replace(/\bme\b/, meName);
     let feedback = "";
     let fbBad = false;
-    if (!own && sel >= 0) {
+    if (!own && sel >= 0 && correct !== undefined) {
       if (sel === correct) feedback = ["Nailed it!", `You really know ${meName}.`, "Correct!"][q % 3];
       else { feedback = "Not quite!"; fbBad = true; }
     }
@@ -139,7 +251,7 @@ export default function KnowMe() {
         <div className="grid grid-cols-10 gap-1">
           {Array.from({ length: 10 }, (_, i) => {
             let c = i === q ? "#5eead4" : "#cdeef4";
-            if (i < q) c = own ? "#0f9f8f" : guesses[i] === key[i] ? "#16a34a" : "#e11d48";
+            if (i < q) c = own ? "#0f9f8f" : revealed[i] === undefined ? "#5eead4" : guesses[i] === revealed[i] ? "#16a34a" : "#e11d48";
             return <div key={i} className="h-2 rounded-full transition-[background] duration-300" style={{ background: c }} />;
           })}
         </div>
@@ -191,16 +303,22 @@ export default function KnowMe() {
             <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
           </div>
           <div className="break-words font-display text-[30px] leading-[1.05]">Your quiz is ready, {meName}!</div>
-          <div className="text-[15px] leading-[1.4] text-[#3d5a80]">Send the link to friends. Everyone who plays lands on your leaderboard.</div>
+          <div className="text-[15px] leading-[1.4] text-[#3d5a80]">Send the link to friends. Everyone who plays lands on your leaderboard. Your answers stay hidden until they guess.</div>
           <div className="box-border flex w-full items-center gap-2 rounded-[14px] border-2 border-dashed border-[#7dd3e0] bg-[#f0fbfd] px-3 py-2.5">
-            <span className="min-w-0 flex-1 truncate text-left text-sm font-bold">{link}</span>
-            <button type="button" className={`${ghost} !min-h-10 !px-3 !py-1.5 !text-[13px]`} onClick={() => { copyText("https://" + link); setCopied(true); later(() => setCopied(false), 1600); }}>
+            <span className="min-w-0 flex-1 truncate text-left text-sm font-bold">{code ? linkLabel("how-well-do-you-know-me", code) : ""}</span>
+            <button type="button" className={`${ghost} !min-h-10 !px-3 !py-1.5 !text-[13px]`} onClick={() => { copyText(url); setCopied(true); later(() => setCopied(false), 1600); }}>
               {copied ? "Copied" : "Copy"}
             </button>
           </div>
         </div>
-        <button type="button" className={fzBtn} onClick={asFriend}>Play it as a friend</button>
-        {board.length > 0 && <button type="button" className={ghost} onClick={() => setPhase("board")}>See leaderboard</button>}
+        <a className={`${fzBtn} flex items-center justify-center no-underline !bg-[#25a244] !shadow-[0_6px_0_#17762f,0_14px_24px_rgba(23,118,47,.3)]`} href={whatsappHref(shareText, url)} target="_blank" rel="noopener">Send on WhatsApp</a>
+        <button type="button" className={ghost} onClick={async () => { if (!(await nativeShare("How well do you know me?", shareText, url))) { copyText(url); setCopied(true); later(() => setCopied(false), 1600); } }}>Share another way</button>
+        <button type="button" className={fzBtn} onClick={() => void showBoard()} disabled={busy}>{busy ? "Loading…" : "See my leaderboard"}</button>
+        {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
+        <div className="grid grid-cols-2 gap-2.5">
+          <button type="button" className={ghost} onClick={() => window.open(url, "_blank", "noopener")}>Preview as a friend</button>
+          <button type="button" className={ghost} onClick={() => { setPhase("name"); setMode("own"); setQ(0); setKey([]); setSel(-1); setError(""); }}>New quiz</button>
+        </div>
       </>,
     );
   }
@@ -229,17 +347,41 @@ export default function KnowMe() {
     );
   }
 
+  if (phase === "score") {
+    const ls = last ? last.score : 0;
+    const line = ls >= 8 ? `You are basically ${meName}’s twin.` : ls >= 5 ? `You know ${meName} pretty well.` : `You need more time with ${meName}.`;
+    return shell(
+      <>
+        <div className="flex animate-fz-pop flex-col items-center gap-1 rounded-[26px] bg-white p-[22px] text-center shadow-[0_8px_0_#b8e6f0]">
+          <div className="break-words text-[13px] font-extrabold text-[#3d5a80]">{friendName || "You"} guessed {meName}</div>
+          <div className="font-display text-[72px] leading-none">{ls}<span className="text-[32px] text-[#3d5a80]">/10</span></div>
+          <div className="text-[15px] font-bold text-[#102a4c]">{line}</div>
+        </div>
+        <p role="status" className={`m-0 text-center text-[13px] font-bold ${sent === "error" ? "text-[#b91c1c]" : "text-[#3d5a80]"}`}>
+          {sent === "sending" ? `Sending your score to ${meName}…` : sent === "sent" ? `${meName} can see your score on their leaderboard.` : `Could not send your score to ${meName}.`}
+        </p>
+        <div className="mt-auto grid grid-cols-2 gap-2.5">
+          {sent === "error" ? (
+            <button type="button" className={ghost} onClick={() => void sendGuesses(guesses)}>Try sending again</button>
+          ) : (
+            <button type="button" className={ghost} onClick={startGuess}>Guess again</button>
+          )}
+          <Link className={`${fzBtn} flex !min-h-[50px] items-center justify-center !text-[15px] no-underline`} href="/tool/how-well-do-you-know-me">Make my own quiz</Link>
+        </div>
+      </>,
+    );
+  }
+
   const sorted = [...board].sort((a, b) => b.score - a.score);
   const podium = POD.filter((p) => sorted[p.i]).map((p) => ({ ...p, e: sorted[p.i] }));
-  const ls = last ? last.score : 0;
-  const lastLine = last ? last.name + (ls >= 8 ? ` is basically ${meName}’s twin` : ls >= 5 ? ` knows ${meName} pretty well` : ` needs more time with ${meName}`) : "";
   return shell(
     <>
       <div className="animate-fz-pop text-center">
-        <div className="break-words text-[13px] font-extrabold text-[#3d5a80]">{lastLine}</div>
-        <div className="font-display text-[56px] leading-none">{ls}<span className="text-[28px] text-[#3d5a80]">/10</span></div>
+        <div className="break-words text-[13px] font-extrabold text-[#3d5a80]">{meName.toUpperCase()}&apos;S LEADERBOARD</div>
+        <div className="font-display text-[34px] leading-none">{sorted.length ? `${sorted.length} ${sorted.length === 1 ? "friend" : "friends"} played` : "Nobody has played yet"}</div>
       </div>
-      <div className="flex h-[276px] items-end justify-center gap-1.5 [perspective:700px]">
+      {sorted.length === 0 && <div className="rounded-2xl border-2 border-dashed border-[#7dd3e0] p-4 text-center text-sm text-[#3d5a80]">Send your link to friends and watch the leaderboard fill up.</div>}
+      <div className="flex h-[276px] items-end justify-center gap-1.5 [perspective:700px]" hidden={sorted.length === 0}>
         {podium.map((p) => (
           <div key={p.i} className="flex min-w-0 max-w-[100px] flex-1 flex-col items-center gap-1.5">
             {p.i === 0 && (
@@ -262,7 +404,7 @@ export default function KnowMe() {
           </div>
         ))}
       </div>
-      <div className="flex max-h-[110px] flex-col gap-1.5 overflow-auto">
+      <div className="flex max-h-[170px] flex-col gap-1.5 overflow-auto">
         {sorted.slice(3).map((r, i) => (
           <div key={r.name} className="flex items-center gap-2.5 rounded-[14px] bg-white px-3 py-2">
             <span className="w-5 font-black">{i + 4}</span>
@@ -271,9 +413,10 @@ export default function KnowMe() {
           </div>
         ))}
       </div>
+      {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
       <div className="mt-auto grid grid-cols-2 gap-2.5">
-        <button type="button" className={ghost} onClick={asFriend}>Play as another friend</button>
-        <button type="button" className={ghost} onClick={() => { setPhase("name"); setMe(""); setFriend(""); setMode("own"); setQ(0); setKey([]); setGuesses([]); setBoard([]); setLast(null); }}>Make your own quiz</button>
+        <button type="button" className={ghost} onClick={() => setPhase("share")}>Back to my link</button>
+        <button type="button" className={ghost} onClick={() => void showBoard()} disabled={busy}>{busy ? "Loading…" : "Refresh"}</button>
       </div>
     </>,
   );

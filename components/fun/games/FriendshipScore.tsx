@@ -2,9 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { GameShell, copyText, hash, useTimers } from "@/components/fun/kit";
+import Link from "next/link";
+import { useAuth } from "@/components/AuthProvider";
+import { GameShell, copyText, useTimers } from "@/components/fun/kit";
+import {
+  createLink, getLink, latestLink, linkLabel, linkUrl, listResponses, nativeShare, submitResponse, whatsappHref,
+  type FriendAnswer,
+} from "@/lib/fun/friends";
 
-type Phase = "create" | "share" | "friendName" | "quiz" | "result";
+type Phase = "loading" | "missing" | "create" | "share" | "results" | "friendName" | "quiz" | "result";
 
 const BADGES = ["#0ea5e9", "#6366f1", "#d946ef", "#f59e0b"];
 const HEART_COLORS = ["#f472b6", "#60a5fa", "#facc15", "#a78bfa", "#fb7185"];
@@ -35,6 +41,13 @@ export function friendScore(me: string, picks: number[]) {
   return Math.round(Math.min(100, (s / Math.max(max, 1)) * 100));
 }
 
+const verdict = (sc: number): [string, string] =>
+  sc >= 90 ? ["Ride or die", "You two would split the last samosa without even asking."]
+  : sc >= 75 ? ["Partners in crime", "Certified duo. Teachers separate you for a reason."]
+  : sc >= 60 ? ["Chai buddies", "Good talks, good tea, good times."]
+  : sc >= 40 ? ["Friendly neighbours", "The foundation is there. More inside jokes needed."]
+  : ["Just getting started", "Every legendary duo starts somewhere."];
+
 const fzBtn =
   "flex min-h-14 w-full cursor-pointer items-center justify-center rounded-[18px] border-0 bg-[#0284c7] px-[18px] py-3.5 text-[17px] font-black text-white no-underline shadow-[0_6px_0_#075985,0_14px_24px_rgba(7,89,133,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#075985] disabled:cursor-default disabled:opacity-50";
 const ghost =
@@ -55,8 +68,13 @@ function Hearts() {
   );
 }
 
-export default function FriendshipScore() {
-  const [phase, setPhase] = useState<Phase>("create");
+/**
+ * Owner (signed in): makes a link, sends it, sees every friend's score.
+ * Friend (opens the link, no account): answers 8 questions about the owner and sees the score. `friendCode` switches to this side.
+ */
+export default function FriendshipScore({ friendCode }: { friendCode?: string } = {}) {
+  const { user, ready } = useAuth();
+  const [rawPhase, setPhase] = useState<Phase>("loading");
   const [me, setMe] = useState("");
   const [friend, setFriend] = useState("");
   const [q, setQ] = useState(0);
@@ -64,22 +82,81 @@ export default function FriendshipScore() {
   const [sel, setSel] = useState(-1);
   const [shown, setShown] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [code, setCode] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [sent, setSent] = useState<"sending" | "sent" | "error">("sending");
+  const [results, setResults] = useState<FriendAnswer[] | null>(null);
   const later = useTimers();
   const raf = useRef(0);
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
+
+  // Friend side: who made this link?
+  useEffect(() => {
+    if (!friendCode) return;
+    let cancelled = false;
+    getLink(friendCode).then((r) => {
+      if (cancelled) return;
+      if (!r.ok) { setError(r.error); setPhase("missing"); return; }
+      if (!r.data || r.data.game !== "friendship-score") { setPhase("missing"); return; }
+      setMe(r.data.owner_name);
+      setPhase("friendName");
+    });
+    return () => { cancelled = true; };
+  }, [friendCode]);
+
+  // Owner side: find the link they already made (works on any device they sign in on).
+  const userId = user?.id ?? null;
+  // A signed-out owner has nothing to load, so they go straight to the first screen.
+  const phase: Phase = rawPhase === "loading" && !friendCode && ready && !userId ? "create" : rawPhase;
+  useEffect(() => {
+    if (friendCode) return;
+    if (!ready) return;
+    if (!userId) return;
+    let cancelled = false;
+    latestLink("friendship-score").then((r) => {
+      if (cancelled) return;
+      if (r.ok && r.data) { setCode(r.data.code); setMe(r.data.owner_name); setPhase("share"); } else setPhase("create");
+    });
+    return () => { cancelled = true; };
+  }, [friendCode, ready, userId]);
 
   const meName = me.trim() || "You";
   const Q = questions(meName);
   const cur = Q[Math.min(q, 7)];
   const sc = phase === "result" ? friendScore(meName, picks) : 0;
-  const titles =
-    sc >= 90 ? ["Ride or die", "You two would split the last samosa without even asking."]
-    : sc >= 75 ? ["Partners in crime", "Certified duo. Teachers separate you for a reason."]
-    : sc >= 60 ? ["Chai buddies", "Good talks, good tea, good times."]
-    : sc >= 40 ? ["Friendly neighbours", "The foundation is there. More inside jokes needed."]
-    : ["Just getting started", "Every legendary duo starts somewhere."];
-  const link = "toppershelf.online/fun/friends/" + meName.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + ((hash(meName) % 9000) + 1000);
+  const titles = verdict(sc);
+  const url = code ? linkUrl("friendship-score", code) : "";
+  const shareText = `${meName} wants to know how strong your friendship is. Answer 8 quick questions:`;
   const friendName = friend.trim() || "Friend";
+
+  async function makeLink() {
+    if (busy || !me.trim()) return;
+    setBusy(true);
+    setError("");
+    const r = await createLink("friendship-score", me);
+    setBusy(false);
+    if (!r.ok) { setError(r.error); return; }
+    setCode(r.data);
+    setResults(null);
+    setPhase("share");
+  }
+  async function showResults() {
+    if (!code) return;
+    setBusy(true);
+    setError("");
+    const r = await listResponses(code);
+    setBusy(false);
+    if (!r.ok) { setError(r.error); return; }
+    setResults(r.data);
+    setPhase("results");
+  }
+  async function send(finalPicks: number[], score: number) {
+    if (!friendCode) return;
+    setSent("sending");
+    const r = await submitResponse(friendCode, friendName, { picks: finalPicks, score });
+    setSent(r.ok ? "sent" : "error");
+  }
 
   function pick(i: number) {
     if (sel >= 0) return;
@@ -92,6 +169,7 @@ export default function FriendshipScore() {
         setSel(-1);
         setShown(0);
         const target = friendScore(meName, next);
+        void send(next, target);
         const t0 = performance.now();
         const step = (now: number) => {
           const p = Math.min(1, (now - t0 - 400) / 1600);
@@ -122,6 +200,28 @@ export default function FriendshipScore() {
   };
   const single = (children: React.ReactNode) => <div className="mx-auto flex w-full max-w-md flex-col gap-3.5 lg:col-span-2">{children}</div>;
 
+  if (phase === "loading") {
+    return <GameShell {...shellProps} body={single(<p className="m-0 py-16 text-center text-[15px] font-bold text-[#3d5a80]" role="status">Loading…</p>)} />;
+  }
+
+  if (phase === "missing") {
+    return (
+      <GameShell
+        {...shellProps}
+        body={single(
+          <>
+            <div className="flex flex-col items-center gap-3 rounded-[26px] bg-white p-[22px] text-center shadow-[0_8px_0_#bfdbfe]">
+              <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
+              <div className="font-display text-[28px] leading-[1.1]">{error || "This link does not exist"}</div>
+              <div className="text-[15px] leading-[1.4] text-[#3d5a80]">It may have been typed wrong. Ask your friend to send it again, or make your own.</div>
+            </div>
+            <Link className={fzBtn} href="/tool/friendship-score">Make your own link</Link>
+          </>,
+        )}
+      />
+    );
+  }
+
   if (phase === "create") {
     const stage = (
       <div className="relative flex h-[250px] items-center justify-center [perspective:800px]">
@@ -147,12 +247,13 @@ export default function FriendshipScore() {
           className={`${input} -mt-1.5`}
           value={me}
           onChange={(e) => setMe(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && me.trim() && setPhase("share")}
+          onKeyDown={(e) => e.key === "Enter" && void makeLink()}
           placeholder="e.g. Priya"
           maxLength={24}
           autoComplete="off"
         />
-        <button type="button" className={fzBtn} onClick={() => setPhase("share")} disabled={!me.trim()}>Make my friendship link</button>
+        {error && <p role="alert" className="m-0 text-sm font-bold text-[#b91c1c]">{error}</p>}
+        <button type="button" className={fzBtn} onClick={() => void makeLink()} disabled={!me.trim() || busy}>{busy ? "Making your link…" : "Make my friendship link"}</button>
       </>
     );
     return <GameShell {...shellProps} stage={stage} controls={controls} />;
@@ -167,16 +268,57 @@ export default function FriendshipScore() {
             <div className="flex animate-fz-pop flex-col items-center gap-3.5 rounded-[26px] bg-white p-[22px] text-center shadow-[0_8px_0_#bfdbfe]">
               <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
               <div className="break-words font-display text-[30px] leading-[1.05]">Your link is ready, {meName}!</div>
-              <div className="text-[15px] leading-[1.4] text-[#3d5a80]">Send it to a friend. They answer 8 quick questions about you two, and you both get a score.</div>
+              <div className="text-[15px] leading-[1.4] text-[#3d5a80]">Send it to a friend. They answer 8 quick questions about you two, and you see their score here.</div>
               <div className="box-border flex w-full items-center gap-2 rounded-[14px] border-2 border-dashed border-[#93c5fd] bg-[#f0f7ff] px-3 py-2.5">
-                <span className="min-w-0 flex-1 truncate text-left text-sm font-bold">{link}</span>
-                <button type="button" className={`${ghost} !min-h-10 !px-3 !py-1.5 !text-[13px]`} onClick={() => { copyText("https://" + link); setCopied(true); later(() => setCopied(false), 1600); }}>
+                <span className="min-w-0 flex-1 truncate text-left text-sm font-bold">{code ? linkLabel("friendship-score", code) : ""}</span>
+                <button type="button" className={`${ghost} !min-h-10 !px-3 !py-1.5 !text-[13px]`} onClick={() => { copyText(url); setCopied(true); later(() => setCopied(false), 1600); }}>
                   {copied ? "Copied" : "Copy"}
                 </button>
               </div>
             </div>
-            <button type="button" className={fzBtn} onClick={() => setPhase("friendName")}>Open it as a friend</button>
-            <p className="m-0 text-center text-[13px] text-[#3d5a80]">Preview what your friend will see.</p>
+            <a className={`${fzBtn} !bg-[#25a244] !shadow-[0_6px_0_#17762f,0_14px_24px_rgba(23,118,47,.3)]`} href={whatsappHref(shareText, url)} target="_blank" rel="noopener">Send on WhatsApp</a>
+            <button type="button" className={ghost} onClick={async () => { if (!(await nativeShare("Friendship Score", shareText, url))) { copyText(url); setCopied(true); later(() => setCopied(false), 1600); } }}>Share another way</button>
+            <button type="button" className={fzBtn} onClick={() => void showResults()} disabled={busy}>{busy ? "Loading…" : "See who answered"}</button>
+            {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
+            <div className="grid grid-cols-2 gap-3">
+              <button type="button" className={ghost} onClick={() => window.open(url, "_blank", "noopener")}>Preview as a friend</button>
+              <button type="button" className={ghost} onClick={() => { setPhase("create"); setError(""); }}>New link</button>
+            </div>
+          </>,
+        )}
+      />
+    );
+  }
+
+  if (phase === "results") {
+    const list = results ?? [];
+    const average = list.length ? Math.round(list.reduce((a, r) => a + (r.score ?? 0), 0) / list.length) : 0;
+    return (
+      <GameShell
+        {...shellProps}
+        body={single(
+          <>
+            <div className="flex animate-fz-pop flex-col gap-1 rounded-[26px] bg-white p-[22px] shadow-[0_8px_0_#bfdbfe]">
+              <div className="text-xs font-black tracking-[.12em] text-[#0284c7]">YOUR FRIENDSHIP SCORES</div>
+              <div className="break-words font-display text-[34px] leading-none">{list.length ? `${list.length} ${list.length === 1 ? "friend" : "friends"} answered` : "Nobody yet"}</div>
+              {list.length > 0 && <div className="text-[15px] text-[#3d5a80]">Average score {average} out of 100</div>}
+            </div>
+            {list.length === 0 && <div className="rounded-2xl border-2 border-dashed border-[#93c5fd] p-4 text-center text-sm text-[#3d5a80]">No answers yet. Send your link to a friend!</div>}
+            {list.map((r) => (
+              <div key={r.responder_name + r.created_at} className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_4px_0_#dbeafe]">
+                <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#0284c7] font-display text-xl text-white">{(r.responder_name[0] || "?").toUpperCase()}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-base font-extrabold">{r.responder_name}</div>
+                  <div className="truncate text-[13px] text-[#3d5a80]">{verdict(r.score ?? 0)[0]}</div>
+                </div>
+                <div className="font-display text-[30px] leading-none">{r.score ?? 0}</div>
+              </div>
+            ))}
+            {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
+            <div className="grid grid-cols-2 gap-3">
+              <button type="button" className={ghost} onClick={() => setPhase("share")}>Back to my link</button>
+              <button type="button" className={`${fzBtn} !min-h-[52px] !text-[15px]`} onClick={() => void showResults()} disabled={busy}>{busy ? "Loading…" : "Refresh"}</button>
+            </div>
           </>,
         )}
       />
@@ -273,9 +415,16 @@ export default function FriendshipScore() {
         <div className="font-display text-[40px] leading-none">{titles[0]}</div>
         <div className="text-[15px] leading-[1.4] text-[#3d5a80]">{titles[1]}</div>
       </div>
+      <p role="status" className={`m-0 text-center text-[13px] font-bold ${sent === "error" ? "text-[#b91c1c]" : "text-[#3d5a80]"}`}>
+        {sent === "sending" ? `Sending your answers to ${meName}…` : sent === "sent" ? `${meName} can now see your score.` : `Could not send your answers to ${meName}.`}
+      </p>
       <div className="mt-auto grid grid-cols-2 gap-3 lg:mt-0">
-        <button type="button" className={ghost} onClick={startQuiz}>Answer again</button>
-        <button type="button" className={`${fzBtn} !min-h-[52px] !text-[15px]`} onClick={() => { setPhase("create"); setMe(""); setFriend(""); setQ(0); setPicks([]); setShown(0); }}>Make your own</button>
+        {sent === "error" ? (
+          <button type="button" className={ghost} onClick={() => void send(picks, friendScore(meName, picks))}>Try sending again</button>
+        ) : (
+          <button type="button" className={ghost} onClick={startQuiz}>Answer again</button>
+        )}
+        <Link className={`${fzBtn} !min-h-[52px] !text-[15px]`} href="/tool/friendship-score">Make your own</Link>
       </div>
     </>
   );

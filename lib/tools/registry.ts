@@ -171,6 +171,7 @@ export const tools: Tool[] = [
     image: "/fun-zone/friendship-score.webp",
     imageBg: "#b6ddfd",
     imageFit: "cover",
+    ready: true,
   },
   {
     id: "what-am-i-to-you",
@@ -182,6 +183,7 @@ export const tools: Tool[] = [
     image: "/fun-zone/what-am-i-to-you.webp",
     imageBg: "#dccefd",
     imageFit: "cover",
+    ready: true,
   },
   {
     id: "how-well-do-you-know-me",
@@ -193,6 +195,7 @@ export const tools: Tool[] = [
     image: "/fun-zone/how-well-do-you-know-me.webp",
     imageBg: "#b6dafd",
     imageFit: "cover",
+    ready: true,
   },
   {
     id: "how-cooked",

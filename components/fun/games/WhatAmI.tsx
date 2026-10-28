@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import { GameShell, useTimers } from "@/components/fun/kit";
+import { useEffect, useState, type ReactNode } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useAuth } from "@/components/AuthProvider";
+import { GameShell, copyText, useTimers } from "@/components/fun/kit";
+import { createLink, getLink, latestLink, linkLabel, linkUrl, listResponses, nativeShare, submitResponse, whatsappHref } from "@/lib/fun/friends";
 
-type Phase = "create" | "friend" | "inbox";
-type Answer = { l: number; note: string };
+type Phase = "loading" | "missing" | "create" | "share" | "friend" | "sent" | "inbox";
+type Answer = { l: number; note: string; name: string };
 
 const LABELS = [
   { t: "Best friend", c: "#ec4899", e: "#be185d", top: "#f9a8d4", icon: "M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.9 4.5c2.1 0 3.9 1.2 5.1 3 1.2-1.8 3-3 5.1-3 3.9 0 6 3.9 4.5 7.3C19.5 16.4 12 21 12 21z" },
@@ -19,16 +23,6 @@ const LABELS = [
 const ROT = [-4, 3, -2, 5, 3, -5, 2, -3];
 const NOTE_BGS = ["#fef08a", "#fbcfe8", "#bfdbfe", "#bbf7d0", "#fed7aa"];
 const NOTE_ROT = [-3, 2, -1.5, 3];
-const SAMPLE: Answer[] = [
-  { l: 0, note: "Literally my person since 6th standard" },
-  { l: 2, note: "Every plan with you ends in a story" },
-  { l: 0, note: "" },
-  { l: 5, note: "Your reels keep me alive" },
-  { l: 3, note: "Saved me before every unit test" },
-  { l: 6, note: "" },
-  { l: 2, note: "" },
-];
-
 const fzBtn =
   "min-h-14 w-full cursor-pointer rounded-[18px] border-0 bg-[#8b5cf6] px-[18px] py-3.5 text-[17px] font-black text-white shadow-[0_6px_0_#6d28d9,0_14px_24px_rgba(109,40,217,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#6d28d9] disabled:cursor-default disabled:opacity-50";
 const ghost =
@@ -44,37 +38,95 @@ function Icon({ d, size, stroke = "#fff", sw = 2.2 }: { d: string; size: number;
   );
 }
 
-export default function WhatAmI() {
-  const [phase, setPhase] = useState<Phase>("create");
+/**
+ * Owner (signed in): makes a link and reads what friends call them. Friend (opens the link, no account): picks one label,
+ * adds an optional note and sends it. `friendCode` switches to the friend side.
+ */
+export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
+  const { user, ready } = useAuth();
+  const [rawPhase, setPhase] = useState<Phase>("loading");
   const [me, setMe] = useState("");
+  const [friendName, setFriendName] = useState("");
   const [sel, setSel] = useState(-1);
   const [note, setNote] = useState("");
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [flying, setFlying] = useState(false);
-  const [sampled, setSampled] = useState(false);
+  const [code, setCode] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
   const later = useTimers();
 
+  // Friend side: who made this link?
+  useEffect(() => {
+    if (!friendCode) return;
+    let cancelled = false;
+    getLink(friendCode).then((r) => {
+      if (cancelled) return;
+      if (!r.ok) { setError(r.error); setPhase("missing"); return; }
+      if (!r.data || r.data.game !== "what-am-i-to-you") { setPhase("missing"); return; }
+      setMe(r.data.owner_name);
+      setPhase("friend");
+    });
+    return () => { cancelled = true; };
+  }, [friendCode]);
+
+  // Owner side: find the link they already made.
+  const userId = user?.id ?? null;
+  // A signed-out owner has nothing to load, so they go straight to the first screen.
+  const phase: Phase = rawPhase === "loading" && !friendCode && ready && !userId ? "create" : rawPhase;
+  useEffect(() => {
+    if (friendCode || !ready) return;
+    if (!userId) return;
+    let cancelled = false;
+    latestLink("what-am-i-to-you").then((r) => {
+      if (cancelled) return;
+      if (r.ok && r.data) { setCode(r.data.code); setMe(r.data.owner_name); setPhase("share"); } else setPhase("create");
+    });
+    return () => { cancelled = true; };
+  }, [friendCode, ready, userId]);
+
   const meName = me.trim() || "You";
+  const url = code ? linkUrl("what-am-i-to-you", code) : "";
+  const shareText = `What am I to you? Tell ${meName} what you really call them (one tap, with an optional note):`;
   const counts = LABELS.map((_, i) => answers.filter((a) => a.l === i).length);
   const max = Math.max(1, ...counts);
   const top = counts.indexOf(Math.max(...counts));
   const notes = answers
     .map((a, i) => ({ a, i }))
     .filter((x) => x.a.note)
-    .reverse()
-    .map((x, j) => ({ text: `“${x.a.note}”`, label: LABELS[x.a.l].t.toUpperCase(), bg: NOTE_BGS[x.i % 5], r: NOTE_ROT[j % 4], d: (j * 0.08).toFixed(2) }));
+    .map((x, j) => ({ text: `“${x.a.note}”`, label: `${LABELS[x.a.l].t.toUpperCase()} · ${x.a.name.toUpperCase()}`, bg: NOTE_BGS[x.i % 5], r: NOTE_ROT[j % 4], d: (j * 0.08).toFixed(2) }));
 
-  function send() {
-    if (sel < 0 || flying) return;
+  async function makeLink() {
+    if (busy || !me.trim()) return;
+    setBusy(true);
+    setError("");
+    const r = await createLink("what-am-i-to-you", me);
+    setBusy(false);
+    if (!r.ok) { setError(r.error); return; }
+    setCode(r.data);
+    setAnswers([]);
+    setPhase("share");
+  }
+  async function showInbox() {
+    if (!code) return;
+    setBusy(true);
+    setError("");
+    const r = await listResponses(code);
+    setBusy(false);
+    if (!r.ok) { setError(r.error); return; }
+    setAnswers(r.data.map((x) => ({ l: Number(x.answers.l) || 0, note: String(x.answers.note ?? ""), name: x.responder_name })));
+    setPhase("inbox");
+  }
+  async function send() {
+    if (sel < 0 || flying || !friendCode || !friendName.trim()) return;
     setFlying(true);
-    const pick = sel;
-    const text = note.trim();
+    setError("");
+    const r = await submitResponse(friendCode, friendName, { l: sel, note: note.trim() });
     later(() => {
-      setAnswers((a) => [...a, { l: pick, note: text }]);
-      setSel(-1);
-      setNote("");
       setFlying(false);
-      setPhase("inbox");
+      if (!r.ok) { setError(r.error); return; }
+      setPhase("sent");
     }, 850);
   }
 
@@ -92,6 +144,23 @@ export default function WhatAmI() {
     />
   );
   const single = (children: ReactNode) => <div className="mx-auto flex w-full max-w-[34rem] flex-col gap-3.5 lg:col-span-2">{children}</div>;
+
+  if (phase === "loading") return shell({ body: single(<p className="m-0 py-16 text-center text-[15px] font-bold text-[#5b3a86]" role="status">Loading…</p>) });
+
+  if (phase === "missing") {
+    return shell({
+      body: single(
+        <>
+          <div className="flex flex-col items-center gap-3 rounded-[26px] bg-white p-[22px] text-center shadow-[0_6px_0_#ddd0fe]">
+            <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
+            <div className="font-display text-[28px] leading-[1.1]">{error || "This link does not exist"}</div>
+            <div className="text-[15px] leading-[1.4] text-[#5b3a86]">It may have been typed wrong. Ask your friend to send it again, or make your own.</div>
+          </div>
+          <Link className={`${fzBtn} flex items-center justify-center no-underline`} href="/tool/what-am-i-to-you">Make your own link</Link>
+        </>,
+      ),
+    });
+  }
 
   if (phase === "create") {
     return shell({
@@ -118,14 +187,59 @@ export default function WhatAmI() {
               className={input}
               value={me}
               onChange={(e) => setMe(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && me.trim() && setPhase("friend")}
+              onKeyDown={(e) => e.key === "Enter" && void makeLink()}
               placeholder="e.g. Ananya"
               maxLength={24}
               autoComplete="off"
             />
           </div>
-          <button type="button" className={fzBtn} onClick={() => setPhase("friend")} disabled={!me.trim()}>Make my link</button>
+          {error && <p role="alert" className="m-0 text-sm font-bold text-[#b91c1c]">{error}</p>}
+          <button type="button" className={fzBtn} onClick={() => void makeLink()} disabled={!me.trim() || busy}>{busy ? "Making your link…" : "Make my link"}</button>
         </>
+      ),
+    });
+  }
+
+  if (phase === "share") {
+    return shell({
+      body: single(
+        <>
+          <div className="flex animate-fz-pop flex-col items-center gap-3.5 rounded-[26px] bg-white p-[22px] text-center shadow-[0_6px_0_#ddd0fe]">
+            <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
+            <div className="break-words font-display text-[30px] leading-[1.05]">Your link is ready, {meName}!</div>
+            <div className="text-[15px] leading-[1.4] text-[#5b3a86]">Send it to friends. Each one picks a label for you and can leave a note. You see them in your inbox.</div>
+            <div className="box-border flex w-full items-center gap-2 rounded-[14px] border-2 border-dashed border-[#c4b5fd] bg-[#f8f4ff] px-3 py-2.5">
+              <span className="min-w-0 flex-1 truncate text-left text-sm font-bold">{code ? linkLabel("what-am-i-to-you", code) : ""}</span>
+              <button type="button" className={`${ghost} !min-h-10 !px-3 !py-1.5 !text-[13px]`} onClick={() => { copyText(url); setCopied(true); later(() => setCopied(false), 1600); }}>
+                {copied ? "Copied" : "Copy"}
+              </button>
+            </div>
+          </div>
+          <a className={`${fzBtn} flex items-center justify-center no-underline !bg-[#25a244] !shadow-[0_6px_0_#17762f,0_14px_24px_rgba(23,118,47,.3)]`} href={whatsappHref(shareText, url)} target="_blank" rel="noopener">Send on WhatsApp</a>
+          <button type="button" className={ghost} onClick={async () => { if (!(await nativeShare("What am I to you?", shareText, url))) { copyText(url); setCopied(true); later(() => setCopied(false), 1600); } }}>Share another way</button>
+          <button type="button" className={fzBtn} onClick={() => void showInbox()} disabled={busy}>{busy ? "Loading…" : "Open my inbox"}</button>
+          {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
+          <div className="grid grid-cols-2 gap-2.5">
+            <button type="button" className={ghost} onClick={() => window.open(url, "_blank", "noopener")}>Preview as a friend</button>
+            <button type="button" className={ghost} onClick={() => { setPhase("create"); setError(""); }}>New link</button>
+          </div>
+        </>,
+      ),
+    });
+  }
+
+  if (phase === "sent") {
+    return shell({
+      body: single(
+        <>
+          <div className="flex animate-fz-pop flex-col items-center gap-3 rounded-[26px] bg-white p-[22px] text-center shadow-[0_6px_0_#ddd0fe]">
+            <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
+            <div className="break-words font-display text-[30px] leading-[1.05]">Sent to {meName}!</div>
+            <div className="text-[15px] leading-[1.4] text-[#5b3a86]">They can see what you picked. Curious what your friends call you?</div>
+          </div>
+          <Link className={`${fzBtn} flex items-center justify-center no-underline`} href="/tool/what-am-i-to-you">Make your own link</Link>
+          <button type="button" className={ghost} onClick={() => { setPhase("friend"); setSel(-1); setNote(""); }}>Change my answer</button>
+        </>,
       ),
     });
   }
@@ -139,7 +253,6 @@ export default function WhatAmI() {
               <div className="text-xs font-black tracking-[.12em] text-[#a21caf]">FRIEND VIEW</div>
               <div className="break-words font-display text-[26px] leading-[1.05]">What is {meName} to you?</div>
             </div>
-            <button type="button" className={`${ghost} !min-h-11 shrink-0 !text-[13px]`} onClick={() => setPhase("inbox")}>Inbox ({answers.length})</button>
           </div>
           <div className="grid grid-cols-4 gap-2">
             {LABELS.map((l, i) => {
@@ -157,11 +270,14 @@ export default function WhatAmI() {
               );
             })}
           </div>
+          <label htmlFor="wa-name" className="text-sm font-bold text-[#5b3a86]">Your name</label>
+          <input id="wa-name" className={`${input} -mt-1.5`} value={friendName} onChange={(e) => setFriendName(e.target.value)} placeholder="e.g. Rohan" maxLength={24} autoComplete="off" />
           <label htmlFor="wa-note" className="text-sm font-bold text-[#5b3a86]">Add a note (optional)</label>
           <input id="wa-note" className={`${input} -mt-1.5`} value={note} onChange={(e) => setNote(e.target.value)} placeholder="You always share your notes before exams" maxLength={70} autoComplete="off" />
+          {error && <p role="alert" className="m-0 text-sm font-bold text-[#b91c1c]">{error}</p>}
           <div className="relative">
             {flying && <div className="absolute left-1/2 top-0 z-[3] -ml-10 h-14 w-20 animate-fz-fly rounded-xl" style={{ background: sel >= 0 ? LABELS[sel].c : "#8b5cf6" }} />}
-            <button type="button" className={fzBtn} onClick={send} disabled={sel < 0 || flying}>Send to {meName}</button>
+            <button type="button" className={fzBtn} onClick={() => void send()} disabled={sel < 0 || flying || !friendName.trim()}>Send to {meName}</button>
           </div>
         </>,
       ),
@@ -212,11 +328,11 @@ export default function WhatAmI() {
               <div className="mt-1.5 text-[11px] font-extrabold text-[#6b21a8]">{n.label}</div>
             </div>
           ))}
-          {notes.length === 0 && <div className="col-span-full rounded-2xl border-2 border-dashed border-[#ddd0fe] p-3.5 text-center text-sm text-[#6b21a8]">No notes yet. Share your link!</div>}
+          {notes.length === 0 && <div className="col-span-full rounded-2xl border-2 border-dashed border-[#ddd0fe] p-3.5 text-center text-sm text-[#6b21a8]">{answers.length ? "No notes yet, only labels." : "Nobody has answered yet. Share your link!"}</div>}
         </div>
         <div className="mt-auto grid grid-cols-2 gap-2.5">
-          <button type="button" className={ghost} onClick={() => { setPhase("friend"); setSel(-1); setNote(""); }}>Answer as another friend</button>
-          <button type="button" className={ghost} onClick={() => { if (!sampled) { setAnswers((a) => [...a, ...SAMPLE]); setSampled(true); } }}>{sampled ? "Sample added" : "Add sample friends"}</button>
+          <button type="button" className={ghost} onClick={() => setPhase("share")}>Back to my link</button>
+          <button type="button" className={ghost} onClick={() => void showInbox()} disabled={busy}>{busy ? "Loading…" : "Refresh"}</button>
         </div>
       </>,
     ),
