@@ -13,7 +13,7 @@ export default function PrivacyPage() {
     <LegalPage title="Privacy Policy" effective={LEGAL_EFFECTIVE}>
       <P>
         This policy explains how {BUSINESS} (&quot;TopperShelf&quot;, &quot;we&quot;, &quot;us&quot;) collects, uses and protects
-        personal data when you use toppershelf.online (the &quot;Site&quot;). We follow the Digital Personal Data Protection Act,
+        personal data when you use toppershelf.online (the &quot;Site&quot;) and the TopperShelf Android app from Google Play (the &quot;App&quot;). Where this policy says &quot;Site&quot;, it also covers the App. We follow the Digital Personal Data Protection Act,
         2023 (DPDP Act), the Information Technology Act, 2000 and the rules made under them. You can open and read any tool page
         without an account. You sign in once with Google to run a tool. By signing in you agree to this policy.
       </P>
@@ -27,7 +27,9 @@ export default function PrivacyPage() {
       <H2>2. Data we collect</H2>
       <UL>
         <li><b>Sign-in data:</b> when you continue with Google, your name and email address as shared by Google. We keep it to a minimum: a name and an email.</li>
-        <li><b>Your saved tools:</b> favourite tools and recently used tools. Today these are stored in your own browser. When we move them to your account, they will be stored against your sign-in.</li>
+        <li><b>Your saved tools:</b> favourite tools and recently used tools. These can be stored in your own browser or device and, when you are signed in, against your account so they follow you across devices. Flashcards, reminders, countdowns and your Grow a Sapling garden are saved against your account when you are signed in.</li>
+        <li><b>Friend games:</b> when you make a link for a game such as What Am I to You? or How Well Do You Know Me?, the name you type, your questions and the answers your friends send through that link are stored on our servers so the game can work. Friends do not need an account to answer.</li>
+        <li><b>Notifications (App only):</b> if you turn on notifications, Google Firebase Cloud Messaging gives your device a token that we use only to send you notifications. You can turn notifications off in the App at any time.</li>
         <li><b>Fun Zone text:</b> a name or a few words you type into a Fun Zone tool can become part of the share link you create, so that the link can rebuild your result. Do not type anything you would not want in a link you share.</li>
         <li><b>Technical and usage data:</b> device, browser, approximate location from IP address and pages visited, collected through cookies and analytics (see section 6), including which tools are opened and run.</li>
         <li><b>Messages you send us:</b> anything you write in an email to us, such as feedback or a tool request.</li>
@@ -62,7 +64,7 @@ export default function PrivacyPage() {
         <li><b>Vercel Inc.</b> hosts the website and its server code.</li>
         <li><b>Supabase Inc.</b> provides our database and sign-in system.</li>
         <li><b>Cloudflare, Inc.</b> manages our domain name (DNS) and email forwarding.</li>
-        <li><b>Google LLC</b> provides Google sign-in and Google Analytics.</li>
+        <li><b>Google LLC</b> provides Google sign-in, Google Analytics and Firebase Cloud Messaging (notifications in the App).</li>
       </UL>
       <P>
         Some of these providers store data on servers outside India. We choose providers that protect data with appropriate
@@ -80,8 +82,9 @@ export default function PrivacyPage() {
 
       <H2>7. How long we keep data</H2>
       <P>
-        We keep your account data while your account is active. If you ask us to delete your account, we delete your personal data
-        within 30 days, except what we must keep by law. Analytics data is kept by Google for the period we set in Google
+        We keep your account data while your account is active. In the App you can delete your account yourself: open Settings from
+        the Home screen and choose &quot;Delete my account&quot;. This removes your saved data and your sign-in straight away. You can
+        also ask us by email (section 9) and we delete your personal data within 30 days, except what we must keep by law. Analytics data is kept by Google for the period we set in Google
         Analytics.
       </P>
 

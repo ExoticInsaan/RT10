@@ -4,7 +4,7 @@ export const SUPPORT_EMAIL = "support@toppershelf.online";
 export const BUSINESS = "TopperShelf";
 export const ADDRESS = "Bharatpur, Rajasthan, India";
 export const GRIEVANCE_NAME = "Jatin Sinsinwar";
-export const LEGAL_EFFECTIVE = "27 October 2026";
+export const LEGAL_EFFECTIVE = "29 October 2026";
 
 /** Shared layout for the Privacy Policy and Terms of Use. */
 export function LegalPage({ title, effective, children }: { title: string; effective: string; children: ReactNode }) {
