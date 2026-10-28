@@ -147,14 +147,15 @@ const shelfContent: Record<string, ToolContent> = {
   "cgpa-calculator": {
     howTo: [
       "Sign in with Google (one tap, free).",
-      "Choose CGPA → %, % → CGPA, or SGPAs → CGPA.",
-      "Enter your number and pick the rule your board or university uses.",
+      "Choose CGPA → %, % → CGPA, SGPAs → CGPA, or Marks → %.",
+      "Enter your numbers and, for CGPA, pick the rule your board or university uses.",
       "Read your result. It updates as you type.",
     ],
     faq: [
       { q: "How do I convert CGPA to percentage?", a: "It depends on who awarded it. CBSE and UGC use CGPA × 9.5. AICTE uses (CGPA − 0.75) × 10. Anna University and AKTU use CGPA × 10, and Mumbai University uses 7.1 × CGPA + 11. Pick yours from the list." },
       { q: "My university uses a different formula. What should I do?", a: "Choose Custom multiplier and enter the number printed on your marksheet. The rule on your marksheet or in your university's regulations is always the official figure." },
       { q: "How is CGPA calculated from SGPAs?", a: "Add each semester's SGPA. With credits for every semester, CGPA is the credit-weighted average, which is how most universities calculate it. Without credits, each semester counts equally." },
+      { q: "How do I get my percentage from marks?", a: "Choose Marks → %, then add each subject with the marks you got and what it was out of. You see the percentage for every subject and your total percentage, which is total marks got divided by total marks available." },
     ],
     privacyNote: typedNote,
   },
