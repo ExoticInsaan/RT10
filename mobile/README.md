@@ -33,3 +33,12 @@ Source images are in `assets/`. After changing them: `npm run icons`.
 ## Before Play review
 - Play requires an in-app way to delete the account if people can create one. Add it (or link to a web page) before publishing.
 - Privacy policy URL, Data safety form and content rating are filled in Play Console as usual.
+
+## Push notifications (Firebase)
+The app is ready to receive notifications; you send them from the Firebase console. One-time setup:
+1. console.firebase.google.com → **Add project** (name it TopperShelf; Analytics optional).
+2. Project overview → **Add app → Android**. Package name: `online.toppershelf.app`. Download **google-services.json**.
+3. Put that file at `mobile/android/app/google-services.json` (the Gradle plugin is already wired and switches on when the file exists), commit it, then rebuild the `.aab`.
+4. To send: Firebase console → **Messaging → New campaign → Notifications**. Write the title and text, choose **Target: App → TopperShelf (Android)** to reach everyone, and send. To open a screen when tapped, add custom data `path` = `/tool/cgpa-calculator`, `/fun`, `/shelf`, etc.
+People turn notifications on with the switch on the **My Shelf** screen (Android 13+ asks for permission at that moment).
+Test on a real phone: the emulator needs Google Play services.

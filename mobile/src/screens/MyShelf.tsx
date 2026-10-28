@@ -2,6 +2,8 @@ import { tools } from "@/lib/tools/registry";
 import { FAVOURITES_KEY, RECENT_KEY } from "@/components/tools/ui";
 import { useAuth } from "@/components/AuthProvider";
 import { useStoredList } from "@/lib/tools/useStoredList";
+import { useState } from "react";
+import { disablePush, enablePush, pushSupported, pushWanted } from "../push";
 import { ShelfTile, Sticker } from "../components/tiles";
 
 const shelf = tools.filter((t) => t.category === "The Shelf");
@@ -16,6 +18,20 @@ export default function MyShelf() {
   const recentTools = recent.filter((id) => !favs.includes(id)).map((id) => tools.find((t) => t.id === id)).filter(Boolean) as typeof tools;
   const empty = !favTools.length && !recentTools.length;
   const name = (user?.user_metadata?.name as string | undefined) ?? user?.email;
+  const [pushOn, setPushOn] = useState(pushWanted);
+  const [pushNote, setPushNote] = useState<string | null>(null);
+
+  async function togglePush() {
+    setPushNote(null);
+    if (pushOn) {
+      await disablePush();
+      setPushOn(false);
+      return;
+    }
+    const problem = await enablePush();
+    setPushOn(!problem);
+    setPushNote(problem);
+  }
 
   return (
     <div className="hide-scrollbar absolute inset-0 overflow-y-auto pb-[100px]">
@@ -37,6 +53,28 @@ export default function MyShelf() {
           >
             {user ? "Sign out" : "Sign in"}
           </button>
+        </div>
+      )}
+
+      {pushSupported() && (
+        <div className="mx-5 mt-3 rounded-3xl border border-line bg-white p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-[15px] font-extrabold">Notifications</div>
+              <div className="text-[13px] text-[#5b6675]">New tools, games and study tips.</div>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={pushOn}
+              aria-label="Notifications"
+              onClick={() => void togglePush()}
+              className={`relative h-8 w-14 shrink-0 cursor-pointer rounded-full border-0 transition ${pushOn ? "bg-[#2563eb]" : "bg-slate-300"}`}
+            >
+              <span className={`absolute top-1 size-6 rounded-full bg-white shadow transition-all ${pushOn ? "left-7" : "left-1"}`} />
+            </button>
+          </div>
+          {pushNote && <p role="alert" className="m-0 mt-2 text-[13px] leading-5 text-rose-600">{pushNote}</p>}
         </div>
       )}
 
