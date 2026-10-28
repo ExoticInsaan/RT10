@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/tools/ui";
-import { Field, Hint, inputClass, readStored, writeStored } from "@/components/tools/kit";
+import { Field, Hint, inputClass } from "@/components/tools/kit";
+import { useAccountData } from "@/lib/tools/useAccountData";
 import ToolIcon from "@/components/tools/ToolIcon";
 
 type Countdown = { id: string; title: string; date: string };
-const KEY = "toppershelf-countdowns";
 
 /** Whole calendar days from today to the date (YYYY-MM-DD), in the visitor's own time zone. Negative once passed. */
 export function daysUntil(date: string, now = new Date()) {
@@ -25,14 +25,12 @@ const todayIso = () => {
 };
 
 export default function DaysCountdown() {
-  // Tools only render in the browser, so saved data can be read straight away.
-  const [items, setItems] = useState<Countdown[]>(() => readStored<Countdown[]>(KEY, []));
+  const [items, setItems, status] = useAccountData<Countdown[]>("days-countdown", []);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [error, setError] = useState("");
   const [now, setNow] = useState(() => new Date());
 
-  useEffect(() => writeStored(KEY, items), [items]);
   // Refresh each minute so a countdown left open overnight rolls over at midnight.
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 60_000);
@@ -42,8 +40,8 @@ export default function DaysCountdown() {
   function add() {
     if (!title.trim()) return setError("Give the countdown a name, like “Physics exam”.");
     if (!date) return setError("Pick a date.");
-    setItems((current) =>
-      [...current, { id: crypto.randomUUID(), title: title.trim().slice(0, 60), date }].sort((a, b) => a.date.localeCompare(b.date)),
+    setItems(
+      [...items, { id: crypto.randomUUID(), title: title.trim().slice(0, 60), date }].sort((a, b) => a.date.localeCompare(b.date)),
     );
     setTitle("");
     setDate("");
@@ -52,6 +50,9 @@ export default function DaysCountdown() {
 
   const [next, ...rest] = items.filter((item) => daysUntil(item.date, now) >= 0);
   const past = items.filter((item) => daysUntil(item.date, now) < 0);
+
+  if (status === "loading") return <p className="m-0 py-16 text-center text-sm text-muted">Loading your countdowns…</p>;
+  if (status === "error") return <p className="m-0 py-16 text-center text-sm text-muted">Could not load your countdowns. Please refresh the page.</p>;
 
   return (
     <div className="mx-auto grid max-w-3xl gap-8">
@@ -73,7 +74,7 @@ export default function DaysCountdown() {
       {error && <Hint error>{error}</Hint>}
 
       {items.length === 0 ? (
-        <Hint>Your countdowns appear here and stay saved in this browser.</Hint>
+        <Hint>Your countdowns appear here and are saved to your account.</Hint>
       ) : (
         <div className="grid gap-4">
           {next && <Big item={next} days={daysUntil(next.date, now)} onRemove={() => setItems(items.filter((i) => i.id !== next.id))} />}
