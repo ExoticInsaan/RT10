@@ -24,15 +24,19 @@ function handleBlobDownloads() {
   };
 }
 
+function blobToBase64(blob: Blob) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
 async function saveAndShare(url: string, filename: string) {
   try {
     const blob = await (await fetch(url)).blob();
-    const data = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(blob);
-    });
+    const data = await blobToBase64(blob);
     const saved = await Filesystem.writeFile({ path: filename, data, directory: Directory.Cache });
     await Share.share({ title: filename, url: saved.uri, dialogTitle: "Save or share" });
   } catch {
@@ -70,6 +74,12 @@ export function initNative() {
   // The friend games call this to open the Android share sheet (WhatsApp, Messages, Instagram and so on).
   (window as unknown as { __tsShare?: (o: { title: string; text: string; url: string }) => Promise<void> }).__tsShare = async ({ title, text, url }) => {
     await Share.share({ title, text, url, dialogTitle: "Share with friends" });
+  };
+  // Story cards: the picture goes to the app cache and the Android share sheet opens with it (WhatsApp, Instagram, Messages…).
+  (window as unknown as { __tsShareImage?: (o: { blob: Blob; filename: string; text: string }) => Promise<void> }).__tsShareImage = async ({ blob, filename, text }) => {
+    const data = await blobToBase64(blob);
+    const saved = await Filesystem.writeFile({ path: filename, data, directory: Directory.Cache });
+    await Share.share({ title: "TopperShelf", text, files: [saved.uri], dialogTitle: "Share your card" });
   };
   void SplashScreen.hide().catch(() => {});
 }

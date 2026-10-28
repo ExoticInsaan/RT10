@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
-import { FitBox, GameShell, OwlPeek, copyText, hash, useTimers } from "@/components/fun/kit";
+import { useEffect, useRef, useState } from "react";
+import CardCooked from "@/components/fun/cards/CardCooked";
+import CardActions from "@/components/fun/CardActions";
+import { FitBox, GameShell, OwlPeek, hash, useTimers } from "@/components/fun/kit";
+import { resultLink } from "@/lib/fun/results";
 
 type Phase = "input" | "loading" | "result";
 
@@ -58,8 +61,7 @@ export default function HowCooked() {
   const [phase, setPhase] = useState<Phase>("input");
   const [name, setName] = useState("");
   const [shown, setShown] = useState(0);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [copied, setCopied] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const [loadIdx, setLoadIdx] = useState(0);
   const later = useTimers();
   const raf = useRef(0);
@@ -98,13 +100,6 @@ export default function HowCooked() {
       };
       raf.current = requestAnimationFrame(step);
     }, 1850);
-  }
-
-  function onTilt(e: MouseEvent<HTMLDivElement>) {
-    const b = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - b.left) / b.width - 0.5;
-    const y = (e.clientY - b.top) / b.height - 0.5;
-    setTilt({ y: Math.round(x * 24), x: Math.round(-y * 20) });
   }
 
   const stageH = phase === "loading" ? 360 : 280;
@@ -292,44 +287,18 @@ export default function HowCooked() {
               />
             );
           })}
-          <FitBox width={262} height={466}>
-            <div className="animate-fz-popin [perspective:900px]">
-              <div
-                onMouseMove={onTilt}
-                onMouseLeave={() => setTilt({ x: 0, y: 0 })}
-                className="relative h-[466px] w-[262px] overflow-hidden rounded-[26px] text-white shadow-[0_24px_50px_rgba(58,20,6,.35)] transition-transform duration-150 [transform-style:preserve-3d]"
-                style={{ background: r.bg, transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}
-              >
-                <div className="absolute inset-0 flex animate-fz-floaty flex-col justify-between p-[22px] [transform:translateZ(30px)]">
-                  <div className="text-xs font-bold tracking-[.12em] opacity-85">HOW COOKED ARE YOU?</div>
-                  <div>
-                    <div className="text-[15px] font-bold opacity-90">{name} is</div>
-                    <div className="font-display text-[100px] font-normal leading-[.9] tracking-[-.02em]">{shown}%</div>
-                    <div className="text-[34px] font-extrabold tracking-[.02em]">COOKED</div>
-                    <div className="mt-3.5 text-[17px] font-medium leading-[1.35]">{r.verdict}</div>
-                  </div>
-                  <div className="flex items-center justify-between text-xs font-bold opacity-90">
-                    <span>toppershelf.online/fun</span>
-                    <span className="rounded-lg bg-white/[.22] px-2 py-1">{r.tier}</span>
-                  </div>
-                </div>
-                <div className="absolute -right-10 -top-10 size-40 rounded-full bg-white/[.12]" />
-              </div>
-            </div>
-          </FitBox>
-          <div className="grid w-full grid-cols-2 gap-3">
-            <button className={ghost} onClick={() => { setPhase("input"); setName(""); setShown(0); setCopied(false); }}>Try another name</button>
-            <button
-              className={`${btn} min-h-12 p-3 text-base`}
-              onClick={() => {
-                copyText("https://toppershelf.online/fun/cooked?n=" + encodeURIComponent(name.trim()));
-                setCopied(true);
-                later(() => setCopied(false), 1800);
-              }}
-            >
-              {copied ? "Link copied" : "Share card"}
-            </button>
+          <div className="animate-fz-popin w-full">
+            <CardCooked cardRef={cardRef} data={{ name: name.trim(), score: shown, tier: r.tier, bg: r.bg, verdict: r.verdict }} />
           </div>
+          <CardActions
+            getNode={() => cardRef.current}
+            fileName="how-cooked-toppershelf.png"
+            shareText={`${name.trim()} is ${r.score}% cooked. How cooked are you?`}
+            shareUrl={resultLink("cooked", { n: name.trim() })}
+            btnClass={`${btn} min-h-12 p-3 text-base`}
+            ghostClass={ghost}
+          />
+          <button type="button" className={`${ghost} w-full`} onClick={() => { setPhase("input"); setName(""); setShown(0); }}>Try another name</button>
         </div>
       )}
     </>

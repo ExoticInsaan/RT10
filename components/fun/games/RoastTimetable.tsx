@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import CardRoast from "@/components/fun/cards/CardRoast";
+import CardActions from "@/components/fun/CardActions";
 import { FitBox, GameShell, hash, useTimers } from "@/components/fun/kit";
+import { resultLink } from "@/lib/fun/results";
 
 type Phase = "input" | "roasting" | "result";
 
@@ -63,6 +66,7 @@ export default function RoastTimetable() {
   const [phase, setPhase] = useState<Phase>("input");
   const [day, setDay] = useState("");
   const [flipped, setFlipped] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const later = useTimers();
 
   const r = roastFor(day);
@@ -183,6 +187,20 @@ export default function RoastTimetable() {
     </div>
   );
 
+  const storyCard = isResult && (
+    <div className="flex flex-col items-center gap-3 lg:col-span-2 lg:mx-auto lg:w-full lg:max-w-[380px]">
+      <CardRoast cardRef={cardRef} data={{ day, lines: r.lines, level: r.level, score: r.score }} />
+      <CardActions
+        getNode={() => cardRef.current}
+        fileName="roast-toppershelf.png"
+        shareText={`My timetable got roasted: ${r.score}/10. Roast yours!`}
+        shareUrl={resultLink("roast", { d: day.trim() })}
+        btnClass={btn}
+        ghostClass={ghost}
+      />
+    </div>
+  );
+
   const go = phase === "input" && (
     <div className="lg:col-start-2 lg:row-start-3">
       <button type="button" className={btn} onClick={roast} disabled={!day.trim()}>Roast it</button>
@@ -199,7 +217,7 @@ export default function RoastTimetable() {
       status="LIVE"
       panelClass="bg-[#fff7e6] px-5 text-[#2a1600] sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:grid-rows-[1fr_auto_auto_1fr] lg:gap-x-10 lg:gap-y-4"
       rootClass="bg-[#fff7e6]"
-      body={<>{input}{stage}{heat}{result}{go}</>}
+      body={<>{input}{stage}{heat}{result}{go}{storyCard}</>}
     />
   );
 }

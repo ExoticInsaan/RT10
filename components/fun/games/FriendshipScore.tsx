@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
+import CardFriend from "@/components/fun/cards/CardFriend";
+import CardActions from "@/components/fun/CardActions";
 import { GameShell, copyText, useTimers } from "@/components/fun/kit";
+import { SITE_URL } from "@/lib/site";
 import {
   createLink, getLink, latestLink, linkLabel, linkUrl, listResponses, nativeShare, submitResponse, whatsappHref,
   type FriendAnswer,
@@ -89,6 +92,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
   const [results, setResults] = useState<FriendAnswer[] | null>(null);
   const later = useTimers();
   const raf = useRef(0);
+  const cardRef = useRef<HTMLDivElement>(null);
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
 
   // Friend side: who made this link?
@@ -388,36 +392,24 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
     );
   }
 
-  const ringC = sc >= 75 ? "#ec4899" : sc >= 50 ? "#0284c7" : "#f59e0b";
   const stage = (
-    <div className="relative flex h-[290px] items-center justify-center [perspective:900px]">
-      <Hearts />
-      <div className="relative size-[240px] animate-fz-medal [transform-style:preserve-3d]">
-        <div className="absolute inset-0 rounded-full bg-[#facc15] [transform:translateZ(-10px)]" />
-        <div className="absolute inset-0 rounded-full bg-[#eab308] [transform:translateZ(-5px)]" />
-        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-white shadow-[inset_0_0_0_10px_#fde047,0_24px_40px_-12px_rgba(16,42,76,.45)]">
-          <svg width="220" height="220" viewBox="0 0 220 220" className="absolute left-2.5 top-2.5" aria-hidden="true">
-            <circle cx="110" cy="110" r="86" stroke="#e0f2fe" strokeWidth="16" fill="none" />
-            <circle className="animate-fz-ring" cx="110" cy="110" r="86" stroke={ringC} strokeWidth="16" fill="none" strokeLinecap="round" strokeDasharray="540" strokeDashoffset={(540 - (540 * sc) / 100).toFixed(1)} transform="rotate(-90 110 110)" />
-          </svg>
-          <div className="relative text-center">
-            <div className="font-display text-[70px] leading-[.9]">{shown}</div>
-            <div className="text-[13px] font-extrabold text-[#3d5a80]">out of 100</div>
-          </div>
-        </div>
-      </div>
+    <div className="animate-fz-popin w-full">
+      <CardFriend cardRef={cardRef} data={{ me: meName, friend: friendName, score: shown, title: titles[0], line: titles[1] }} />
     </div>
   );
   const controls = (
     <>
-      <div className="flex animate-fz-pop flex-col gap-1.5 text-center [animation-delay:1.2s]">
-        <div className="break-words text-[13px] font-extrabold text-[#0369a1]">{meName} + {friendName}</div>
-        <div className="font-display text-[40px] leading-none">{titles[0]}</div>
-        <div className="text-[15px] leading-[1.4] text-[#3d5a80]">{titles[1]}</div>
-      </div>
       <p role="status" className={`m-0 text-center text-[13px] font-bold ${sent === "error" ? "text-[#b91c1c]" : "text-[#3d5a80]"}`}>
         {sent === "sending" ? `Sending your answers to ${meName}…` : sent === "sent" ? `${meName} can now see your score.` : `Could not send your answers to ${meName}.`}
       </p>
+      <CardActions
+        getNode={() => cardRef.current}
+        fileName="friendship-score-toppershelf.png"
+        shareText={`${meName} + ${friendName}: ${sc}/100 friendship score. Test yours!`}
+        shareUrl={`${SITE_URL}/tool/friendship-score`}
+        btnClass={fzBtn}
+        ghostClass={ghost}
+      />
       <div className="mt-auto grid grid-cols-2 gap-3 lg:mt-0">
         {sent === "error" ? (
           <button type="button" className={ghost} onClick={() => void send(picks, friendScore(meName, picks))}>Try sending again</button>

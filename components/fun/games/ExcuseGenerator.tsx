@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import CardExcuse from "@/components/fun/cards/CardExcuse";
+import CardActions from "@/components/fun/CardActions";
 import { GameShell, hash, useTimers } from "@/components/fun/kit";
+import { resultLink } from "@/lib/fun/results";
 
 const LISTS = [
   ["My neighbour’s goat", "A rogue auto-rickshaw", "Nani’s WhatsApp group", "The Wi-Fi router", "A very confident pigeon", "My little cousin", "Mercury in retrograde", "The building lift", "My phone’s autocorrect", "A suspicious monsoon cloud"],
@@ -21,6 +24,12 @@ export function excuseFor(situation: string, roll: number) {
   return { idx, believe, text: `Sorry about ${lead}. ${LISTS[0][idx[0]]} ${LISTS[1][idx[1]]}, ${LISTS[2][idx[2]]}.` };
 }
 
+/** The pieces of the excuse as shown on the story card (same situation and roll give the same excuse). */
+export function excuseParts(situation: string, roll: number) {
+  const e = excuseFor(situation, roll);
+  return { text: `${LISTS[0][e.idx[0]]} ${LISTS[1][e.idx[1]]}, ${LISTS[2][e.idx[2]]}.`, believe: e.believe };
+}
+
 const btn =
   "min-h-14 cursor-pointer rounded-[18px] border-0 bg-[#6a4cff] px-4 py-3.5 text-[17px] font-extrabold text-white shadow-[0_6px_0_#4126c9,0_14px_24px_rgba(65,38,201,.28)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#4126c9] disabled:cursor-default disabled:opacity-50";
 const ghost =
@@ -35,6 +44,7 @@ export default function ExcuseGenerator() {
   const [has, setHas] = useState(false);
   const [lever, setLever] = useState(false);
   const [made, setMade] = useState("");
+  const cardRef = useRef<HTMLDivElement>(null);
   const later = useTimers();
 
   function spin(nextRoll: number) {
@@ -149,6 +159,20 @@ export default function ExcuseGenerator() {
     </div>
   );
 
+  const storyCard = has && (
+    <div className="flex animate-fz-pop flex-col items-center gap-3 lg:col-span-2 lg:mx-auto lg:w-full lg:max-w-[380px]">
+      <CardExcuse cardRef={cardRef} data={{ situation: made, text: `${LISTS[0][idx[0]]} ${LISTS[1][idx[1]]}, ${LISTS[2][idx[2]]}.`, believe }} />
+      <CardActions
+        getNode={() => cardRef.current}
+        fileName="excuse-toppershelf.png"
+        shareText={`My excuse for ${made}: ${believe}% believable. Make yours!`}
+        shareUrl={resultLink("excuse", { s: made, r: roll })}
+        btnClass={btn}
+        ghostClass={ghost}
+      />
+    </div>
+  );
+
   return (
     <GameShell
       gradient="linear-gradient(150deg,#6d28d9 0%,#a21caf 55%,#ec4899 100%)"
@@ -159,7 +183,7 @@ export default function ExcuseGenerator() {
       status="LIVE"
       panelClass="bg-[#f3f0ff] px-5 text-[#1d1340] sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:content-center lg:gap-x-10 lg:gap-y-4"
       rootClass="bg-[#f3f0ff]"
-      body={<>{input}{machine}{result}{buttons}</>}
+      body={<>{input}{machine}{result}{buttons}{storyCard}</>}
     />
   );
 }

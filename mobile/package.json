@@ -27,6 +27,7 @@
     "@fontsource/dm-serif-display": "^5.2.5",
     "@fontsource/inter": "^5.2.5",
     "@supabase/supabase-js": "^2.117.3",
+    "html-to-image": "^1.11.13",
     "pdf-lib": "1.17.1",
     "pdfjs-dist": "6.4.299",
     "react": "19.3.0",

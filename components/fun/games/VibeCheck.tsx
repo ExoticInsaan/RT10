@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
-import { GameShell, OwlPeek, copyText, hash, useTimers } from "@/components/fun/kit";
+import { useEffect, useRef, useState } from "react";
+import CardVibe from "@/components/fun/cards/CardVibe";
+import CardActions from "@/components/fun/CardActions";
+import { GameShell, OwlPeek, hash, useTimers } from "@/components/fun/kit";
+import { resultLink } from "@/lib/fun/results";
 
 type Phase = "input" | "loading" | "result";
 
@@ -17,7 +20,6 @@ const VIBES = [
   { n: "Soft Launch", a: "#fbcfe8", b: "#c026d3", bg: "#a21caf", l: "Quietly levelling up. Nobody knows yet, and that is the point." },
   { n: "Villain Arc (Productive)", a: "#fca5a5", b: "#dc2626", bg: "#b91c1c", l: "Revenge served as a perfect assignment. Petty, but efficient." },
 ];
-const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 const STARS = Array.from({ length: 16 }, (_, i) => ({
   x: (((i * 73) % 330) + 8) / 350 * 100,
   y: (i * 47) % 280 + 8,
@@ -30,7 +32,7 @@ const RINGS = [
   { tx: 64, ty: -54, size: 180, c: "#fde68a", dur: 11 },
 ];
 
-const dayKey = (t: number) => {
+export const dayKey = (t: number) => {
   const d = new Date(t);
   return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 };
@@ -56,8 +58,7 @@ const ghost =
 export default function VibeCheck() {
   const [phase, setPhase] = useState<Phase>("input");
   const [name, setName] = useState("");
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [copied, setCopied] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const [now, setNow] = useState(0);
   const later = useTimers();
   useEffect(() => {
@@ -79,18 +80,6 @@ export default function VibeCheck() {
     setPhase("loading");
     later(() => setPhase("result"), 2200);
   }
-  function share() {
-    copyText("https://toppershelf.online/fun/vibe?n=" + encodeURIComponent(name.trim()));
-    setCopied(true);
-    later(() => setCopied(false), 1800);
-  }
-  function onTilt(e: MouseEvent<HTMLDivElement>) {
-    const b = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - b.left) / b.width - 0.5;
-    const y = (e.clientY - b.top) / b.height - 0.5;
-    setTilt({ y: Math.round(x * 24), x: Math.round(-y * 20) });
-  }
-
   const stage =
     phase !== "result" ? (
       <div className="relative mx-auto h-[300px] w-full max-w-[26rem] shrink-0 overflow-hidden rounded-[26px] bg-[#1e1b4b] [perspective:700px]">
@@ -123,45 +112,12 @@ export default function VibeCheck() {
         </div>
       </div>
     ) : (
-      <div className="flex justify-center [perspective:900px]">
-        <div
-          onMouseMove={onTilt}
-          onMouseLeave={() => setTilt({ x: 0, y: 0 })}
-          className="relative h-[444px] w-[250px] animate-fz-card overflow-hidden rounded-[26px] text-white shadow-[0_26px_50px_-14px_rgba(30,27,75,.55)] transition-transform duration-150 [transform-style:preserve-3d]"
-          style={{ background: r!.v.bg, transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}
-        >
-          <div className="absolute inset-0 [background:radial-gradient(circle_at_1px_1px,rgba(255,255,255,.2)_1.2px,transparent_1.7px)_0_0/16px_16px]" />
-          <div className="absolute inset-0 flex flex-col gap-3 p-5 [transform:translateZ(36px)]">
-            <div className="flex items-center justify-between text-[11px] font-extrabold tracking-[.12em]">
-              <span>VIBE CHECK</span>
-              <span>{d.getDate()} {MONTHS[d.getMonth()]}</span>
-            </div>
-            <div className="relative flex h-[120px] items-center justify-center">
-              <div
-                className="size-24 animate-fz-pulse rounded-full shadow-[0_0_34px_rgba(255,255,255,.55)]"
-                style={{ background: `radial-gradient(circle at 34% 30%,#fff 0%,${orb.a} 25%,${orb.b} 75%)` }}
-              />
-              <div className="absolute left-1/2 top-1/2 -ml-[75px] -mt-[75px] size-[150px] rounded-full border-2 border-white/70 [transform:rotateX(72deg)]" />
-            </div>
-            <div>
-              <div className="break-words text-sm font-bold opacity-90">{name.trim()}&apos;s vibe today</div>
-              <div className="font-display text-4xl leading-none">{r!.v.n}</div>
-              <div className="mt-2 text-sm font-medium leading-[1.4]">{r!.v.l}</div>
-            </div>
-            <div className="mt-auto flex flex-col gap-[7px]">
-              {r!.meters.map((m) => (
-                <div key={m.label} className="flex items-center gap-2 text-[11px] font-extrabold">
-                  <span className="w-[62px]">{m.label}</span>
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/25">
-                    <div className="h-full animate-fz-bar rounded-full bg-white" style={{ width: `${m.v}%` }} />
-                  </div>
-                  <span className="w-[30px] text-right">{m.v}%</span>
-                </div>
-              ))}
-            </div>
-            <div className="text-[11px] font-extrabold opacity-90">toppershelf.online/fun</div>
-          </div>
-        </div>
+      <div className="animate-fz-card w-full">
+        <CardVibe
+          cardRef={cardRef}
+          date={d}
+          data={{ name: name.trim(), vibe: r!.v.n, line: r!.v.l, a: r!.v.a, b: r!.v.b, bg: r!.v.bg, meters: r!.meters.map((m) => ({ label: m.label, v: m.v })) }}
+        />
       </div>
     );
 
@@ -190,10 +146,15 @@ export default function VibeCheck() {
     ) : phase === "result" ? (
       <div className="flex flex-col items-center gap-3.5">
         <div className="text-[13px] font-bold text-[#4b4a7a]">New vibe in {Math.floor(mins / 60)}h {mins % 60}m</div>
-        <div className="grid w-full grid-cols-2 gap-3">
-          <button type="button" className={ghost} onClick={() => { setPhase("input"); setName(""); setCopied(false); }}>Check someone</button>
-          <button type="button" className={`${btn} !min-h-[50px] !text-[15px]`} onClick={share}>{copied ? "Link copied" : "Share card"}</button>
-        </div>
+        <CardActions
+          getNode={() => cardRef.current}
+          fileName="vibe-check-toppershelf.png"
+          shareText={`${name.trim()}'s vibe today: ${r!.v.n}. What's yours?`}
+          shareUrl={resultLink("vibe", { n: name.trim(), d: dayKey(now) })}
+          btnClass={`${btn} !min-h-[50px] !text-[15px]`}
+          ghostClass={ghost}
+        />
+        <button type="button" className={`${ghost} w-full`} onClick={() => { setPhase("input"); setName(""); }}>Check someone</button>
       </div>
     ) : null;
 

@@ -19,6 +19,21 @@ export function hash(text: string) {
   return x >>> 0;
 }
 
+/** Blend two #rrggbb colours: t=0 gives a, t=1 gives b. Used to theme the story cards from a result colour. */
+export function mix(a: string, b: string, t: number) {
+  const pa = parseInt(a.slice(1), 16);
+  const pb = parseInt(b.slice(1), 16);
+  const ch = (shift: number) => Math.round(((pa >> shift) & 255) * (1 - t) + ((pb >> shift) & 255) * t);
+  return "#" + [ch(16), ch(8), ch(0)].map((v) => v.toString(16).padStart(2, "0")).join("");
+}
+
+/** Today's date the way story cards print it, for example "WED · 28 OCT". */
+export function storyDate(d: Date) {
+  const day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][d.getDay()];
+  const mon = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][d.getMonth()];
+  return `${day} · ${d.getDate()} ${mon}`;
+}
+
 /** Small seeded random generator (mulberry32) for repeatable layouts. */
 export function rng(seed: number) {
   let a = seed >>> 0;
