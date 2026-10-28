@@ -5,6 +5,7 @@ import ToolIcon from "@/components/tools/ToolIcon";
 import { Button } from "@/components/tools/ui";
 import { DropZone, Field, Hint, Segmented, downloadBlob, formatBytes, inputClass, renameFile } from "@/components/tools/kit";
 import PdfEditor from "./PdfEditor";
+import PdfModeCards, { ModeIcon } from "./PdfModeCards";
 
 type Mode = "merge" | "compress" | "to-pdf" | "edit" | "split" | "to-images";
 type Output = { name: string; blob: Blob };
@@ -23,6 +24,8 @@ const engine = () => import("./pdf-engine");
 
 export default function PdfToolkit() {
   const [mode, setMode] = useState<Mode>("merge");
+  // Phones and tablets start on the grid of cards; desktop always shows the switch and the tool.
+  const [picked, setPicked] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [pageCount, setPageCount] = useState<number | null>(null);
   const [ranges, setRanges] = useState("");
@@ -123,8 +126,39 @@ export default function PdfToolkit() {
 
   return (
     <div className="mx-auto grid max-w-3xl gap-6">
+      {!picked && (
+        <PdfModeCards
+          cards={modes.map(({ value, label, intro }) => ({ value, label, intro }))}
+          onPick={(value) => {
+            reset(value as Mode);
+            setPicked(true);
+          }}
+        />
+      )}
+
+      <div className={`grid gap-6 ${picked ? "" : "max-lg:hidden"}`}>
+      {picked && (
+        <div className="flex items-center gap-3 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setPicked(false)}
+            aria-label="Back to all PDF tools"
+            className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy"
+          >
+            <span className="rotate-180">
+              <ToolIcon name="arrow" size={18} />
+            </span>
+          </button>
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-blue-soft text-blue-hover">
+            <ModeIcon id={mode} size={22} />
+          </span>
+          <h2 className="m-0 text-lg font-extrabold text-navy">{current.label}</h2>
+        </div>
+      )}
       <div className="grid gap-2">
-        <Segmented label="What do you want to do?" value={mode} onChange={reset} options={modes.map(({ value, label }) => ({ value, label }))} />
+        <div className="max-lg:hidden">
+          <Segmented label="What do you want to do?" value={mode} onChange={reset} options={modes.map(({ value, label }) => ({ value, label }))} />
+        </div>
         <p className="m-0 text-sm text-muted">{current.intro}</p>
       </div>
 
@@ -268,6 +302,7 @@ export default function PdfToolkit() {
           )}
         </div>
       )}
+      </div>
     </div>
   );
 }
