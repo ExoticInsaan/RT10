@@ -26,6 +26,7 @@
       "react/*": ["node_modules/@types/react/*"],
       "react-dom": ["node_modules/@types/react-dom"],
       "pdf-lib": ["node_modules/pdf-lib"],
+      "html-to-image": ["node_modules/html-to-image"],
       "pdfjs-dist": ["node_modules/pdfjs-dist"],
       "@supabase/supabase-js": ["node_modules/@supabase/supabase-js"]
     }

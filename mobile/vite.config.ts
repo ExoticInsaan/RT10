@@ -48,6 +48,7 @@ export default defineConfig({
       { find: /^react-dom$/, replacement: mod("react-dom") },
       { find: /^react-dom\/(.*)$/, replacement: mod("react-dom") + "/$1" },
       { find: /^pdf-lib$/, replacement: mod("pdf-lib") },
+      { find: /^html-to-image$/, replacement: mod("html-to-image") },
       { find: /^pdfjs-dist$/, replacement: mod("pdfjs-dist") },
       { find: /^@supabase\/supabase-js$/, replacement: mod("@supabase/supabase-js") },
     ],
