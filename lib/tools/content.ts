@@ -81,7 +81,7 @@ export const toolContent: Record<string, ToolContent> = {
 // ---- The Shelf ----
 const deviceNote = "Your files never leave your device. Everything happens in your browser, so nothing is uploaded.";
 const typedNote = "Nothing you type is sent anywhere. It is worked out in your browser.";
-const savedNote = "Saved only in this browser on this device. Clearing your browser data removes it.";
+const savedNote = "Saved in your TopperShelf account, so it follows you to any device. Only you can see it, and you can delete your account any time.";
 
 const shelfContent: Record<string, ToolContent> = {
   "pdf-toolkit": {
@@ -139,7 +139,7 @@ const shelfContent: Record<string, ToolContent> = {
     ],
     faq: [
       { q: "How do I add many cards quickly?", a: "Use Paste many at once and write one card per line as question - answer, question: answer, or paste two columns from a spreadsheet." },
-      { q: "Where are my decks saved?", a: "In this browser on this device, so they are there next time you open the tool here. They don't sync to other devices yet." },
+      { q: "Where are my decks saved?", a: "In your TopperShelf account, so your decks are there on any phone or computer you sign in on. Only you can see them." },
       { q: "How does study mode decide the order?", a: "Cards are shuffled each time. A card you mark Again comes back a few cards later, until every card is marked Got it." },
     ],
     privacyNote: savedNote,
@@ -183,7 +183,7 @@ const shelfContent: Record<string, ToolContent> = {
     faq: [
       { q: "Will I get a reminder if TopperShelf is closed?", a: "Only through your calendar. Use Google Calendar or Phone calendar (.ics) on a reminder, and your phone's calendar alerts you at that time. Inside TopperShelf, alerts only appear while this page is open." },
       { q: "What is the .ics file?", a: "A standard calendar file. Opening it on a phone or computer adds the reminder, with an alert, to your calendar app." },
-      { q: "Where are my reminders saved?", a: "In this browser on this device. They don't sync to other devices yet, so add important ones to your calendar." },
+      { q: "Where are my reminders saved?", a: "In your TopperShelf account, so they follow you to any device you sign in on. Alerts still come from your calendar, so add important ones to Google Calendar or your phone calendar." },
     ],
     privacyNote: savedNote,
   },
@@ -196,7 +196,7 @@ const shelfContent: Record<string, ToolContent> = {
     ],
     faq: [
       { q: "How are the days counted?", a: "In whole calendar days from today, using your own time zone, so a countdown ticks over at midnight where you are." },
-      { q: "Are my countdowns saved?", a: "Yes, in this browser on this device, so they're still there next time you open the tool here." },
+      { q: "Are my countdowns saved?", a: "Yes, in your TopperShelf account, so they are there on any device you sign in on." },
       { q: "What happens after the date passes?", a: "It moves to the bottom of the list and shows how many days ago it was, until you remove it." },
     ],
     privacyNote: savedNote,
@@ -204,3 +204,48 @@ const shelfContent: Record<string, ToolContent> = {
 };
 
 Object.assign(toolContent, shelfContent);
+
+Object.assign(toolContent, {
+  "decision-wheel": {
+    howTo: [
+      "Sign in with Google (one tap, free).",
+      "Type your options one by one. You need at least 2.",
+      "Press Spin and wait for the wheel to stop.",
+      "Not happy? Press Spin again, or change the options and spin a new wheel.",
+    ],
+    faq: [
+      { q: "Is the wheel really random?", a: "Yes. Every option has the same chance, and each spin is independent of the last one." },
+      { q: "How many options can I add?", a: "Add as many as fit comfortably on the wheel. Two is the minimum, and short names read best." },
+      { q: "Can I use it for study decisions?", a: "Of course: which subject to revise first, who presents first, or where to eat after the exam." },
+    ],
+    privacyNote: "Your options are used only on this page to draw the wheel. We don’t save them.",
+  },
+  "would-you-rather": {
+    howTo: [
+      "Sign in with Google (one tap, free).",
+      "Read the two choices and tap the one you would pick.",
+      "See how your pick compares, then go to the next question.",
+      "At the end you get a short verdict on how you chose.",
+    ],
+    faq: [
+      { q: "Are the percentages real votes?", a: "No. They are sample figures written for fun, not live results from other players." },
+      { q: "How many questions are there?", a: "A set of student-life dilemmas each round, from chai versus Maggi to exam superpowers. Play again for another go." },
+      { q: "Do you save my answers?", a: "No. Your picks only stay on the screen while you play." },
+    ],
+    privacyNote: "We don’t save your answers. They only stay on screen while you play.",
+  },
+  "grow-a-sapling": {
+    howTo: [
+      "Sign in with Google (one tap, free).",
+      "Press the Water button to care for your tree today.",
+      "Come back every day. Each day you water keeps your streak alive.",
+      "Keep going for 365 days to grow a full tree, then plant the next one.",
+    ],
+    faq: [
+      { q: "What happens if I miss a day?", a: "Your streak resets and the tree wilts until you water it again. Your best streak is kept." },
+      { q: "Is my garden saved?", a: "Yes. It is saved in your TopperShelf account, so your trees and streak follow you to a new phone or browser." },
+      { q: "Why do I need to sign in?", a: "So your streak is saved to your account and is not lost if you clear your browser or change phone." },
+    ],
+    privacyNote: "Your garden is saved in your TopperShelf account. Only you can see it.",
+  },
+});

@@ -135,17 +135,19 @@ export const tools: Tool[] = [
     image: "/fun-zone/decision-wheel.webp",
     imageBg: "#cfe0fe",
     imageFit: "cover",
+    ready: true,
   },
   {
     id: "would-you-rather",
     name: "Would You Rather",
-    description: "Two impossible choices, one answer. Then see what everyone else picked.",
+    description: "Two impossible choices, one answer. Pick one and see how it stacks up.",
     category: "Fun Zone",
     icon: "message",
     tone: "violet",
     image: "/fun-zone/would-you-rather.webp",
     imageBg: "#e8d8fd",
     imageFit: "cover",
+    ready: true,
   },
   {
     id: "grow-a-sapling",
@@ -157,6 +159,7 @@ export const tools: Tool[] = [
     image: "/fun-zone/grow-a-sapling.webp",
     imageBg: "#d0f5d8",
     imageFit: "cover",
+    ready: true,
   },
   {
     id: "friendship-score",

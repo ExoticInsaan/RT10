@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps<"/tool/[id]">): Pro
   const tool = toolById(id);
   if (!tool) return {};
   return {
-    title: tool.name,
+    title: `${tool.name}: free online ${tool.category === "Fun Zone" ? "game" : "tool"}`,
     description: `${tool.description} Free online ${tool.name.toLowerCase()} on TopperShelf.`,
     alternates: { canonical: `/tool/${tool.id}` },
     // Tools that are not built yet stay out of Google until they work.
