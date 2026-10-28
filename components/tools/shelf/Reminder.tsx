@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import ToolIcon from "@/components/tools/ToolIcon";
 import { Button } from "@/components/tools/ui";
-import { Field, Hint, downloadBlob, inputClass, readStored, writeStored } from "@/components/tools/kit";
+import { Field, Hint, downloadBlob, inputClass } from "@/components/tools/kit";
+import { useAccountData } from "@/lib/tools/useAccountData";
 
 type Item = { id: string; title: string; note: string; at: number; fired: boolean };
-const KEY = "toppershelf-reminders";
 
 /** 2026-10-28T04:00:00.000Z → 20261028T040000Z (the UTC format both calendars accept). */
 const utcStamp = (ms: number) => new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
@@ -64,7 +64,7 @@ const localInputValue = (date: Date) => {
 };
 
 export default function Reminder() {
-  const [items, setItems] = useState<Item[]>(() => readStored<Item[]>(KEY, []));
+  const [items, setItems, status] = useAccountData<Item[]>("reminder", []);
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
   const [at, setAt] = useState("");
@@ -75,7 +75,6 @@ export default function Reminder() {
     typeof Notification === "undefined" ? "unsupported" : Notification.permission,
   );
 
-  useEffect(() => writeStored(KEY, items), [items]);
 
   // While this page is open, check every 15 seconds and alert for anything that has come due.
   // The latest list is read from a ref so the check itself never runs inside a state update.
@@ -106,7 +105,7 @@ export default function Reminder() {
     check();
     const timer = setInterval(check, 15_000);
     return () => clearInterval(timer);
-  }, []);
+  }, [setItems]);
 
   function add() {
     if (!title.trim()) return setError("Write what to remind you about.");
@@ -126,6 +125,9 @@ export default function Reminder() {
 
   const upcoming = items.filter((i) => !i.fired);
   const done = items.filter((i) => i.fired);
+
+  if (status === "loading") return <p className="m-0 py-16 text-center text-sm text-muted">Loading your reminders…</p>;
+  if (status === "error") return <p className="m-0 py-16 text-center text-sm text-muted">Could not load your reminders. Please refresh the page.</p>;
 
   return (
     <div className="mx-auto grid max-w-3xl gap-6">
@@ -182,7 +184,7 @@ export default function Reminder() {
       </p>
 
       {items.length === 0 ? (
-        <Hint>Your reminders appear here and stay saved in this browser.</Hint>
+        <Hint>Your reminders appear here and are saved to your account.</Hint>
       ) : (
         <div className="grid gap-6">
           {upcoming.length > 0 && <List title="Coming up" items={upcoming} now={now} onRemove={(id) => setItems(items.filter((i) => i.id !== id))} />}

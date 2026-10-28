@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ToolIcon from "@/components/tools/ToolIcon";
 import { Button } from "@/components/tools/ui";
-import { Field, Hint, inputClass, readStored, writeStored } from "@/components/tools/kit";
+import { Field, Hint, inputClass } from "@/components/tools/kit";
+import { useAccountData } from "@/lib/tools/useAccountData";
 
 type Card = { id: string; front: string; back: string };
 type Deck = { id: string; name: string; cards: Card[] };
-const KEY = "toppershelf-flashcards";
 const uid = () => crypto.randomUUID();
 
 /**
@@ -37,12 +37,11 @@ function shuffle<T>(list: T[]) {
 }
 
 export default function FlashcardMaker() {
-  const [decks, setDecks] = useState<Deck[]>(() => readStored<Deck[]>(KEY, []));
+  const [decks, setDecks, status] = useAccountData<Deck[]>("flashcard-maker", []);
   const [openId, setOpenId] = useState<string | null>(null);
   const [studying, setStudying] = useState(false);
   const [newName, setNewName] = useState("");
 
-  useEffect(() => writeStored(KEY, decks), [decks]);
 
   const deck = decks.find((d) => d.id === openId) ?? null;
   const updateDeck = (next: Deck) => setDecks(decks.map((d) => (d.id === next.id ? next : d)));
@@ -62,6 +61,9 @@ export default function FlashcardMaker() {
       />
     );
   }
+
+  if (status === "loading") return <p className="m-0 py-16 text-center text-sm text-muted">Loading your decks…</p>;
+  if (status === "error") return <p className="m-0 py-16 text-center text-sm text-muted">Could not load your decks. Please refresh the page.</p>;
 
   return (
     <div className="mx-auto grid max-w-3xl gap-6">
@@ -83,7 +85,7 @@ export default function FlashcardMaker() {
         <Button type="submit">Create deck</Button>
       </form>
 
-      {decks.length === 0 && <Hint>Your decks appear here and stay saved in this browser.</Hint>}
+      {decks.length === 0 && <Hint>Your decks appear here and are saved to your account.</Hint>}
       {decks.length > 0 && (
         <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
           {decks.map((d) => (
