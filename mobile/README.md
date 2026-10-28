@@ -54,3 +54,18 @@ supabase functions deploy delete-account --project-ref <your TopperShelf project
 
 Keep "Verify JWT" on. The function uses the project's built-in `SUPABASE_SERVICE_ROLE_KEY`, so no extra secret is needed.
 For the Play Console Data safety form, point "Delete account URL" at https://www.toppershelf.online/contact (or a page that explains in-app deletion).
+
+## Quick start on your computer
+
+```
+git pull
+cd mobile
+cp .env.example .env     # already holds the TopperShelf Supabase URL and anon key
+npm install
+npm run android          # builds, syncs and opens Android Studio; plug in your phone and press Run
+```
+
+Phone checklist: Google sign-in works, a game opens, an image or PDF saves through the share sheet, the back button behaves,
+Settings opens from the Home account icon, Delete my account works (use a throwaway Google account), and favourites follow you to another device.
+Before sign-in works, add `online.toppershelf.app://auth` under Supabase → Authentication → URL Configuration → Redirect URLs.
+Notifications also need `google-services.json` in `mobile/android/app/` (see the Firebase section above).
