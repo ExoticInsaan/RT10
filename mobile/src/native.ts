@@ -67,5 +67,9 @@ export function initNative() {
   if (!isNative) return;
   handleBlobDownloads();
   handleBackButton();
+  // The friend games call this to open the Android share sheet (WhatsApp, Messages, Instagram and so on).
+  (window as unknown as { __tsShare?: (o: { title: string; text: string; url: string }) => Promise<void> }).__tsShare = async ({ title, text, url }) => {
+    await Share.share({ title, text, url, dialogTitle: "Share with friends" });
+  };
   void SplashScreen.hide().catch(() => {});
 }

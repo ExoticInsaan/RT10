@@ -147,6 +147,12 @@ export const whatsappHref = (text: string, url: string) => "https://wa.me/?text=
 /** Opens the phone's share sheet where the browser has one. Returns false when it cannot (use Copy or WhatsApp instead). */
 export async function nativeShare(title: string, text: string, url: string): Promise<boolean> {
   try {
+    // Inside the Android app the system share sheet comes from the Capacitor plugin (set up in mobile/src/native.ts).
+    const native = typeof window !== "undefined" ? (window as unknown as { __tsShare?: (o: { title: string; text: string; url: string }) => Promise<void> }).__tsShare : undefined;
+    if (native) {
+      await native({ title, text, url });
+      return true;
+    }
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       await navigator.share({ title, text, url });
       return true;
