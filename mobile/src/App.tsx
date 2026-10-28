@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import AccountListsSync from "@/components/AccountListsSync";
 import AuthProvider from "@/components/AuthProvider";
 import BottomNav, { TAB_PATHS } from "./components/BottomNav";
 import { setStatusBar } from "./native";
@@ -42,6 +43,7 @@ export default function App() {
   useEffect(() => setStatusBar(path), [path]);
   return (
     <AuthProvider>
+      <AccountListsSync />
       <div className="relative mx-auto h-dvh w-full max-w-[480px] overflow-hidden bg-ivory text-navy">
         <Screen key={path} path={path} />
         {TAB_PATHS.includes(path) && <BottomNav path={path} />}

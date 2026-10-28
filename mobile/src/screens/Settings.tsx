@@ -105,7 +105,7 @@ export default function Settings() {
     setFavs([]);
     setRecent([]);
     clearLocalData();
-    setNote("Favourites and recent tools were cleared from this phone.");
+    setNote("Favourites and recent tools were cleared.");
   }
 
   async function removeAccount() {
@@ -184,7 +184,7 @@ export default function Settings() {
       </Group>
 
       <Group title="Data on this phone">
-        <Row label="Clear favourites and recent tools" hint="Only on this phone, your account stays" onClick={clearData} right={<Chevron />} />
+        <Row label="Clear favourites and recent tools" hint="Also clears the copy saved in your account" onClick={clearData} right={<Chevron />} />
       </Group>
 
       {note && (

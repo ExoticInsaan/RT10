@@ -5,6 +5,7 @@ import "./globals.css";
 import SiteHeader from "@/components/shell/SiteHeader";
 import SiteFooter from "@/components/shell/SiteFooter";
 import MobileNav from "@/components/shell/MobileNav";
+import AccountListsSync from "@/components/AccountListsSync";
 import AuthProvider from "@/components/AuthProvider";
 import Analytics from "@/components/Analytics";
 import { SITE_URL } from "@/lib/site";
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`h-full ${inter.variable} ${dmSerif.variable}`}>
       <body className="flex min-h-full flex-col bg-ivory font-sans text-ink antialiased">
         <AuthProvider>
+          <AccountListsSync />
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />

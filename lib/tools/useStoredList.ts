@@ -2,7 +2,8 @@
 
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 
-const EVENT = "toppershelf:stored-list";
+export const LIST_EVENT = "toppershelf:stored-list";
+const EVENT = LIST_EVENT;
 const EMPTY = "[]";
 
 function subscribe(callback: () => void) {
@@ -23,10 +24,28 @@ function parse(raw: string): string[] {
   }
 }
 
+/** Read a saved list without React (used by the account sync). */
+export function readList(key: string): string[] {
+  try {
+    return parse(localStorage.getItem(key) ?? EMPTY);
+  } catch {
+    return [];
+  }
+}
+/** Save a list and tell every screen showing it. */
+export function writeList(key: string, list: string[]) {
+  try {
+    localStorage.setItem(key, JSON.stringify(list));
+  } catch {
+    /* storage full or blocked: skip saving */
+  }
+  window.dispatchEvent(new Event(EVENT));
+}
+
 /**
  * A list of ids saved in this browser (favourite tools, recently used tools).
  * The server and the first paint see an empty list, then the saved list appears, so there is no hydration mismatch.
- * Later this can be backed by the signed-in account (Supabase) without changing the callers.
+ * When signed in, <AccountListsSync /> keeps favourites and recents in the person's account (table user_tools).
  */
 export function useStoredList(key: string) {
   const raw = useSyncExternalStore(
