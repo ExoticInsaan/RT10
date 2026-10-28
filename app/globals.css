@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./fun-zone.css";
 
 /* Toppershelf design system: tokens from the new website experience. */
 @theme inline {

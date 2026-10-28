@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import FunGame, { hasFunGame } from "@/components/fun/FunGame";
 import FunRunner from "@/components/tools/FunRunner";
 import { shelfTools } from "@/components/tools/shelf";
 import ToolIcon from "@/components/tools/ToolIcon";
@@ -28,6 +29,15 @@ export default function ToolGate({ toolId, toolName }: { toolId: string; toolNam
     return (
       <section>
         <ShelfTool />
+      </section>
+    );
+  }
+
+  // Fun Zone games with a full game screen (components/fun/games) replace the basic runner.
+  if (signedIn && hasFunGame(toolId)) {
+    return (
+      <section className="-m-3 sm:-m-6">
+        <FunGame id={toolId} />
       </section>
     );
   }
