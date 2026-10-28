@@ -252,7 +252,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
           value={me}
           onChange={(e) => setMe(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && void makeLink()}
-          placeholder="e.g. Priya"
+          placeholder="e.g. Jatin"
           maxLength={24}
           autoComplete="off"
         />
@@ -346,7 +346,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
                 value={friend}
                 onChange={(e) => setFriend(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && friend.trim() && startQuiz()}
-                placeholder="e.g. Rohan"
+                placeholder="e.g. Aryan"
                 maxLength={24}
                 autoComplete="off"
               />

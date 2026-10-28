@@ -7,7 +7,7 @@ import { FitBox, hand, mix, storyDate, useToday } from "@/components/fun/kit";
 export type CookedCardData = { name: string; score: number; tier: string; bg: string; verdict: string };
 
 export const cookedSample: CookedCardData = {
-  name: "Aarav",
+  name: "Jatin",
   score: 87,
   tier: "WELL DONE",
   bg: "#d6401b",

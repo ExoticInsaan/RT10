@@ -16,7 +16,7 @@ export type VibeCardData = {
 };
 
 export const vibeSample: VibeCardData = {
-  name: "Ananya",
+  name: "Aryan",
   vibe: "Main Character",
   line: "The universe cast you as the lead today. Walk slower, look out of windows.",
   a: "#f9a8d4",

@@ -14,7 +14,7 @@ const Ctx = createContext<AuthCtx>({ user: null, ready: false, openSignIn: () =>
 export const useAuth = () => useContext(Ctx);
 
 const MOCK = import.meta.env.VITE_MOCK_USER === "1";
-const mockUser = { id: "preview-user", email: "preview@toppershelf.online", user_metadata: { name: "Aarav" } } as unknown as User;
+const mockUser = { id: "preview-user", email: "preview@toppershelf.online", user_metadata: { name: "Aryan" } } as unknown as User;
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(MOCK ? mockUser : null);

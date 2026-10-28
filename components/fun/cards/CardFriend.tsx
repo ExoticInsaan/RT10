@@ -6,7 +6,7 @@ import { FitBox, hand } from "@/components/fun/kit";
 
 export type FriendCardData = { me: string; friend: string; score: number; title: string; line: string };
 
-export const friendSample: FriendCardData = { me: "Priya", friend: "Rohan", score: 92, title: "Ride or die", line: "We would split the last samosa without even asking." };
+export const friendSample: FriendCardData = { me: "Jatin", friend: "Aryan", score: 92, title: "Ride or die", line: "We would split the last samosa without even asking." };
 
 /** The accent follows the score: pink for a strong bond, blue in the middle, amber for a new one. */
 function tone(score: number) {

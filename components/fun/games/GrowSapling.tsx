@@ -523,7 +523,7 @@ function GardenGame() {
                 value={draftA || g.names.a}
                 onChange={(e) => setDraftA(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && void createInvite()}
-                placeholder="e.g. Priya"
+                placeholder="e.g. Jatin"
                 maxLength={20}
                 autoComplete="off"
               />

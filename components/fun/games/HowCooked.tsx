@@ -251,7 +251,7 @@ export default function HowCooked() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && reveal()}
-            placeholder="e.g. Aarav"
+            placeholder="e.g. Jatin"
             maxLength={30}
             autoComplete="off"
           />

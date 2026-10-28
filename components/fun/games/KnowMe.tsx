@@ -222,7 +222,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
           value={me}
           onChange={(e) => setMe(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && me.trim()) { setPhase("quiz"); setMode("own"); setQ(0); setKey([]); } }}
-          placeholder="e.g. Kabir"
+          placeholder="e.g. Jatin"
           maxLength={24}
           autoComplete="off"
         />
@@ -334,7 +334,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
             value={friend}
             onChange={(e) => setFriend(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && friend.trim() && startGuess()}
-            placeholder="e.g. Meera"
+            placeholder="e.g. Aryan"
             maxLength={24}
             autoComplete="off"
           />

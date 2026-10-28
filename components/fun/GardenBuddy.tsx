@@ -121,7 +121,7 @@ export default function GardenBuddy({ code }: { code: string }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && void water()}
-            placeholder="e.g. Rohan"
+            placeholder="e.g. Aryan"
             maxLength={20}
             autoComplete="off"
           />

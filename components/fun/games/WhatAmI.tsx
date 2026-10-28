@@ -191,7 +191,7 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
               value={me}
               onChange={(e) => setMe(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void makeLink()}
-              placeholder="e.g. Ananya"
+              placeholder="e.g. Jatin"
               maxLength={24}
               autoComplete="off"
             />
@@ -285,7 +285,7 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
             })}
           </div>
           <label htmlFor="wa-name" className="text-sm font-bold text-[#5b3a86]">Your name</label>
-          <input id="wa-name" className={`${input} -mt-1.5`} value={friendName} onChange={(e) => setFriendName(e.target.value)} placeholder="e.g. Rohan" maxLength={24} autoComplete="off" />
+          <input id="wa-name" className={`${input} -mt-1.5`} value={friendName} onChange={(e) => setFriendName(e.target.value)} placeholder="e.g. Aryan" maxLength={24} autoComplete="off" />
           <label htmlFor="wa-note" className="text-sm font-bold text-[#5b3a86]">Add a note (optional)</label>
           <input id="wa-note" className={`${input} -mt-1.5`} value={note} onChange={(e) => setNote(e.target.value)} placeholder="You always share your notes before exams" maxLength={70} autoComplete="off" />
           {error && <p role="alert" className="m-0 text-sm font-bold text-[#b91c1c]">{error}</p>}

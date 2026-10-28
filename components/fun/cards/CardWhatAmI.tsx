@@ -6,7 +6,7 @@ import { FitBox, hand, hash } from "@/components/fun/kit";
 
 export type WhatAmICardData = { owner: string; link: string };
 
-export const whatAmISample: WhatAmICardData = { owner: "Ananya", link: "toppershelf.online/fun/notes/ananya" };
+export const whatAmISample: WhatAmICardData = { owner: "Jatin", link: "toppershelf.online/fun/notes/jatin" };
 
 // Each person gets their own colour scheme, picked from their name, so every card looks different.
 const THEMES = [
