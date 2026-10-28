@@ -4,16 +4,18 @@ import { useState } from "react";
 import ToolIcon from "@/components/tools/ToolIcon";
 import { Button } from "@/components/tools/ui";
 import { DropZone, Field, Hint, Segmented, downloadBlob, formatBytes, inputClass, renameFile } from "@/components/tools/kit";
+import PdfEditor from "./PdfEditor";
 
-type Mode = "merge" | "split" | "compress" | "to-pdf" | "to-images";
+type Mode = "merge" | "compress" | "to-pdf" | "edit" | "split" | "to-images";
 type Output = { name: string; blob: Blob };
 
 const MAX_BYTES = 150 * 1024 * 1024;
 const modes: { value: Mode; label: string; intro: string }[] = [
   { value: "merge", label: "Merge", intro: "Join several PDFs into one, in the order you choose." },
-  { value: "split", label: "Split", intro: "Pull out the pages you need, or save every page as its own PDF." },
   { value: "compress", label: "Compress", intro: "Shrink a heavy PDF, such as a scanned document, to upload or email." },
   { value: "to-pdf", label: "Images → PDF", intro: "Turn photos or scans into one PDF, one image per page." },
+  { value: "edit", label: "Edit PDF", intro: "Add pages, photos or pages from another PDF, and remove, turn or reorder pages." },
+  { value: "split", label: "Split", intro: "Pull out the pages you need, or save every page as its own PDF." },
   { value: "to-images", label: "PDF → JPG", intro: "Save every page of a PDF as a JPG image." },
 ];
 
@@ -126,7 +128,9 @@ export default function PdfToolkit() {
         <p className="m-0 text-sm text-muted">{current.intro}</p>
       </div>
 
-      {(multiple || files.length === 0) && (
+      {mode === "edit" && <PdfEditor />}
+
+      {mode !== "edit" && (multiple || files.length === 0) && (
         <DropZone
           key={mode}
           accept={wantsImages ? "image/jpeg,image/png,image/webp" : "application/pdf,.pdf"}

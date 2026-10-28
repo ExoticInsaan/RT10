@@ -117,25 +117,29 @@ async function imageAsJpegOrPng(file: File): Promise<{ bytes: Uint8Array; type: 
   return { bytes: new Uint8Array(await blob.arrayBuffer()), type: "jpg" };
 }
 
+/** Adds one A4 page with the image centred on it (small margin, never upscaled). */
+async function addImagePage(doc: import("pdf-lib").PDFDocument, file: File) {
+  let image;
+  try {
+    const { bytes, type } = await imageAsJpegOrPng(file);
+    image = type === "jpg" ? await doc.embedJpg(bytes) : await doc.embedPng(bytes);
+  } catch {
+    throw new PdfError(`“${file.name}” couldn't be read as an image.`);
+  }
+  const page = doc.addPage([A4.width, A4.height]);
+  const maxW = A4.width - A4.margin * 2;
+  const maxH = A4.height - A4.margin * 2;
+  const scale = Math.min(maxW / image.width, maxH / image.height, 1);
+  const w = image.width * scale;
+  const h = image.height * scale;
+  page.drawImage(image, { x: (A4.width - w) / 2, y: (A4.height - h) / 2, width: w, height: h });
+  return page;
+}
+
 export async function imagesToPdf(files: File[]) {
   const { PDFDocument } = await loadPdfLib();
   const doc = await PDFDocument.create();
-  for (const file of files) {
-    let image;
-    try {
-      const { bytes, type } = await imageAsJpegOrPng(file);
-      image = type === "jpg" ? await doc.embedJpg(bytes) : await doc.embedPng(bytes);
-    } catch {
-      throw new PdfError(`“${file.name}” couldn't be read as an image.`);
-    }
-    const page = doc.addPage([A4.width, A4.height]);
-    const maxW = A4.width - A4.margin * 2;
-    const maxH = A4.height - A4.margin * 2;
-    const scale = Math.min(maxW / image.width, maxH / image.height, 1);
-    const w = image.width * scale;
-    const h = image.height * scale;
-    page.drawImage(image, { x: (A4.width - w) / 2, y: (A4.height - h) / 2, width: w, height: h });
-  }
+  for (const file of files) await addImagePage(doc, file);
   return toBlob(await doc.save({ useObjectStreams: true }));
 }
 
@@ -196,4 +200,79 @@ export async function pdfToImages(file: File, onProgress: (done: number, total: 
     onProgress(index + 1, total);
   });
   return images;
+}
+
+/* ---------------- Edit PDF: arrange, rotate, delete and add pages ---------------- */
+
+/** One page of the edited PDF, in its final position. `rotate` is extra clockwise turning, in multiples of 90. */
+export type EditPage =
+  | { kind: "pdf"; source: number; index: number; rotate: number }
+  | { kind: "blank"; width: number; height: number; rotate: number }
+  | { kind: "image"; file: File; rotate: number };
+
+export type Thumb = { url: string; landscape: boolean };
+
+/** Small previews of every page (JPEG data URLs, about 240 px wide). */
+export async function pageThumbnails(file: File, onProgress?: (done: number, total: number) => void) {
+  const thumbs: Thumb[] = [];
+  await renderPages(file, 0.4, async (canvas, index, total) => {
+    thumbs.push({ url: canvas.toDataURL("image/jpeg", 0.7), landscape: canvas.width > canvas.height });
+    onProgress?.(index + 1, total);
+  });
+  return thumbs;
+}
+
+/** Page size of a PDF's first page, so an added blank page can match the document. */
+export async function firstPageSize(file: File) {
+  const doc = await openPdf(file);
+  const { width, height } = doc.getPage(0).getSize();
+  return { width, height };
+}
+
+/**
+ * Builds the edited PDF. Pages taken from PDFs are copied as they are (text stays selectable); only their rotation
+ * changes if you turned them. Blank and image pages are created fresh.
+ */
+export async function buildEditedPdf(sources: File[], pages: EditPage[]) {
+  const { PDFDocument, degrees } = await loadPdfLib();
+  if (!pages.length) throw new PdfError("The PDF needs at least one page.");
+  const out = await PDFDocument.create();
+  const opened = await Promise.all(sources.map((file) => openPdf(file)));
+  for (const item of pages) {
+    let page;
+    if (item.kind === "pdf") {
+      [page] = await out.copyPages(opened[item.source], [item.index]);
+      out.addPage(page);
+    } else if (item.kind === "blank") {
+      page = out.addPage([item.width, item.height]);
+    } else {
+      page = await addImagePage(out, item.file);
+    }
+    if (item.rotate) page.setRotation(degrees((page.getRotation().angle + item.rotate) % 360));
+  }
+  return toBlob(await out.save({ useObjectStreams: true }));
+}
+
+/** A small picture of an image file for the page grid. */
+export async function imageThumbnail(file: File): Promise<Thumb> {
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(file);
+  } catch {
+    throw new PdfError(`“${file.name}” couldn't be read as an image.`);
+  }
+  // Image pages are A4 portrait with the picture centred, so preview them that way.
+  const canvas = document.createElement("canvas");
+  canvas.width = 238;
+  canvas.height = 337;
+  const ctx = canvas.getContext("2d")!;
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const margin = 10;
+  const scale = Math.min((canvas.width - margin * 2) / bitmap.width, (canvas.height - margin * 2) / bitmap.height, 1);
+  const w = bitmap.width * scale;
+  const h = bitmap.height * scale;
+  ctx.drawImage(bitmap, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+  bitmap.close();
+  return { url: canvas.toDataURL("image/jpeg", 0.75), landscape: false };
 }

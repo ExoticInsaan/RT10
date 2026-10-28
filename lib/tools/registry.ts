@@ -28,7 +28,7 @@ export const tools: Tool[] = [
   {
     id: "pdf-toolkit",
     name: "PDF Toolkit",
-    description: "Merge, split, compress and convert PDFs right in your browser.",
+    description: "Merge, compress, edit and convert PDFs, and add pages, right in your browser.",
     category: "The Shelf",
     ready: true,
     icon: "fileText",

@@ -87,13 +87,14 @@ const shelfContent: Record<string, ToolContent> = {
   "pdf-toolkit": {
     howTo: [
       "Sign in with Google (one tap, free).",
-      "Choose what to do: Merge, Split, Compress, Images → PDF or PDF → JPG.",
+      "Choose what to do: Merge, Compress, Images → PDF, Edit PDF, Split or PDF → JPG.",
       "Drop in your files and arrange them if needed.",
       "Press the button and download the result.",
     ],
     faq: [
       { q: "Are my PDFs uploaded to a server?", a: "No. Every PDF is read and saved by your own browser, so your documents never leave your device." },
       { q: "How much does Compress shrink a PDF?", a: "It works best on scanned documents and photo-heavy PDFs, which often shrink by 80% or more. Each page becomes an image, so text in the result can't be selected. If the result isn't smaller, the tool tells you to keep your original." },
+      { q: "How do I add a page to a PDF?", a: "Choose Edit PDF and open your PDF. Under Add pages, pick a blank page, photos or scans, or pages from another PDF, choose where they go, then save the edited PDF. You can also remove, turn and reorder pages there." },
       { q: "How do I pick pages when splitting?", a: "Type pages and ranges such as 1-3, 5 or 4- (page 4 to the end). Pages come out in the order you type them. You can also save every page as its own PDF." },
       { q: "Does it work with password-protected PDFs?", a: "No. Remove the password first (open it and save a copy without one), then try again." },
     ],
