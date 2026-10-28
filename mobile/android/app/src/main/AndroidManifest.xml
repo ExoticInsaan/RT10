@@ -27,6 +27,11 @@
             </intent-filter>
         </activity>
 
+        <!-- Small icon and colour for notifications sent from Firebase -->
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_stat_toppershelf" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/notification_blue" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="toppershelf_default" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -39,4 +44,6 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Android 13+: needed to show notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>
