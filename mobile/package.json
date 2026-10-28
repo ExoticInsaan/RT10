@@ -1,0 +1,46 @@
+{
+  "name": "toppershelf-android",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "TopperShelf Play Store app: a Capacitor + Vite + Tailwind shell that reuses the website's game and tool components.",
+  "scripts": {
+    "assets": "node scripts/copy-assets.mjs",
+    "dev": "npm run assets && vite",
+    "build": "npm run assets && tsc --noEmit -p . && vite build",
+    "build:preview": "npm run assets && VITE_MOCK_USER=1 vite build",
+    "sync": "npm run build && cap sync android",
+    "android": "npm run sync && cap open android",
+    "icons": "capacitor-assets generate --android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/browser": "^8.0.0",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
+    "@capacitor/splash-screen": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0",
+    "@fontsource/caveat": "^5.2.5",
+    "@fontsource/dm-serif-display": "^5.2.5",
+    "@fontsource/inter": "^5.2.5",
+    "@supabase/supabase-js": "^2.117.3",
+    "pdf-lib": "1.17.1",
+    "pdfjs-dist": "6.4.299",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.3",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5",
+    "vite": "^8.3.5"
+  }
+}

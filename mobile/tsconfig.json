@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "next/image": ["src/shims/next-image.tsx"],
+      "next/link": ["src/shims/next-link.tsx"],
+      "next/dynamic": ["src/shims/next-dynamic.tsx"],
+      "next/navigation": ["src/shims/next-navigation.ts"],
+      "next/font/google": ["src/shims/next-font.ts"],
+      "@/lib/supabase/client": ["src/shims/supabase-client.ts"],
+      "@/components/AuthProvider": ["src/shims/AuthProvider.tsx"],
+      "@/*": ["../*"],
+      "react": ["node_modules/@types/react"],
+      "react/*": ["node_modules/@types/react/*"],
+      "react-dom": ["node_modules/@types/react-dom"],
+      "pdf-lib": ["node_modules/pdf-lib"],
+      "pdfjs-dist": ["node_modules/pdfjs-dist"],
+      "@supabase/supabase-js": ["node_modules/@supabase/supabase-js"]
+    }
+  },
+  "include": ["src", "../components/fun", "../components/tools", "../lib/tools", "vite.config.ts"],
+  "exclude": ["../components/tools/MyToolsClient.tsx", "../components/tools/HomeSearch.tsx", "../components/tools/ToolsBrowser.tsx", "../components/tools/ShareActions.tsx", "../components/tools/ToolGate.tsx"]
+}

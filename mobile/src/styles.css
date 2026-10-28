@@ -1,0 +1,130 @@
+@import "tailwindcss";
+@import "@fontsource/inter/latin-400.css";
+@import "@fontsource/inter/latin-500.css";
+@import "@fontsource/inter/latin-600.css";
+@import "@fontsource/inter/latin-700.css";
+@import "@fontsource/inter/latin-800.css";
+@import "@fontsource/inter/latin-900.css";
+@import "@fontsource/dm-serif-display/latin-400.css";
+@import "@fontsource/caveat/latin-600.css";
+@import "@fontsource/caveat/latin-700.css";
+@import "../../app/fun-zone.css";
+
+/* Scan the shared website components and the app screens for Tailwind classes. */
+@source "../../components";
+@source "../../lib";
+@source ".";
+
+/* Same design tokens as the website (app/globals.css), so the shared tools look identical. */
+@theme inline {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "DM Serif Display", Georgia, serif;
+}
+@theme {
+  --color-ivory: #fffbf7;
+  --color-surface: #f7f0e6;
+  --color-blue-soft: #e9f4fc;
+  --color-blue: #60a5fa;
+  --color-blue-hover: #3b82f6;
+  --color-navy: #102a4c;
+  --color-ink: #1f2937;
+  --color-muted: #687483;
+  --color-line: #dedbd5;
+  --color-violet: #7c3aed;
+  --color-teal: #0f9f8f;
+  --color-coral: #f97355;
+  --shadow-search: 0 12px 36px rgba(16, 42, 76, 0.08);
+  --shadow-card: 0 16px 40px rgba(16, 42, 76, 0.09);
+  --shadow-float: 0 24px 70px rgba(16, 42, 76, 0.2);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+html {
+  background: #fffbf7;
+  color: #1f2937;
+  overscroll-behavior: none;
+}
+body {
+  margin: 0;
+  background: #fffbf7;
+  color: #1f2937;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+}
+input,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+@layer base {
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(96, 165, 250, 0.38);
+  outline-offset: 2px;
+}
+
+/* App look-and-feel helpers. */
+.font-caveat-var {
+  --font-caveat: "Caveat";
+}
+@utility hide-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+@utility dots-light {
+  background-image: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 18%) 1.2px, transparent 1.7px);
+  background-size: 18px 18px;
+}
+@utility bg-fun-gradient {
+  background:
+    radial-gradient(circle at 8% 18%, rgba(251, 146, 60, 0.2), transparent 24%),
+    radial-gradient(circle at 92% 12%, rgba(139, 92, 246, 0.22), transparent 27%),
+    linear-gradient(135deg, #fff1e9, #e8f5ff 48%, #f3e8ff);
+}
+@utility bg-fun-field {
+  background:
+    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 16%) 1.2px, transparent 1.7px) 0 0 / 18px 18px,
+    linear-gradient(150deg, #6d28d9 0%, #a21caf 38%, #e11d48 70%, #f97316 100%);
+}
+@utility bg-onboard-fun {
+  background:
+    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 16%) 1.2px, transparent 1.7px) 0 0 / 18px 18px,
+    linear-gradient(150deg, #6d28d9 0%, #a21caf 45%, #e11d48 100%);
+}
+@utility bg-onboard-dots {
+  background-color: #fffbf7;
+  background-image: radial-gradient(#cfe1ed 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+@utility safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+@utility safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.fun-field {
+  background:
+    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 16%) 1.2px, transparent 1.7px) 0 0 / 18px 18px,
+    linear-gradient(150deg, #6d28d9 0%, #a21caf 38%, #e11d48 70%, #f97316 100%);
+}
