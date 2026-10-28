@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { Ref } from "react";
-import { FitBox, hand, mix, storyDate } from "@/components/fun/kit";
+import { FitBox, hand, mix, storyDate, useToday } from "@/components/fun/kit";
 
 export type CookedCardData = { name: string; score: number; tier: string; bg: string; verdict: string };
 
@@ -15,7 +15,9 @@ export const cookedSample: CookedCardData = {
 };
 
 /** 9:16 story card (drawn at 540x960, exported at 1080x1920). The colours follow the result. */
-export default function CardCooked({ data = cookedSample, cardRef, date = new Date() }: { data?: CookedCardData; cardRef?: Ref<HTMLDivElement>; date?: Date }) {
+export default function CardCooked({ data = cookedSample, cardRef, date }: { data?: CookedCardData; cardRef?: Ref<HTMLDivElement>; date?: Date }) {
+  const today = useToday();
+  const when = date ?? today;
   const { name, score, tier, bg, verdict } = data;
   const dark = mix(bg, "#000000", 0.16);
   const accent = mix(bg, "#fff3e6", 0.72);
@@ -30,7 +32,7 @@ export default function CardCooked({ data = cookedSample, cardRef, date = new Da
 
         <div className="absolute left-[44px] right-[44px] top-[104px] flex justify-between text-[15px] font-extrabold tracking-[.18em]">
           <span>HOW COOKED ARE YOU?</span>
-          <span className="opacity-[.75]">{storyDate(date).split(" · ")[1]}</span>
+          <span className="opacity-[.75]">{when ? storyDate(when).split(" · ")[1] : "TODAY"}</span>
         </div>
 
         <div className="absolute left-[44px] right-[44px] top-[170px] font-display italic leading-[1] overflow-hidden whitespace-nowrap text-ellipsis" style={{ fontSize: nm.length > 16 ? 30 : nm.length > 10 ? 38 : 44 }}>

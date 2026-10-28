@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { Ref } from "react";
-import { FitBox, hand } from "@/components/fun/kit";
+import { FitBox, hand, useToday } from "@/components/fun/kit";
 
 export type RoastCardData = { day: string; lines: string[]; level: string; score: number };
 
@@ -39,10 +39,12 @@ function Marked({ text, mark }: { text: string; mark: string }) {
 const CHILI = "M10 6c4 0 6 3 5 8-1 5-6 9-10 9 3-3 3-6 2-9-1-4 0-8 3-8z";
 
 /** 9:16 story card (drawn at 540x960, exported at 1080x1920). The colours follow the roast level. */
-export default function CardRoast({ data = roastSample, cardRef, date = new Date() }: { data?: RoastCardData; cardRef?: Ref<HTMLDivElement>; date?: Date }) {
+export default function CardRoast({ data = roastSample, cardRef, date }: { data?: RoastCardData; cardRef?: Ref<HTMLDivElement>; date?: Date }) {
+  const today = useToday();
+  const stamp = date ?? today;
   const h = heat(data.score);
   const day = data.day.trim();
-  const when = date.toLocaleString("en-IN", { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true }).replace(",", " at");
+  const when = !stamp ? "Today" : stamp.toLocaleString("en-IN", { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true }).replace(",", " at");
   return (
     <FitBox width={540} height={960} max={1} className="mx-auto max-w-[540px]">
       <div ref={cardRef} className={`${hand.variable} w-[540px] h-[960px] relative overflow-hidden bg-[#fffcf3] text-[#1c1917]`}>

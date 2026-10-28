@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { Ref } from "react";
-import { FitBox, hand, storyDate } from "@/components/fun/kit";
+import { FitBox, hand, storyDate, useToday } from "@/components/fun/kit";
 
 export type VibeCardData = {
   name: string;
@@ -26,7 +26,9 @@ export const vibeSample: VibeCardData = {
 };
 
 /** 9:16 story card (drawn at 540x960, exported at 1080x1920). The colours follow the vibe. */
-export default function CardVibe({ data = vibeSample, cardRef, date = new Date() }: { data?: VibeCardData; cardRef?: Ref<HTMLDivElement>; date?: Date }) {
+export default function CardVibe({ data = vibeSample, cardRef, date }: { data?: VibeCardData; cardRef?: Ref<HTMLDivElement>; date?: Date }) {
+  const today = useToday();
+  const when = date ?? today;
   const { name, vibe, line, a, b, bg, meters } = data;
   const nm = name.trim();
   return (
@@ -39,7 +41,7 @@ export default function CardVibe({ data = vibeSample, cardRef, date = new Date()
 
         <div className="absolute left-[44px] right-[44px] top-[104px] flex justify-between text-[14px] font-extrabold tracking-[.2em] opacity-[.9]">
           <span>TODAY&apos;S VIBE</span>
-          <span>{storyDate(date)}</span>
+          <span>{when ? storyDate(when) : "TODAY"}</span>
         </div>
 
         <div

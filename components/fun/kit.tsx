@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { Caveat } from "next/font/google";
 
 /* Shared building blocks for the Fun Zone games. Each game keeps its own colours; this file only holds the frame,
@@ -32,6 +32,20 @@ export function storyDate(d: Date) {
   const day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][d.getDay()];
   const mon = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][d.getMonth()];
   return `${day} · ${d.getDate()} ${mon}`;
+}
+
+let minuteStamp = 0;
+let minuteValue = 0;
+const noSubscribe = () => () => {};
+const readMinute = () => {
+  const m = Math.floor(Date.now() / 60000);
+  if (m !== minuteStamp) { minuteStamp = m; minuteValue = m * 60000; }
+  return minuteValue;
+};
+/** The current time, or null while the page is being built on the server (so prerendering never reads the clock). */
+export function useToday(): Date | null {
+  const t = useSyncExternalStore(noSubscribe, readMinute, () => 0);
+  return t ? new Date(t) : null;
 }
 
 /** Small seeded random generator (mulberry32) for repeatable layouts. */
