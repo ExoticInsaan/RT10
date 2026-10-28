@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The Play Store app lives in mobile/ and has its own build.
+    "mobile/**",
   ]),
 ]);
 
