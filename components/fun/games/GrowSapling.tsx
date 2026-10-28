@@ -2,7 +2,9 @@
 
 import { useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
+import { useAuth } from "@/components/AuthProvider";
 import { useGardenSync } from "@/components/fun/useGardenSync";
+import { Button } from "@/components/tools/ui";
 import { FitBox, GameShell, copyText, loadJSON, rng, saveJSON, useTimers } from "@/components/fun/kit";
 
 /* ---------- garden data ---------- */
@@ -158,10 +160,29 @@ function loadGarden(): Garden {
 
 const noop = () => () => {};
 
-/** The garden lives in localStorage, so it only renders after mount. */
+/**
+ * The garden lives in localStorage, so it only renders after mount. Like the Shelf tools, it is for signed-in people:
+ * this check sits in the game itself, so every way in (tool page, app, full-screen preview) asks for sign-in.
+ */
 export default function GrowSapling() {
   const mounted = useSyncExternalStore(noop, () => true, () => false);
-  return mounted ? <GardenGame /> : <div className="mx-auto min-h-[640px] w-full max-w-[28rem] rounded-[28px] bg-[#ecfdf3] lg:max-w-[64rem]" aria-busy="true" />;
+  const { user, ready, openSignIn } = useAuth();
+  const frame = "mx-auto min-h-[640px] w-full max-w-[28rem] rounded-[28px] bg-[#ecfdf3] lg:max-w-[64rem]";
+  if (!mounted || !ready) return <div className={frame} aria-busy="true" />;
+  if (!user) {
+    return (
+      <div className={`${frame} grid place-items-center p-6 text-center`}>
+        <div className="max-w-sm">
+          <h2 className="m-0 text-xl font-extrabold text-[#064e3b]">Sign in to grow your sapling</h2>
+          <p className="mb-5 mt-2 text-sm leading-6 text-[#25483a]">
+            It takes one tap with Google. Your tree and streak are saved to your account, so they follow you to any phone.
+          </p>
+          <Button onClick={openSignIn}>Continue with Google</Button>
+        </div>
+      </div>
+    );
+  }
+  return <GardenGame />;
 }
 
 function GardenGame() {
