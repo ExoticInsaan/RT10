@@ -1,9 +1,6 @@
 import { tools } from "@/lib/tools/registry";
 import { FAVOURITES_KEY, RECENT_KEY } from "@/components/tools/ui";
-import { useAuth } from "@/components/AuthProvider";
 import { useStoredList } from "@/lib/tools/useStoredList";
-import { useState } from "react";
-import { disablePush, enablePush, pushSupported, pushWanted } from "../push";
 import { ShelfTile, Sticker } from "../components/tiles";
 
 const shelf = tools.filter((t) => t.category === "The Shelf");
@@ -13,25 +10,9 @@ const funPicks = ["how-cooked", "excuse-generator"].map(byId);
 export default function MyShelf() {
   const [favs] = useStoredList(FAVOURITES_KEY);
   const [recent] = useStoredList(RECENT_KEY);
-  const { user, ready, openSignIn, signOut } = useAuth();
   const favTools = favs.map((id) => tools.find((t) => t.id === id)).filter(Boolean) as typeof tools;
   const recentTools = recent.filter((id) => !favs.includes(id)).map((id) => tools.find((t) => t.id === id)).filter(Boolean) as typeof tools;
   const empty = !favTools.length && !recentTools.length;
-  const name = (user?.user_metadata?.name as string | undefined) ?? user?.email;
-  const [pushOn, setPushOn] = useState(pushWanted);
-  const [pushNote, setPushNote] = useState<string | null>(null);
-
-  async function togglePush() {
-    setPushNote(null);
-    if (pushOn) {
-      await disablePush();
-      setPushOn(false);
-      return;
-    }
-    const problem = await enablePush();
-    setPushOn(!problem);
-    setPushNote(problem);
-  }
 
   return (
     <div className="hide-scrollbar absolute inset-0 overflow-y-auto pb-[100px]">
@@ -39,44 +20,6 @@ export default function MyShelf() {
         <h1 className="m-0 font-display text-[40px] leading-none font-normal">My Shelf</h1>
         <p className="mt-2 mb-0 text-[15px] leading-[1.45] text-[#5b6675]">Your favourite tools and the ones you used last will live here.</p>
       </div>
-
-      {ready && (
-        <div className="mx-5 mt-5 flex items-center justify-between gap-3 rounded-3xl border border-line bg-white p-4">
-          <div className="min-w-0">
-            <div className="text-[15px] font-extrabold">{user ? "Signed in" : "You are browsing as a guest"}</div>
-            <div className="truncate text-[13px] text-[#5b6675]">{user ? name : "Sign in to run the tools and keep your favourites."}</div>
-          </div>
-          <button
-            type="button"
-            onClick={user ? () => void signOut() : openSignIn}
-            className="min-h-11 shrink-0 cursor-pointer rounded-full border-0 bg-navy px-5 text-sm font-bold text-white"
-          >
-            {user ? "Sign out" : "Sign in"}
-          </button>
-        </div>
-      )}
-
-      {pushSupported() && (
-        <div className="mx-5 mt-3 rounded-3xl border border-line bg-white p-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <div className="text-[15px] font-extrabold">Notifications</div>
-              <div className="text-[13px] text-[#5b6675]">New tools, games and study tips.</div>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={pushOn}
-              aria-label="Notifications"
-              onClick={() => void togglePush()}
-              className={`relative h-8 w-14 shrink-0 cursor-pointer rounded-full border-0 transition ${pushOn ? "bg-[#2563eb]" : "bg-slate-300"}`}
-            >
-              <span className={`absolute top-1 size-6 rounded-full bg-white shadow transition-all ${pushOn ? "left-7" : "left-1"}`} />
-            </button>
-          </div>
-          {pushNote && <p role="alert" className="m-0 mt-2 text-[13px] leading-5 text-rose-600">{pushNote}</p>}
-        </div>
-      )}
 
       {empty ? (
         <div className="mx-5 mt-5 box-border rounded-3xl border border-line bg-white p-5">

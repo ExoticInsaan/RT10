@@ -3,8 +3,10 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+const appVersion = JSON.parse(readFileSync(path.resolve(here, "package.json"), "utf8")).version as string;
 const root = path.resolve(here, "..");
 const shim = (f: string) => path.resolve(here, "src/shims", f);
 const mod = (name: string) => path.resolve(here, "node_modules", name);
@@ -30,6 +32,7 @@ function pdfWorker(): Plugin {
 export default defineConfig({
   plugins: [pdfWorker(), react(), tailwindcss()],
   base: "./",
+  define: { __APP_VERSION__: JSON.stringify(appVersion) },
   resolve: {
     alias: [
       { find: /^next\/image$/, replacement: shim("next-image.tsx") },

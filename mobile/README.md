@@ -42,3 +42,15 @@ The app is ready to receive notifications; you send them from the Firebase conso
 4. To send: Firebase console → **Messaging → New campaign → Notifications**. Write the title and text, choose **Target: App → TopperShelf (Android)** to reach everyone, and send. To open a screen when tapped, add custom data `path` = `/tool/cgpa-calculator`, `/fun`, `/shelf`, etc.
 People turn notifications on with the switch on the **My Shelf** screen (Android 13+ asks for permission at that moment).
 Test on a real phone: the emulator needs Google Play services.
+
+## Settings and account deletion
+
+The Settings screen (Home → account icon) is app-only. "Delete my account" calls the `delete-account` Supabase Edge Function
+(`supabase/functions/delete-account`), which deletes the signed-in person's saved data and login. Deploy it once to the TopperShelf project:
+
+```
+supabase functions deploy delete-account --project-ref <your TopperShelf project ref>
+```
+
+Keep "Verify JWT" on. The function uses the project's built-in `SUPABASE_SERVICE_ROLE_KEY`, so no extra secret is needed.
+For the Play Console Data safety form, point "Delete account URL" at https://www.toppershelf.online/contact (or a page that explains in-app deletion).

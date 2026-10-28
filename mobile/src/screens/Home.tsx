@@ -23,7 +23,7 @@ export default function Home() {
             Topper<span className="text-[#2563eb]">Shelf</span>
           </div>
         </div>
-        <a href="#/my-shelf" aria-label="Your account and My Shelf" className="flex size-11 items-center justify-center rounded-full bg-[#e9f4fc] text-[#1d4ed8]">
+        <a href="#/settings" aria-label="Settings and account" className="flex size-11 items-center justify-center rounded-full bg-[#e9f4fc] text-[#1d4ed8]">
           <UserIcon />
         </a>
       </div>
