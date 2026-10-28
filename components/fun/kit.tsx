@@ -116,7 +116,7 @@ export function FitBox({
     return () => ro.disconnect();
   }, [width, max]);
   return (
-    <div ref={outer} className={`relative w-full ${className}`} style={{ height: height * scale }}>
+    <div ref={outer} className={`relative w-full shrink-0 ${className}`} style={{ height: height * scale }}>
       <div
         className="absolute left-1/2 top-0 origin-top"
         style={{ width, height, transform: `translateX(-50%) scale(${scale})` }}

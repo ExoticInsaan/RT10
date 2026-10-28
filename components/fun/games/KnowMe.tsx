@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
+import CardKnowMe from "@/components/fun/cards/CardKnowMe";
+import CardActions from "@/components/fun/CardActions";
 import { GameShell, copyText, useTimers } from "@/components/fun/kit";
 import { createLink, getLink, knowCheck, latestLink, linkLabel, linkUrl, listResponses, nativeShare, submitResponse, whatsappHref } from "@/lib/fun/friends";
 
@@ -24,12 +26,6 @@ const QS: [string, string[]][] = [
   ["How do I reply to texts?", ["Instantly", "After 3 hours", "Seen, then forget", "Voice notes only"]],
 ];
 const BADGES = ["#0f9f8f", "#3b82f6", "#8b5cf6", "#f59e0b"];
-const AV = ["#f59e0b", "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6"];
-const POD = [
-  { i: 1, h: 96, c: "#94a3b8", top: "#cbd5e1", d: 0.25 },
-  { i: 0, h: 136, c: "#eab308", top: "#fde047", d: 0.05 },
-  { i: 2, h: 70, c: "#c2763a", top: "#e7a56a", d: 0.45 },
-];
 
 const fzBtn =
   "min-h-14 w-full cursor-pointer rounded-[18px] border-0 bg-[#0f9f8f] px-[18px] py-3.5 text-[17px] font-black text-white shadow-[0_6px_0_#0b6f64,0_14px_24px_rgba(11,111,100,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#0b6f64] disabled:cursor-default disabled:opacity-50";
@@ -63,6 +59,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
   const [error, setError] = useState("");
   const [sent, setSent] = useState<"sending" | "sent" | "error">("sending");
   const later = useTimers();
+  const cardRef = useRef<HTMLDivElement>(null);
 
   // Friend side: who made this quiz?
   useEffect(() => {
@@ -373,7 +370,6 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
   }
 
   const sorted = [...board].sort((a, b) => b.score - a.score);
-  const podium = POD.filter((p) => sorted[p.i]).map((p) => ({ ...p, e: sorted[p.i] }));
   return shell(
     <>
       <div className="animate-fz-pop text-center">
@@ -381,29 +377,19 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
         <div className="font-display text-[34px] leading-none">{sorted.length ? `${sorted.length} ${sorted.length === 1 ? "friend" : "friends"} played` : "Nobody has played yet"}</div>
       </div>
       {sorted.length === 0 && <div className="rounded-2xl border-2 border-dashed border-[#7dd3e0] p-4 text-center text-sm text-[#3d5a80]">Send your link to friends and watch the leaderboard fill up.</div>}
-      <div className="flex h-[276px] items-end justify-center gap-1.5 [perspective:700px]" hidden={sorted.length === 0}>
-        {podium.map((p) => (
-          <div key={p.i} className="flex min-w-0 max-w-[100px] flex-1 flex-col items-center gap-1.5">
-            {p.i === 0 && (
-              <svg className="animate-fz-crown" width="34" height="26" viewBox="0 0 34 26" aria-hidden="true">
-                <path d="M2 24 L4 6 L11 14 L17 2 L23 14 L30 6 L32 24 Z" fill="#facc15" stroke="#ca8a04" strokeWidth="2" strokeLinejoin="round" />
-              </svg>
-            )}
-            <div className="flex size-12 items-center justify-center rounded-full text-xl font-black text-white shadow-[0_4px_0_rgba(0,0,0,.15)]" style={{ background: AV[p.i] }}>{(p.e.name[0] || "?").toUpperCase()}</div>
-            <div className="max-w-full truncate text-[13px] font-extrabold">{p.e.name}</div>
-            <div className="relative w-full max-w-24 [transform-style:preserve-3d] [transform:rotateX(10deg)]">
-              <div className="h-4 rounded-t-[10px] [transform:skewX(-8deg)]" style={{ background: p.top }} />
-              <div
-                className="box-border flex animate-fz-pod flex-col items-center justify-start rounded-b-lg pt-2 text-white shadow-[inset_-10px_0_0_rgba(0,0,0,.12)]"
-                style={{ height: p.h, background: p.c, animationDelay: `${p.d}s` }}
-              >
-                <span className="font-display text-[32px] leading-none">{p.i + 1}</span>
-                <span className="text-xs font-extrabold">{p.e.score}/10</span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      {sorted.length > 0 && (
+        <div className="flex animate-fz-pop flex-col items-center gap-3">
+          <CardKnowMe cardRef={cardRef} data={{ owner: meName, top: sorted.slice(0, 3).map((e) => ({ name: e.name, score: e.score })) }} />
+          <CardActions
+            getNode={() => cardRef.current}
+            fileName="who-knows-me-toppershelf.png"
+            shareText={`${meName}'s quiz: who knows me best? Think you can beat ${sorted[0].name}?`}
+            shareUrl={url}
+            btnClass={fzBtn}
+            ghostClass={ghost}
+          />
+        </div>
+      )}
       <div className="flex max-h-[170px] flex-col gap-1.5 overflow-auto">
         {sorted.slice(3).map((r, i) => (
           <div key={r.name} className="flex items-center gap-2.5 rounded-[14px] bg-white px-3 py-2">

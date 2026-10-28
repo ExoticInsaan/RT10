@@ -1,20 +1,45 @@
 "use client";
 
 import Image from "next/image";
+import type { Ref } from "react";
 import { FitBox, hand } from "@/components/fun/kit";
 
-/** 9:16 story card (drawn at 540x960, exported at 1080x1920). Scales to fit any screen. */
-export default function CardSapling() {
+export type SaplingCardData = {
+  species: string;
+  /** Which day of this tree's 365 it is on. */
+  day: number;
+  stage: string;
+  streak: number;
+  trees: number;
+  /** The tree's own colours (from the game's species list). */
+  trunk: string;
+  leaf1: string;
+  leaf2: string;
+  bloom: string;
+  fruit: string;
+};
+
+export const saplingSample: SaplingCardData = {
+  species: "Mango", day: 247, stage: "Flowering", streak: 247, trees: 2,
+  trunk: "#7c4a1e", leaf1: "#15803d", leaf2: "#22c55e", bloom: "#fef3c7", fruit: "#f59e0b",
+};
+
+/** 9:16 story card (drawn at 540x960, exported at 1080x1920). The tree grows with the day and wears its own colours. */
+export default function CardSapling({ data = saplingSample, cardRef }: { data?: SaplingCardData; cardRef?: Ref<HTMLDivElement> }) {
+  const grow = 0.3 + 0.7 * Math.min(1, Math.max(0, data.day) / 365);
+  const fruiting = data.day >= 301;
+  const flowering = data.day >= 241;
   return (
     <FitBox width={540} height={960} max={1} className="mx-auto max-w-[540px]">
       <div
+        ref={cardRef}
         className={`${hand.variable} w-[540px] h-[960px] relative overflow-hidden bg-[#e8eee0] text-[#1f3a28]`}
       >
         <div className="absolute inset-0 [background:radial-gradient(circle_at_1px_1px,rgba(31,58,40,.07)_1px,transparent_1.5px)_0_0/6px_6px]"></div>
 
         <div className="absolute left-[44px] right-[44px] top-[104px] flex justify-between text-[14px] font-extrabold tracking-[.2em] text-[#4d7a58]">
           <span>GARDEN JOURNAL</span>
-          <span>NO. 247</span>
+          <span>{data.species.toUpperCase()}</span>
         </div>
 
         <div className="absolute left-[70px] right-[70px] top-[146px] h-[420px] rounded-[200px_200px_24px_24px] overflow-hidden bg-[#cfe6ef] [border:6px_solid_#fff] shadow-[0_24px_40px_-20px_rgba(31,58,40,.45)]">
@@ -42,49 +67,55 @@ export default function CardSapling() {
             </g>
             <rect x="0" y="262" width="300" height="60" fill="#8fc98a" />
             <rect x="0" y="262" width="300" height="6" fill="#a8dca2" />
+            <g transform={`translate(150 262) scale(${grow.toFixed(3)}) translate(-150 -262)`}>
             <g className="animate-fz-sway5 [transform-origin:150px_262px]">
               <path
                 d="M141 262 Q144 200 146 150 L154 150 Q156 200 159 262 Z"
-                fill="#7c4a1e"
+                fill={data.trunk}
               />
               <path
                 d="M148 205 Q120 192 104 172"
-                stroke="#7c4a1e"
+                stroke={data.trunk}
                 strokeWidth="6"
                 fill="none"
                 strokeLinecap="round"
               />
               <path
                 d="M151 190 Q182 178 196 160"
-                stroke="#7c4a1e"
+                stroke={data.trunk}
                 strokeWidth="5"
                 fill="none"
                 strokeLinecap="round"
               />
-              <circle cx="104" cy="168" r="30" fill="#15803d" />
-              <circle cx="198" cy="156" r="30" fill="#15803d" />
-              <circle cx="150" cy="128" r="58" fill="#15803d" />
-              <circle cx="112" cy="142" r="40" fill="#22c55e" />
-              <circle cx="190" cy="140" r="40" fill="#22c55e" />
-              <circle cx="130" cy="98" r="36" fill="#22c55e" />
-              <circle cx="172" cy="98" r="36" fill="#16a34a" />
-              <circle cx="150" cy="80" r="30" fill="#22c55e" />
+              <circle cx="104" cy="168" r="30" fill={data.leaf1} />
+              <circle cx="198" cy="156" r="30" fill={data.leaf1} />
+              <circle cx="150" cy="128" r="58" fill={data.leaf1} />
+              <circle cx="112" cy="142" r="40" fill={data.leaf2} />
+              <circle cx="190" cy="140" r="40" fill={data.leaf2} />
+              <circle cx="130" cy="98" r="36" fill={data.leaf2} />
+              <circle cx="172" cy="98" r="36" fill={data.leaf1} />
+              <circle cx="150" cy="80" r="30" fill={data.leaf2} />
               <circle cx="124" cy="82" r="18" fill="#ffffff" opacity=".14" />
-              <circle cx="120" cy="150" r="6.5" fill="#f59e0b" />
+              <g opacity={fruiting ? 1 : 0}>
+              <circle cx="120" cy="150" r="6.5" fill={data.fruit} />
               <circle cx="118" cy="148" r="2" fill="#fff" opacity=".6" />
-              <circle cx="168" cy="132" r="6.5" fill="#f59e0b" />
+              <circle cx="168" cy="132" r="6.5" fill={data.fruit} />
               <circle cx="166" cy="130" r="2" fill="#fff" opacity=".6" />
-              <circle cx="140" cy="108" r="6.5" fill="#f59e0b" />
+              <circle cx="140" cy="108" r="6.5" fill={data.fruit} />
               <circle cx="138" cy="106" r="2" fill="#fff" opacity=".6" />
-              <circle cx="194" cy="160" r="6.5" fill="#f59e0b" />
+              <circle cx="194" cy="160" r="6.5" fill={data.fruit} />
               <circle cx="192" cy="158" r="2" fill="#fff" opacity=".6" />
-              <circle cx="96" cy="170" r="6.5" fill="#f59e0b" />
+              <circle cx="96" cy="170" r="6.5" fill={data.fruit} />
               <circle cx="94" cy="168" r="2" fill="#fff" opacity=".6" />
-              <circle cx="160" cy="84" r="6.5" fill="#f59e0b" />
+              <circle cx="160" cy="84" r="6.5" fill={data.fruit} />
               <circle cx="158" cy="82" r="2" fill="#fff" opacity=".6" />
-              <circle cx="182" cy="108" r="4" fill="#fef3c7" />
-              <circle cx="112" cy="118" r="4" fill="#fef3c7" />
-              <circle cx="150" cy="150" r="4" fill="#fef3c7" />
+              </g>
+              <g opacity={flowering ? 1 : 0}>
+              <circle cx="182" cy="108" r="4" fill={data.bloom} />
+              <circle cx="112" cy="118" r="4" fill={data.bloom} />
+              <circle cx="150" cy="150" r="4" fill={data.bloom} />
+              </g>
+            </g>
             </g>
             <path
               d="M100 268 l-3 -7 M100 268 l0 -9 M100 268 l3 -7 M210 270 l-3 -7 M210 270 l0 -9 M210 270 l3 -7 M40 290 l-3 -7 M40 290 l0 -9 M40 290 l3 -7"
@@ -95,12 +126,12 @@ export default function CardSapling() {
           </svg>
         </div>
         <div className="absolute left-[330px] top-[540px] [transform:rotate(6deg)] bg-[#fff] p-[8px_14px] rounded-[6px] shadow-[0_8px_16px_-8px_rgba(31,58,40,.4)] font-hand text-[24px] text-[#b45309]">
-          mango, first fruit!
+          {data.species.toLowerCase()}, {data.stage.toLowerCase()}
         </div>
 
         <div className="absolute left-[44px] right-[44px] top-[600px]">
           <div className="font-display text-[96px] leading-[.9]">
-            <span className="italic">day</span> 247
+            <span className="italic">day</span> {Math.max(1, data.day)}
           </div>
           <div className="font-display italic text-[32px] leading-[1.1] mt-[6px] text-[#4d7a58]">
             of keeping something alive.
@@ -118,10 +149,10 @@ export default function CardSapling() {
                   fill="#f97316"
                 />
               </svg>
-              247 day streak
+              {data.streak} day streak
             </span>
             <span className="inline-flex items-center gap-[6px] bg-[#fff] rounded-[99px] p-[8px_14px] font-extrabold text-[15px]">
-              2 trees in my garden
+              {data.trees === 0 ? "first tree growing" : `${data.trees} ${data.trees === 1 ? "tree" : "trees"} in my garden`}
             </span>
           </div>
         </div>
@@ -130,6 +161,7 @@ export default function CardSapling() {
           <div className="flex items-center gap-[10px]">
             <Image
               src="/mascot/owl-peek.webp"
+              unoptimized
               alt=""
               width={62}
               height={49}

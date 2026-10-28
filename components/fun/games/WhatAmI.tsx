@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
+import CardWhatAmI from "@/components/fun/cards/CardWhatAmI";
+import CardActions from "@/components/fun/CardActions";
 import { GameShell, copyText, useTimers } from "@/components/fun/kit";
 import { createLink, getLink, latestLink, linkLabel, linkUrl, listResponses, nativeShare, submitResponse, whatsappHref } from "@/lib/fun/friends";
 
@@ -56,6 +58,7 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const later = useTimers();
+  const cardRef = useRef<HTMLDivElement>(null);
 
   // Friend side: who made this link?
   useEffect(() => {
@@ -214,6 +217,17 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
                 {copied ? "Copied" : "Copy"}
               </button>
             </div>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <CardWhatAmI cardRef={cardRef} data={{ owner: meName, link: code ? linkLabel("what-am-i-to-you", code).replace(/^www\./, "") : "" }} />
+            <CardActions
+              getNode={() => cardRef.current}
+              fileName="what-am-i-to-you-toppershelf.png"
+              shareText={shareText}
+              shareUrl={url}
+              btnClass={fzBtn}
+              ghostClass={ghost}
+            />
           </div>
           <a className={`${fzBtn} flex items-center justify-center no-underline !bg-[#25a244] !shadow-[0_6px_0_#17762f,0_14px_24px_rgba(23,118,47,.3)]`} href={whatsappHref(shareText, url)} target="_blank" rel="noopener">Send on WhatsApp</a>
           <button type="button" className={ghost} onClick={async () => { if (!(await nativeShare("What am I to you?", shareText, url))) { copyText(url); setCopied(true); later(() => setCopied(false), 1600); } }}>Share another way</button>

@@ -73,7 +73,8 @@ export default function CardVibe({ data = vibeSample, cardRef, date = new Date()
 
         <div className="absolute left-[44px] right-[44px] bottom-[118px] flex items-center justify-between">
           <div className="flex items-center gap-[10px]">
-            <Image src="/mascot/owl-peek.webp" alt="" width={62} height={49} className="h-auto w-[62px] block" />
+            <Image src="/mascot/owl-peek.webp"
+              unoptimized alt="" width={62} height={49} className="h-auto w-[62px] block" />
             <div className="text-[14px] leading-[1.3]">
               <div className="font-extrabold">check your vibe</div>
               <div className="opacity-[.8]">toppershelf.online/fun</div>

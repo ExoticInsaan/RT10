@@ -3,9 +3,12 @@
 import { useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { useAuth } from "@/components/AuthProvider";
+import CardSapling from "@/components/fun/cards/CardSapling";
+import CardActions from "@/components/fun/CardActions";
 import { useGardenBuddy } from "@/components/fun/useGardenBuddy";
 import { useGardenSync } from "@/components/fun/useGardenSync";
 import { linkLabel, linkUrl, nativeShare, whatsappHref } from "@/lib/fun/friends";
+import { SITE_URL } from "@/lib/site";
 import { Button } from "@/components/tools/ui";
 import { FitBox, GameShell, copyText, loadJSON, rng, saveJSON, useTimers } from "@/components/fun/kit";
 
@@ -200,7 +203,7 @@ function GardenGame() {
   const [boing, setBoing] = useState(false);
   const [plus, setPlus] = useState(false);
   const [toast, setToast] = useState("");
-  const [sheet, setSheet] = useState<"" | "invite" | "manage">("");
+  const [sheet, setSheet] = useState<"" | "invite" | "manage" | "share">("");
   const [draftA, setDraftA] = useState("");
   const [nudge, setNudge] = useState("");
   const [copied, setCopied] = useState(false);
@@ -209,6 +212,7 @@ function GardenGame() {
   const buddy = useGardenBuddy(g, setG, KEY);
   const [confirmReset, setConfirmReset] = useState(false);
   const nudgeTimer = useRef(0);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const set = (patch: Partial<Garden>) => {
     const next = { ...g, ...patch };
@@ -469,6 +473,7 @@ function GardenGame() {
       </div>
       <div className="flex items-center justify-center">
         <button type="button" className={`${mini} !flex-none px-4`} onClick={() => { setConfirmReset(false); setSheet("manage"); }}>Garden options</button>
+        {g.cared > 0 && <button type="button" className={`${mini} !flex-none px-4`} onClick={() => setSheet("share")}>Share my garden</button>}
       </div>
     </>
   );
@@ -560,6 +565,25 @@ function GardenGame() {
             <span className="text-[13px] leading-[1.35] text-[#3f6b55]">{paired ? `${nm("b")} is in your garden.` : "No buddy yet? Keep growing solo. You can invite anytime."}</span>
             <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("")}>Close</button>
           </div>
+        </div>
+      )}
+      {sheet === "share" && (
+        <div className={sheetCls} role="dialog" aria-label="Share my garden">
+          {handle}
+          <div className="font-display text-[28px] leading-none">Share my garden</div>
+          <CardSapling
+            cardRef={cardRef}
+            data={{ species: S.name, day: d, stage: stageOf(d), streak: streakNow, trees: totalTrees, trunk: S.trunk, leaf1: S.l1, leaf2: S.l2, bloom: S.fl, fruit: S.fr }}
+          />
+          <CardActions
+            getNode={() => cardRef.current}
+            fileName="grow-a-sapling-toppershelf.png"
+            shareText={`My ${S.name.toLowerCase()} tree is on day ${d} with a ${streakNow} day streak. Grow yours!`}
+            shareUrl={`${SITE_URL}/tool/grow-a-sapling`}
+            btnClass={buddyBtn}
+            ghostClass={`${buddyBtn} ${buddyGhost}`}
+          />
+          <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("")}>Close</button>
         </div>
       )}
       {sheet === "manage" && (

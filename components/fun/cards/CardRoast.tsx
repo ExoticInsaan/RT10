@@ -86,7 +86,8 @@ export default function CardRoast({ data = roastSample, cardRef, date = new Date
 
         <div className="absolute left-[40px] right-[40px] bottom-[118px] flex items-center justify-between">
           <div className="flex items-center gap-[10px]">
-            <Image src="/mascot/owl-peek.webp" alt="" width={62} height={49} className="h-auto w-[62px] block" />
+            <Image src="/mascot/owl-peek.webp"
+              unoptimized alt="" width={62} height={49} className="h-auto w-[62px] block" />
             <div className="text-[14px] leading-[1.3]">
               <div className="font-extrabold">roast my timetable</div>
               <div className="text-[#78716c]">toppershelf.online/fun</div>

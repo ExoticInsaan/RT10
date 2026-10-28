@@ -114,6 +114,7 @@ export default function CardFriend({ data = friendSample, cardRef }: { data?: Fr
           <div className="flex items-center gap-[10px]">
             <Image
               src="/mascot/owl-peek.webp"
+              unoptimized
               alt=""
               width={62}
               height={49}
