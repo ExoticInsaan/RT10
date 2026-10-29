@@ -8,10 +8,8 @@ import CardFriend from "@/components/fun/cards/CardFriend";
 import CardActions from "@/components/fun/CardActions";
 import { GameShell, copyText, useTimers } from "@/components/fun/kit";
 import { SITE_URL } from "@/lib/site";
-import {
-  createLink, getLink, latestLink, linkLabel, linkUrl, listResponses, nativeShare, submitResponse, whatsappHref,
-  type FriendAnswer,
-} from "@/lib/fun/friends";
+import { createLink, getLink, latestLink, linkLabel, linkUrl, listResponses, submitResponse, type FriendAnswer,  } from "@/lib/fun/friends";
+import ShareButton from "@/components/fun/ShareButton";
 
 type Phase = "loading" | "missing" | "create" | "share" | "results" | "friendName" | "quiz" | "result";
 
@@ -280,9 +278,15 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
                 </button>
               </div>
             </div>
-            <a className={`${fzBtn} !bg-[#25a244] !shadow-[0_6px_0_#17762f,0_14px_24px_rgba(23,118,47,.3)]`} href={whatsappHref(shareText, url)} target="_blank" rel="noopener">Send on WhatsApp</a>
-            <button type="button" className={ghost} onClick={async () => { if (!(await nativeShare("Friendship Score", shareText, url))) { copyText(url); setCopied(true); later(() => setCopied(false), 1600); } }}>Share another way</button>
-            <button type="button" className={fzBtn} onClick={() => void showResults()} disabled={busy}>{busy ? "Loading…" : "See who answered"}</button>
+            <ShareButton
+              title="Friendship Score"
+              text={shareText}
+              url={url}
+              shareClass={fzBtn}
+              whatsappClass={`${fzBtn} !bg-[#25a244] !shadow-[0_6px_0_#17762f,0_14px_24px_rgba(23,118,47,.3)]`}
+              onFallback={() => { copyText(url); setCopied(true); later(() => setCopied(false), 1600); }}
+            />
+            <button type="button" className={ghost} onClick={() => void showResults()} disabled={busy}>{busy ? "Loading…" : "See who answered"}</button>
             {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
             <div className="grid grid-cols-2 gap-3">
               <button type="button" className={ghost} onClick={() => window.open(url, "_blank", "noopener")}>Preview as a friend</button>

@@ -144,11 +144,21 @@ export async function listWaters(code: string): Promise<Result<Watering[]>> {
 
 export const whatsappHref = (text: string, url: string) => "https://wa.me/?text=" + encodeURIComponent(`${text} ${url}`);
 
-/** Opens the phone's share sheet where the browser has one. Returns false when it cannot (use Copy or WhatsApp instead). */
+type ShareBridge = (o: { title: string; text: string; url: string }) => Promise<void>;
+const nativeBridge = () => (typeof window !== "undefined" ? (window as unknown as { __tsShare?: ShareBridge }).__tsShare : undefined);
+
+/** True when this device can open a system share sheet (the Android app, or a phone/desktop browser that supports it). */
+export const canNativeShare = () => Boolean(nativeBridge()) || (typeof navigator !== "undefined" && typeof navigator.share === "function");
+
+/**
+ * Opens the system share sheet. Returns true when the sheet was used, including when the person closed it
+ * without sharing (so callers do not copy the link behind their back). Returns false only when there is no
+ * share sheet or it failed, so the caller can fall back to Copy.
+ */
 export async function nativeShare(title: string, text: string, url: string): Promise<boolean> {
   try {
     // Inside the Android app the system share sheet comes from the Capacitor plugin (set up in mobile/src/native.ts).
-    const native = typeof window !== "undefined" ? (window as unknown as { __tsShare?: (o: { title: string; text: string; url: string }) => Promise<void> }).__tsShare : undefined;
+    const native = nativeBridge();
     if (native) {
       await native({ title, text, url });
       return true;
@@ -157,8 +167,9 @@ export async function nativeShare(title: string, text: string, url: string): Pro
       await navigator.share({ title, text, url });
       return true;
     }
-  } catch {
-    /* closed the share sheet */
+  } catch (error) {
+    const e = error as { name?: string; message?: string };
+    if (e?.name === "AbortError" || /cancel/i.test(e?.message ?? "")) return true;
   }
   return false;
 }

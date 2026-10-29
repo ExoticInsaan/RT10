@@ -7,7 +7,8 @@ import { useAuth } from "@/components/AuthProvider";
 import CardKnowMe from "@/components/fun/cards/CardKnowMe";
 import CardActions from "@/components/fun/CardActions";
 import { GameShell, copyText, useTimers } from "@/components/fun/kit";
-import { createLink, getLink, knowCheck, latestLink, linkLabel, linkUrl, listResponses, nativeShare, submitResponse, whatsappHref } from "@/lib/fun/friends";
+import { createLink, getLink, knowCheck, latestLink, linkLabel, linkUrl, listResponses, submitResponse } from "@/lib/fun/friends";
+import ShareButton from "@/components/fun/ShareButton";
 
 type Phase = "loading" | "missing" | "name" | "quiz" | "saving" | "saveFail" | "share" | "friendName" | "score" | "board";
 type Mode = "own" | "guess";
@@ -308,9 +309,15 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
             </button>
           </div>
         </div>
-        <a className={`${fzBtn} flex items-center justify-center no-underline !bg-[#25a244] !shadow-[0_6px_0_#17762f,0_14px_24px_rgba(23,118,47,.3)]`} href={whatsappHref(shareText, url)} target="_blank" rel="noopener">Send on WhatsApp</a>
-        <button type="button" className={ghost} onClick={async () => { if (!(await nativeShare("How well do you know me?", shareText, url))) { copyText(url); setCopied(true); later(() => setCopied(false), 1600); } }}>Share another way</button>
-        <button type="button" className={fzBtn} onClick={() => void showBoard()} disabled={busy}>{busy ? "Loading…" : "See my leaderboard"}</button>
+        <ShareButton
+          title="How well do you know me?"
+          text={shareText}
+          url={url}
+          shareClass={fzBtn}
+          whatsappClass={`${fzBtn} flex items-center justify-center no-underline !bg-[#25a244] !shadow-[0_6px_0_#17762f,0_14px_24px_rgba(23,118,47,.3)]`}
+          onFallback={() => { copyText(url); setCopied(true); later(() => setCopied(false), 1600); }}
+        />
+        <button type="button" className={ghost} onClick={() => void showBoard()} disabled={busy}>{busy ? "Loading…" : "See my leaderboard"}</button>
         {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
         <div className="grid grid-cols-2 gap-2.5">
           <button type="button" className={ghost} onClick={() => window.open(url, "_blank", "noopener")}>Preview as a friend</button>

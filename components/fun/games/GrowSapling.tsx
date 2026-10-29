@@ -7,7 +7,8 @@ import CardSapling from "@/components/fun/cards/CardSapling";
 import CardActions from "@/components/fun/CardActions";
 import { useGardenBuddy } from "@/components/fun/useGardenBuddy";
 import { useGardenSync } from "@/components/fun/useGardenSync";
-import { linkLabel, linkUrl, nativeShare, whatsappHref } from "@/lib/fun/friends";
+import { linkLabel, linkUrl } from "@/lib/fun/friends";
+import ShareButton from "@/components/fun/ShareButton";
 import { SITE_URL } from "@/lib/site";
 import { Button } from "@/components/tools/ui";
 import { FitBox, GameShell, copyText, loadJSON, rng, saveJSON, useTimers } from "@/components/fun/kit";
@@ -542,22 +543,14 @@ function GardenGame() {
                   {copied ? "Copied" : "Copy"}
                 </button>
               </div>
-              <a
-                className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-[#25a244] text-base font-black text-white no-underline shadow-[0_5px_0_#17762f] active:translate-y-[3px] active:shadow-[0_2px_0_#17762f]"
-                href={whatsappHref(`Help me grow our ${S.name.toLowerCase()} tree on TopperShelf! Water it on days I forget so our streak never breaks:`, inviteUrl)}
-                target="_blank"
-                rel="noopener"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.3 7.9L3 21l1.2-4.5A9 9 0 1 1 21 12z" /></svg>
-                Send on WhatsApp
-              </a>
-              <button
-                type="button"
-                className={`${mini} !flex-none`}
-                onClick={async () => { if (!(await nativeShare("Grow a Sapling", `Help me grow our ${S.name.toLowerCase()} tree on TopperShelf!`, inviteUrl))) { copyText(inviteUrl); setCopied(true); later(() => setCopied(false), 1600); } }}
-              >
-                Share another way
-              </button>
+              <ShareButton
+                title="Grow a Sapling"
+                text={`Help me grow our ${S.name.toLowerCase()} tree on TopperShelf! Water it on days I forget so our streak never breaks:`}
+                url={inviteUrl}
+                shareClass={bigBtn}
+                whatsappClass="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-[#25a244] text-base font-black text-white no-underline shadow-[0_5px_0_#17762f] active:translate-y-[3px] active:shadow-[0_2px_0_#17762f]"
+                onFallback={() => { copyText(inviteUrl); setCopied(true); later(() => setCopied(false), 1600); }}
+              />
               <button type="button" className={`${mini} !flex-none`} onClick={() => window.open(inviteUrl, "_blank", "noopener")}>Preview as your friend</button>
             </>
           )}
