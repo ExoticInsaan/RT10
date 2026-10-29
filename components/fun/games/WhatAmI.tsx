@@ -240,8 +240,7 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
           />
           <button type="button" className={ghost} onClick={() => void showInbox()} disabled={busy}>{busy ? "Loading…" : "Open my inbox"}</button>
           {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
-          <div className="grid grid-cols-2 gap-2.5">
-            <button type="button" className={ghost} onClick={() => window.open(url, "_blank", "noopener")}>Preview as a friend</button>
+          <div className="grid grid-cols-1 gap-2.5">
             <button type="button" className={ghost} onClick={() => { setPhase("create"); setError(""); }}>New link</button>
           </div>
         </>,

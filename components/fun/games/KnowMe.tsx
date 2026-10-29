@@ -319,8 +319,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
         />
         <button type="button" className={ghost} onClick={() => void showBoard()} disabled={busy}>{busy ? "Loading…" : "See my leaderboard"}</button>
         {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
-        <div className="grid grid-cols-2 gap-2.5">
-          <button type="button" className={ghost} onClick={() => window.open(url, "_blank", "noopener")}>Preview as a friend</button>
+        <div className="grid grid-cols-1 gap-2.5">
           <button type="button" className={ghost} onClick={() => { setPhase("name"); setMode("own"); setQ(0); setKey([]); setSel(-1); setError(""); }}>New quiz</button>
         </div>
       </>,

@@ -551,7 +551,6 @@ function GardenGame() {
                 whatsappClass="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-[#25a244] text-base font-black text-white no-underline shadow-[0_5px_0_#17762f] active:translate-y-[3px] active:shadow-[0_2px_0_#17762f]"
                 onFallback={() => { copyText(inviteUrl); setCopied(true); later(() => setCopied(false), 1600); }}
               />
-              <button type="button" className={`${mini} !flex-none`} onClick={() => window.open(inviteUrl, "_blank", "noopener")}>Preview as your friend</button>
             </>
           )}
           <div className="flex items-center justify-between gap-2.5">
