@@ -41,6 +41,13 @@
         </provider>
     </application>
 
+    <!-- Android 11+: lets the app see whether Instagram and WhatsApp are installed, for the Story and Status buttons -->
+    <queries>
+        <package android:name="com.instagram.android" />
+        <package android:name="com.whatsapp" />
+        <package android:name="com.whatsapp.w4b" />
+    </queries>
+
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />

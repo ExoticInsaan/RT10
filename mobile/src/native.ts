@@ -1,4 +1,4 @@
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, registerPlugin } from "@capacitor/core";
 import { App } from "@capacitor/app";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
@@ -8,6 +8,13 @@ import { TAB_PATHS } from "./components/BottomNav";
 import { navigate } from "./shims/router";
 
 export const isNative = Capacitor.isNativePlatform();
+
+/** Java plugin in android/app/src/main/java/online/toppershelf/app/StorySharePlugin.java */
+const StoryShare = registerPlugin<{
+  available(): Promise<{ instagram: boolean; whatsapp: boolean }>;
+  shareImage(o: { uri: string; text?: string; title?: string }): Promise<void>;
+}>("StoryShare");
+
 
 /**
  * Android's WebView ignores `<a download>` on blob links, and the PDF and image tools save files that way.
@@ -75,11 +82,12 @@ export function initNative() {
   (window as unknown as { __tsShare?: (o: { title: string; text: string; url: string }) => Promise<void> }).__tsShare = async ({ title, text, url }) => {
     await Share.share({ title, text, url, dialogTitle: "Share with friends" });
   };
-  // Story cards: the picture goes to the app cache and the Android share sheet opens with it (WhatsApp, Instagram, Messages…).
+  // Story cards: the picture goes to the app cache and the Android share sheet opens with it (WhatsApp, Instagram, Messages…) with Story and Status shortcuts.
   (window as unknown as { __tsShareImage?: (o: { blob: Blob; filename: string; text: string }) => Promise<void> }).__tsShareImage = async ({ blob, filename, text }) => {
     const data = await blobToBase64(blob);
     const saved = await Filesystem.writeFile({ path: filename, data, directory: Directory.Cache });
-    await Share.share({ title: "TopperShelf", text, files: [saved.uri], dialogTitle: "Share your card" });
+    // Same Android share dialog as before, plus "Instagram Story" and "WhatsApp Status" in the app row.
+    await StoryShare.shareImage({ uri: saved.uri, text, title: "Share your card" });
   };
   void SplashScreen.hide().catch(() => {});
 }
