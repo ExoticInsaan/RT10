@@ -8,6 +8,7 @@ const config: CapacitorConfig = {
   android: { backgroundColor: "#fffbf7" },
   plugins: {
     SplashScreen: { launchShowDuration: 0, backgroundColor: "#fffbf7" },
+    LocalNotifications: { smallIcon: "ic_stat_toppershelf", iconColor: "#2563eb" },
     StatusBar: { style: "LIGHT", backgroundColor: "#fffbf7", overlaysWebView: false },
   },
 };

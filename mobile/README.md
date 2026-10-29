@@ -46,6 +46,14 @@ The app is ready to receive notifications; you send them from the Firebase conso
 People turn notifications on with the switch on the **My Shelf** screen (Android 13+ asks for permission at that moment).
 Test on a real phone: the emulator needs Google Play services.
 
+## Reminders (app only)
+The Reminder tool in the app (`src/components/AppReminder.tsx`) schedules a real phone notification for each reminder with
+`@capacitor/local-notifications` (`src/reminders.ts`). It fires at the chosen time even when the app is closed, survives a phone restart,
+and tapping it opens the Reminder screen. The calendar buttons are not shown in the app. Android 13+ asks for notification permission
+when the first reminder is added. `ReminderScheduler` re-schedules saved reminders at launch (for example ones added on another phone) and
+clears them on sign-out. The website's Reminder is unchanged. On Android 14+ the exact-alarm permission is off by default, so a reminder
+can arrive a few minutes late on some phones until the person allows "Alarms & reminders" in the app's Android settings.
+
 ## Settings and account deletion
 
 The Settings screen (Home → account icon) is app-only. "Delete my account" calls the `delete-account` Supabase Edge Function

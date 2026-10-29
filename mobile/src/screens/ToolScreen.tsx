@@ -5,6 +5,7 @@ import { RECENT_KEY } from "@/components/tools/ui";
 import { useAuth } from "@/components/AuthProvider";
 import { toolById } from "@/lib/tools/registry";
 import { useStoredList } from "@/lib/tools/useStoredList";
+import AppReminder from "../components/AppReminder";
 import { BackIcon } from "../components/icons";
 import { back } from "../shims/router";
 
@@ -14,7 +15,8 @@ export default function ToolScreen({ id }: { id: string }) {
   const { user, ready, openSignIn } = useAuth();
   const [, setRecent] = useStoredList(RECENT_KEY);
   const fun = hasFunGame(id);
-  const Shelf = shelfTools[id];
+  // The app has its own Reminder (real phone notifications, no calendar buttons).
+  const Shelf = id === "reminder" ? AppReminder : shelfTools[id];
 
   useEffect(() => {
     setRecent((cur) => [id, ...cur.filter((x) => x !== id)].slice(0, 8));
