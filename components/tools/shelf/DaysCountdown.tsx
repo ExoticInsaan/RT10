@@ -55,9 +55,9 @@ export default function DaysCountdown() {
   if (status === "error") return <p className="m-0 py-16 text-center text-sm text-muted">Could not load your countdowns. Please refresh the page.</p>;
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-8">
+    <div className="mx-auto grid grid-cols-1 max-w-3xl gap-8">
       <form
-        className="grid gap-4 sm:grid-cols-[1fr_12rem_auto] sm:items-end"
+        className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_12rem_auto] sm:items-end"
         onSubmit={(event) => {
           event.preventDefault();
           add();
@@ -76,10 +76,10 @@ export default function DaysCountdown() {
       {items.length === 0 ? (
         <Hint>Your countdowns appear here and are saved to your account.</Hint>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {next && <Big item={next} days={daysUntil(next.date, now)} onRemove={() => setItems(items.filter((i) => i.id !== next.id))} />}
           {[...rest, ...past].length > 0 && (
-            <ul className="m-0 grid list-none gap-2 p-0">
+            <ul className="m-0 grid grid-cols-1 list-none gap-2 p-0">
               {[...rest, ...past].map((item) => {
                 const days = daysUntil(item.date, now);
                 return (

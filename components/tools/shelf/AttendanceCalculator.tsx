@@ -46,7 +46,7 @@ export default function AttendanceCalculator() {
     const best = hasLeft ? (a + remaining) / (n + remaining) : NaN;
 
     body = (
-      <div className="grid gap-4">
+      <div className="grid grid-cols-1 gap-4">
         <ResultPanel
           tone={ok ? "green" : "amber"}
           label="Your attendance right now"
@@ -92,8 +92,8 @@ export default function AttendanceCalculator() {
   }
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-6">
-      <div className="grid gap-4 sm:grid-cols-2">
+    <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <NumberField label="Classes attended" value={attended} onChange={setAttended} min={0} step={1} placeholder="e.g. 42" />
         <NumberField label="Classes held so far" value={total} onChange={setTotal} min={1} step={1} placeholder="e.g. 60" />
         <NumberField label="Target attendance" value={target} onChange={setTarget} min={1} max={100} suffix="%" hint="75% is the most common rule." />

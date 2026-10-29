@@ -126,7 +126,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="hide-scrollbar absolute inset-0 overflow-y-auto pb-10">
+    <div className="hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-10">
       <header className="sticky top-0 z-10 flex items-center gap-2 bg-ivory/95 px-3 pt-4 pb-2 backdrop-blur">
         <button type="button" onClick={back} aria-label="Back" className="grid size-11 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-navy">
           <BackIcon />

@@ -15,7 +15,7 @@ export default function MyShelf() {
   const empty = !favTools.length && !recentTools.length;
 
   return (
-    <div className="hide-scrollbar absolute inset-0 overflow-y-auto pb-[100px]">
+    <div className="hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-[100px]">
       <div className="px-5 pt-5">
         <h1 className="m-0 font-display text-[40px] leading-none font-normal">My Shelf</h1>
         <p className="mt-2 mb-0 text-[15px] leading-[1.45] text-[#5b6675]">Your favourite tools and the ones you used last will live here.</p>

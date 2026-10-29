@@ -42,6 +42,9 @@ html,
 body,
 #root {
   height: 100%;
+  max-width: 100%;
+  /* The app is vertical-scroll only: nothing may ever pan the screen sideways. */
+  overflow-x: hidden;
 }
 html {
   background: #fffbf7;

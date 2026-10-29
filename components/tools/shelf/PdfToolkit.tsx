@@ -125,7 +125,7 @@ export default function PdfToolkit() {
   const original = files.reduce((sum, f) => sum + f.size, 0);
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-6">
+    <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       {!picked && (
         <PdfModeCards
           cards={modes.map(({ value, label, intro }) => ({ value, label, intro }))}
@@ -136,7 +136,7 @@ export default function PdfToolkit() {
         />
       )}
 
-      <div className={`grid gap-6 ${picked ? "" : "max-lg:hidden"}`}>
+      <div className={`grid grid-cols-1 gap-6 ${picked ? "" : "max-lg:hidden"}`}>
       {picked && (
         <div className="flex items-center gap-3 lg:hidden">
           <button
@@ -155,7 +155,7 @@ export default function PdfToolkit() {
           <h2 className="m-0 text-lg font-extrabold text-navy">{current.label}</h2>
         </div>
       )}
-      <div className="grid gap-2">
+      <div className="grid grid-cols-1 gap-2">
         <div className="max-lg:hidden">
           <Segmented label="What do you want to do?" value={mode} onChange={reset} options={modes.map(({ value, label }) => ({ value, label }))} />
         </div>
@@ -180,9 +180,9 @@ export default function PdfToolkit() {
       )}
 
       {files.length > 0 && (
-        <ol className="m-0 grid list-none gap-2 p-0">
+        <ol className="m-0 grid grid-cols-1 list-none gap-2 p-0">
           {files.map((file, index) => (
-            <li key={`${file.name}-${index}`} className="flex items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3">
+            <li key={`${file.name}-${index}`} className="flex min-w-0 items-center gap-2 rounded-2xl border border-line bg-white py-2.5 pr-1.5 pl-3 sm:gap-3 sm:py-3 sm:pr-3 sm:pl-4">
               <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-red-50 text-xs font-extrabold text-red-600">
                 {wantsImages ? "IMG" : "PDF"}
               </span>
@@ -193,31 +193,33 @@ export default function PdfToolkit() {
                   {mode === "split" && pageCount !== null && ` · ${pageCount} page${pageCount === 1 ? "" : "s"}`}
                 </span>
               </span>
-              {multiple && files.length > 1 && (
-                <>
-                  <IconButton label={`Move ${file.name} up`} disabled={index === 0} onClick={() => move(index, -1)} rotate="-rotate-90" />
-                  <IconButton label={`Move ${file.name} down`} disabled={index === files.length - 1} onClick={() => move(index, 1)} rotate="rotate-90" />
-                </>
-              )}
-              <button
-                type="button"
-                aria-label={`Remove ${file.name}`}
-                onClick={() => {
-                  setFiles(files.filter((_, i) => i !== index));
-                  setOutputs([]);
-                  if (!multiple) setPageCount(null);
-                }}
-                className="grid size-9 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-muted hover:bg-surface hover:text-navy"
-              >
-                <ToolIcon name="close" size={17} />
-              </button>
+              <span className="flex shrink-0 items-center">
+                {multiple && files.length > 1 && (
+                  <>
+                    <IconButton label={`Move ${file.name} up`} disabled={index === 0} onClick={() => move(index, -1)} rotate="-rotate-90" />
+                    <IconButton label={`Move ${file.name} down`} disabled={index === files.length - 1} onClick={() => move(index, 1)} rotate="rotate-90" />
+                  </>
+                )}
+                <button
+                  type="button"
+                  aria-label={`Remove ${file.name}`}
+                  onClick={() => {
+                    setFiles(files.filter((_, i) => i !== index));
+                    setOutputs([]);
+                    if (!multiple) setPageCount(null);
+                  }}
+                  className={iconBtn}
+                >
+                  <ToolIcon name="close" size={16} />
+                </button>
+              </span>
             </li>
           ))}
         </ol>
       )}
 
       {mode === "split" && files.length > 0 && pageCount !== null && (
-        <div className="grid gap-3">
+        <div className="grid grid-cols-1 gap-3">
           <Segmented
             label="How to split"
             value={splitHow}
@@ -236,7 +238,7 @@ export default function PdfToolkit() {
       )}
 
       {mode === "compress" && files.length > 0 && (
-        <div className="grid gap-2">
+        <div className="grid grid-cols-1 gap-2">
           <Segmented
             label="Compression strength"
             value={level}
@@ -262,7 +264,7 @@ export default function PdfToolkit() {
       {error && <Hint error>{error}</Hint>}
 
       {outputs.length > 0 && (
-        <div className="grid gap-3 rounded-2xl bg-blue-soft p-5" aria-live="polite">
+        <div className="grid grid-cols-1 gap-3 rounded-2xl bg-blue-soft p-5" aria-live="polite">
           {outputs.length === 1 ? (
             <>
               <p className="m-0 text-sm font-semibold text-muted">Ready</p>
@@ -283,7 +285,7 @@ export default function PdfToolkit() {
               <p className="m-0 text-sm font-semibold text-navy">
                 {outputs.length} files ready. Download the ones you need.
               </p>
-              <ul className="m-0 grid max-h-80 list-none gap-2 overflow-y-auto p-0">
+              <ul className="m-0 grid grid-cols-1 max-h-80 list-none gap-2 overflow-y-auto p-0">
                 {outputs.map((output) => (
                   <li key={output.name} className="flex items-center gap-3 rounded-xl bg-white px-4 py-2.5">
                     <span className="min-w-0 flex-1 truncate text-sm text-navy">{output.name}</span>
@@ -315,6 +317,10 @@ function actionLabel(mode: Mode, count: number) {
   return "Save pages as JPG";
 }
 
+/** Small round row buttons (move up/down, remove): one fixed size that never shrinks or stretches, so rows stay inside the screen. */
+const iconBtn =
+  "grid size-9 shrink-0 cursor-pointer place-items-center rounded-full border-0 bg-transparent p-0 text-muted hover:bg-surface hover:text-navy";
+
 function IconButton({ label, onClick, disabled, rotate }: { label: string; onClick: () => void; disabled: boolean; rotate: string }) {
   return (
     <button
@@ -322,7 +328,7 @@ function IconButton({ label, onClick, disabled, rotate }: { label: string; onCli
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="grid size-9 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-muted hover:bg-surface hover:text-navy disabled:cursor-not-allowed disabled:opacity-30"
+      className={`${iconBtn} disabled:cursor-not-allowed disabled:opacity-30`}
     >
       <span className={rotate}>
         <ToolIcon name="arrow" size={16} />

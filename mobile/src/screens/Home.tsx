@@ -15,7 +15,7 @@ export default function Home() {
   }, [q]);
 
   return (
-    <div className="hide-scrollbar absolute inset-0 overflow-y-auto pb-[100px]">
+    <div className="hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-[100px]">
       <div className="flex items-center justify-between px-5 pt-3.5">
         <div className="flex items-center gap-[9px]">
           <img src="./logo-mark.png" alt="" className="size-9" />

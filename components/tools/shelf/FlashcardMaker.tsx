@@ -66,9 +66,9 @@ export default function FlashcardMaker() {
   if (status === "error") return <p className="m-0 py-16 text-center text-sm text-muted">Could not load your decks. Please refresh the page.</p>;
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-6">
+    <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       <form
-        className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end"
+        className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-end"
         onSubmit={(event) => {
           event.preventDefault();
           const name = newName.trim();
@@ -87,7 +87,7 @@ export default function FlashcardMaker() {
 
       {decks.length === 0 && <Hint>Your decks appear here and are saved to your account.</Hint>}
       {decks.length > 0 && (
-        <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
+        <ul className="m-0 grid grid-cols-1 list-none gap-3 p-0 sm:grid-cols-2">
           {decks.map((d) => (
             <li key={d.id}>
               <button
@@ -128,7 +128,7 @@ function DeckEditor({
   const [message, setMessage] = useState("");
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-6">
+    <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <button type="button" onClick={onBack} className="cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-blue-hover">
           ← All decks
@@ -140,7 +140,7 @@ function DeckEditor({
       <h3 className="m-0 text-2xl font-extrabold tracking-tight text-navy">{deck.name}</h3>
 
       <form
-        className="grid gap-3 rounded-2xl bg-surface p-5"
+        className="grid grid-cols-1 gap-3 rounded-2xl bg-surface p-5"
         onSubmit={(event) => {
           event.preventDefault();
           if (!front.trim() || !back.trim()) return setMessage("Fill in both sides of the card.");
@@ -150,7 +150,7 @@ function DeckEditor({
           setMessage("");
         }}
       >
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="Front (question)">
             <textarea className={`${inputClass} h-24 py-3`} value={front} onChange={(e) => setFront(e.target.value)} maxLength={300} />
           </Field>
@@ -169,7 +169,7 @@ function DeckEditor({
           </button>
         </div>
         {showBulk && (
-          <div className="grid gap-3">
+          <div className="grid grid-cols-1 gap-3">
             <Field label="One card per line" hint="Write “question - answer”, “question: answer”, or paste two columns from a spreadsheet.">
               <textarea
                 className={`${inputClass} h-40 py-3 font-mono`}
@@ -197,7 +197,7 @@ function DeckEditor({
       </form>
 
       {deck.cards.length > 0 && (
-        <ol className="m-0 grid list-none gap-2 p-0">
+        <ol className="m-0 grid grid-cols-1 list-none gap-2 p-0">
           {deck.cards.map((card) => (
             <li key={card.id} className="flex items-start gap-3 rounded-2xl border border-line bg-white px-4 py-3">
               <span className="grid min-w-0 flex-1 gap-1 sm:grid-cols-2 sm:gap-4">
@@ -273,7 +273,7 @@ function Study({ deck, onExit }: { deck: Deck; onExit: () => void }) {
   }
 
   return (
-    <div className="mx-auto grid max-w-xl gap-5">
+    <div className="mx-auto grid grid-cols-1 max-w-xl gap-5">
       <div className="flex items-center justify-between text-sm">
         <button type="button" onClick={onExit} className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover">
           ← Stop

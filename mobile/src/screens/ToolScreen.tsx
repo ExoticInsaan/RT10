@@ -56,7 +56,7 @@ export default function ToolScreen({ id }: { id: string }) {
 
 function Frame({ fun, backLabel, title, children }: { fun: boolean; backLabel: string; title: string; children: React.ReactNode }) {
   return (
-    <div className={`hide-scrollbar absolute inset-0 overflow-y-auto pb-[max(28px,env(safe-area-inset-bottom))] ${fun ? "bg-fun-field" : "bg-ivory"}`}>
+    <div className={`hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-[max(28px,env(safe-area-inset-bottom))] ${fun ? "bg-fun-field" : "bg-ivory"}`}>
       <button
         type="button"
         onClick={back}

@@ -27,7 +27,7 @@ export default function SignIn() {
   }
 
   return (
-    <div className="flex size-full flex-col overflow-y-auto bg-ivory text-navy">
+    <div className="flex size-full flex-col overflow-y-auto overflow-x-hidden bg-ivory text-navy">
       <div className="dots-light relative h-[330px] shrink-0 overflow-hidden rounded-b-[36px] bg-navy">
         <div className="flex items-center gap-2.5 px-6 pt-6">
           <img src="./logo-mark-light.png" alt="" className="size-10" />

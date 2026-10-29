@@ -148,7 +148,7 @@ export default function ImageCompressor() {
 
   if (!file || !img) {
     return (
-      <div className="mx-auto grid max-w-3xl gap-4">
+      <div className="mx-auto grid grid-cols-1 max-w-3xl gap-4">
         <DropZone
           accept="image/jpeg,image/png,image/webp"
           onFiles={pick}
@@ -161,7 +161,7 @@ export default function ImageCompressor() {
   }
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-6">
+    <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       <div className="flex items-center gap-4 rounded-2xl bg-surface p-3">
         {/* eslint-disable-next-line @next/next/no-img-element -- a local preview of the visitor's own file */}
         <img src={img.src} alt="" className="size-16 rounded-xl bg-white object-contain" />
@@ -183,7 +183,7 @@ export default function ImageCompressor() {
         </Button>
       </div>
 
-      <div className="grid gap-2">
+      <div className="grid grid-cols-1 gap-2">
         <p className="m-0 text-sm font-semibold text-navy">Make it smaller than</p>
         <Segmented
           label="Target size"
@@ -201,7 +201,7 @@ export default function ImageCompressor() {
         )}
       </div>
 
-      <div className="grid gap-3">
+      <div className="grid grid-cols-1 gap-3">
         <Segmented
           label="Picture size"
           value={resize}
@@ -232,7 +232,7 @@ export default function ImageCompressor() {
       {error && <Hint error>{error}</Hint>}
 
       {result && (
-        <div className="grid gap-4 rounded-2xl bg-blue-soft p-5 sm:grid-cols-[10rem_1fr] sm:items-center" aria-live="polite">
+        <div className="grid grid-cols-1 gap-4 rounded-2xl bg-blue-soft p-5 sm:grid-cols-[10rem_1fr] sm:items-center" aria-live="polite">
           {/* eslint-disable-next-line @next/next/no-img-element -- the compressed result, generated in the browser */}
           <img src={result.url} alt="Compressed result" className="mx-auto max-h-40 rounded-xl bg-white object-contain" />
           <div>

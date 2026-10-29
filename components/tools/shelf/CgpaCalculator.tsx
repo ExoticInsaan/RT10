@@ -140,7 +140,7 @@ export default function CgpaCalculator() {
   const customMissing = formulaId === "custom" && !(multiplier > 0);
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-6">
+    <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       {!picked && (
         <ModeCards
           title="What do you want to work out?"
@@ -152,7 +152,7 @@ export default function CgpaCalculator() {
         />
       )}
 
-      <div className={`grid gap-6 ${picked ? "" : "max-lg:hidden"}`}>
+      <div className={`grid grid-cols-1 gap-6 ${picked ? "" : "max-lg:hidden"}`}>
       {picked && <ModeHeader card={currentCard} onBack={() => setPicked(false)} backLabel="Back to all calculators" />}
       {picked && <p className="m-0 text-sm text-muted lg:hidden">{currentCard.intro}</p>}
       <div className="max-lg:hidden">
@@ -165,7 +165,7 @@ export default function CgpaCalculator() {
       </div>
 
       {(mode === "to-percent" || mode === "to-cgpa") && (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {mode === "to-percent" ? (
             <NumberField label="Your CGPA" value={cgpa} onChange={setCgpa} min={0} max={10} placeholder="e.g. 8.4" hint="On a 10-point scale." />
           ) : (
@@ -262,12 +262,12 @@ function SgpaToCgpa({
   const cgpa = filled.reduce((sum, s) => sum + s.sgpa * (useCredits ? s.credits : 1), 0) / totalCredits;
 
   return (
-    <div className="grid gap-5">
+    <div className="grid grid-cols-1 gap-5">
       <p className="m-0 text-sm leading-6 text-muted">
         Add each semester&apos;s SGPA. Add credits too if you know them: CGPA is then weighted by credits, which is how most
         universities calculate it. Without credits, every semester counts equally.
       </p>
-      <ol className="m-0 grid list-none gap-3 p-0">
+      <ol className="m-0 grid grid-cols-1 list-none gap-3 p-0">
         {semesters.map((s, index) => (
           <li key={index} className="grid grid-cols-[auto_1fr_1fr_auto] items-end gap-3">
             <span className="mb-3.5 w-10 text-sm font-bold text-muted">S{index + 1}</span>
@@ -324,13 +324,13 @@ function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSub
   const totalMax = used.reduce((sum, r) => sum + r.max, 0);
 
   return (
-    <div className="grid gap-5">
+    <div className="grid grid-cols-1 gap-5">
       <p className="m-0 text-sm leading-6 text-muted max-lg:hidden">
         Add the marks you got in each subject and what it was out of. You get the percentage for every subject and your overall percentage.
       </p>
-      <ol className="m-0 grid list-none gap-3 p-0">
+      <ol className="m-0 grid grid-cols-1 list-none gap-3 p-0">
         {subjects.map((s, index) => (
-          <li key={index} className="grid gap-3 rounded-2xl border border-line bg-white p-3 sm:grid-cols-[1.2fr_1fr_1fr_auto] sm:items-end">
+          <li key={index} className="grid grid-cols-1 gap-3 rounded-2xl border border-line bg-white p-3 sm:grid-cols-[1.2fr_1fr_1fr_auto] sm:items-end">
             <div className="flex items-end gap-2 sm:contents">
               <Field label={`Subject ${index + 1}`}>
                 <input
@@ -372,11 +372,11 @@ function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSub
       ) : used.length === 0 ? (
         <Hint>Enter your marks in at least one subject to see the percentages.</Hint>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <ResultPanel label={`Total percentage · ${round2(totalGot)} out of ${round2(totalMax)}`} value={`${round2((totalGot / totalMax) * 100)}%`}>
             {used.length === 1 ? "Based on 1 subject." : `Added up over ${used.length} subjects, not an average of the subject percentages.`}
           </ResultPanel>
-          <ul className="m-0 grid list-none gap-2 p-0">
+          <ul className="m-0 grid grid-cols-1 list-none gap-2 p-0">
             {used.map((r) => {
               const pct = (r.got / r.max) * 100;
               return (

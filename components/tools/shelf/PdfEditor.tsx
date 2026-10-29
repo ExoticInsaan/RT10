@@ -115,7 +115,7 @@ export default function PdfEditor() {
 
   if (!sources.length) {
     return (
-      <div className="grid gap-4">
+      <div className="grid grid-cols-1 gap-4">
         {busy ? (
           <Hint>{busy}</Hint>
         ) : (
@@ -132,7 +132,7 @@ export default function PdfEditor() {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="m-0 min-w-0 text-sm text-navy">
           <strong className="block truncate">{sources[0].name}</strong>
@@ -158,7 +158,7 @@ export default function PdfEditor() {
       {items.length === 0 ? (
         <Hint>Every page has been removed. Add a page, or start over.</Hint>
       ) : (
-        <ol className="m-0 grid list-none grid-cols-2 gap-4 p-0 sm:grid-cols-3 md:grid-cols-4">
+        <ol className="m-0 grid grid-cols-1 list-none grid-cols-2 gap-4 p-0 sm:grid-cols-3 md:grid-cols-4">
           {items.map((item, index) => (
             <PageCard
               key={item.key}
@@ -210,7 +210,7 @@ function AddPanel({
   const position = after === "end" ? pageCount : Math.min(after, pageCount);
 
   return (
-    <div className="grid gap-4 rounded-2xl bg-surface p-5">
+    <div className="grid grid-cols-1 gap-4 rounded-2xl bg-surface p-5">
       <p className="m-0 text-base font-bold text-navy">Add pages</p>
       <Segmented
         label="What to add"
@@ -222,7 +222,7 @@ function AddPanel({
           { value: "pdf", label: "Pages from a PDF" },
         ]}
       />
-      <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
         <Field label="Where">
           <select
             className={inputClass}
@@ -300,7 +300,7 @@ function PageCard({
   const turned = item.page.rotate % 180 !== 0;
   const label = item.page.kind === "blank" ? "Blank page" : item.page.kind === "image" ? "Photo page" : `Page ${number}`;
   return (
-    <li className="grid gap-2 rounded-2xl border border-line bg-white p-2.5">
+    <li className="grid grid-cols-1 gap-2 rounded-2xl border border-line bg-white p-2.5">
       <div className="relative grid aspect-[3/4] place-items-center overflow-hidden rounded-xl bg-surface">
         {item.thumb ? (
           // eslint-disable-next-line @next/next/no-img-element -- a preview drawn in the browser from the visitor's own PDF

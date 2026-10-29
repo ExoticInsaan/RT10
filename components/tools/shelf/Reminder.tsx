@@ -130,9 +130,9 @@ export default function Reminder() {
   if (status === "error") return <p className="m-0 py-16 text-center text-sm text-muted">Could not load your reminders. Please refresh the page.</p>;
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-6">
+    <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       {due.length > 0 && (
-        <div className="grid gap-2" role="alert">
+        <div className="grid grid-cols-1 gap-2" role="alert">
           {due.map((i) => (
             <div key={i.id} className="flex items-center gap-3 rounded-2xl bg-amber-100 px-5 py-4">
               <span className="text-2xl" aria-hidden="true">⏰</span>
@@ -153,7 +153,7 @@ export default function Reminder() {
       )}
 
       <form
-        className="grid gap-4 rounded-2xl bg-surface p-5 sm:grid-cols-2"
+        className="grid grid-cols-1 gap-4 rounded-2xl bg-surface p-5 sm:grid-cols-2"
         onSubmit={(event) => {
           event.preventDefault();
           add();
@@ -186,7 +186,7 @@ export default function Reminder() {
       {items.length === 0 ? (
         <Hint>Your reminders appear here and are saved to your account.</Hint>
       ) : (
-        <div className="grid gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {upcoming.length > 0 && <List title="Coming up" items={upcoming} now={now} onRemove={(id) => setItems(items.filter((i) => i.id !== id))} />}
           {done.length > 0 && (
             <List title="Past" items={[...done].reverse()} now={now} past onRemove={(id) => setItems(items.filter((i) => i.id !== id))} />
@@ -201,7 +201,7 @@ function List({ title, items, now, past = false, onRemove }: { title: string; it
   return (
     <section>
       <h3 className="mb-3 mt-0 text-base font-bold text-navy">{title}</h3>
-      <ul className="m-0 grid list-none gap-2 p-0">
+      <ul className="m-0 grid grid-cols-1 list-none gap-2 p-0">
         {items.map((i) => (
           <li key={i.id} className={`rounded-2xl border border-line bg-white px-5 py-4 ${past ? "opacity-70" : ""}`}>
             <div className="flex items-start gap-3">
