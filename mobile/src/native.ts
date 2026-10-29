@@ -91,17 +91,23 @@ function handleBackButton() {
   });
 }
 
-const bars: [RegExp, string, Style][] = [
-  [/^\/(fun|onboard\/2)$|^\/tool\/(decision-wheel|would-you-rather|grow-a-sapling|friendship-score|what-am-i-to-you|how-well-do-you-know-me|how-cooked|excuse-generator|roast-my-timetable|vibe-check)$/, "#6d28d9", Style.Dark],
-  [/^\/signin$/, "#102a4c", Style.Dark],
+/** Our Android plugin (SystemUiPlugin.java): colours the strips behind the status bar and the navigation keys. */
+const SystemUi = registerPlugin<{ setBars(o: { top: string; bottom: string }): Promise<void> }>("SystemUi");
+
+// [screens, colour behind the status bar, colour behind the navigation bar, status bar icon style]
+const bars: [RegExp, string, string, Style][] = [
+  [/^\/(fun|onboard\/2)$|^\/tool\/(decision-wheel|would-you-rather|grow-a-sapling|friendship-score|what-am-i-to-you|how-well-do-you-know-me|how-cooked|excuse-generator|roast-my-timetable|vibe-check)$/, "#6d28d9", "#f97316", Style.Dark],
+  [/^\/signin$/, "#102a4c", "#102a4c", Style.Dark],
 ];
 
-/** Colour the Android status bar to match the screen under it. */
+/** Colour the strips behind the phone's own status bar and navigation bar to match the screen between them. */
 export function setStatusBar(path: string) {
   if (!isNative) return;
   const hit = bars.find(([re]) => re.test(path));
-  void StatusBar.setBackgroundColor({ color: hit ? hit[1] : "#fffbf7" }).catch(() => {});
-  void StatusBar.setStyle({ style: hit ? hit[2] : Style.Light }).catch(() => {});
+  const [top, bottom, style] = hit ? [hit[1], hit[2], hit[3]] : ["#fffbf7", "#fffbf7", Style.Light];
+  void SystemUi.setBars({ top, bottom }).catch(() => {});
+  void StatusBar.setBackgroundColor({ color: top }).catch(() => {});
+  void StatusBar.setStyle({ style }).catch(() => {});
 }
 
 export function initNative() {
