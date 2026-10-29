@@ -15,16 +15,38 @@ const StoryShare = registerPlugin<{
   shareImage(o: { uri: string; text?: string; title?: string }): Promise<void>;
 }>("StoryShare");
 
+/** Where a download was saved. Sent to the "Saved" message (components/SavedToast.tsx). */
+export type SavedFile = { uri: string; name: string; folder: "Downloads" | "Pictures"; mimeType: string };
+export const SAVED_EVENT = "ts-saved";
+
+/** Our own Android plugin (android/app/src/main/java/online/toppershelf/app/DownloadsPlugin.java). */
+const Downloads = registerPlugin<{
+  save(o: { data: string; filename: string; mimeType: string }): Promise<Omit<SavedFile, "mimeType">>;
+  open(o: { uri: string; mimeType: string }): Promise<void>;
+  share(o: { uri: string; mimeType: string }): Promise<void>;
+}>("Downloads");
+
+export const openSaved = (f: SavedFile) => Downloads.open({ uri: f.uri, mimeType: f.mimeType });
+export const shareSaved = (f: SavedFile) => Downloads.share({ uri: f.uri, mimeType: f.mimeType });
+
+const MIME: Record<string, string> = {
+  pdf: "application/pdf", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", gif: "image/gif",
+  txt: "text/plain", csv: "text/csv", json: "application/json", zip: "application/zip",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+};
+const mimeFor = (blob: Blob, filename: string) => blob.type || MIME[filename.split(".").pop()?.toLowerCase() ?? ""] || "application/octet-stream";
 
 /**
  * Android's WebView ignores `<a download>` on blob links, and the PDF and image tools save files that way.
- * On the phone, a click on such a link writes the file to the app cache and opens the Share sheet (Save to Files, Drive, WhatsApp…).
+ * On the phone, a click on such a link saves the file to the phone (Downloads, or Pictures for images) and shows a
+ * "Saved" message with Open and Share. On Android 9 and older, or if saving fails, it opens the Share sheet instead.
  */
 function handleBlobDownloads() {
   const original = HTMLAnchorElement.prototype.click;
   HTMLAnchorElement.prototype.click = function patched(this: HTMLAnchorElement) {
     if (this.download && this.href.startsWith("blob:")) {
-      void saveAndShare(this.href, this.download);
+      void saveDownload(this.href, this.download);
       return;
     }
     original.call(this);
@@ -40,10 +62,18 @@ function blobToBase64(blob: Blob) {
   });
 }
 
-async function saveAndShare(url: string, filename: string) {
+async function saveDownload(url: string, filename: string) {
   try {
     const blob = await (await fetch(url)).blob();
     const data = await blobToBase64(blob);
+    const mimeType = mimeFor(blob, filename);
+    try {
+      const saved = await Downloads.save({ data, filename, mimeType });
+      window.dispatchEvent(new CustomEvent<SavedFile>(SAVED_EVENT, { detail: { ...saved, mimeType } }));
+      return;
+    } catch {
+      /* Android 9 or older, or the phone refused: use the Share sheet below */
+    }
     const saved = await Filesystem.writeFile({ path: filename, data, directory: Directory.Cache });
     await Share.share({ title: filename, url: saved.uri, dialogTitle: "Save or share" });
   } catch {

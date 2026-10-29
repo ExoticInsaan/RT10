@@ -8,6 +8,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(StorySharePlugin.class);
+        registerPlugin(DownloadsPlugin.class); // saves downloads to Downloads / Pictures
         super.onCreate(savedInstanceState);
     }
 }

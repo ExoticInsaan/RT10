@@ -9,7 +9,10 @@ The website (Next.js, Vercel) is untouched.
 - `src/shims/` replaces `next/image`, `next/link`, `next/dynamic`, `next/navigation`, `next/font` and the website's
   `AuthProvider` / Supabase client so the shared components run in a plain static bundle.
 - Everything is bundled in the app: images, fonts and tools open offline. Sign-in and account data (flashcards, reminders, countdowns) need internet.
-- `src/native.ts`: Android back button, status-bar colours, and file saving (PDF/image downloads open the Share sheet).
+- `src/native.ts`: Android back button, status-bar colours, and file saving. Downloads (PDFs, edited images, Fun Zone cards) are saved
+  to the phone by our own plugin, `android/.../DownloadsPlugin.java`: images go to `Pictures/TopperShelf`, everything else to
+  `Download/TopperShelf`, using MediaStore, so no storage permission is needed on Android 10+. A "Saved" message with Open and Share
+  appears (`src/components/SavedToast.tsx`). On Android 9 and older the plugin declines and the Share sheet opens instead.
 
 ## First-time setup
 ```bash

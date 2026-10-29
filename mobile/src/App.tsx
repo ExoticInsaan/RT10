@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import AccountListsSync from "@/components/AccountListsSync";
 import AuthProvider from "@/components/AuthProvider";
 import BottomNav, { TAB_PATHS } from "./components/BottomNav";
+import SavedToast from "./components/SavedToast";
 import { setStatusBar } from "./native";
 import { usePath } from "./shims/router";
 import FunZone from "./screens/FunZone";
@@ -47,6 +48,7 @@ export default function App() {
       <div className="relative mx-auto h-dvh w-full max-w-[480px] overflow-hidden bg-ivory text-navy">
         <Screen key={path} path={path} />
         {TAB_PATHS.includes(path) && <BottomNav path={path} />}
+        <SavedToast />
       </div>
     </AuthProvider>
   );
