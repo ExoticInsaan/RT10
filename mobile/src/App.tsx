@@ -10,7 +10,7 @@ import { usePath } from "./shims/router";
 import FunZone from "./screens/FunZone";
 import Home from "./screens/Home";
 import MyShelf from "./screens/MyShelf";
-import { Onboard1, Onboard2 } from "./screens/Onboard";
+import { Onboard1, Onboard2, Onboard3 } from "./screens/Onboard";
 import Settings from "./screens/Settings";
 import Shelf from "./screens/Shelf";
 import SignIn from "./screens/SignIn";
@@ -24,6 +24,8 @@ function Screen({ path }: { path: string }) {
       return <Onboard1 />;
     case "/onboard/2":
       return <Onboard2 />;
+    case "/onboard/3":
+      return <Onboard3 />;
     case "/signin":
       return <SignIn />;
     case "/home":

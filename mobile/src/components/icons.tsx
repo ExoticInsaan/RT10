@@ -14,6 +14,10 @@ export const SparkIcon = ({ size = 24, ...p }: P) =>
   base(size, <><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" /><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z" /></>, p);
 export const HeartIcon = ({ size = 24, filled, ...p }: P & { filled?: boolean }) =>
   base(size, <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" fill={filled ? "currentColor" : "none"} />, p);
+export const BellIcon = ({ size = 24, ...p }: P) => base(size, <><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /></>, p);
+export const OfflineIcon = ({ size = 24, ...p }: P) =>
+  base(size, <><path d="M1 1l22 22" /><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" /><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" /><path d="M10.71 5.05A16 16 0 0 1 22.58 9" /><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" /><path d="M8.53 16.11a6 6 0 0 1 6.95 0" /><path d="M12 20h.01" /></>, p);
+export const CloudIcon = ({ size = 24, ...p }: P) => base(size, <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />, p);
 export const UserIcon = ({ size = 22, ...p }: P) => base(size, <><circle cx="12" cy="8" r="4" /><path d="M4 22c1-5 3.7-7 8-7s7 2 8 7" /></>, p);
 export const SearchIcon = ({ size = 20, ...p }: P) => base(size, <><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></>, p);
 export const BackIcon = ({ size = 22, ...p }: P) => base(size, <path d="M15 5l-7 7 7 7" />, p, 2.6);

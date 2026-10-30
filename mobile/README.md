@@ -54,6 +54,11 @@ when the first reminder is added. `ReminderScheduler` re-schedules saved reminde
 clears them on sign-out. The website's Reminder is unchanged. On Android 14+ the exact-alarm permission is off by default, so a reminder
 can arrive a few minutes late on some phones until the person allows "Alarms & reminders" in the app's Android settings.
 
+## First-launch tour
+Splash, then three intro screens (`src/screens/Onboard.tsx`): useful tools, the silly ones, and a third screen with reminders, offline use and
+account sync, where the app asks once to allow notifications (or "Not now"). The choice is the same one as Settings → Notifications, and a
+blocked or skipped permission never stops the tour. Returning people skip the tour.
+
 ## Offline use
 The screens, tools, fonts and images are bundled in the app, so it opens with no internet. Saved tools (Flashcards, Countdown, Reminders)
 use `src/shims/useAccountData.ts` instead of the website's version: they open from a copy kept on the phone, refresh from the account
