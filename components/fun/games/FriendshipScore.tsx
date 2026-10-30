@@ -8,7 +8,7 @@ import CardFriend from "@/components/fun/cards/CardFriend";
 import CardActions from "@/components/fun/CardActions";
 import { GameShell, copyText, useTimers } from "@/components/fun/kit";
 import { SITE_URL } from "@/lib/site";
-import { createLink, getLink, latestLink, linkLabel, linkUrl, listResponses, submitResponse, type FriendAnswer,  } from "@/lib/fun/friends";
+import { createLink, friendRank, getLink, latestLink, linkLabel, linkUrl, listResponses, submitResponse, type FriendAnswer, type FriendRank } from "@/lib/fun/friends";
 import ShareButton from "@/components/fun/ShareButton";
 
 type Phase = "loading" | "missing" | "create" | "share" | "results" | "friendName" | "quiz" | "result";
@@ -88,6 +88,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
   const [error, setError] = useState("");
   const [sent, setSent] = useState<"sending" | "sent" | "error">("sending");
   const [results, setResults] = useState<FriendAnswer[] | null>(null);
+  const [rank, setRank] = useState<FriendRank | null>(null);
   const later = useTimers();
   const raf = useRef(0);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -158,6 +159,10 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
     setSent("sending");
     const r = await submitResponse(friendCode, friendName, { picks: finalPicks, score });
     setSent(r.ok ? "sent" : "error");
+    if (r.ok) {
+      const k = await friendRank(friendCode, friendName);
+      if (k.ok) setRank(k.data);
+    }
   }
 
   function pick(i: number) {
@@ -187,7 +192,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
       }
     }, 420);
   }
-  const startQuiz = () => { setPhase("quiz"); setQ(0); setPicks([]); setSel(-1); setShown(0); };
+  const startQuiz = () => { setRank(null); setPhase("quiz"); setQ(0); setPicks([]); setSel(-1); setShown(0); };
 
   const shellProps = {
     gradient: "linear-gradient(150deg,#0ea5e9 0%,#6366f1 55%,#d946ef 100%)",
@@ -342,6 +347,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
               <div className="text-xs font-black tracking-[.12em] text-[#0284c7]">A FRIENDSHIP TEST FROM</div>
               <div className="break-words font-display text-[40px] leading-none">{meName}</div>
               <div className="text-[15px] leading-[1.4] text-[#3d5a80]">Answer 8 quick questions about you two. Be honest. {meName} will see the score.</div>
+              <div className="text-[13px] leading-[1.4] text-[#3d5a80]">Your name and score can also be seen by other friends who answer this link.</div>
               <label htmlFor="fs-friend" className="mt-1.5 text-sm font-bold text-[#3d5a80]">Your name</label>
               <input
                 id="fs-friend"
@@ -405,6 +411,26 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
       <p role="status" className={`m-0 text-center text-[13px] font-bold ${sent === "error" ? "text-[#b91c1c]" : "text-[#3d5a80]"}`}>
         {sent === "sending" ? `Sending your answers to ${meName}…` : sent === "sent" ? `${meName} can now see your score.` : `Could not send your answers to ${meName}.`}
       </p>
+      {sent === "sent" && rank && (
+        <div className="flex flex-col gap-2 rounded-2xl bg-white p-4 shadow-[0_4px_0_#dbeafe]" role="status">
+          <div className="text-xs font-black tracking-[.12em] text-[#0284c7]">YOUR RANK</div>
+          <div className="font-display text-[28px] leading-none">#{rank.rank} of {rank.total} {rank.total === 1 ? "friend" : "friends"}</div>
+          {rank.ahead === 0 ? (
+            <div className="text-sm text-[#3d5a80]">{rank.total > 1 ? "Nobody beats you." : `You are the first to answer for ${meName}.`}</div>
+          ) : (
+            <>
+              <div className="text-sm text-[#3d5a80]">Ahead of you:</div>
+              {rank.above.map((a) => (
+                <div key={a.name + a.score} className="flex items-center justify-between gap-3 text-sm font-extrabold">
+                  <span className="min-w-0 truncate">{a.name}</span>
+                  <span className="font-display text-lg">{a.score}</span>
+                </div>
+              ))}
+              {rank.ahead > rank.above.length && <div className="text-[13px] text-[#3d5a80]">and {rank.ahead - rank.above.length} more</div>}
+            </>
+          )}
+        </div>
+      )}
       <CardActions
         getNode={() => cardRef.current}
         fileName="friendship-score-toppershelf.png"
@@ -417,7 +443,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
         {sent === "error" ? (
           <button type="button" className={ghost} onClick={() => void send(picks, friendScore(meName, picks))}>Try sending again</button>
         ) : (
-          <button type="button" className={ghost} onClick={startQuiz}>Answer again</button>
+          <button type="button" className={ghost} onClick={startQuiz}>{rank && rank.ahead > 0 ? "Retry to climb" : "Answer again"}</button>
         )}
         <Link className={`${fzBtn} !min-h-[52px] !text-[15px]`} href="/tool/friendship-score">Make your own</Link>
       </div>
