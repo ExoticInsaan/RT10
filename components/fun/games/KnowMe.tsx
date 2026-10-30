@@ -146,13 +146,18 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
       return;
     }
     const at = q;
-    if (friendCode) {
-      void knowCheck(friendCode, at, i).then((r) => {
-        const right = r.ok && r.data !== null ? r.data : -1;
-        setRevealed((a) => { const n = [...a]; n[at] = right; return n; });
-      });
-    }
-    later(() => {
+    // The right answer comes from the server, so it arrives a moment after the tap. Until then the chosen option
+    // stays neutral (see `checking` below); it must never show "NOPE" before we know.
+    const check = friendCode
+      ? knowCheck(friendCode, at, i).then((r) => {
+          const right = r.ok && r.data !== null ? r.data : -1;
+          setRevealed((a) => { const n = [...a]; n[at] = right; return n; });
+        })
+      : Promise.resolve();
+    // Move on after at least 1.1 s, but wait for the answer to show (up to 4 s on a slow connection).
+    const shown = new Promise<void>((done) => later(done, 1100));
+    const giveUp = new Promise<void>((done) => later(done, 4000));
+    void Promise.race([Promise.all([check, shown]), giveUp]).then(() => {
       const next = [...guesses, i];
       setGuesses(next);
       setSel(-1);
@@ -160,7 +165,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
         void sendGuesses(next);
         setPhase("score");
       } else setQ(q + 1);
-    }, 1100);
+    });
   }
   const startGuess = () => { setPhase("quiz"); setMode("guess"); setQ(0); setGuesses([]); setRevealed([]); setSel(-1); };
 
@@ -236,7 +241,9 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
     const qText = own ? cur[0] : cur[0].replace(/\bMy\b/, meName + "’s").replace(/\bI\b/, meName).replace(/\bme\b/, meName);
     let feedback = "";
     let fbBad = false;
-    if (!own && sel >= 0 && correct !== undefined) {
+    // Friend side: the person has tapped but the server has not told us the right answer yet (or the check failed).
+    const checking = !own && sel >= 0 && (correct === undefined || correct < 0);
+    if (!own && sel >= 0 && correct !== undefined && correct >= 0) {
       if (sel === correct) feedback = ["Nailed it!", `You really know ${meName}.`, "Correct!"][q % 3];
       else { feedback = "Not quite!"; fbBad = true; }
     }
@@ -249,7 +256,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
         <div className="grid grid-cols-10 gap-1">
           {Array.from({ length: 10 }, (_, i) => {
             let c = i === q ? "#5eead4" : "#cdeef4";
-            if (i < q) c = own ? "#0f9f8f" : revealed[i] === undefined ? "#5eead4" : guesses[i] === revealed[i] ? "#16a34a" : "#e11d48";
+            if (i < q) c = own ? "#0f9f8f" : revealed[i] === undefined || revealed[i] < 0 ? "#5eead4" : guesses[i] === revealed[i] ? "#16a34a" : "#e11d48";
             return <div key={i} className="h-2 rounded-full transition-[background] duration-300" style={{ background: c }} />;
           })}
         </div>
@@ -263,6 +270,12 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
               if (sel >= 0) {
                 if (own) {
                   if (i === sel) cls = "border-[#0f9f8f] bg-[#ccfbf1] shadow-[0_4px_0_#d5eef3]";
+                } else if (checking) {
+                  if (i === sel) {
+                    cls = "border-[#3b82f6] bg-[#dbeafe] shadow-[0_4px_0_#bfdbfe]";
+                    tag = correct === undefined ? "CHECKING…" : "";
+                    tagC = "#3b82f6";
+                  }
                 } else if (i === correct) {
                   cls = "border-[#16a34a] bg-[#dcfce7] shadow-[0_4px_0_#86efac]";
                   tag = i === sel ? "CORRECT" : meName.toUpperCase() + "’S PICK";
