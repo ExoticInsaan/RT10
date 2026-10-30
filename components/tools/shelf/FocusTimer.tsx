@@ -96,6 +96,18 @@ export default function FocusTimer() {
     setRemaining(lengthOf(next));
   }, [phase, round, settings.rounds, doneToday, notify, lengthOf]);
 
+  // Tells anything listening (the Android app schedules a phone notification for the end time) when the timer starts or stops.
+  // The website has no listener, so nothing happens there.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("toppershelf:focus-timer", { detail: { endAt, phase } }));
+  }, [endAt, phase]);
+  useEffect(
+    () => () => {
+      window.dispatchEvent(new CustomEvent("toppershelf:focus-timer", { detail: { endAt: null, phase: "focus" } }));
+    },
+    [],
+  );
+
   // Count against the clock, not by counting ticks, so the time stays right when the tab sleeps.
   useEffect(() => {
     if (endAt === null) {

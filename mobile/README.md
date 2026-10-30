@@ -54,6 +54,11 @@ when the first reminder is added. `ReminderScheduler` re-schedules saved reminde
 clears them on sign-out. The website's Reminder is unchanged. On Android 14+ the exact-alarm permission is off by default, so a reminder
 can arrive a few minutes late on some phones until the person allows "Alarms & reminders" in the app's Android settings.
 
+## Focus Timer notification
+While the Focus Timer runs, the app schedules one phone notification for its end time (`src/focusTimer.ts`), so the person is told with the
+screen locked or the app closed. The shared timer announces start and stop with a `toppershelf:focus-timer` event (the website ignores it).
+There is one fixed notification id, so a new start replaces the old alert and pause, skip or leaving the screen cancels it. No early warning.
+
 ## First-launch tour
 Splash, then three intro screens (`src/screens/Onboard.tsx`): useful tools, the silly ones, and a third screen with reminders, offline use and
 account sync, where the app asks once to allow notifications (or "Not now"). The choice is the same one as Settings → Notifications, and a
