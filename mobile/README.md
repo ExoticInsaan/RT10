@@ -102,3 +102,12 @@ Phone checklist: Google sign-in works, a game opens, an image or PDF saves throu
 Settings opens from the Home account icon, Delete my account works (use a throwaway Google account), and favourites follow you to another device.
 Before sign-in works, add `online.toppershelf.app://auth` under Supabase → Authentication → URL Configuration → Redirect URLs.
 Notifications also need `google-services.json` in `mobile/android/app/` (see the Firebase section above).
+
+## Home-screen widget: Days left
+A 2x2 widget (resizable) that shows the next upcoming countdown as a big number of days, plus the one after it. It needs **no permission**
+and no Play Console declaration. The app hands the saved countdowns to the widget with our own plugin (`CountdownWidgetPlugin.java`, called
+from `src/widget.ts`): at launch and on sign-out by `components/CountdownWidgetSync.tsx`, and whenever the list changes by an event the shared
+Countdown tool sends (`toppershelf:countdowns`, ignored by the website). The widget (`CountdownWidgetProvider.java`) stores the list in the app's
+private preferences and works out "days left" itself each time it draws, so it needs no network or background work. Android redraws it about
+once an hour, so after midnight it can show yesterday's number for up to an hour. Signing out empties it. Tapping it opens the app. The
+Countdown screen in the app shows a one-line tip on how to add the widget.

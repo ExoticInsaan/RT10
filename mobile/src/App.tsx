@@ -3,6 +3,7 @@ import AccountListsSync from "@/components/AccountListsSync";
 import AuthProvider from "@/components/AuthProvider";
 import BottomNav, { TAB_PATHS } from "./components/BottomNav";
 import OfflineBanner from "./components/OfflineBanner";
+import CountdownWidgetSync from "./components/CountdownWidgetSync";
 import ReminderScheduler from "./components/ReminderScheduler";
 import SavedToast from "./components/SavedToast";
 import { setStatusBar } from "./native";
@@ -50,6 +51,7 @@ export default function App() {
     <AuthProvider>
       <AccountListsSync />
       <ReminderScheduler />
+      <CountdownWidgetSync />
       <div className="relative mx-auto h-dvh w-full max-w-[480px] overflow-hidden bg-ivory text-navy">
         <Screen key={path} path={path} />
         {TAB_PATHS.includes(path) && <BottomNav path={path} />}

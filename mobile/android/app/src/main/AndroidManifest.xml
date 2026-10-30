@@ -39,6 +39,14 @@
             android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- Home-screen widget: days left until the next countdown (CountdownWidgetProvider.java). Needs no permission. -->
+        <receiver android:name=".CountdownWidgetProvider" android:exported="false" android:label="@string/widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/countdown_widget_info" />
+        </receiver>
     </application>
 
     <!-- Android 11+: lets the app see whether Instagram and WhatsApp are installed, for the Story and Status buttons -->

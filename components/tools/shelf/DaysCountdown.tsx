@@ -37,6 +37,11 @@ export default function DaysCountdown() {
     return () => clearInterval(timer);
   }, []);
 
+  // Tells anything listening (the Android app keeps its home-screen widget up to date) the saved countdowns. The website ignores it.
+  useEffect(() => {
+    if (status === "ready") window.dispatchEvent(new CustomEvent("toppershelf:countdowns", { detail: items }));
+  }, [items, status]);
+
   function add() {
     if (!title.trim()) return setError("Give the countdown a name, like “Physics exam”.");
     if (!date) return setError("Pick a date.");

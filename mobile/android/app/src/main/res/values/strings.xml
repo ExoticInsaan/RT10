@@ -4,4 +4,12 @@
     <string name="title_activity_main">TopperShelf</string>
     <string name="package_name">online.toppershelf.app</string>
     <string name="custom_url_scheme">online.toppershelf.app</string>
+    <string name="widget_label">Days left</string>
+    <string name="widget_description">Shows how many days are left until your next countdown.</string>
+    <string name="widget_empty">Tap to add one</string>
+    <string name="widget_empty_description">No countdown yet. Tap to open TopperShelf.</string>
+    <string name="widget_today">Today!</string>
+    <string name="widget_day_left">day left</string>
+    <string name="widget_days_left">days left</string>
+    <string name="widget_next">Next: %1$s · %2$dd</string>
 </resources>

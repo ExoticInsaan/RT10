@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android refreshes the widget about once an hour (its own minimum is 30 minutes) and whenever the app saves a new list. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_description"
+    android:initialLayout="@layout/widget_countdown"
+    android:minHeight="110dp"
+    android:minWidth="110dp"
+    android:previewLayout="@layout/widget_countdown"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellHeight="2"
+    android:targetCellWidth="2"
+    android:updatePeriodMillis="3600000"
+    android:widgetCategory="home_screen" />

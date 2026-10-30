@@ -6,6 +6,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { toolById } from "@/lib/tools/registry";
 import { useStoredList } from "@/lib/tools/useStoredList";
 import AppReminder from "../components/AppReminder";
+import WidgetTip from "../components/WidgetTip";
 import { BackIcon } from "../components/icons";
 import { back } from "../shims/router";
 
@@ -52,6 +53,7 @@ export default function ToolScreen({ id }: { id: string }) {
   return (
     <Frame fun={false} backLabel="The Shelf" title={tool.name}>
       {signedIn ? <div className="rounded-3xl border border-[#e8e4dd] bg-white p-4 shadow-card">{Shelf && <Shelf />}</div> : gate}
+      {signedIn && id === "days-countdown" && <WidgetTip />}
     </Frame>
   );
 }
