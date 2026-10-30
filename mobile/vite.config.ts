@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
@@ -29,8 +29,22 @@ function pdfWorker(): Plugin {
   };
 }
 
+/** Fail the build loudly if the Supabase keys are missing, so a release can never ship with sign-in broken. */
+function requireSupabaseEnv(): Plugin {
+  return {
+    name: "require-supabase-env",
+    apply: "build",
+    config(_, { mode }) {
+      const env = { ...loadEnv(mode, here, "VITE_"), ...process.env };
+      if (env.VITE_MOCK_USER) return;
+      const missing = ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"].filter((k) => !env[k]);
+      if (missing.length) throw new Error(`Missing ${missing.join(", ")}. Copy mobile/.env.example to mobile/.env before building.`);
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [pdfWorker(), react(), tailwindcss()],
+  plugins: [requireSupabaseEnv(), pdfWorker(), react(), tailwindcss()],
   base: "./",
   define: { __APP_VERSION__: JSON.stringify(appVersion) },
   resolve: {
