@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import AccountListsSync from "@/components/AccountListsSync";
 import AuthProvider from "@/components/AuthProvider";
 import BottomNav, { TAB_PATHS } from "./components/BottomNav";
+import OfflineBanner from "./components/OfflineBanner";
 import ReminderScheduler from "./components/ReminderScheduler";
 import SavedToast from "./components/SavedToast";
 import { setStatusBar } from "./native";
@@ -51,6 +52,7 @@ export default function App() {
         <Screen key={path} path={path} />
         {TAB_PATHS.includes(path) && <BottomNav path={path} />}
         <SavedToast />
+        <OfflineBanner />
       </div>
     </AuthProvider>
   );

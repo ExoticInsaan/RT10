@@ -42,6 +42,8 @@ export default defineConfig({
       { find: /^next\/font\/google$/, replacement: shim("next-font.ts") },
       { find: /^@\/lib\/supabase\/client$/, replacement: shim("supabase-client.ts") },
       { find: /^@\/components\/AuthProvider$/, replacement: shim("AuthProvider.tsx") },
+      // Offline-capable saving for Flashcards, Countdown and Reminders (the website keeps its own online-only version).
+      { find: /^@\/lib\/tools\/useAccountData$/, replacement: shim("useAccountData.ts") },
       { find: /^@\//, replacement: root + "/" },
       { find: /^react$/, replacement: mod("react") },
       { find: /^react\/(.*)$/, replacement: mod("react") + "/$1" },

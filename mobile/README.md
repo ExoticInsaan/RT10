@@ -54,6 +54,14 @@ when the first reminder is added. `ReminderScheduler` re-schedules saved reminde
 clears them on sign-out. The website's Reminder is unchanged. On Android 14+ the exact-alarm permission is off by default, so a reminder
 can arrive a few minutes late on some phones until the person allows "Alarms & reminders" in the app's Android settings.
 
+## Offline use
+The screens, tools, fonts and images are bundled in the app, so it opens with no internet. Saved tools (Flashcards, Countdown, Reminders)
+use `src/shims/useAccountData.ts` instead of the website's version: they open from a copy kept on the phone, refresh from the account
+when online, and changes made offline are saved on the phone first and sent when the internet or the app comes back (the phone's waiting
+changes are never overwritten by an older account copy). `src/shims/AuthProvider.tsx` reads the login from the phone, so the app does
+not look signed out offline. Copies on the phone are removed on sign-out. A small "You're offline" notice shows while there is no
+connection. Friend games, sign-in and the account-deletion call still need the internet. The website is unchanged.
+
 ## Settings and account deletion
 
 The Settings screen (Home → account icon) is app-only. "Delete my account" calls the `delete-account` Supabase Edge Function
