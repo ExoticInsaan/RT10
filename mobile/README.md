@@ -51,8 +51,12 @@ The Reminder tool in the app (`src/components/AppReminder.tsx`) schedules a real
 `@capacitor/local-notifications` (`src/reminders.ts`). It fires at the chosen time even when the app is closed, survives a phone restart,
 and tapping it opens the Reminder screen. The calendar buttons are not shown in the app. Android 13+ asks for notification permission
 when the first reminder is added. `ReminderScheduler` re-schedules saved reminders at launch (for example ones added on another phone) and
-clears them on sign-out. The website's Reminder is unchanged. On Android 14+ the exact-alarm permission is off by default, so a reminder
-can arrive a few minutes late on some phones until the person allows "Alarms & reminders" in the app's Android settings.
+clears them on sign-out. The website's Reminder is unchanged.
+
+Play Store: the app does **not** use the exact-alarm permission (Google Play restricts it to alarm-clock and calendar apps, and Android 14+ also
+sends people to a settings page to grant it). The notifications plugin adds `SCHEDULE_EXACT_ALARM` by itself, so `AndroidManifest.xml` removes it
+(`tools:node="remove"`) and every notification is scheduled with `isExactNotification: false`. Android still delivers each one while the phone
+is idle, normally close to the chosen time, but it is not guaranteed to the second and can be later on phones in deep battery saving.
 
 ## Focus Timer notification
 While the Focus Timer runs, the app schedules one phone notification for its end time (`src/focusTimer.ts`), so the person is told with the

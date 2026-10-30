@@ -46,6 +46,7 @@ async function apply({ endAt, phase }: Detail) {
           smallIcon: "ic_stat_toppershelf",
           iconColor: "#2563eb",
           schedule: { at: new Date(endAt), allowWhileIdle: true },
+          isExactNotification: false, // no exact-alarm permission needed (see README: Play Store)
           extra: { kind: "focus-timer", path: "/tool/focus-timer" },
         },
       ],

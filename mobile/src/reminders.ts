@@ -82,6 +82,7 @@ export async function syncReminders(items: ReminderItem[]) {
           smallIcon: "ic_stat_toppershelf",
           iconColor: "#2563eb",
           schedule: { at: new Date(i.at), allowWhileIdle: true },
+          isExactNotification: false, // no exact-alarm permission needed (see README: Play Store)
           extra: { kind: KIND, path: "/tool/reminder" },
         })),
       });
