@@ -38,7 +38,7 @@ function requireSupabaseEnv(): Plugin {
       const env = { ...loadEnv(mode, here, "VITE_"), ...process.env };
       if (env.VITE_MOCK_USER) return;
       const missing = ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"].filter((k) => !env[k]);
-      if (missing.length) throw new Error(`Missing ${missing.join(", ")}. Copy mobile/.env.example to mobile/.env before building.`);
+      if (missing.length) throw new Error(`Missing ${missing.join(", ")}. Check mobile/.env.production.`);
     },
   };
 }
