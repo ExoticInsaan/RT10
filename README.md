@@ -33,24 +33,27 @@ TopperShelf is a free, fast tools website for everyone: student tools, document 
 
 | Area | Status |
 | --- | --- |
-| Tool registry (`lib/tools/registry.ts`, 18 tools in 7 categories) | Done |
-| Home, All Tools (search and category filter), tool page, Fun Zone, My Tools | Done |
-| Bottom mobile navigation (Home, Tools, Fun, My Tools), dark mode | Done |
-| Google sign-in with a popup on the tool page (`AuthProvider`, `AuthPanel`) | Done |
-| Sign-in gate on tools (`ToolGate`): anyone can open a page, signing in runs the tool | Done |
-| Fun Zone tools: How cooked are you?, Excuse Generator, Roast My Timetable, Instant Vibe Check | Done (run and produce a result) |
-| Share cards: 9:16 page plus 1080x1920 PNG (`app/share/[id]`) | Done |
-| Sitemap, robots, JSON-LD on home, 404 page with tool search | Done |
-| Real tool UIs (PDF, image, calculators, text, India, students) | **Not built.** Non-fun tools show "coming soon" after sign-in. |
-| Favourites and recents saved to the user's account | **Not built.** Currently saved in this browser's `localStorage` (`lib/tools/useStoredList.ts`). |
-| Per-tool SEO template (how-to steps, FAQ, FAQ and app structured data, trust note, breadcrumbs) | Done. It fills in from `lib/tools/content.ts`; only the four Fun tools have content so far |
-| Category pages (`/the-shelf/pdf`, `/the-shelf/india-tools` and so on) | Done |
-| `/search` page, feedback and "Request a tool" form | Not built. Contact is a mailto page. |
-| Unfinished tools kept out of Google ("Soon" badge, noindex, not in the sitemap) | Done, controlled by `ready: true` in the registry |
-| Link-preview image | Done (`app/opengraph-image.tsx`) |
-| PWA (install prompt, offline, manifest), Play Store (TWA) | Not built |
+| Website (Next.js, Vercel) at toppershelf.online | Live |
+| Android app (Capacitor, Google Play, `mobile/`) | **Live on Google Play** (see "Android app" below) |
+| Tool registry (`lib/tools/registry.ts`): 18 tools, all marked `ready: true` | Done |
+| Two sections only: **The Shelf** (8 useful tools) and **Fun Zone** (10 playful tools) | Done |
+| Home, The Shelf (All Tools, search and filter), tool page, Fun Zone, My Shelf | Done |
+| Bottom mobile navigation, dark mode | Done |
+| Google sign-in with a popup on the tool page (`AuthProvider`, `AuthPanel`) and the sign-in gate (`ToolGate`) | Done |
+| Real tool screens: PDF Toolkit, Image Compressor, Focus Timer, Flashcard Maker, CGPA & Percentage Calculator, Attendance Calculator, Reminder, Days Countdown | Done (`components/tools/shelf/`) |
+| Fun Zone games and share cards (9:16 page plus 1080x1920 PNG, `app/share/[id]`) | Done |
+| Per-tool SEO template (how-to steps, FAQ, app structured data, trust note, breadcrumbs) | Done, filled from `lib/tools/content.ts` |
+| Sitemap, robots, JSON-LD on home, 404 page with tool search, link-preview image | Done |
+| Old URLs (`/tools`, `/tools/:category`, `/my-tools`, `/the-shelf/:category`) | Redirect permanently (`next.config.ts`) |
+| Account data saved per user in Supabase (Flashcards, Reminders, Countdowns) | Done (`supabase/migrations/0001_user_tool_data.sql`, `lib/tools/useAccountData.ts`) |
+| Friend games and Grow a Sapling saved in Supabase | Done (migrations 0002 to 0005) |
+| In-app account deletion (`delete-account` Edge Function, `/delete-account` page) | Done |
+| Favourites and recents | **Browser only** (`localStorage`, `lib/tools/useStoredList.ts`). Not yet saved to the account, so they do not follow people across devices or between web and app. |
+| PWA (install prompt, offline, manifest) | **Not built** on the website. The Android app is a separate Capacitor build and works offline by itself. |
+| `/search` results page, feedback and "Request a tool" form | Not built. Contact is mailto-based. |
+| Typo and Hinglish tolerant search | Not built. Plain text match today. |
 | Ads | Later, not before traffic is steady |
-| About, Founders, Contact, Privacy, Terms pages | Rewritten for the tools site (Contact is still mailto-based; a feedback form with "Request a tool" is not built) |
+| About, Founders, Contact, Privacy, Terms pages | Done |
 
 ---
 
@@ -69,15 +72,16 @@ TopperShelf is a free, fast tools website for everyone: student tools, document 
 | Route | Purpose |
 | --- | --- |
 | `/` | Home: search, categories, popular tools, Fun Zone teaser, trust strip |
-| `/the-shelf` | All Tools, filter by `?category=` and search with `?q=` |
+| `/the-shelf` | The Shelf: all useful tools, with search (`?q=`) |
 | `/tool/[id]` | One tool page (open to view, sign-in needed to run) |
 | `/fun` | Fun Zone grid |
 | `/share/[id]` and `/share/[id]/image` | Result page and downloadable story card (noindex) |
 | `/my-shelf` | Favourites and recently used (noindex) |
 | `/login`, `/auth/callback` | Sign-in |
+| `/delete-account` | Account deletion page |
 | `/about`, `/founders`, `/contact`, `/privacy`, `/terms` | Info and legal pages. |
 
-The plan document sketches nested URLs such as `/the-shelf/documents/image-to-pdf`. The build uses the flatter `/tool/[id]` plus category pages at `/the-shelf/[category]` (`/the-shelf?category=` still works as a filter on the All Tools page). Keep the flat form unless there is a deliberate decision to change it, because the sitemap and canonicals already use it.
+The plan document sketches nested URLs such as `/tools/pdf/compress-pdf`. The build uses the flatter `/tool/[id]`, and the site has two sections only (The Shelf and Fun Zone), so the old category pages redirect to `/the-shelf` or `/fun`. Keep the flat form unless there is a deliberate decision to change it, because the sitemap and canonicals already use it.
 
 ### Tool page template
 
@@ -100,29 +104,26 @@ Every tool page follows one template so new tools are quick to add: H1 that matc
 | Search | `components/tools/ui.tsx` (`SearchBox`) and `ToolsBrowser`. Plain text match today; typo and Hinglish tolerance still to do. |
 | Tool page template | `app/tool/[id]/page.tsx` plus `ToolGate` |
 | Share-card generator | `components/tools/ShareCard.tsx`, `app/share/[id]/image/route.tsx`, `lib/tools/fun.ts` |
-| File handler (photo, signature and PDF processing in the browser) | To build |
-| Favourites and recents | `useStoredList` (local now, account later) |
+| File handler (PDF and image processing in the browser) | `components/tools/shelf/pdf-engine.ts`, `PdfToolkit.tsx`, `ImageCompressor.tsx` |
+| Favourites and recents | `useStoredList` (this browser only for now; account later). Saved tool data (flashcards, reminders, countdowns) uses `useAccountData`. |
 | SEO engine | Metadata on each page, `app/sitemap.ts` (lists only ready tools and categories with a ready tool), `components/seo/JsonLd.tsx` |
 | Accounts and sign-in | `components/AuthProvider.tsx`, `AuthPanel.tsx`, `lib/supabase/` |
-| PWA layer, feedback form, ad slots | To build |
+| PWA layer (website), feedback form, ad slots | To build |
 
-### Launch set (11 tools, then new ones regularly)
+### Tools today (18, all live)
 
-Only the Fun Zone tools work today. The others are listed as "Soon" until they are built, in this order:
+- **The Shelf (8):** PDF Toolkit, Image Compressor, Focus Timer, Flashcard Maker, CGPA & Percentage Calculator, Attendance Calculator, Reminder, Days Countdown
+- **Fun Zone (10):** Decision Wheel, Would You Rather, Grow a Sapling, Friendship Score, What Am I to You?, How Well Do You Know Me?, How Cooked Are You?, Excuse Generator, Roast My Timetable, Instant Vibe Check
 
-- **Documents:** Photo & Signature Resizer (exact pixels and KB for exam forms), Leave & Application Letter Maker, Image to PDF
-- **Students:** CGPA & Percentage Converter, Attendance Calculator, Marks Needed Calculator, Exam Countdown
-- **Fun Zone (live):** How cooked are you?, Excuse Generator, Roast My Timetable, Instant Vibe Check
-
-Later ideas: Merge and Compress PDF, assignment cover page maker, resume maker, syllabus planner, flashcards.
+Later ideas: Photo & Signature Resizer for exact exam-form sizes, Image to PDF, Leave & Application Letter Maker, Marks Needed Calculator, assignment cover page maker, resume maker, syllabus planner.
 
 ### Build phases
 
 1. Foundation: layout, registry, tool template, search, SEO, sign-in. *(done)*
-2. First tools: one document tool, one student tool and the witty tools to prove the template. *(witty done; photo resizer and CGPA converter next)*
-3. Launch set: the remaining tools in the list above, Fun Zone, About, Contact, Legal.
-4. PWA: install support, offline for simple tools, My Tools saved to the account.
-5. Play Store: wrap the PWA as a TWA, closed testing, then release.
+2. First tools and the witty tools. *(done)*
+3. Launch set: Shelf tools, Fun Zone, About, Contact, Legal. *(done for the 18 tools above)*
+4. PWA on the website: install support, offline for simple tools, favourites saved to the account. *(not started)*
+5. Play Store: **done with Capacitor** (not a TWA). See "Android app".
 6. Growth: 2 to 3 tools a week, guides for SEO, a tool-request leaderboard, ads once traffic is steady.
 
 ### Open decisions
@@ -130,6 +131,20 @@ Later ideas: Merge and Compress PDF, assignment cover page maker, resume maker, 
 - Sign-in method (Google only today; email or phone OTP optional) and whether a visitor may try a tool once before signing in.
 - Ad strategy and timing. If ads, remarketing or Meta Pixel are ever added, add a consent banner first and update the privacy policy.
 - Whether the Fun Zone gets its own sub-brand.
+
+---
+
+## Android app (`mobile/`)
+
+The Play Store app is a **Capacitor** app, not a TWA. It lives in `mobile/` and is a Vite + React + Tailwind build wrapped by Capacitor 8. It reuses the website's tool and game components (`components/fun`, `components/tools/shelf`, `lib/tools`) through small replacements in `mobile/src/shims/` for `next/image`, `next/link`, `next/navigation`, `AuthProvider` and the Supabase client.
+
+- **Bundled, not remote.** All screens, tools, fonts and images are packaged inside the app (`webDir: "dist"`, no `server.url`). It opens instantly and works offline. Sign-in, account data and friend games need the internet.
+- **The website is separate.** Changes to the website go live on Vercel at once. Changes to the app need a new Play Store release (raise `versionCode` in `mobile/android/app/build.gradle`).
+- **App-only features:** onboarding tour, Settings with account deletion, file saving to Downloads and Pictures, Share sheet, push notifications (Firebase), real phone reminders, Focus Timer notification, a "Days left" home-screen widget.
+- **Shared backend:** the same Supabase project as the website. The app returns from Google sign-in through `online.toppershelf.app://auth`.
+- **Do not remove the website.** The app does not load it, but it is the main source of Google and Instagram traffic, it serves iPhone and laptop users, and the app's sign-in and account data still depend on the Supabase project.
+
+Setup, notifications, widget and offline details are in `mobile/README.md`. Release steps (upload key, versionCode, Play Console, Data safety) are in `mobile/RELEASE.md`.
 
 ---
 
@@ -165,18 +180,27 @@ Other commands: `npm run build`, `npm run start`, `npm run lint`, `npm run typec
 | Path | What it is |
 | --- | --- |
 | `app/` | Routes (see the route table) |
-| `components/tools/` | Tool UI: cards, browser, gate, fun runner, share card, My Tools |
+| `components/tools/` | Tool UI: cards, browser, gate, fun runner, share card, My Shelf |
 | `components/shell/` | Header, footer, logo, mobile nav, status pages (404 and error), legal page layout |
 | `components/seo/` | JSON-LD helper |
 | `lib/tools/` | Registry, fun tool logic, stored-list hook |
 | `lib/supabase/` | Browser and server clients |
-| `supabase/migrations/` | SQL migrations (none yet) |
+| `supabase/migrations/` | SQL migrations (0001 to 0005: tool data, Grow a Sapling, friend games, friend rank) |
+| `supabase/functions/` | Edge Functions (`delete-account`) |
+| `components/fun/` | Fun Zone games, friend rooms, share buttons |
+| `components/tools/shelf/` | The Shelf tool screens |
+| `mobile/` | Android app (Capacitor), see "Android app" |
 
 ---
 
 ## Database (Supabase)
 
-The site only needs Supabase Auth today. Planned additions: tables for favourites and recents per user, and tool requests, each with Row Level Security (users read and write only their own rows). Put new SQL in numbered files in `supabase/migrations/`.
+Supabase Auth plus Postgres, shared by the website and the Android app. Every table uses Row Level Security (people read and write only their own rows). SQL lives in numbered files in `supabase/migrations/`:
+
+- `0001_user_tool_data`: saved Flashcards, Reminders and Countdowns per user
+- `0002_grow_a_sapling`, `0003_friend_games`, `0004_fix_fun_links_insert`, `0005_friend_rank`: Fun Zone garden and friend games
+
+Planned: favourites and recents per user, and tool requests. The `delete-account` Edge Function (`supabase/functions/delete-account`) removes a person's saved data and login.
 
 Collect only a name and email at sign-in.
 
@@ -186,6 +210,8 @@ Google only. In Supabase under **Authentication → URL Configuration**:
 
 - Site URL: `https://www.toppershelf.online`
 - Redirect URLs: `https://www.toppershelf.online/auth/callback`, `https://toppershelf.online/auth/callback`
+
+For the Android app also add `online.toppershelf.app://auth` to Redirect URLs.
 
 Google is configured in Google Cloud Console (OAuth client) and in Supabase (**Authentication → Providers → Google**).
 
