@@ -48,7 +48,7 @@ TopperShelf is a free, fast tools website for everyone: student tools, document 
 | Account data saved per user in Supabase (Flashcards, Reminders, Countdowns) | Done (`supabase/migrations/0001_user_tool_data.sql`, `lib/tools/useAccountData.ts`) |
 | Friend games and Grow a Sapling saved in Supabase | Done (migrations 0002 to 0005) |
 | In-app account deletion (`delete-account` Edge Function, `/delete-account` page) | Done |
-| Favourites and recents | **Browser only** (`localStorage`, `lib/tools/useStoredList.ts`). Not yet saved to the account, so they do not follow people across devices or between web and app. |
+| Favourites and recents | Done. Kept on the device first (`lib/tools/useStoredList.ts`) and saved to the signed-in account in table `user_tools` (`components/AccountListsSync.tsx`, website and app), so they follow people across devices. |
 | PWA (install prompt, offline, manifest) | **Not built** on the website. The Android app is a separate Capacitor build and works offline by itself. |
 | `/search` results page, feedback and "Request a tool" form | Not built. Contact is mailto-based. |
 | Typo and Hinglish tolerant search | Not built. Plain text match today. |
@@ -105,7 +105,7 @@ Every tool page follows one template so new tools are quick to add: H1 that matc
 | Tool page template | `app/tool/[id]/page.tsx` plus `ToolGate` |
 | Share-card generator | `components/tools/ShareCard.tsx`, `app/share/[id]/image/route.tsx`, `lib/tools/fun.ts` |
 | File handler (PDF and image processing in the browser) | `components/tools/shelf/pdf-engine.ts`, `PdfToolkit.tsx`, `ImageCompressor.tsx` |
-| Favourites and recents | `useStoredList` (this browser only for now; account later). Saved tool data (flashcards, reminders, countdowns) uses `useAccountData`. |
+| Favourites and recents | `useStoredList` (device copy) plus `AccountListsSync` (account copy in `user_tools`). Saved tool data (flashcards, reminders, countdowns) uses `useAccountData`. |
 | SEO engine | Metadata on each page, `app/sitemap.ts` (lists only ready tools and categories with a ready tool), `components/seo/JsonLd.tsx` |
 | Accounts and sign-in | `components/AuthProvider.tsx`, `AuthPanel.tsx`, `lib/supabase/` |
 | PWA layer (website), feedback form, ad slots | To build |
@@ -122,7 +122,7 @@ Later ideas: Photo & Signature Resizer for exact exam-form sizes, Image to PDF, 
 1. Foundation: layout, registry, tool template, search, SEO, sign-in. *(done)*
 2. First tools and the witty tools. *(done)*
 3. Launch set: Shelf tools, Fun Zone, About, Contact, Legal. *(done for the 18 tools above)*
-4. PWA on the website: install support, offline for simple tools, favourites saved to the account. *(not started)*
+4. PWA on the website: install support and offline for simple tools. *(not started)*
 5. Play Store: **done with Capacitor** (not a TWA). See "Android app".
 6. Growth: 2 to 3 tools a week, guides for SEO, a tool-request leaderboard, ads once traffic is steady.
 
@@ -185,7 +185,7 @@ Other commands: `npm run build`, `npm run start`, `npm run lint`, `npm run typec
 | `components/seo/` | JSON-LD helper |
 | `lib/tools/` | Registry, fun tool logic, stored-list hook |
 | `lib/supabase/` | Browser and server clients |
-| `supabase/migrations/` | SQL migrations (0001 to 0005: tool data, Grow a Sapling, friend games, friend rank) |
+| `supabase/migrations/` | SQL migrations (0001 to 0007: tool data, Grow a Sapling, friend games, friend rank, favourites, tool requests) |
 | `supabase/functions/` | Edge Functions (`delete-account`) |
 | `components/fun/` | Fun Zone games, friend rooms, share buttons |
 | `components/tools/shelf/` | The Shelf tool screens |
@@ -200,7 +200,10 @@ Supabase Auth plus Postgres, shared by the website and the Android app. Every ta
 - `0001_user_tool_data`: saved Flashcards, Reminders and Countdowns per user
 - `0002_grow_a_sapling`, `0003_friend_games`, `0004_fix_fun_links_insert`, `0005_friend_rank`: Fun Zone garden and friend games
 
-Planned: favourites and recents per user, and tool requests. The `delete-account` Edge Function (`supabase/functions/delete-account`) removes a person's saved data and login.
+- `0006_user_tools`: favourite and recently used tools per user
+- `0007_tool_requests`: table for "Request a tool" submissions (created, but no screen in the site uses it yet)
+
+The `delete-account` Edge Function (`supabase/functions/delete-account`) removes a person's saved data and login.
 
 Collect only a name and email at sign-in.
 
