@@ -354,3 +354,40 @@ Object.assign(toolContent, {
     privacyNote: "Your garden is saved in your TopperShelf account. Only you can see it.",
   },
 });
+
+// Search titles and descriptions for the Fun Zone tools people are most likely to search for.
+// Roast My Timetable, Grow a Sapling, Instant Vibe Check and How Cooked Are You? are left as they are, because few people search for them by name.
+const funSeo: Record<string, Pick<ToolContent, "seoTitle" | "seoDescription">> = {
+  "excuse-generator": {
+    seoTitle: "Funny Excuse Generator for Any Situation",
+    seoDescription:
+      "Type a situation like missing the 8am class and get a funny, made-up excuse with a silly believability score. Free, with a card you can share.",
+  },
+  "decision-wheel": {
+    seoTitle: "Decision Wheel: Spin to Pick an Option",
+    seoDescription:
+      "Can't decide? Add your options, spin the wheel and let it choose. Free, works on your phone, and your options are not saved.",
+  },
+  "would-you-rather": {
+    seoTitle: "Would You Rather Questions for Students",
+    seoDescription:
+      "Play would you rather dilemmas from student life, from chai versus Maggi to exam superpowers, and get a short verdict at the end. Free.",
+  },
+  "friendship-score": {
+    seoTitle: "Friendship Test: Get Your Friendship Score",
+    seoDescription:
+      "Make a link, send it to a friend and see their score after 8 quick questions. Your friend needs no account. Free to use.",
+  },
+  "how-well-do-you-know-me": {
+    seoTitle: "How Well Do You Know Me? Friends Quiz",
+    seoDescription:
+      "Answer 10 questions about yourself, send the link and see which friend guesses the most. Free, with a leaderboard for your friends.",
+  },
+  "what-am-i-to-you": {
+    seoTitle: "What Am I to You? Ask Your Friends",
+    seoDescription:
+      "Share a link and see what your friends really think of you. They pick a label and can add a short note. Free to use.",
+  },
+};
+
+for (const [id, seo] of Object.entries(funSeo)) Object.assign(toolContent[id], seo);
