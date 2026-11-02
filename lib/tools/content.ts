@@ -11,6 +11,10 @@ export type ToolContent = {
   faq: { q: string; a: string }[];
   /** One short, TRUE line shown in a "Good to know" box. */
   privacyNote?: string;
+  /** Search title (without the site name, which is added automatically). Keep it under about 47 characters. */
+  seoTitle?: string;
+  /** Search description, about 150 characters. Falls back to the registry description. */
+  seoDescription?: string;
 };
 
 const funNote = "We don’t save what you type. It only appears in the link to your result.";
@@ -202,6 +206,64 @@ const shelfContent: Record<string, ToolContent> = {
     privacyNote: savedNote,
   },
 };
+
+// Search-facing copy for The Shelf: a title and description aimed at one real search per tool, plus a worked-example question where numbers help.
+// Only claims that match what each tool really does. Check the numbers again if a tool's rules change.
+const shelfSeo: Record<string, Pick<ToolContent, "seoTitle" | "seoDescription"> & { extraFaq?: { q: string; a: string } }> = {
+  "cgpa-calculator": {
+    seoTitle: "CGPA to Percentage Calculator, Free Online",
+    seoDescription:
+      "Convert CGPA to percentage using the CBSE, AICTE, Anna University, AKTU or Mumbai University rule. Free, instant, works on your phone.",
+    extraFaq: {
+      q: "What is a CGPA of 8.4 in percentage?",
+      a: "It depends on the rule. Under CBSE it is 8.4 × 9.5 = 79.8%. Under AICTE it is (8.4 − 0.75) × 10 = 76.5%. Under Anna University or AKTU it is 8.4 × 10 = 84%. Under Mumbai University it is 7.1 × 8.4 + 11 = 70.64%. Use the rule printed on your marksheet or in your university's regulations.",
+    },
+  },
+  "attendance-calculator": {
+    seoTitle: "Attendance Calculator: Classes You Can Miss",
+    seoDescription:
+      "Find out how many classes you can miss and still keep 75% attendance, or how many you must attend to get back to your target. Free and instant.",
+    extraFaq: {
+      q: "Can you show a worked example at 75%?",
+      a: "You attended 40 of 50 classes, which is 80%. You can miss 3 classes in a row and stay above 75% (40 of 53 is 75.47%), but a fourth drops you to 74.07%. Another student attended 30 of 45, which is 66.67%. They must attend the next 15 classes in a row to reach exactly 75% (45 of 60).",
+    },
+  },
+  "image-compressor": {
+    seoTitle: "Compress Image to 20KB, 50KB or 100KB Online",
+    seoDescription:
+      "Compress a photo or signature to an exact size like 20 KB, 50 KB, 100 KB or 200 KB, and set exact pixels for exam and job forms. Free, in your browser.",
+  },
+  "pdf-toolkit": {
+    seoTitle: "Merge, Compress & Split PDF Online Free",
+    seoDescription:
+      "Merge PDFs, compress a PDF, split pages, turn photos into a PDF, edit pages or save PDF pages as JPG. Free, and your files stay on your device.",
+  },
+  "focus-timer": {
+    seoTitle: "Free Pomodoro Focus Timer for Studying",
+    seoDescription:
+      "A free Pomodoro-style study timer: 25 minutes of focus, short breaks and a long break after every fourth session. Change every time to suit you.",
+  },
+  "flashcard-maker": {
+    seoTitle: "Free Flashcard Maker for Students",
+    seoDescription:
+      "Make flashcard decks, paste many cards at once and study with Got it and Again. Free, saved in your account, works on any phone or computer.",
+  },
+  reminder: {
+    seoTitle: "Free Online Reminder with Calendar Alerts",
+    seoDescription:
+      "Write what to remember, pick a date and time, and add it to Google Calendar or your phone calendar to get an alert even when the site is closed.",
+  },
+  "days-countdown": {
+    seoTitle: "Days Countdown Calculator for Exams & Events",
+    seoDescription:
+      "Count the days left to your exam, trip or any date. Add as many countdowns as you like, saved in your account. Free and instant.",
+  },
+};
+
+for (const [id, { extraFaq, ...seo }] of Object.entries(shelfSeo)) {
+  Object.assign(shelfContent[id], seo);
+  if (extraFaq) shelfContent[id].faq.push(extraFaq);
+}
 
 Object.assign(toolContent, shelfContent);
 
