@@ -23,11 +23,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: "TopperShelf: Free Online Tools for Students & Everyday Life",
-    template: "%s | Toppershelf",
+    template: "%s | TopperShelf",
   },
   description:
     "Free, fast online tools for students: exam photo and signature resizer, CGPA converter, attendance calculator, leave letters and more, plus a few fun ones to share.",
-  applicationName: "Toppershelf",
+  applicationName: "TopperShelf",
   keywords: [
     "TopperShelf",
     "free online tools",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   // /index. Each public page now sets its own absolute-path canonical (resolved against
   // metadataBase), which also drops query strings like ?term=1.
   openGraph: {
-    siteName: "Toppershelf",
+    siteName: "TopperShelf",
     type: "website",
     locale: "en_IN",
     title: "TopperShelf: Useful tools. A few silly ones. All free.",

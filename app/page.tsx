@@ -27,11 +27,14 @@ const structuredData = {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
       name: SITE_NAME,
-      alternateName: ["TopperShelf", "Topper Shelf"],
+      alternateName: ["Toppershelf", "Topper Shelf", "toppershelf.online"],
       url: SITE_URL,
       logo: `${SITE_URL}/icon.png`,
       email: "support@toppershelf.online",
-      sameAs: ["https://www.instagram.com/toppershelf_official"],
+      sameAs: [
+        "https://www.instagram.com/toppershelf_official",
+        "https://play.google.com/store/apps/details?id=online.toppershelf.app",
+      ],
       description: "Free online tools for files, numbers, words and everyday life.",
     },
     {
@@ -39,6 +42,7 @@ const structuredData = {
       "@id": `${SITE_URL}/#website`,
       url: SITE_URL,
       name: SITE_NAME,
+      alternateName: ["Toppershelf", "Topper Shelf", "toppershelf.online"],
       inLanguage: "en-IN",
       publisher: { "@id": `${SITE_URL}/#organization` },
       potentialAction: {
