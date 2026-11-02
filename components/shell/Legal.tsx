@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 export const SUPPORT_EMAIL = "support@toppershelf.online";
 export const BUSINESS = "TopperShelf";
-export const ADDRESS = "Bharatpur, Rajasthan, India";
+export const ADDRESS = "Rajasthan, India";
 export const GRIEVANCE_NAME = "Jatin Sinsinwar";
 export const LEGAL_EFFECTIVE = "29 October 2026";
 
