@@ -22,6 +22,27 @@ const Ctx = createContext<AuthCtx>({
 
 export const useAuth = () => useContext(Ctx);
 
+// Everything kept on this device that belongs to a signed-in account. It is wiped on sign-out so the next person
+// who signs in on this device starts from their own account copy, never the previous account's.
+const ACCOUNT_DEVICE_KEYS = [
+  "fz-garden",
+  "fz-garden-stamp",
+  "fz-garden-user",
+  "fz-buddy-name",
+  "fz-buddy-watered",
+  "toppershelf-favourites",
+  "toppershelf-recent",
+  "toppershelf-lists-user",
+];
+
+function clearAccountDeviceData() {
+  try {
+    ACCOUNT_DEVICE_KEYS.forEach((key) => localStorage.removeItem(key));
+  } catch {
+    /* storage blocked: nothing to clear */
+  }
+}
+
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
@@ -35,7 +56,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         setUser(data.user ?? null);
         setReady(true);
       });
-      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_OUT") {
+          // Also fires when the session ends in another tab. Reload so open pages drop the in-memory copy too.
+          clearAccountDeviceData();
+          window.location.reload();
+        }
         setUser(session?.user ?? null);
         if (session?.user) setOpen(false);
       });
