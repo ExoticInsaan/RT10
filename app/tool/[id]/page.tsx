@@ -7,6 +7,7 @@ import Image from "next/image";
 import FunSticker from "@/components/tools/FunSticker";
 import ShelfViewAll from "@/components/tools/ShelfViewAll";
 import ToolIcon from "@/components/tools/ToolIcon";
+import ShareToolButton from "@/components/tools/ShareToolButton";
 import ToolGate from "@/components/tools/ToolGate";
 import { ShelfGrid } from "@/components/tools/ToolsBrowser";
 import { SaveButton } from "@/components/tools/ui";
@@ -147,7 +148,10 @@ export default async function ToolPage({ params }: PageProps<"/tool/[id]">) {
               <p className={`mb-6 mt-4 text-base leading-7 sm:text-lg ${fun ? "text-white/90" : "text-muted"}`}>
                 {tool.description}
               </p>
-              <SaveButton id={tool.id} onDark={fun} />
+              <div className="flex flex-wrap items-center gap-3">
+                <SaveButton id={tool.id} onDark={fun} />
+                <ShareToolButton toolId={tool.id} toolName={tool.name} onDark={fun} />
+              </div>
             </div>
             {picture && <div className="shrink-0 self-start sm:self-auto">{picture}</div>}
           </div>

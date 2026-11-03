@@ -4,6 +4,7 @@ import { shelfTools } from "@/components/tools/shelf";
 import { RECENT_KEY } from "@/components/tools/ui";
 import { useAuth } from "@/components/AuthProvider";
 import { toolById } from "@/lib/tools/registry";
+import ShareToolButton from "@/components/tools/ShareToolButton";
 import { trackToolOpen } from "@/lib/tools/track";
 import { useStoredList } from "@/lib/tools/useStoredList";
 import AppReminder from "../components/AppReminder";
@@ -51,30 +52,33 @@ export default function ToolScreen({ id }: { id: string }) {
 
   if (fun) {
     return (
-      <Frame fun backLabel="Fun Zone" title={tool.name}>
+      <Frame fun backLabel="Fun Zone" title={tool.name} toolId={tool.id}>
         {signedIn ? <FunGame id={id} /> : gate}
       </Frame>
     );
   }
   return (
-    <Frame fun={false} backLabel="The Shelf" title={tool.name}>
+    <Frame fun={false} backLabel="The Shelf" title={tool.name} toolId={tool.id}>
       {signedIn ? <div className="rounded-3xl border border-[#e8e4dd] bg-white p-4 shadow-card">{Shelf && <Shelf />}</div> : gate}
       {signedIn && id === "days-countdown" && <WidgetTip />}
     </Frame>
   );
 }
 
-function Frame({ fun, backLabel, title, children }: { fun: boolean; backLabel: string; title: string; children: React.ReactNode }) {
+function Frame({ fun, backLabel, title, toolId, children }: { fun: boolean; backLabel: string; title: string; toolId?: string; children: React.ReactNode }) {
   return (
     <div className={`hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-[max(28px,env(safe-area-inset-bottom))] ${fun ? "bg-fun-field" : "bg-ivory"}`}>
-      <button
-        type="button"
-        onClick={back}
-        className={`mt-1 inline-flex min-h-12 cursor-pointer items-center gap-1 border-0 bg-transparent pr-4 pl-2.5 text-base font-extrabold ${fun ? "text-white" : "text-navy"}`}
-      >
-        <BackIcon />
-        {backLabel}
-      </button>
+      <div className="flex items-center justify-between pr-3">
+        <button
+          type="button"
+          onClick={back}
+          className={`mt-1 inline-flex min-h-12 cursor-pointer items-center gap-1 border-0 bg-transparent pr-4 pl-2.5 text-base font-extrabold ${fun ? "text-white" : "text-navy"}`}
+        >
+          <BackIcon />
+          {backLabel}
+        </button>
+        {toolId && <ShareToolButton toolId={toolId} toolName={title} onDark={fun} />}
+      </div>
       {!fun && <h1 className="m-0 px-5 pb-3 font-display text-[34px] leading-[1.05] font-normal text-navy">{title}</h1>}
       <div className={fun ? "px-3" : "px-4"}>{children}</div>
     </div>
