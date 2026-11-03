@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import AccountListsSync from "@/components/AccountListsSync";
 import AuthProvider from "@/components/AuthProvider";
+import ErrorBoundary from "./components/ErrorBoundary";
 import BottomNav, { TAB_PATHS } from "./components/BottomNav";
 import OfflineBanner from "./components/OfflineBanner";
 import CountdownWidgetSync from "./components/CountdownWidgetSync";
@@ -56,7 +57,9 @@ export default function App() {
       <ReminderScheduler />
       <CountdownWidgetSync />
       <div className="relative mx-auto h-dvh w-full max-w-[480px] overflow-hidden bg-ivory text-navy">
-        <Screen key={path} path={path} />
+        <ErrorBoundary key={path}>
+          <Screen path={path} />
+        </ErrorBoundary>
         {TAB_PATHS.includes(path) && <BottomNav path={path} />}
         <SavedToast />
         <OfflineBanner />
