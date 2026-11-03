@@ -3,7 +3,7 @@ import { isAuthRetryableFetchError, type User } from "@supabase/supabase-js";
 import { createClient } from "./supabase-client";
 import { navigate } from "./router";
 import { listenForOAuthReturn } from "../auth";
-import { OFFLINE_USER_KEY, clearOfflineCache } from "./offlineCache";
+import { OFFLINE_USER_KEY, clearAccountDeviceData } from "./offlineCache";
 
 /**
  * Same API as the website's AuthProvider (user, ready, openSignIn, signOut) so the shared tools work unchanged.
@@ -73,7 +73,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           rememberUser(session.user);
         } else if (event === "SIGNED_OUT") {
           setUser(null);
-          rememberUser(null);
+          clearAccountDeviceData();
+          // Reload so screens already open drop their in-memory copy of the old account too.
+          window.location.reload();
         }
       });
       unsubscribe = () => data.subscription.unsubscribe();
@@ -95,7 +97,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       /* ignore */
     }
-    clearOfflineCache(); // the next person on this phone must not see this account's saved copies
+    clearAccountDeviceData(); // the next person on this phone must not see this account's saved copies
     setUser(null);
   }, []);
 

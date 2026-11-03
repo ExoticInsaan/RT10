@@ -12,3 +12,25 @@ export function clearOfflineCache() {
     /* nothing to clear */
   }
 }
+
+/** Device copies of the garden, favourites and recent tools. They belong to whoever was signed in. */
+const ACCOUNT_DEVICE_KEYS = [
+  "fz-garden",
+  "fz-garden-stamp",
+  "fz-garden-user",
+  "fz-buddy-name",
+  "fz-buddy-watered",
+  "toppershelf-favourites",
+  "toppershelf-recent",
+  "toppershelf-lists-user",
+];
+
+/** Wiped on sign-out so the next account on this phone starts from its own saved copy, never the previous account's. */
+export function clearAccountDeviceData() {
+  clearOfflineCache();
+  try {
+    ACCOUNT_DEVICE_KEYS.forEach((key) => localStorage.removeItem(key));
+  } catch {
+    /* nothing to clear */
+  }
+}
