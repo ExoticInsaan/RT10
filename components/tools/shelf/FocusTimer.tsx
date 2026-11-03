@@ -27,6 +27,16 @@ function loadSettings(): Settings {
   };
 }
 const pad = (n: number) => String(n).padStart(2, "0");
+
+// The "Change times" form shows lengths in minutes (1.5 means 1 minute 30 seconds). The same lengths can also be set on the clock.
+type Draft = Record<keyof Settings, string>;
+const minutesText = (seconds: number) => String(Math.round((seconds / 60) * 100) / 100);
+const draftFrom = (s: Settings): Draft => ({
+  focus: minutesText(s.focus),
+  short: minutesText(s.short),
+  long: minutesText(s.long),
+  rounds: String(s.rounds),
+});
 // Three-digit minutes (100 and up) are one character wider, so the digits get a size smaller to stay inside the ring.
 const digitSize = (small: boolean) => (small ? "text-5xl sm:text-6xl" : "text-6xl sm:text-7xl");
 const names: Record<Phase, string> = { focus: "Focus", short: "Short break", long: "Long break" };
@@ -61,7 +71,8 @@ function chime() {
 export default function FocusTimer() {
   // Tools only render in the browser, so saved settings and today's count can be read straight away.
   const [settings, setSettings] = useState<Settings>(loadSettings);
-  const [roundsDraft, setRoundsDraft] = useState(() => String(settings.rounds));
+  const [draft, setDraft] = useState<Draft>(() => draftFrom(settings));
+  const [formError, setFormError] = useState("");
   const [phase, setPhase] = useState<Phase>("focus");
   const [round, setRound] = useState(1);
   const [remaining, setRemaining] = useState(() => settings.focus * 1000);
@@ -157,12 +168,21 @@ export default function FocusTimer() {
   }
 
   function save() {
-    const rounds = toNumber(roundsDraft);
-    if (!Number.isInteger(rounds) || rounds < 1 || rounds > 12) return;
-    const next = { ...settings, rounds };
-    setSettings(next);
-    writeStored(SETTINGS_KEY, next);
+    const shown = draftFrom(settings);
+    // A field the person did not touch keeps its exact length (including seconds set on the clock).
+    const read = (p: Phase) => (draft[p] === shown[p] ? settings[p] : Math.round(toNumber(draft[p]) * 60));
+    const parsed: Settings = { focus: read("focus"), short: read("short"), long: read("long"), rounds: toNumber(draft.rounds) };
+    const valid = (n: number, max: number) => Number.isInteger(n) && n >= 1 && n <= max;
+    if (!valid(parsed.focus, limits.focus) || !valid(parsed.short, limits.short) || !valid(parsed.long, limits.long) || !valid(parsed.rounds, 12)) {
+      setFormError("Check the times: Focus up to 180 minutes, Short break up to 60, Long break up to 90, and 1 to 12 sessions.");
+      return;
+    }
+    setFormError("");
+    setSettings(parsed);
+    writeStored(SETTINGS_KEY, parsed);
     setEditing(false);
+    setEndAt(null);
+    setRemaining(parsed[phase] * 1000);
   }
 
   // Tapping the clock changes the length of the current session type (Focus, Short break or Long break).
@@ -327,9 +347,13 @@ export default function FocusTimer() {
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
         <button type="button" onClick={() => {
             setTimeEdit(null);
+            if (!editing) {
+              setDraft(draftFrom(settings)); // start from the current times, including any set on the clock
+              setFormError("");
+            }
             setEditing(!editing);
           }} className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover underline-offset-4 hover:underline">
-          {editing ? "Close settings" : "Session settings"}
+          {editing ? "Close settings" : "Change times"}
         </button>
         {typeof Notification !== "undefined" && !notify && (
           <button
@@ -344,14 +368,21 @@ export default function FocusTimer() {
 
       {editing && (
         <form
-          className="grid w-full gap-4 rounded-2xl bg-surface p-5"
+          noValidate
+          className="grid w-full grid-cols-2 gap-4 rounded-2xl bg-surface p-5"
           onSubmit={(event) => {
             event.preventDefault();
             save();
           }}
         >
-          <NumberField label="Sessions before a long break" value={roundsDraft} onChange={setRoundsDraft} min={1} max={12} step={1} />
-          <Button type="submit">Save</Button>
+          <NumberField label="Focus" value={draft.focus} onChange={(v) => setDraft({ ...draft, focus: v })} max={180} suffix="min" />
+          <NumberField label="Short break" value={draft.short} onChange={(v) => setDraft({ ...draft, short: v })} max={60} suffix="min" />
+          <NumberField label="Long break" value={draft.long} onChange={(v) => setDraft({ ...draft, long: v })} max={90} suffix="min" />
+          <NumberField label="Sessions before a long break" value={draft.rounds} onChange={(v) => setDraft({ ...draft, rounds: v })} min={1} max={12} step={1} />
+          {formError && <p className="col-span-2 m-0 text-sm font-semibold text-red-600">{formError}</p>}
+          <Button type="submit" className="col-span-2">
+            Save times
+          </Button>
         </form>
       )}
       <p className="m-0 max-w-md text-center text-xs leading-5 text-muted">
