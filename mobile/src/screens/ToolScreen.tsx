@@ -4,6 +4,7 @@ import { shelfTools } from "@/components/tools/shelf";
 import { RECENT_KEY } from "@/components/tools/ui";
 import { useAuth } from "@/components/AuthProvider";
 import { toolById } from "@/lib/tools/registry";
+import { trackToolOpen } from "@/lib/tools/track";
 import { useStoredList } from "@/lib/tools/useStoredList";
 import AppReminder from "../components/AppReminder";
 import WidgetTip from "../components/WidgetTip";
@@ -22,6 +23,11 @@ export default function ToolScreen({ id }: { id: string }) {
   useEffect(() => {
     setRecent((cur) => [id, ...cur.filter((x) => x !== id)].slice(0, 8));
   }, [id, setRecent]);
+
+  // Count the visit once the sign-in state is known, so "signed in or not" is right.
+  useEffect(() => {
+    if (ready && tool) trackToolOpen(id, !!user);
+  }, [id, ready, user, tool]);
 
   if (!tool || (!fun && !Shelf)) {
     return (

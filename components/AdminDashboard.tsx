@@ -10,7 +10,7 @@ import { tools } from "@/lib/tools/registry";
  * Admin dashboard. Everything here is protected by the database, not by this page:
  * - admin_stats() and the "read every tool request" rule only answer people listed in the app_admins table.
  * - Anyone else just gets "no access", whatever they type into the address bar.
- * It shows totals and tool requests only, never people's saved flashcards, reminders or emails.
+ * It shows totals, anonymous tool-open counts and tool requests only, never people's saved flashcards, reminders or emails.
  */
 
 type Stats = {
@@ -25,6 +25,8 @@ type Stats = {
   friend_games: { game: string; links: number }[];
   friend_responses: number;
 };
+
+type Usage = { days: number; by_tool: { tool: string; opens: number; signed_in_opens: number; app_opens: number }[] };
 
 type Request = { id: string; tool_name: string; details: string | null; created_at: string };
 
@@ -73,6 +75,8 @@ export default function AdminDashboard() {
   const [state, setState] = useState<"idle" | "loading" | "denied" | "error" | "ok">("idle");
   const [stats, setStats] = useState<Stats | null>(null);
   const [requests, setRequests] = useState<Request[]>([]);
+  // null = tracking is not set up in the database yet (migration 0009), which should not break the rest of the page.
+  const [usage, setUsage] = useState<Usage | null>(null);
 
   const [reloadKey, setReloadKey] = useState(0);
   const reload = () => {
@@ -95,8 +99,9 @@ export default function AdminDashboard() {
     Promise.all([
       supabase.rpc("admin_stats"),
       supabase.from("tool_requests").select("id, tool_name, details, created_at").order("created_at", { ascending: false }).limit(300),
+      supabase.rpc("admin_tool_usage", { p_days: 30 }),
     ])
-      .then(([statsResult, listResult]) => {
+      .then(([statsResult, listResult, usageResult]) => {
         if (cancelled) return;
         if (statsResult.error) {
           const code = statsResult.error.code;
@@ -108,6 +113,7 @@ export default function AdminDashboard() {
           return;
         }
         setStats(statsResult.data as Stats);
+        setUsage(usageResult.error ? null : (usageResult.data as Usage));
         setRequests((listResult.data ?? []) as Request[]);
         setState("ok");
       })
@@ -184,6 +190,35 @@ export default function AdminDashboard() {
         <Card label="New in 30 days" value={stats.users_30d} />
         <Card label="Tool requests" value={stats.requests_total} />
       </div>
+
+      <Section
+        title="Most opened tools, last 30 days"
+        hint={
+          usage
+            ? `${usage.by_tool.reduce((n, r) => n + r.opens, 0)} opens in total (once per tool per visit). ${usage.by_tool.reduce((n, r) => n + r.app_opens, 0)} of them in the Android app.`
+            : undefined
+        }
+      >
+        {usage === null ? (
+          <p className="m-0 text-sm text-muted">Usage tracking is not set up yet. Run supabase/migrations/0009_tool_events.sql once in the Supabase SQL editor.</p>
+        ) : (
+          <div className="grid gap-x-8 gap-y-8 sm:grid-cols-2">
+            <BarList rows={usage.by_tool.slice(0, 12).map((r) => ({ label: toolName(r.tool), value: r.opens }))} empty="No opens recorded yet." />
+            <div>
+              <p className="mb-3 mt-0 text-sm font-semibold text-navy">Opened without signing in</p>
+              <BarList
+                rows={usage.by_tool
+                  .map((r) => ({ label: toolName(r.tool), value: r.opens - r.signed_in_opens }))
+                  .filter((r) => r.value > 0)
+                  .sort((a, b) => b.value - a.value)
+                  .slice(0, 12)}
+                empty="Nothing yet."
+              />
+              <p className="mb-0 mt-3 text-xs text-muted">These visitors saw the sign-in prompt. Someone who then signs in is counted in both lists.</p>
+            </div>
+          </div>
+        )}
+      </Section>
 
       <Section title="Tool requests" hint="The same tool asked for more than once is grouped. Build the most-asked first.">
         {grouped.length === 0 ? (

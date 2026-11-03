@@ -79,6 +79,11 @@ export default function PrivacyPage() {
         visitors in the EEA, the UK and Switzerland, analytics storage is off by default. We do not currently show ads. If we add
         ads or remarketing in future, we will add a consent banner first and update this policy.
       </P>
+      <P>
+        We also keep anonymous counts of which tools are opened in our own database. Each count records only the tool, whether it
+        was opened on the Site or in the App, whether the person was signed in, and the date. It does not record your name,
+        email, account ID, device ID or IP address.
+      </P>
 
       <H2>7. How long we keep data</H2>
       <P>

@@ -8,6 +8,7 @@ import ToolIcon from "@/components/tools/ToolIcon";
 import { Button, RECENT_KEY } from "@/components/tools/ui";
 import { useAuth } from "@/components/AuthProvider";
 import { isFunTool } from "@/lib/tools/fun";
+import { trackToolOpen } from "@/lib/tools/track";
 import { useStoredList } from "@/lib/tools/useStoredList";
 
 /**
@@ -21,6 +22,11 @@ export default function ToolGate({ toolId, toolName }: { toolId: string; toolNam
   useEffect(() => {
     setRecent((current) => [toolId, ...current.filter((x) => x !== toolId)].slice(0, 8));
   }, [toolId, setRecent]);
+
+  // Count the visit once the sign-in state is known, so "signed in or not" is right.
+  useEffect(() => {
+    if (ready) trackToolOpen(toolId, !!user);
+  }, [toolId, ready, user]);
 
   const signedIn = ready && user;
   const ShelfTool = shelfTools[toolId];
