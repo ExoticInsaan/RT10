@@ -57,6 +57,8 @@ export default function FocusTimer() {
     return log.day === todayKey() ? log.count : 0;
   });
   const [editing, setEditing] = useState(false);
+  // Text typed into the clock when the person taps it to change the length of this session type. null = not editing.
+  const [timeEdit, setTimeEdit] = useState<string | null>(null);
   const [notify, setNotify] = useState(() => typeof Notification !== "undefined" && Notification.permission === "granted");
   const originalTitle = useRef("");
 
@@ -91,6 +93,7 @@ export default function FocusTimer() {
         /* notifications unavailable */
       }
     }
+    setTimeEdit(null);
     setPhase(next);
     setEndAt(null);
     setRemaining(lengthOf(next));
@@ -132,6 +135,7 @@ export default function FocusTimer() {
   const progress = 1 - remaining / total;
 
   function switchTo(next: Phase) {
+    setTimeEdit(null);
     setEndAt(null);
     setPhase(next);
     setRemaining(lengthOf(next));
@@ -153,6 +157,28 @@ export default function FocusTimer() {
     setRemaining(parsed[phase] * 60_000);
   }
 
+  // Tapping the clock changes the length of the current session type (Focus, Short break or Long break).
+  const limits: Record<Phase, number> = { focus: 180, short: 60, long: 90 };
+  const typedMinutes = timeEdit === null ? NaN : toNumber(timeEdit);
+  const typedValid = Number.isInteger(typedMinutes) && typedMinutes >= 1 && typedMinutes <= limits[phase];
+
+  function startTimeEdit() {
+    setEndAt(null); // pause first: the length is not something to change while it counts down
+    setEditing(false);
+    setTimeEdit(String(settings[phase]));
+  }
+
+  function saveTime() {
+    if (!typedValid) return;
+    const next = { ...settings, [phase]: typedMinutes };
+    setSettings(next);
+    writeStored(SETTINGS_KEY, next);
+    setDraft((d) => ({ ...d, [phase]: String(typedMinutes) })); // keep the "Change times" form in step
+    setRemaining(typedMinutes * 60_000);
+    setEndAt(null);
+    setTimeEdit(null);
+  }
+
   const ring = 2 * Math.PI * 120;
 
   return (
@@ -165,7 +191,7 @@ export default function FocusTimer() {
       />
 
       <div className="relative grid size-64 place-items-center sm:size-72">
-        <svg viewBox="0 0 260 260" className="absolute inset-0 size-full -rotate-90" aria-hidden="true">
+        <svg viewBox="0 0 260 260" className="pointer-events-none absolute inset-0 size-full -rotate-90" aria-hidden="true">
           <circle cx="130" cy="130" r="120" fill="none" stroke="currentColor" strokeWidth="10" className="text-surface" />
           <circle
             cx="130"
@@ -181,12 +207,77 @@ export default function FocusTimer() {
           />
         </svg>
         <div className="text-center" aria-live="off">
-          <p className="m-0 text-6xl font-extrabold tracking-tight tabular-nums text-navy sm:text-7xl" role="timer">
-            {clock(remaining)}
-          </p>
-          <p className="m-0 mt-1 text-sm font-semibold text-muted">
-            {phase === "focus" ? `Session ${round} of ${settings.rounds}` : names[phase]}
-          </p>
+          {timeEdit === null ? (
+            <>
+              <button
+                type="button"
+                onClick={startTimeEdit}
+                aria-label={`${names[phase]} is ${settings[phase]} minutes. Tap to change it.`}
+                className="cursor-pointer rounded-2xl border-0 bg-transparent px-3 py-1 transition hover:bg-blue-soft focus-visible:bg-blue-soft"
+              >
+                <span className="block text-6xl font-extrabold tracking-tight tabular-nums text-navy sm:text-7xl" role="timer">
+                  {clock(remaining)}
+                </span>
+              </button>
+              <p className="m-0 mt-1 text-sm font-semibold text-muted">
+                {phase === "focus" ? `Session ${round} of ${settings.rounds}` : names[phase]}
+              </p>
+              <p className="m-0 mt-1 inline-flex items-center gap-1 text-xs font-semibold text-blue-hover">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z" />
+                </svg>
+                Tap the time to change it
+              </p>
+            </>
+          ) : (
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                saveTime();
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") setTimeEdit(null);
+              }}
+            >
+              <div className="flex items-baseline justify-center gap-1.5">
+                <input
+                  autoFocus
+                  onFocus={(event) => event.target.select()}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  autoComplete="off"
+                  aria-label={`${names[phase]} length in minutes`}
+                  value={timeEdit}
+                  onChange={(event) => setTimeEdit(event.target.value.replace(/\D/g, "").slice(0, 3))}
+                  className={`w-28 rounded-xl border-2 bg-white py-0.5 text-center text-6xl font-extrabold tabular-nums text-navy outline-none sm:text-7xl ${
+                    typedValid ? "border-blue" : "border-red-400"
+                  }`}
+                />
+                <span className="text-lg font-bold text-muted">min</span>
+              </div>
+              <p className={`m-0 mt-1 text-xs font-semibold ${typedValid ? "text-muted" : "text-red-600"}`}>
+                {typedValid ? `${names[phase]} length` : `Enter 1 to ${limits[phase]} minutes`}
+              </p>
+              <div className="mt-2 flex justify-center gap-2">
+                <button
+                  type="submit"
+                  disabled={!typedValid}
+                  className="min-h-10 cursor-pointer rounded-full border-0 bg-blue-hover px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTimeEdit(null)}
+                  className="min-h-10 cursor-pointer rounded-full border border-line bg-white px-4 text-sm font-bold text-navy"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
 
@@ -207,7 +298,10 @@ export default function FocusTimer() {
       </p>
 
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
-        <button type="button" onClick={() => setEditing(!editing)} className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover underline-offset-4 hover:underline">
+        <button type="button" onClick={() => {
+            setTimeEdit(null);
+            setEditing(!editing);
+          }} className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover underline-offset-4 hover:underline">
           {editing ? "Close settings" : "Change times"}
         </button>
         {typeof Notification !== "undefined" && !notify && (
