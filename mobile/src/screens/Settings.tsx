@@ -164,7 +164,7 @@ export default function Settings() {
       </Group>
 
       <Group title="Help and feedback">
-        <Row label="Ask for a tool" hint="Tell us what to build next" onClick={() => goMail(mail("Tool request for TopperShelf", "Hi TopperShelf team,\n\nI would love a tool that can:\n\n"))} right={<Chevron />} />
+        <Row label="Ask for a tool" hint="Tell us what to build next" onClick={() => navigate("/request-tool")} right={<Chevron />} />
         <Row
           label="Report a problem"
           hint={SUPPORT_EMAIL}
