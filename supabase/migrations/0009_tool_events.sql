@@ -1,5 +1,5 @@
--- Anonymous "tool opened" counts for the /admin page. NOT yet applied to the live project: run this file once in the
--- Supabase SQL editor. Until then the site and app keep working and the admin page just says tracking is not set up.
+-- Anonymous "tool opened" counts for the /admin page (already applied to the live project; kept here so the database
+-- can be rebuilt from this repo).
 -- Each row is only: which tool, website or app, signed in or not, and when. No account id, device id or IP address.
 create table if not exists public.tool_events (
   id uuid primary key default gen_random_uuid(),
@@ -15,6 +15,7 @@ alter table public.tool_events enable row level security;
 
 -- Anyone (signed in or not) can add a row. Nobody can read, change or delete rows through the website or app:
 -- there is no select policy on purpose. Only the admin_tool_usage() function below reads them, for admins.
+revoke all on public.tool_events from anon, authenticated;
 grant insert on public.tool_events to anon, authenticated;
 create policy "anyone: insert events" on public.tool_events for insert to anon, authenticated with check (true);
 

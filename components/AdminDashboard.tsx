@@ -200,7 +200,7 @@ export default function AdminDashboard() {
         }
       >
         {usage === null ? (
-          <p className="m-0 text-sm text-muted">Usage tracking is not set up yet. Run supabase/migrations/0009_tool_events.sql once in the Supabase SQL editor.</p>
+          <p className="m-0 text-sm text-muted">Usage tracking is not set up in the database yet (migration 0009 has not been applied).</p>
         ) : (
           <div className="grid gap-x-8 gap-y-8 sm:grid-cols-2">
             <BarList rows={usage.by_tool.slice(0, 12).map((r) => ({ label: toolName(r.tool), value: r.opens }))} empty="No opens recorded yet." />
