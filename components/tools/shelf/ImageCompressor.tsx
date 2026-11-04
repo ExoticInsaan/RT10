@@ -12,6 +12,7 @@ import {
   renameFile,
   toNumber,
 } from "@/components/tools/kit";
+import { useTr } from "@/lib/tools/useTr";
 
 type Result = { blob: Blob; url: string; width: number; height: number; quality: number; hitTarget: boolean };
 
@@ -88,6 +89,7 @@ async function compress(img: HTMLImageElement, limit: number, width: number, hei
 }
 
 export default function ImageCompressor() {
+  const tr = useTr();
   const [file, setFile] = useState<File | null>(null);
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [preset, setPreset] = useState("50");
@@ -108,7 +110,7 @@ export default function ImageCompressor() {
     setResult(null);
     setError("");
     if (!/^image\/(jpeg|png|webp|gif|bmp)$/.test(chosen.type)) {
-      setError("Use a JPG, PNG or WebP image. iPhone HEIC photos need converting to JPG first (share them as JPG from Photos).");
+      setError(tr("Use a JPG, PNG or WebP image. iPhone HEIC photos need converting to JPG first (share them as JPG from Photos)."));
       return;
     }
     try {
@@ -118,7 +120,7 @@ export default function ImageCompressor() {
       setWidth(String(loaded.naturalWidth));
       setHeight(String(loaded.naturalHeight));
     } catch {
-      setError("That image couldn't be opened. Try saving it again as a JPG.");
+      setError(tr("That image couldn't be opened. Try saving it again as a JPG."));
     }
   }
 
@@ -128,9 +130,9 @@ export default function ImageCompressor() {
 
   async function run() {
     if (!img || !file) return;
-    if (!(targetKb >= 5)) return setError("Choose a target of at least 5 KB.");
+    if (!(targetKb >= 5)) return setError(tr("Choose a target of at least 5 KB."));
     if (resize === "exact" && !(w >= 16 && h >= 16 && w <= 8000 && h <= 8000)) {
-      return setError("Width and height should be between 16 and 8000 pixels.");
+      return setError(tr("Width and height should be between 16 and 8000 pixels."));
     }
     setBusy(true);
     setError("");
@@ -140,7 +142,7 @@ export default function ImageCompressor() {
       const r = await compress(img, targetKb * 1024, outW, outH, resize === "exact");
       setResult({ ...r, url: URL.createObjectURL(r.blob) });
     } catch {
-      setError("Couldn't get the image that small. Try a bigger target size.");
+      setError(tr("Couldn't get the image that small. Try a bigger target size."));
     } finally {
       setBusy(false);
     }
@@ -152,8 +154,8 @@ export default function ImageCompressor() {
         <DropZone
           accept="image/jpeg,image/png,image/webp"
           onFiles={pick}
-          title="Drop a photo or signature here"
-          note="JPG, PNG or WebP. It stays on your device: nothing is uploaded."
+          title={tr("Drop a photo or signature here")}
+          note={tr("JPG, PNG or WebP. It stays on your device: nothing is uploaded.")}
         />
         {error && <Hint error>{error}</Hint>}
       </div>
@@ -179,83 +181,87 @@ export default function ImageCompressor() {
             setResult(null);
           }}
         >
-          Change
+          {tr("Change")}
         </Button>
       </div>
 
       <div className="grid grid-cols-1 gap-2">
-        <p className="m-0 text-sm font-semibold text-navy">Make it smaller than</p>
+        <p className="m-0 text-sm font-semibold text-navy">{tr("Make it smaller than")}</p>
         <Segmented
-          label="Target size"
+          label={tr("Target size")}
           value={preset}
           onChange={(v) => {
             setPreset(v);
             setResult(null);
           }}
-          options={[...presets.map((kb) => ({ value: String(kb), label: `${kb} KB` })), { value: "custom", label: "Other" }]}
+          options={[...presets.map((kb) => ({ value: String(kb), label: `${kb} KB` })), { value: "custom", label: tr("Other") }]}
         />
         {preset === "custom" && (
           <div className="max-w-xs">
-            <NumberField label="Size limit" value={customKb} onChange={setCustomKb} min={5} suffix="KB" placeholder="e.g. 30" />
+            <NumberField label={tr("Size limit")} value={customKb} onChange={setCustomKb} min={5} suffix="KB" placeholder={tr("e.g. 30")} />
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-1 gap-3">
         <Segmented
-          label="Picture size"
+          label={tr("Picture size")}
           value={resize}
           onChange={(v) => {
             setResize(v);
             setResult(null);
           }}
           options={[
-            { value: "keep", label: "Keep the same size" },
-            { value: "exact", label: "Set exact pixels" },
+            { value: "keep", label: tr("Keep the same size") },
+            { value: "exact", label: tr("Set exact pixels") },
           ]}
         />
         {resize === "exact" && (
           <div className="grid grid-cols-2 gap-4">
-            <NumberField label="Width" value={width} onChange={setWidth} min={16} step={1} suffix="px" />
-            <NumberField label="Height" value={height} onChange={setHeight} min={16} step={1} suffix="px" />
+            <NumberField label={tr("Width")} value={width} onChange={setWidth} min={16} step={1} suffix="px" />
+            <NumberField label={tr("Height")} value={height} onChange={setHeight} min={16} step={1} suffix="px" />
             <p className="col-span-2 m-0 text-xs leading-5 text-muted">
-              Exam forms often ask for a fixed size, for example 200 × 230 px for a photo or 140 × 60 px for a signature. The
-              picture is stretched to fit exactly, so crop it close to that shape first for the best look.
+              {tr("Exam forms often ask for a fixed size, for example 200 × 230 px for a photo or 140 × 60 px for a signature. The picture is stretched to fit exactly, so crop it close to that shape first for the best look.")}
             </p>
           </div>
         )}
       </div>
 
       <Button onClick={run} disabled={busy} className="w-full sm:w-auto sm:justify-self-start">
-        {busy ? "Compressing…" : "Compress image"}
+        {busy ? tr("Compressing…") : tr("Compress image")}
       </Button>
       {error && <Hint error>{error}</Hint>}
 
       {result && (
         <div className="grid grid-cols-1 gap-4 rounded-2xl bg-blue-soft p-5 sm:grid-cols-[10rem_1fr] sm:items-center" aria-live="polite">
           {/* eslint-disable-next-line @next/next/no-img-element -- the compressed result, generated in the browser */}
-          <img src={result.url} alt="Compressed result" className="mx-auto max-h-40 rounded-xl bg-white object-contain" />
+          <img src={result.url} alt={tr("Compressed result")} className="mx-auto max-h-40 rounded-xl bg-white object-contain" />
           <div>
             <p className="m-0 text-sm font-semibold text-muted">
-              {result.hitTarget ? `Under ${targetKb} KB` : `Smallest possible at this size`}
+              {result.hitTarget ? tr("Under {n} KB", { n: targetKb }) : tr("Smallest possible at this size")}
             </p>
             <p className="m-0 mt-1 text-4xl font-extrabold tracking-tight text-navy tabular-nums">{formatBytes(result.blob.size)}</p>
             <p className="m-0 mt-1 text-sm text-slate-700">
-              {result.width} × {result.height} px · JPG · down from {formatBytes(file.size)}
+              {tr("{w} × {h} px · JPG · down from {size}", { w: result.width, h: result.height, size: formatBytes(file.size) })}
             </p>
             {result.hitTarget && resize === "keep" && result.width < img.naturalWidth && (
               <p className="m-0 mt-2 text-sm text-slate-700">
-                The picture was made smaller ({img.naturalWidth} × {img.naturalHeight} → {result.width} × {result.height} px) to fit
-                under {targetKb} KB.
+                {tr("The picture was made smaller ({iw} × {ih} → {w} × {h} px) to fit under {kb} KB.", {
+                  iw: img.naturalWidth,
+                  ih: img.naturalHeight,
+                  w: result.width,
+                  h: result.height,
+                  kb: targetKb,
+                })}
               </p>
             )}
             {!result.hitTarget && (
               <p className="m-0 mt-2 text-sm text-red-700">
-                This is as small as a {result.width} × {result.height} picture gets. Use smaller pixel sizes or a bigger target.
+                {tr("This is as small as a {w} × {h} picture gets. Use smaller pixel sizes or a bigger target.", { w: result.width, h: result.height })}
               </p>
             )}
             <Button className="mt-4" onClick={() => downloadBlob(result.blob, renameFile(file.name, "-compressed", "jpg"))}>
-              Download JPG
+              {tr("Download JPG")}
             </Button>
           </div>
         </div>

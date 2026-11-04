@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState, type ReactNode } from "react";
 import ToolIcon from "@/components/tools/ToolIcon";
+import { useTr } from "@/lib/tools/useTr";
 
 /*
  * Shared building blocks for the Shelf tools, so every tool looks and behaves the same:
@@ -161,6 +162,7 @@ export function DropZone({
   note: string;
 }) {
   const id = useId();
+  const tr = useTr();
   const input = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
   return (
@@ -189,7 +191,7 @@ export function DropZone({
         htmlFor={id}
         className="mt-5 inline-flex min-h-12 cursor-pointer items-center justify-center rounded-xl bg-blue-hover px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-navy"
       >
-        Choose {multiple ? "files" : "a file"}
+        {multiple ? tr("Choose files") : tr("Choose a file")}
       </label>
       <input
         ref={input}
