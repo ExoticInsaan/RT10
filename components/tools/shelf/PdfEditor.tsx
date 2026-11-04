@@ -4,7 +4,8 @@ import { useId, useState } from "react";
 import ToolIcon from "@/components/tools/ToolIcon";
 import { Button } from "@/components/tools/ui";
 import { DropZone, Field, Hint, Segmented, downloadBlob, formatBytes, inputClass, renameFile } from "@/components/tools/kit";
-import type { EditPage, Thumb } from "./pdf-engine";
+import { useTr } from "@/lib/tools/useTr";
+import { PdfError, errorText, type EditPage, type Thumb } from "./pdf-engine";
 
 type Item = { key: string; page: EditPage; thumb: Thumb | null };
 type AddKind = "blank" | "images" | "pdf";
@@ -18,6 +19,7 @@ const isImage = (f: File) => /^image\/(jpeg|png|webp)$/.test(f.type);
 
 /** Edit PDF: open one PDF, then add, remove, turn and reorder its pages, and save a new copy. */
 export default function PdfEditor() {
+  const tr = useTr();
   const [sources, setSources] = useState<File[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [pageSize, setPageSize] = useState({ width: 595.28, height: 841.89 });
@@ -33,20 +35,20 @@ export default function PdfEditor() {
   async function open(files: File[]) {
     const file = files[0];
     setError("");
-    if (!isPdf(file)) return setError("Choose a PDF file to edit.");
-    if (file.size > MAX_BYTES) return setError("That PDF is over 150 MB, which is too large to edit in a browser.");
-    setBusy("Opening your PDF…");
+    if (!isPdf(file)) return setError(tr("Choose a PDF file to edit."));
+    if (file.size > MAX_BYTES) return setError(tr("That PDF is over 150 MB, which is too large to edit in a browser."));
+    setBusy(tr("Opening your PDF…"));
     try {
       const pdf = await engine();
       const size = await pdf.firstPageSize(file);
-      const thumbs = await pdf.pageThumbnails(file, (done, total) => setBusy(`Reading page ${done} of ${total}…`));
-      if (thumbs.length > MAX_PAGES) throw new Error(`This PDF has ${thumbs.length} pages. Edit PDF works with up to ${MAX_PAGES}.`);
+      const thumbs = await pdf.pageThumbnails(file, (done, total) => setBusy(tr("Reading page {done} of {total}…", { done, total })));
+      if (thumbs.length > MAX_PAGES) throw new PdfError("This PDF has {n} pages. Edit PDF works with up to {max}.", { n: thumbs.length, max: MAX_PAGES });
       setSources([file]);
       setPageSize(size);
       setItems(thumbs.map((thumb, index) => ({ key: newKey(), page: { kind: "pdf", source: 0, index, rotate: 0 }, thumb })));
       setResult(null);
     } catch (e) {
-      setError((e as Error).message || "That PDF couldn't be opened.");
+      setError(errorText(e, tr, "That PDF couldn't be opened."));
     } finally {
       setBusy(null);
     }
@@ -62,27 +64,27 @@ export default function PdfEditor() {
         added = [{ key: newKey(), page: { kind: "blank", width: pageSize.width, height: pageSize.height, rotate: 0 }, thumb: null }];
       } else if (kind === "images") {
         const images = files.filter(isImage);
-        if (!images.length) return setError("Only JPG, PNG and WebP images can be added as pages.");
-        setBusy("Adding images…");
+        if (!images.length) return setError(tr("Only JPG, PNG and WebP images can be added as pages."));
+        setBusy(tr("Adding images…"));
         const pdf = await engine();
         for (const file of images) {
           added.push({ key: newKey(), page: { kind: "image", file, rotate: 0 }, thumb: await pdf.imageThumbnail(file) });
         }
       } else {
         const file = files[0];
-        if (!file || !isPdf(file)) return setError("Choose a PDF to take pages from.");
-        if (file.size > MAX_BYTES) return setError("That PDF is over 150 MB, which is too large to handle in a browser.");
-        setBusy("Reading the other PDF…");
+        if (!file || !isPdf(file)) return setError(tr("Choose a PDF to take pages from."));
+        if (file.size > MAX_BYTES) return setError(tr("That PDF is over 150 MB, which is too large to handle in a browser."));
+        setBusy(tr("Reading the other PDF…"));
         const pdf = await engine();
-        const thumbs = await pdf.pageThumbnails(file, (done, total) => setBusy(`Reading page ${done} of ${total}…`));
+        const thumbs = await pdf.pageThumbnails(file, (done, total) => setBusy(tr("Reading page {done} of {total}…", { done, total })));
         const source = sources.length;
         setSources([...sources, file]);
         added = thumbs.map((thumb, index) => ({ key: newKey(), page: { kind: "pdf", source, index, rotate: 0 }, thumb }));
       }
-      if (items.length + added.length > MAX_PAGES) return setError(`An edited PDF can have up to ${MAX_PAGES} pages.`);
+      if (items.length + added.length > MAX_PAGES) return setError(tr("An edited PDF can have up to {max} pages.", { max: MAX_PAGES }));
       edited([...items.slice(0, position), ...added, ...items.slice(position)]);
     } catch (e) {
-      setError((e as Error).message || "Those pages couldn't be added.");
+      setError(errorText(e, tr, "Those pages couldn't be added."));
     } finally {
       setBusy(null);
     }
@@ -102,12 +104,12 @@ export default function PdfEditor() {
 
   async function save() {
     setError("");
-    setBusy("Saving your PDF…");
+    setBusy(tr("Saving your PDF…"));
     try {
       const pdf = await engine();
       setResult(await pdf.buildEditedPdf(sources, items.map((item) => item.page)));
     } catch (e) {
-      setError((e as Error).message || "The PDF couldn't be saved.");
+      setError(errorText(e, tr, "The PDF couldn't be saved."));
     } finally {
       setBusy(null);
     }
@@ -122,8 +124,8 @@ export default function PdfEditor() {
           <DropZone
             accept="application/pdf,.pdf"
             onFiles={open}
-            title="Drop the PDF you want to edit"
-            note="You'll see every page and can add, remove, turn or move pages. Nothing is uploaded."
+            title={tr("Drop the PDF you want to edit")}
+            note={tr("You'll see every page and can add, remove, turn or move pages. Nothing is uploaded.")}
           />
         )}
         {error && <Hint error>{error}</Hint>}
@@ -137,7 +139,7 @@ export default function PdfEditor() {
         <p className="m-0 min-w-0 text-sm text-navy">
           <strong className="block truncate">{sources[0].name}</strong>
           <span className="text-muted">
-            {items.length} page{items.length === 1 ? "" : "s"} now
+            {tr(items.length === 1 ? "{n} page now" : "{n} pages now", { n: items.length })}
           </span>
         </p>
         <Button
@@ -149,14 +151,14 @@ export default function PdfEditor() {
             setError("");
           }}
         >
-          Start over
+          {tr("Start over")}
         </Button>
       </div>
 
       <AddPanel pageCount={items.length} busy={Boolean(busy)} onAdd={addPages} />
 
       {items.length === 0 ? (
-        <Hint>Every page has been removed. Add a page, or start over.</Hint>
+        <Hint>{tr("Every page has been removed. Add a page, or start over.")}</Hint>
       ) : (
         <ol className="m-0 grid grid-cols-1 list-none grid-cols-2 gap-4 p-0 sm:grid-cols-3 md:grid-cols-4">
           {items.map((item, index) => (
@@ -177,15 +179,15 @@ export default function PdfEditor() {
 
       <div className="sticky bottom-24 z-10 flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-white/95 p-3 shadow-card backdrop-blur md:bottom-4">
         <Button onClick={save} disabled={Boolean(busy) || items.length === 0}>
-          {busy ?? "Save edited PDF"}
+          {busy ?? tr("Save edited PDF")}
         </Button>
         {result && (
           <>
             <span className="text-sm text-navy" aria-live="polite">
-              Ready · {items.length} page{items.length === 1 ? "" : "s"} · {formatBytes(result.size)}
+              {tr("Ready · {pages} · {size}", { pages: tr(items.length === 1 ? "{n} page" : "{n} pages", { n: items.length }), size: formatBytes(result.size) })}
             </span>
             <Button variant="secondary" onClick={() => downloadBlob(result, renameFile(sources[0].name, "-edited", "pdf"))}>
-              Download PDF
+              {tr("Download PDF")}
             </Button>
           </>
         )}
@@ -204,6 +206,7 @@ function AddPanel({
   busy: boolean;
   onAdd: (kind: AddKind, after: number, files: File[]) => void;
 }) {
+  const tr = useTr();
   const [kind, setKind] = useState<AddKind>("blank");
   const [after, setAfter] = useState<number | "end">("end");
   const inputId = useId();
@@ -211,36 +214,36 @@ function AddPanel({
 
   return (
     <div className="grid grid-cols-1 gap-4 rounded-2xl bg-surface p-5">
-      <p className="m-0 text-base font-bold text-navy">Add pages</p>
+      <p className="m-0 text-base font-bold text-navy">{tr("Add pages")}</p>
       <Segmented
-        label="What to add"
+        label={tr("What to add")}
         value={kind}
         onChange={setKind}
         options={[
-          { value: "blank", label: "Blank page" },
-          { value: "images", label: "Photos or scans" },
-          { value: "pdf", label: "Pages from a PDF" },
+          { value: "blank", label: tr("Blank page") },
+          { value: "images", label: tr("Photos or scans") },
+          { value: "pdf", label: tr("Pages from a PDF") },
         ]}
       />
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
-        <Field label="Where">
+        <Field label={tr("Where")}>
           <select
             className={inputClass}
             value={String(after)}
             onChange={(e) => setAfter(e.target.value === "end" ? "end" : Number(e.target.value))}
           >
-            <option value="end">At the end</option>
-            <option value="0">At the start</option>
+            <option value="end">{tr("At the end")}</option>
+            <option value="0">{tr("At the start")}</option>
             {Array.from({ length: Math.max(pageCount - 1, 0) }, (_, i) => (
               <option key={i + 1} value={i + 1}>
-                After page {i + 1}
+                {tr("After page {n}", { n: i + 1 })}
               </option>
             ))}
           </select>
         </Field>
         {kind === "blank" ? (
           <Button disabled={busy} onClick={() => onAdd("blank", position, [])}>
-            Add blank page
+            {tr("Add blank page")}
           </Button>
         ) : (
           <>
@@ -250,7 +253,7 @@ function AddPanel({
                 busy ? "pointer-events-none opacity-60" : ""
               }`}
             >
-              {kind === "images" ? "Choose photos" : "Choose a PDF"}
+              {kind === "images" ? tr("Choose photos") : tr("Choose a PDF")}
             </label>
             <input
               id={inputId}
@@ -269,10 +272,10 @@ function AddPanel({
       </div>
       <p className="m-0 text-xs leading-5 text-muted">
         {kind === "blank"
-          ? "A blank page the same size as your document's first page."
+          ? tr("A blank page the same size as your document's first page.")
           : kind === "images"
-            ? "Each photo becomes its own A4 page, in the order you pick them."
-            : "Every page of the other PDF is added. Remove the ones you don't need afterwards."}
+            ? tr("Each photo becomes its own A4 page, in the order you pick them.")
+            : tr("Every page of the other PDF is added. Remove the ones you don't need afterwards.")}
       </p>
     </div>
   );
@@ -297,8 +300,9 @@ function PageCard({
   onRotate: () => void;
   onDelete: () => void;
 }) {
+  const tr = useTr();
   const turned = item.page.rotate % 180 !== 0;
-  const label = item.page.kind === "blank" ? "Blank page" : item.page.kind === "image" ? "Photo page" : `Page ${number}`;
+  const label = item.page.kind === "blank" ? tr("Blank page") : item.page.kind === "image" ? tr("Photo page") : tr("Page {n}", { n: number });
   return (
     <li className="grid grid-cols-1 gap-2 rounded-2xl border border-line bg-white p-2.5">
       <div className="relative grid aspect-[3/4] place-items-center overflow-hidden rounded-xl bg-surface">
@@ -315,27 +319,27 @@ function PageCard({
             className="grid aspect-[1/1.414] w-3/4 place-items-center bg-white text-xs text-muted shadow-sm transition-transform"
             style={{ transform: `rotate(${item.page.rotate}deg) scale(${turned ? 0.74 : 1})` }}
           >
-            Blank
+            {tr("Blank")}
           </span>
         )}
         <span className="absolute left-2 top-2 rounded-full bg-navy px-2 py-0.5 text-xs font-bold text-white">{number}</span>
         {(item.page.kind !== "pdf" || item.page.source > 0) && (
-          <span className="absolute right-2 top-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[0.65rem] font-bold text-white">New</span>
+          <span className="absolute right-2 top-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[0.65rem] font-bold text-white">{tr("New")}</span>
         )}
       </div>
       <div className="flex items-center justify-between">
-        <PageButton label={`Move page ${number} earlier`} disabled={first} onClick={onLeft}>
+        <PageButton label={tr("Move page {n} earlier", { n: number })} disabled={first} onClick={onLeft}>
           <span className="rotate-180">
             <ToolIcon name="arrow" size={15} />
           </span>
         </PageButton>
-        <PageButton label={`Turn page ${number}`} onClick={onRotate}>
+        <PageButton label={tr("Turn page {n}", { n: number })} onClick={onRotate}>
           <span aria-hidden="true" className="text-base leading-none">↻</span>
         </PageButton>
-        <PageButton label={`Remove page ${number}`} onClick={onDelete} danger>
+        <PageButton label={tr("Remove page {n}", { n: number })} onClick={onDelete} danger>
           <ToolIcon name="close" size={15} />
         </PageButton>
-        <PageButton label={`Move page ${number} later`} disabled={last} onClick={onRight}>
+        <PageButton label={tr("Move page {n} later", { n: number })} disabled={last} onClick={onRight}>
           <ToolIcon name="arrow" size={15} />
         </PageButton>
       </div>

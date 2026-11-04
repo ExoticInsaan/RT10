@@ -4,6 +4,7 @@ import { useState } from "react";
 import ToolIcon from "@/components/tools/ToolIcon";
 import { Button } from "@/components/tools/ui";
 import { DropZone, Field, Hint, Segmented, downloadBlob, formatBytes, inputClass, renameFile } from "@/components/tools/kit";
+import { useTr, type Tr } from "@/lib/tools/useTr";
 import PdfEditor from "./PdfEditor";
 import PdfModeCards, { ModeIcon } from "./PdfModeCards";
 
@@ -21,8 +22,10 @@ const modes: { value: Mode; label: string; intro: string }[] = [
 ];
 
 const engine = () => import("./pdf-engine");
+const describe = async (error: unknown, tr: Tr, fallback: string) => (await engine()).errorText(error, tr, fallback);
 
 export default function PdfToolkit() {
+  const tr = useTr();
   const [mode, setMode] = useState<Mode>("merge");
   // Phones and tablets start on the grid of cards; desktop always shows the switch and the tool.
   const [picked, setPicked] = useState(false);
@@ -37,7 +40,8 @@ export default function PdfToolkit() {
 
   const wantsImages = mode === "to-pdf";
   const multiple = mode === "merge" || mode === "to-pdf";
-  const current = modes.find((m) => m.value === mode)!;
+  const shownModes = modes.map((m) => ({ ...m, label: tr(m.label), intro: tr(m.intro) }));
+  const current = shownModes.find((m) => m.value === mode)!;
 
   function reset(next: Mode) {
     setMode(next);
@@ -52,10 +56,10 @@ export default function PdfToolkit() {
     setError("");
     setOutputs([]);
     const tooBig = chosen.find((f) => f.size > MAX_BYTES);
-    if (tooBig) return setError(`“${tooBig.name}” is over 150 MB, which is too large to handle in a browser.`);
+    if (tooBig) return setError(tr("“{name}” is over 150 MB, which is too large to handle in a browser.", { name: tooBig.name }));
     const ok = chosen.filter((f) => (wantsImages ? /^image\/(jpeg|png|webp)$/.test(f.type) : f.type === "application/pdf" || /\.pdf$/i.test(f.name)));
     if (ok.length < chosen.length) {
-      setError(wantsImages ? "Only JPG, PNG and WebP images can go into a PDF." : "Only PDF files work here.");
+      setError(wantsImages ? tr("Only JPG, PNG and WebP images can go into a PDF.") : tr("Only PDF files work here."));
     }
     if (!ok.length) return;
     const next = multiple ? [...files, ...ok].slice(0, 50) : ok.slice(0, 1);
@@ -66,7 +70,7 @@ export default function PdfToolkit() {
         setPageCount(await pageCountOf(next[0]));
       } catch (e) {
         setFiles([]);
-        setError((e as Error).message);
+        setError(await describe(e, tr, "Something went wrong with that file."));
       }
     }
   }
@@ -86,37 +90,37 @@ export default function PdfToolkit() {
     const pdf = await engine();
     try {
       if (mode === "merge") {
-        if (files.length < 2) return setError("Add at least two PDFs to merge.");
-        setBusy("Merging…");
+        if (files.length < 2) return setError(tr("Add at least two PDFs to merge."));
+        setBusy(tr("Merging…"));
         setOutputs([{ name: "merged.pdf", blob: await pdf.mergePdfs(files) }]);
       } else if (mode === "split") {
         const file = files[0];
         if (splitHow === "every") {
-          setBusy("Splitting…");
+          setBusy(tr("Splitting…"));
           const blobs = await pdf.splitEveryPage(file);
           setOutputs(blobs.map((blob, i) => ({ name: renameFile(file.name, `-page-${i + 1}`, "pdf"), blob })));
         } else {
           const indexes = pdf.parseRanges(ranges, pageCount ?? 0);
-          setBusy("Extracting pages…");
+          setBusy(tr("Extracting pages…"));
           setOutputs([{ name: renameFile(file.name, "-pages", "pdf"), blob: await pdf.extractPages(file, indexes) }]);
         }
       } else if (mode === "compress") {
         const file = files[0];
-        setBusy("Compressing…");
-        const blob = await pdf.compressPdf(file, level, (done, total) => setBusy(`Compressing page ${done} of ${total}…`));
+        setBusy(tr("Compressing…"));
+        const blob = await pdf.compressPdf(file, level, (done, total) => setBusy(tr("Compressing page {done} of {total}…", { done, total })));
         setOutputs([{ name: renameFile(file.name, "-compressed", "pdf"), blob }]);
       } else if (mode === "to-pdf") {
         if (!files.length) return;
-        setBusy("Making your PDF…");
+        setBusy(tr("Making your PDF…"));
         setOutputs([{ name: files.length === 1 ? renameFile(files[0].name, "", "pdf") : "images.pdf", blob: await pdf.imagesToPdf(files) }]);
       } else {
         const file = files[0];
-        setBusy("Saving pages…");
-        const images = await pdf.pdfToImages(file, (done, total) => setBusy(`Saving page ${done} of ${total}…`));
+        setBusy(tr("Saving pages…"));
+        const images = await pdf.pdfToImages(file, (done, total) => setBusy(tr("Saving page {done} of {total}…", { done, total })));
         setOutputs(images.map((blob, i) => ({ name: renameFile(file.name, `-page-${i + 1}`, "jpg"), blob })));
       }
     } catch (e) {
-      setError(e instanceof Error && e.message ? e.message : "Something went wrong with that file.");
+      setError(pdf.errorText(e, tr, "Something went wrong with that file."));
     } finally {
       setBusy(null);
     }
@@ -128,7 +132,7 @@ export default function PdfToolkit() {
     <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       {!picked && (
         <PdfModeCards
-          cards={modes.map(({ value, label, intro }) => ({ value, label, intro }))}
+          cards={shownModes.map(({ value, label, intro }) => ({ value, label, intro }))}
           onPick={(value) => {
             reset(value as Mode);
             setPicked(true);
@@ -142,7 +146,7 @@ export default function PdfToolkit() {
           <button
             type="button"
             onClick={() => setPicked(false)}
-            aria-label="Back to all PDF tools"
+            aria-label={tr("Back to all PDF tools")}
             className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy"
           >
             <span className="rotate-180">
@@ -157,7 +161,7 @@ export default function PdfToolkit() {
       )}
       <div className="grid grid-cols-1 gap-2">
         <div className="max-lg:hidden">
-          <Segmented label="What do you want to do?" value={mode} onChange={reset} options={modes.map(({ value, label }) => ({ value, label }))} />
+          <Segmented label={tr("What do you want to do?")} value={mode} onChange={reset} options={shownModes.map(({ value, label }) => ({ value, label }))} />
         </div>
         <p className="m-0 text-sm text-muted">{current.intro}</p>
       </div>
@@ -172,10 +176,10 @@ export default function PdfToolkit() {
           onFiles={add}
           title={
             files.length && multiple
-              ? `Add more ${wantsImages ? "images" : "PDFs"}`
-              : `Drop ${multiple ? (wantsImages ? "images" : "PDFs") : "a PDF"} here`
+              ? tr(wantsImages ? "Add more images" : "Add more PDFs")
+              : tr(multiple ? (wantsImages ? "Drop images here" : "Drop PDFs here") : "Drop a PDF here")
           }
-          note="Everything happens on your device. Your files are never uploaded."
+          note={tr("Everything happens on your device. Your files are never uploaded.")}
         />
       )}
 
@@ -190,19 +194,19 @@ export default function PdfToolkit() {
                 <span className="block truncate text-sm font-bold text-navy">{file.name}</span>
                 <span className="block text-xs text-muted">
                   {formatBytes(file.size)}
-                  {mode === "split" && pageCount !== null && ` · ${pageCount} page${pageCount === 1 ? "" : "s"}`}
+                  {mode === "split" && pageCount !== null && ` · ${tr(pageCount === 1 ? "{n} page" : "{n} pages", { n: pageCount })}`}
                 </span>
               </span>
               <span className="flex shrink-0 items-center">
                 {multiple && files.length > 1 && (
                   <>
-                    <IconButton label={`Move ${file.name} up`} disabled={index === 0} onClick={() => move(index, -1)} rotate="-rotate-90" />
-                    <IconButton label={`Move ${file.name} down`} disabled={index === files.length - 1} onClick={() => move(index, 1)} rotate="rotate-90" />
+                    <IconButton label={tr("Move {name} up", { name: file.name })} disabled={index === 0} onClick={() => move(index, -1)} rotate="-rotate-90" />
+                    <IconButton label={tr("Move {name} down", { name: file.name })} disabled={index === files.length - 1} onClick={() => move(index, 1)} rotate="rotate-90" />
                   </>
                 )}
                 <button
                   type="button"
-                  aria-label={`Remove ${file.name}`}
+                  aria-label={tr("Remove {name}", { name: file.name })}
                   onClick={() => {
                     setFiles(files.filter((_, i) => i !== index));
                     setOutputs([]);
@@ -221,17 +225,17 @@ export default function PdfToolkit() {
       {mode === "split" && files.length > 0 && pageCount !== null && (
         <div className="grid grid-cols-1 gap-3">
           <Segmented
-            label="How to split"
+            label={tr("How to split")}
             value={splitHow}
             onChange={setSplitHow}
             options={[
-              { value: "pick", label: "Pick pages" },
-              { value: "every", label: "Every page separately" },
+              { value: "pick", label: tr("Pick pages") },
+              { value: "every", label: tr("Every page separately") },
             ]}
           />
           {splitHow === "pick" && (
-            <Field label="Pages to keep" hint={`For example 1-3, 5 or 4- (page 4 to the end). This PDF has ${pageCount} pages.`}>
-              <input className={inputClass} value={ranges} onChange={(e) => setRanges(e.target.value)} placeholder="e.g. 1-3, 5" />
+            <Field label={tr("Pages to keep")} hint={tr("For example 1-3, 5 or 4- (page 4 to the end). This PDF has {n} pages.", { n: pageCount })}>
+              <input className={inputClass} value={ranges} onChange={(e) => setRanges(e.target.value)} placeholder={tr("e.g. 1-3, 5")} />
             </Field>
           )}
         </div>
@@ -240,24 +244,23 @@ export default function PdfToolkit() {
       {mode === "compress" && files.length > 0 && (
         <div className="grid grid-cols-1 gap-2">
           <Segmented
-            label="Compression strength"
+            label={tr("Compression strength")}
             value={level}
             onChange={setLevel}
             options={[
-              { value: "light", label: "Light: sharper" },
-              { value: "strong", label: "Strong: smallest" },
+              { value: "light", label: tr("Light: sharper") },
+              { value: "strong", label: tr("Strong: smallest") },
             ]}
           />
           <p className="m-0 text-xs leading-5 text-muted">
-            Each page is redrawn as an image, which shrinks scanned and photo-heavy PDFs a lot. Text in the result can&apos;t be
-            selected or searched, so keep your original too.
+            {tr("Each page is redrawn as an image, which shrinks scanned and photo-heavy PDFs a lot. Text in the result can't be selected or searched, so keep your original too.")}
           </p>
         </div>
       )}
 
       {files.length > 0 && (
         <Button onClick={run} disabled={Boolean(busy) || (mode === "split" && pageCount === null)} className="w-full sm:w-auto sm:justify-self-start">
-          {busy ?? actionLabel(mode, files.length)}
+          {busy ?? actionLabel(mode, files.length, tr)}
         </Button>
       )}
 
@@ -267,23 +270,23 @@ export default function PdfToolkit() {
         <div className="grid grid-cols-1 gap-3 rounded-2xl bg-blue-soft p-5" aria-live="polite">
           {outputs.length === 1 ? (
             <>
-              <p className="m-0 text-sm font-semibold text-muted">Ready</p>
+              <p className="m-0 text-sm font-semibold text-muted">{tr("Ready")}</p>
               <p className="m-0 text-3xl font-extrabold tracking-tight text-navy">{formatBytes(outputs[0].blob.size)}</p>
               {mode === "compress" && (
                 <p className="m-0 text-sm text-slate-700">
                   {outputs[0].blob.size < original
-                    ? `${Math.round((1 - outputs[0].blob.size / original) * 100)}% smaller than the original ${formatBytes(original)}.`
-                    : `That's not smaller than the original (${formatBytes(original)}), so this PDF is already well compressed. Keep the original.`}
+                    ? tr("{pct}% smaller than the original {size}.", { pct: Math.round((1 - outputs[0].blob.size / original) * 100), size: formatBytes(original) })
+                    : tr("That's not smaller than the original ({size}), so this PDF is already well compressed. Keep the original.", { size: formatBytes(original) })}
                 </p>
               )}
               <Button className="justify-self-start" onClick={() => downloadBlob(outputs[0].blob, outputs[0].name)}>
-                Download {outputs[0].name.endsWith(".pdf") ? "PDF" : "file"}
+                {tr(outputs[0].name.endsWith(".pdf") ? "Download PDF" : "Download file")}
               </Button>
             </>
           ) : (
             <>
               <p className="m-0 text-sm font-semibold text-navy">
-                {outputs.length} files ready. Download the ones you need.
+                {tr("{n} files ready. Download the ones you need.", { n: outputs.length })}
               </p>
               <ul className="m-0 grid grid-cols-1 max-h-80 list-none gap-2 overflow-y-auto p-0">
                 {outputs.map((output) => (
@@ -295,7 +298,7 @@ export default function PdfToolkit() {
                       onClick={() => downloadBlob(output.blob, output.name)}
                       className="cursor-pointer rounded-lg border-0 bg-blue-hover px-3 py-1.5 text-xs font-bold text-white hover:bg-navy"
                     >
-                      Download
+                      {tr("Download")}
                     </button>
                   </li>
                 ))}
@@ -309,12 +312,12 @@ export default function PdfToolkit() {
   );
 }
 
-function actionLabel(mode: Mode, count: number) {
-  if (mode === "merge") return `Merge ${count} PDF${count === 1 ? "" : "s"}`;
-  if (mode === "split") return "Split PDF";
-  if (mode === "compress") return "Compress PDF";
-  if (mode === "to-pdf") return `Make a PDF from ${count} image${count === 1 ? "" : "s"}`;
-  return "Save pages as JPG";
+function actionLabel(mode: Mode, count: number, tr: Tr) {
+  if (mode === "merge") return tr(count === 1 ? "Merge {n} PDF" : "Merge {n} PDFs", { n: count });
+  if (mode === "split") return tr("Split PDF");
+  if (mode === "compress") return tr("Compress PDF");
+  if (mode === "to-pdf") return tr(count === 1 ? "Make a PDF from {n} image" : "Make a PDF from {n} images", { n: count });
+  return tr("Save pages as JPG");
 }
 
 /** Small round row buttons (move up/down, remove): one fixed size that never shrinks or stretches, so rows stay inside the screen. */
