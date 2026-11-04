@@ -28,9 +28,10 @@ function loadSettings(): Settings {
 }
 const pad = (n: number) => String(n).padStart(2, "0");
 
-// The "Change times" form shows lengths in minutes (1.5 means 1 minute 30 seconds). The same lengths can also be set on the clock.
+// The "Change times" form works in whole minutes. Seconds are set by tapping the clock, and a length that has seconds is
+// shown here as its whole minutes with a note, so nothing is hidden.
 type Draft = Record<keyof Settings, string>;
-const minutesText = (seconds: number) => String(Math.round((seconds / 60) * 100) / 100);
+const minutesText = (seconds: number) => String(Math.floor(seconds / 60));
 const draftFrom = (s: Settings): Draft => ({
   focus: minutesText(s.focus),
   short: minutesText(s.short),
@@ -167,14 +168,21 @@ export default function FocusTimer() {
     setRemaining(lengthOf(next));
   }
 
+  // Shown under a field whose length has seconds (set on the clock), so the form never hides them.
+  const secondsNote = (p: Phase) => (settings[p] % 60 === 0 ? undefined : `Now ${Math.floor(settings[p] / 60)}:${pad(settings[p] % 60)}. Edit seconds on the clock.`);
+
   function save() {
     const shown = draftFrom(settings);
     // A field the person did not touch keeps its exact length (including seconds set on the clock).
-    const read = (p: Phase) => (draft[p] === shown[p] ? settings[p] : Math.round(toNumber(draft[p]) * 60));
+    const read = (p: Phase) => {
+      if (draft[p] === shown[p]) return settings[p];
+      const minutes = toNumber(draft[p]);
+      return Number.isInteger(minutes) ? minutes * 60 : NaN; // whole minutes only here
+    };
     const parsed: Settings = { focus: read("focus"), short: read("short"), long: read("long"), rounds: toNumber(draft.rounds) };
     const valid = (n: number, max: number) => Number.isInteger(n) && n >= 1 && n <= max;
     if (!valid(parsed.focus, limits.focus) || !valid(parsed.short, limits.short) || !valid(parsed.long, limits.long) || !valid(parsed.rounds, 12)) {
-      setFormError("Check the times: Focus up to 180 minutes, Short break up to 60, Long break up to 90, and 1 to 12 sessions.");
+      setFormError("Check the times: whole minutes only (Focus up to 180, Short break up to 60, Long break up to 90) and 1 to 12 sessions. To set seconds, tap the time in the circle.");
       return;
     }
     setFormError("");
@@ -375,9 +383,9 @@ export default function FocusTimer() {
             save();
           }}
         >
-          <NumberField label="Focus" value={draft.focus} onChange={(v) => setDraft({ ...draft, focus: v })} max={180} suffix="min" />
-          <NumberField label="Short break" value={draft.short} onChange={(v) => setDraft({ ...draft, short: v })} max={60} suffix="min" />
-          <NumberField label="Long break" value={draft.long} onChange={(v) => setDraft({ ...draft, long: v })} max={90} suffix="min" />
+          <NumberField label="Focus" value={draft.focus} onChange={(v) => setDraft({ ...draft, focus: v })} max={180} step={1} suffix="min" hint={secondsNote("focus")} />
+          <NumberField label="Short break" value={draft.short} onChange={(v) => setDraft({ ...draft, short: v })} max={60} step={1} suffix="min" hint={secondsNote("short")} />
+          <NumberField label="Long break" value={draft.long} onChange={(v) => setDraft({ ...draft, long: v })} max={90} step={1} suffix="min" hint={secondsNote("long")} />
           <NumberField label="Sessions before a long break" value={draft.rounds} onChange={(v) => setDraft({ ...draft, rounds: v })} min={1} max={12} step={1} />
           {formError && <p className="col-span-2 m-0 text-sm font-semibold text-red-600">{formError}</p>}
           <Button type="submit" className="col-span-2">
