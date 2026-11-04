@@ -275,14 +275,37 @@ export default function FocusTimer() {
         setFullscreen(false);
       }
     };
+    // Keep the phone screen awake while the full screen clock is open, so it can be read from across a desk.
+    // The browser drops this lock whenever the page is hidden, so it is asked for again when the page is back.
+    let lock: WakeLockSentinel | null = null;
+    let open = true;
+    const keepAwake = async () => {
+      try {
+        if (!("wakeLock" in navigator) || document.visibilityState !== "visible" || (lock && !lock.released)) return;
+        const sentinel = await navigator.wakeLock.request("screen");
+        if (open) lock = sentinel;
+        else void sentinel.release().catch(() => undefined);
+      } catch {
+        /* not allowed here (for example battery saver): the screen may dim as usual */
+      }
+    };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void keepAwake();
+    };
+    void keepAwake();
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
     document.addEventListener("fullscreenchange", onChange);
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
+      open = false;
+      void lock?.release().catch(() => undefined);
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKey);
       document.removeEventListener("fullscreenchange", onChange);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, [fullscreen]);
 
