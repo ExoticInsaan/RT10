@@ -168,8 +168,8 @@ export default function FocusTimer() {
     setRemaining(lengthOf(next));
   }
 
-  // Shown under a field whose length has seconds (set on the clock), so the form never hides them.
-  const secondsNote = (p: Phase) => (settings[p] % 60 === 0 ? undefined : `Now ${Math.floor(settings[p] / 60)}:${pad(settings[p] % 60)}. Edit seconds on the clock.`);
+  // Shown under a field whose length has seconds (set on the clock), so the form never hides them. Information only.
+  const secondsNote = (p: Phase) => (settings[p] % 60 === 0 ? undefined : `Now ${Math.floor(settings[p] / 60)}:${pad(settings[p] % 60)}`);
 
   function save() {
     const shown = draftFrom(settings);
@@ -182,7 +182,7 @@ export default function FocusTimer() {
     const parsed: Settings = { focus: read("focus"), short: read("short"), long: read("long"), rounds: toNumber(draft.rounds) };
     const valid = (n: number, max: number) => Number.isInteger(n) && n >= 1 && n <= max;
     if (!valid(parsed.focus, limits.focus) || !valid(parsed.short, limits.short) || !valid(parsed.long, limits.long) || !valid(parsed.rounds, 12)) {
-      setFormError("Check the times: whole minutes only (Focus up to 180, Short break up to 60, Long break up to 90) and 1 to 12 sessions. To set seconds, tap the time in the circle.");
+      setFormError("Check the times: whole minutes only (Focus up to 180, Short break up to 60, Long break up to 90) and 1 to 12 sessions.");
       return;
     }
     setFormError("");
