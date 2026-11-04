@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { FitBox, GameShell, useTimers } from "@/components/fun/kit";
+import { useTr } from "@/lib/tools/useTr";
 
 const COLORS = ["#f43f5e", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"];
 const CONF = ["#f43f5e", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#fff"];
@@ -17,7 +18,8 @@ const spinBtn =
   "min-h-[58px] w-full cursor-pointer rounded-[18px] border-0 bg-[#2563eb] px-[18px] py-3.5 text-[19px] font-black tracking-[.02em] text-white shadow-[0_6px_0_#1e40af,0_14px_24px_rgba(30,64,175,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#1e40af] disabled:cursor-default disabled:opacity-50";
 
 export default function DecisionWheel() {
-  const [opts, setOpts] = useState(["Pizza", "Biryani", "Dosa"]);
+  const tr = useTr();
+  const [opts, setOpts] = useState(() => [tr("Pizza"), tr("Biryani"), tr("Dosa")]);
   const [draft, setDraft] = useState("");
   const [rot, setRot] = useState(0);
   const [spinning, setSpinning] = useState(false);
@@ -117,7 +119,7 @@ export default function DecisionWheel() {
               />
             ))}
             <div className="absolute -bottom-1 left-1/2 z-[4] animate-fz-banner whitespace-nowrap rounded-[18px] bg-[#102a4c] px-[18px] py-2.5 text-center text-white shadow-[0_10px_24px_rgba(16,42,76,.35)]">
-              <div className="text-[11px] font-extrabold tracking-[.14em] text-[#93c5fd]">THE WHEEL HAS SPOKEN</div>
+              <div className="text-[11px] font-extrabold tracking-[.14em] text-[#93c5fd]">{tr("THE WHEEL HAS SPOKEN")}</div>
               <div className="font-display text-[28px] leading-[1.1]">{opts[winner]}</div>
             </div>
           </>
@@ -129,14 +131,14 @@ export default function DecisionWheel() {
   const controls = (
     <>
       <div className="flex flex-col gap-2">
-        <label htmlFor="wheel-opt" className="text-sm font-bold text-[#3d5a80]">Your options ({n}/8)</label>
+        <label htmlFor="wheel-opt" className="text-sm font-bold text-[#3d5a80]">{tr("Your options ({n}/8)", { n })}</label>
         <div className="flex gap-2">
           <input
             id="wheel-opt"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && add()}
-            placeholder="Add an option"
+            placeholder={tr("Add an option")}
             maxLength={18}
             autoComplete="off"
             className="box-border min-w-0 flex-1 rounded-[14px] border-2 border-[#c7dcfb] bg-white px-3.5 py-[13px] text-base font-medium text-[#102a4c] outline-none placeholder:text-[#8aa3c4] focus:border-[#2563eb] focus:shadow-[0_0_0_4px_rgba(37,99,235,.15)]"
@@ -147,7 +149,7 @@ export default function DecisionWheel() {
             disabled={!draft.trim() || n >= 8 || spinning}
             className="min-h-[50px] cursor-pointer rounded-[14px] border-0 bg-[#102a4c] px-4 text-[15px] font-extrabold text-white shadow-[0_4px_0_#050f1f] active:translate-y-[3px] active:shadow-[0_1px_0_#050f1f] disabled:cursor-default disabled:opacity-45"
           >
-            Add
+            {tr("Add")}
           </button>
         </div>
         <div className="flex min-h-[38px] flex-wrap gap-2">
@@ -159,7 +161,7 @@ export default function DecisionWheel() {
                 type="button"
                 onClick={() => remove(i)}
                 disabled={spinning}
-                aria-label={`Remove ${t}`}
+                aria-label={tr("Remove {name}", { name: t })}
                 className="flex size-[30px] shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-[#eef4ff] p-0 text-[#1e40af] hover:bg-[#dbe7fe] disabled:cursor-default"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
@@ -169,7 +171,7 @@ export default function DecisionWheel() {
         </div>
       </div>
       <button type="button" className={spinBtn} onClick={spin} disabled={n < 2 || spinning}>
-        {spinning ? "Spinning…" : n < 2 ? "Add at least 2 options" : hasWinner ? "Spin again" : "Spin"}
+        {spinning ? tr("Spinning…") : n < 2 ? tr("Add at least 2 options") : hasWinner ? tr("Spin again") : tr("Spin")}
       </button>
     </>
   );

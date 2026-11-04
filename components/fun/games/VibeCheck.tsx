@@ -5,6 +5,7 @@ import CardVibe from "@/components/fun/cards/CardVibe";
 import CardActions from "@/components/fun/CardActions";
 import { GameShell, OwlPeek, hash, useTimers } from "@/components/fun/kit";
 import { resultLink } from "@/lib/fun/results";
+import { useTr } from "@/lib/tools/useTr";
 
 type Phase = "input" | "loading" | "result";
 
@@ -56,6 +57,7 @@ const ghost =
   "min-h-[50px] cursor-pointer rounded-2xl border-2 border-[#d4d7fb] bg-white px-3.5 py-3 text-[15px] font-extrabold text-[#312e81] shadow-[0_5px_0_#d4d7fb] active:translate-y-[3px] active:shadow-[0_2px_0_#d4d7fb]";
 
 export default function VibeCheck() {
+  const tr = useTr();
   const [phase, setPhase] = useState<Phase>("input");
   const [name, setName] = useState("");
   const cardRef = useRef<HTMLDivElement>(null);
@@ -108,7 +110,7 @@ export default function VibeCheck() {
           }}
         />
         <div className="absolute inset-x-0 bottom-4 text-center font-display text-[22px] text-white">
-          {phase === "loading" ? "Reading your aura, hold up…" : "Your aura is waiting fr"}
+          {phase === "loading" ? tr("Reading your aura, hold up…") : tr("Your aura is waiting fr")}
         </div>
       </div>
     ) : (
@@ -125,27 +127,27 @@ export default function VibeCheck() {
     phase === "input" ? (
       <>
         <div className="flex flex-col gap-2">
-          <label htmlFor="vibe-name" className="text-sm font-bold text-[#4b4a7a]">Your name</label>
+          <label htmlFor="vibe-name" className="text-sm font-bold text-[#4b4a7a]">{tr("Your name")}</label>
           <input
             id="vibe-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && check()}
-            placeholder="Type your name"
+            placeholder={tr("Type your name")}
             maxLength={30}
             autoComplete="off"
             className="box-border w-full rounded-2xl border-2 border-[#d4d7fb] bg-white px-4 py-[15px] text-base font-medium text-[#1e1b4b] outline-none placeholder:text-[#9a9ccc] focus:border-[#6366f1] focus:shadow-[0_0_0_4px_rgba(99,102,241,.18)] sm:text-[17px]"
           />
         </div>
-        <button type="button" className={btn} onClick={check} disabled={!name.trim()}>Check the vibe</button>
-        <p className="m-0 text-center text-[13px] font-semibold text-[#4b4a7a]">Your vibe changes every day at midnight.</p>
+        <button type="button" className={btn} onClick={check} disabled={!name.trim()}>{tr("Check the vibe")}</button>
+        <p className="m-0 text-center text-[13px] font-semibold text-[#4b4a7a]">{tr("Your vibe changes every day at midnight.")}</p>
         <div className="-mb-6 flex h-[92px] justify-end overflow-hidden pr-0 lg:hidden">
           <OwlPeek className="w-[118px]" />
         </div>
       </>
     ) : phase === "result" ? (
       <div className="flex flex-col items-center gap-3.5">
-        <div className="text-[13px] font-bold text-[#4b4a7a]">New vibe in {Math.floor(mins / 60)}h {mins % 60}m</div>
+        <div className="text-[13px] font-bold text-[#4b4a7a]">{tr("New vibe in {h}h {m}m", { h: Math.floor(mins / 60), m: mins % 60 })}</div>
         <CardActions
           getNode={() => cardRef.current}
           fileName="vibe-check-toppershelf.png"
@@ -154,7 +156,7 @@ export default function VibeCheck() {
           btnClass={`${btn} !min-h-[50px] !text-[15px]`}
           ghostClass={ghost}
         />
-        <button type="button" className={`${ghost} w-full`} onClick={() => { setPhase("input"); setName(""); }}>Check someone</button>
+        <button type="button" className={`${ghost} w-full`} onClick={() => { setPhase("input"); setName(""); }}>{tr("Check someone")}</button>
       </div>
     ) : null;
 

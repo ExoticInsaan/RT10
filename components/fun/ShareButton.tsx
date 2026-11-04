@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { canNativeShare, nativeShare, whatsappHref } from "@/lib/fun/friends";
+import { useTr } from "@/lib/tools/useTr";
 
 const subscribe = () => () => {};
 
@@ -28,6 +29,7 @@ export default function ShareButton({
   /** Called if the share sheet fails to open, so the caller can copy the link. */
   onFallback?: () => void;
 }) {
+  const tr = useTr();
   const canShare = useSyncExternalStore(subscribe, canNativeShare, () => false);
   if (canShare) {
     return (
@@ -38,13 +40,13 @@ export default function ShareButton({
           if (!(await nativeShare(title, text, url))) onFallback?.();
         }}
       >
-        Share
+        {tr("Share")}
       </button>
     );
   }
   return (
     <a className={whatsappClass} href={whatsappHref(text, url)} target="_blank" rel="noopener">
-      Send on WhatsApp
+      {tr("Send on WhatsApp")}
     </a>
   );
 }

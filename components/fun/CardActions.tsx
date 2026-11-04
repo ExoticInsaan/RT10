@@ -4,6 +4,7 @@ import { useState } from "react";
 import { copyText } from "@/components/fun/kit";
 import { cardToBlob, downloadBlob, shareImage } from "@/lib/fun/cardImage";
 import { nativeShare } from "@/lib/fun/friends";
+import { useTr } from "@/lib/tools/useTr";
 
 /**
  * Download card + Share card under a story card.
@@ -26,6 +27,7 @@ export default function CardActions({
   btnClass: string;
   ghostClass: string;
 }) {
+  const tr = useTr();
   const [busy, setBusy] = useState<"" | "download" | "share">("");
   const [note, setNote] = useState("");
 
@@ -41,9 +43,9 @@ export default function CardActions({
     setNote("");
     try {
       downloadBlob(await draw(), fileName);
-      setNote("Card saved.");
+      setNote(tr("Card saved."));
     } catch {
-      setNote("Could not make the card. Please try again.");
+      setNote(tr("Could not make the card. Please try again."));
     }
     setBusy("");
   }
@@ -60,14 +62,14 @@ export default function CardActions({
           /* link shared */
         } else if (shareUrl) {
           copyText(shareUrl);
-          setNote("Link copied. Paste it in any chat.");
+          setNote(tr("Link copied. Paste it in any chat."));
         } else {
           downloadBlob(blob, fileName);
-          setNote("Card saved. Share it from your gallery.");
+          setNote(tr("Card saved. Share it from your gallery."));
         }
       }
     } catch {
-      setNote("Could not make the card. Please try again.");
+      setNote(tr("Could not make the card. Please try again."));
     }
     setBusy("");
   }
@@ -75,8 +77,8 @@ export default function CardActions({
   return (
     <div className="w-full">
       <div className="grid w-full grid-cols-2 gap-3">
-        <button type="button" className={ghostClass} onClick={download} disabled={!!busy}>{busy === "download" ? "Making…" : "Download card"}</button>
-        <button type="button" className={btnClass} onClick={share} disabled={!!busy}>{busy === "share" ? "Opening…" : "Share card"}</button>
+        <button type="button" className={ghostClass} onClick={download} disabled={!!busy}>{busy === "download" ? tr("Making…") : tr("Download card")}</button>
+        <button type="button" className={btnClass} onClick={share} disabled={!!busy}>{busy === "share" ? tr("Opening…") : tr("Share card")}</button>
       </div>
       <p className="m-0 mt-2 min-h-5 text-center text-[13px] font-semibold opacity-80" role="status">{note}</p>
     </div>
