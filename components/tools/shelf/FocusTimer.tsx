@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/tools/ui";
 import { NumberField, Segmented, readStored, toNumber, writeStored } from "@/components/tools/kit";
 
@@ -40,6 +41,15 @@ const draftFrom = (s: Settings): Draft => ({
 });
 // Three-digit minutes (100 and up) are one character wider, so the digits get a size smaller to stay inside the ring.
 const digitSize = (small: boolean) => (small ? "text-5xl sm:text-6xl" : "text-6xl sm:text-7xl");
+// Leaves the browser's own full screen too, when the page was able to enter it (not every phone or app view allows that).
+function leaveBrowserFullscreen() {
+  try {
+    if (document.fullscreenElement) void document.exitFullscreen();
+  } catch {
+    /* nothing to leave */
+  }
+}
+
 const names: Record<Phase, string> = { focus: "Focus", short: "Short break", long: "Long break" };
 
 const todayKey = () => new Date().toDateString();
@@ -86,6 +96,9 @@ export default function FocusTimer() {
   // Minutes and seconds typed into the clock when the person taps it. null = not editing.
   const [timeEdit, setTimeEdit] = useState<{ m: string; s: string } | null>(null);
   const secondsInput = useRef<HTMLInputElement>(null);
+  // Full screen view: a big clock with Start/Pause and a minimize button. The timer itself keeps running underneath.
+  const [fullscreen, setFullscreen] = useState(false);
+  const usedBrowserFullscreen = useRef(false);
   const [notify, setNotify] = useState(() => typeof Notification !== "undefined" && Notification.permission === "granted");
   const originalTitle = useRef("");
 
@@ -223,7 +236,58 @@ export default function FocusTimer() {
     setTimeEdit(null);
   }
 
+  function openFullscreen() {
+    setTimeEdit(null);
+    setEditing(false);
+    setFullscreen(true);
+    try {
+      const request = document.documentElement.requestFullscreen?.();
+      if (request) {
+        usedBrowserFullscreen.current = true;
+        request.catch(() => {
+          usedBrowserFullscreen.current = false; // not allowed here: the full screen view still covers the whole page
+        });
+      }
+    } catch {
+      usedBrowserFullscreen.current = false;
+    }
+  }
+
+  function closeFullscreen() {
+    setFullscreen(false);
+    usedBrowserFullscreen.current = false;
+    leaveBrowserFullscreen();
+  }
+
+  useEffect(() => {
+    if (!fullscreen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setFullscreen(false);
+        usedBrowserFullscreen.current = false;
+        leaveBrowserFullscreen();
+      }
+    };
+    // The person left the browser's full screen with the system gesture or Esc: close ours too.
+    const onChange = () => {
+      if (usedBrowserFullscreen.current && !document.fullscreenElement) {
+        usedBrowserFullscreen.current = false;
+        setFullscreen(false);
+      }
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("fullscreenchange", onChange);
+    };
+  }, [fullscreen]);
+
   const ring = 2 * Math.PI * 120;
+  const bigSize = "min(84vw, 58vh)"; // diameter of the ring in the full screen view
 
   return (
     <div className="mx-auto grid max-w-xl justify-items-center gap-6">
@@ -235,6 +299,17 @@ export default function FocusTimer() {
       />
 
       <div className="relative grid size-64 place-items-center sm:size-72">
+        <button
+          type="button"
+          onClick={openFullscreen}
+          aria-label="Full screen"
+          title="Full screen"
+          className="absolute -right-8 -top-[18px] z-10 grid size-9 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy shadow-sm transition hover:bg-blue-soft"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3" />
+          </svg>
+        </button>
         <svg viewBox="0 0 260 260" className="pointer-events-none absolute inset-0 size-full -rotate-90" aria-hidden="true">
           <circle cx="130" cy="130" r="120" fill="none" stroke="currentColor" strokeWidth="10" className="text-surface" />
           <circle
@@ -396,6 +471,63 @@ export default function FocusTimer() {
       <p className="m-0 max-w-md text-center text-xs leading-5 text-muted">
         Keep this tab open. The timer keeps time when you switch tabs and plays a chime when a session ends.
       </p>
+
+      {fullscreen &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${names[phase]} timer, full screen`}
+            className="fixed inset-0 z-[1000] grid grid-rows-[auto_1fr_auto] bg-ivory px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <p className="m-0 text-base font-bold text-muted">{phase === "focus" ? `Focus · Session ${round} of ${settings.rounds}` : names[phase]}</p>
+              <button
+                type="button"
+                onClick={closeFullscreen}
+                aria-label="Minimize"
+                title="Minimize"
+                className="grid size-11 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy shadow-sm transition hover:bg-blue-soft"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M3 8h3a2 2 0 0 0 2-2V3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M21 16h-3a2 2 0 0 0-2 2v3" />
+                </svg>
+              </button>
+            </div>
+            <div className="grid place-items-center">
+              <div className="relative grid place-items-center" style={{ width: bigSize, height: bigSize }}>
+                <svg viewBox="0 0 260 260" className="pointer-events-none absolute inset-0 size-full -rotate-90" aria-hidden="true">
+                  <circle cx="130" cy="130" r="120" fill="none" stroke="currentColor" strokeWidth="10" className="text-surface" />
+                  <circle
+                    cx="130"
+                    cy="130"
+                    r="120"
+                    fill="none"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    stroke="currentColor"
+                    className={phase === "focus" ? "text-blue-hover" : "text-emerald-500"}
+                    strokeDasharray={ring}
+                    strokeDashoffset={ring * (1 - progress)}
+                  />
+                </svg>
+                <span
+                  data-fullscreen-clock
+                  className="font-extrabold leading-none tracking-tight tabular-nums text-navy"
+                  style={{ fontSize: `calc(${bigSize} * ${clock(remaining).length > 5 ? 0.19 : 0.25})` }}
+                >
+                  {clock(remaining)}
+                </span>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <Button className="min-w-44" onClick={() => setEndAt(running ? null : Date.now() + remaining)}>
+                {running ? "Pause" : remaining < total ? "Resume" : "Start"}
+              </Button>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
