@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useTr } from "@/lib/tools/useTr";
 
 /** Small notice while the phone has no internet, so people know what still works. Renders nothing when online. */
 export default function OfflineBanner() {
+  const tr = useTr();
   const [offline, setOffline] = useState(() => !navigator.onLine);
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export default function OfflineBanner() {
   return (
     <div role="status" className="pointer-events-none absolute inset-x-0 bottom-[calc(88px+env(safe-area-inset-bottom))] z-40 flex justify-center px-4">
       <p className="m-0 max-w-sm rounded-full bg-navy px-4 py-2 text-center text-xs font-bold leading-5 text-white shadow-card">
-        You&rsquo;re offline. Your tools still work and changes sync when you&rsquo;re back online.
+        {tr("You’re offline. Your tools still work and changes sync when you’re back online.")}
       </p>
     </div>
   );

@@ -17,6 +17,10 @@ const english: Tr = (en, params) => fillParams(en, params);
 export const TrContext = createContext<Tr>(english);
 export const useTr = () => useContext(TrContext);
 
+/** The language tag for dates and times. The website keeps en-IN; the Android app passes hi-IN when Hindi is chosen. */
+export const LocaleContext = createContext("en-IN");
+export const useLocale = () => useContext(LocaleContext);
+
 /** Renders text where <b>…</b> marks the bold parts, so a whole sentence can be translated as one piece. */
 export function Rich({ text }: { text: string }) {
   return (

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { TrContext, fillParams, type Tr } from "@/lib/tools/useTr";
+import { LocaleContext, TrContext, fillParams, type Tr } from "@/lib/tools/useTr";
 import { toolStringsHi } from "./toolStrings.hi";
 import { DEFAULT_LANG, LANG_STORAGE_KEY, isLang, translate, type Lang, type TranslationKey } from "./index";
 
@@ -49,7 +49,9 @@ export default function LanguageProvider({ children }: { children: ReactNode }) 
 
   return (
     <Ctx.Provider value={value}>
-      <TrContext.Provider value={tr}>{children}</TrContext.Provider>
+      <TrContext.Provider value={tr}>
+        <LocaleContext.Provider value={lang === "hi" ? "hi-IN" : "en-IN"}>{children}</LocaleContext.Provider>
+      </TrContext.Provider>
     </Ctx.Provider>
   );
 }

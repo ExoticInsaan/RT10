@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/tools/ui";
 import { NumberField, Segmented, readStored, toNumber, writeStored } from "@/components/tools/kit";
+import { useTr } from "@/lib/tools/useTr";
 
 type Phase = "focus" | "short" | "long";
 type Settings = { focus: number; short: number; long: number; rounds: number };
@@ -40,6 +41,7 @@ function chime() {
 }
 
 export default function FocusTimer() {
+  const tr = useTr();
   // Tools only render in the browser, so saved settings and today's count can be read straight away.
   const [settings, setSettings] = useState<Settings>(() => ({ ...defaults, ...readStored<Partial<Settings>>(SETTINGS_KEY, {}) }));
   const [draft, setDraft] = useState<Record<keyof Settings, string>>(() => ({
@@ -86,7 +88,7 @@ export default function FocusTimer() {
     }
     if (completed && notify) {
       try {
-        new Notification(phase === "focus" ? "Focus session done. Take a break." : "Break's over. Back to it.", { icon: "/icon.png" });
+        new Notification(phase === "focus" ? tr("Focus session done. Take a break.") : tr("Break's over. Back to it."), { icon: "/icon.png" });
       } catch {
         /* notifications unavailable */
       }
@@ -94,7 +96,7 @@ export default function FocusTimer() {
     setPhase(next);
     setEndAt(null);
     setRemaining(lengthOf(next));
-  }, [phase, round, settings.rounds, doneToday, notify, lengthOf]);
+  }, [phase, round, settings.rounds, doneToday, notify, lengthOf, tr]);
 
   // Tells anything listening (the Android app schedules a phone notification for the end time) when the timer starts or stops.
   // The website has no listener, so nothing happens there.
@@ -119,13 +121,13 @@ export default function FocusTimer() {
       if (left <= 0) finish(true);
       else {
         setRemaining(left);
-        document.title = `${clock(left)} · ${names[phase]}`;
+        document.title = `${clock(left)} · ${tr(names[phase])}`;
       }
     };
     tick();
     const timer = setInterval(tick, 250);
     return () => clearInterval(timer);
-  }, [endAt, phase, finish]);
+  }, [endAt, phase, finish, tr]);
 
   const running = endAt !== null;
   const total = lengthOf(phase);
@@ -158,10 +160,10 @@ export default function FocusTimer() {
   return (
     <div className="mx-auto grid max-w-xl justify-items-center gap-6">
       <Segmented
-        label="Session type"
+        label={tr("Session type")}
         value={phase}
         onChange={switchTo}
-        options={(["focus", "short", "long"] as Phase[]).map((p) => ({ value: p, label: names[p] }))}
+        options={(["focus", "short", "long"] as Phase[]).map((p) => ({ value: p, label: tr(names[p]) }))}
       />
 
       <div className="relative grid size-64 place-items-center sm:size-72">
@@ -185,30 +187,32 @@ export default function FocusTimer() {
             {clock(remaining)}
           </p>
           <p className="m-0 mt-1 text-sm font-semibold text-muted">
-            {phase === "focus" ? `Session ${round} of ${settings.rounds}` : names[phase]}
+            {phase === "focus" ? tr("Session {n} of {total}", { n: round, total: settings.rounds }) : tr(names[phase])}
           </p>
         </div>
       </div>
 
       <div className="flex flex-wrap justify-center gap-3">
         <Button className="min-w-36" onClick={() => setEndAt(running ? null : Date.now() + remaining)}>
-          {running ? "Pause" : remaining < total ? "Resume" : "Start"}
+          {running ? tr("Pause") : remaining < total ? tr("Resume") : tr("Start")}
         </Button>
         <Button variant="secondary" onClick={() => switchTo(phase)}>
-          Reset
+          {tr("Reset")}
         </Button>
         <Button variant="ghost" onClick={() => finish(false)}>
-          Skip
+          {tr("Skip")}
         </Button>
       </div>
 
       <p className="m-0 text-sm text-muted">
-        {doneToday === 0 ? "No focus sessions finished today yet." : `${doneToday} focus session${doneToday === 1 ? "" : "s"} finished today.`}
+        {doneToday === 0
+          ? tr("No focus sessions finished today yet.")
+          : tr(doneToday === 1 ? "{n} focus session finished today." : "{n} focus sessions finished today.", { n: doneToday })}
       </p>
 
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
         <button type="button" onClick={() => setEditing(!editing)} className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover underline-offset-4 hover:underline">
-          {editing ? "Close settings" : "Change times"}
+          {editing ? tr("Close settings") : tr("Change times")}
         </button>
         {typeof Notification !== "undefined" && !notify && (
           <button
@@ -216,7 +220,7 @@ export default function FocusTimer() {
             onClick={() => Notification.requestPermission().then((p) => setNotify(p === "granted"))}
             className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover underline-offset-4 hover:underline"
           >
-            Notify me when time&apos;s up
+            {tr("Notify me when time's up")}
           </button>
         )}
       </div>
@@ -229,17 +233,17 @@ export default function FocusTimer() {
             save();
           }}
         >
-          <NumberField label="Focus" value={draft.focus} onChange={(v) => setDraft({ ...draft, focus: v })} min={1} max={180} step={1} suffix="min" />
-          <NumberField label="Short break" value={draft.short} onChange={(v) => setDraft({ ...draft, short: v })} min={1} max={60} step={1} suffix="min" />
-          <NumberField label="Long break" value={draft.long} onChange={(v) => setDraft({ ...draft, long: v })} min={1} max={90} step={1} suffix="min" />
-          <NumberField label="Sessions before a long break" value={draft.rounds} onChange={(v) => setDraft({ ...draft, rounds: v })} min={1} max={12} step={1} />
+          <NumberField label={tr("Focus")} value={draft.focus} onChange={(v) => setDraft({ ...draft, focus: v })} min={1} max={180} step={1} suffix={tr("min")} />
+          <NumberField label={tr("Short break")} value={draft.short} onChange={(v) => setDraft({ ...draft, short: v })} min={1} max={60} step={1} suffix={tr("min")} />
+          <NumberField label={tr("Long break")} value={draft.long} onChange={(v) => setDraft({ ...draft, long: v })} min={1} max={90} step={1} suffix={tr("min")} />
+          <NumberField label={tr("Sessions before a long break")} value={draft.rounds} onChange={(v) => setDraft({ ...draft, rounds: v })} min={1} max={12} step={1} />
           <Button type="submit" className="col-span-2">
-            Save times
+            {tr("Save times")}
           </Button>
         </form>
       )}
       <p className="m-0 max-w-md text-center text-xs leading-5 text-muted">
-        Keep this tab open. The timer keeps time when you switch tabs and plays a chime when a session ends.
+        {tr("Keep this tab open. The timer keeps time when you switch tabs and plays a chime when a session ends.")}
       </p>
     </div>
   );
