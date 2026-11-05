@@ -5,7 +5,7 @@ import CardVibe from "@/components/fun/cards/CardVibe";
 import CardActions from "@/components/fun/CardActions";
 import { GameShell, OwlPeek, hash, useTimers } from "@/components/fun/kit";
 import { resultLink } from "@/lib/fun/results";
-import { useTr } from "@/lib/tools/useTr";
+import { useHindi, useTr } from "@/lib/tools/useTr";
 
 type Phase = "input" | "loading" | "result";
 
@@ -39,14 +39,30 @@ export const dayKey = (t: number) => {
 };
 
 /** Same name on the same day gives the same vibe; it changes at midnight. */
-export function vibeFor(name: string, day: string) {
+const VIBES_HI = [
+  { n: "मेन कैरेक्टर", l: "आज आप मेन कैरेक्टर हैं। धीरे चलें, खिड़की से बाहर देखें, कोई झूठ नहीं।" },
+  { n: "अच्छी अफ़रा-तफ़री", l: "आप गड़बड़ करेंगे, पर मदद वाली गड़बड़। नेक दिल की अफ़रा-तफ़री।" },
+  { n: "ऊँघता जीनियस", l: "दिमाग़ 200% पर, आँखें 12% पर। आपका सबसे अच्छा आइडिया रात 2 बजे आएगा।" },
+  { n: "बेफ़िक्र शहज़ादा", l: "आज कुछ भी आपको हिला नहीं सकता। सरप्राइज़ टेस्ट भी नहीं।" },
+  { n: "गोल्डन रिट्रीवर", l: "पूरी धूप वाली एनर्जी। आज आप कम से कम 3 लोगों का हौसला बढ़ाएँगे।" },
+  { n: "लो-फ़ाई फ़ोकस", l: "हेडफ़ोन ऑन, दुनिया ऑफ़। आज आप सच में काम पूरा कर लेंगे।" },
+  { n: "चाय के दार्शनिक", l: "गहरे विचार, एक-एक कप के साथ। दोपहर से पहले बहस से बचें।" },
+  { n: "प्लॉट ट्विस्ट आने वाला है", l: "कुछ ज़बरदस्त लोड हो रहा है। फ़ोन चार्ज रखें।" },
+  { n: "सॉफ़्ट लॉन्च", l: "चुपचाप लेवल अप हो रहे हैं। अभी किसी को पता नहीं, और यही मज़ा है।" },
+  { n: "विलेन आर्क (काम का)", l: "बदला, लेकिन एकदम परफ़ेक्ट असाइनमेंट के रूप में। छोटी बात है पर काम करती है।" },
+];
+const METERS_HI: Record<string, string> = { ENERGY: "एनर्जी", AURA: "ऑरा", CHAOS: "अफ़रा-तफ़री" };
+
+export function vibeFor(name: string, day: string, hi = false) {
   const h = hash("vibe:" + name.trim().toLowerCase() + ":" + day);
+  const base = VIBES[h % VIBES.length];
+  const label = (l: string) => (hi ? METERS_HI[l] : l);
   return {
-    v: VIBES[h % VIBES.length],
+    v: hi ? { ...base, ...VIBES_HI[h % VIBES.length] } : base,
     meters: [
-      { label: "ENERGY", v: 20 + ((h >>> 4) % 81) },
-      { label: "AURA", v: 30 + ((h >>> 9) % 71) },
-      { label: "CHAOS", v: (h >>> 14) % 101 },
+      { label: label("ENERGY"), v: 20 + ((h >>> 4) % 81) },
+      { label: label("AURA"), v: 30 + ((h >>> 9) % 71) },
+      { label: label("CHAOS"), v: (h >>> 14) % 101 },
     ],
   };
 }
@@ -58,6 +74,7 @@ const ghost =
 
 export default function VibeCheck() {
   const tr = useTr();
+  const hi = useHindi();
   const [phase, setPhase] = useState<Phase>("input");
   const [name, setName] = useState("");
   const cardRef = useRef<HTMLDivElement>(null);
@@ -68,7 +85,7 @@ export default function VibeCheck() {
     return () => window.clearInterval(id);
   }, []);
 
-  const r = phase === "result" ? vibeFor(name, dayKey(now)) : null;
+  const r = phase === "result" ? vibeFor(name, dayKey(now), hi) : null;
   const orb = r ? { a: r.v.a, b: r.v.b } : phase === "loading" ? { a: "#f0abfc", b: "#c026d3" } : { a: "#a5b4fc", b: "#6366f1" };
   const speed = phase === "loading" ? 0.35 : 1;
   const d = new Date(now);
@@ -151,7 +168,7 @@ export default function VibeCheck() {
         <CardActions
           getNode={() => cardRef.current}
           fileName="vibe-check-toppershelf.png"
-          shareText={`${name.trim()}'s vibe today: ${r!.v.n}. What's yours?`}
+          shareText={tr("{name}'s vibe today: {vibe}. What's yours?", { name: name.trim(), vibe: r!.v.n })}
           shareUrl={resultLink("vibe", { n: name.trim(), d: dayKey(now) })}
           btnClass={`${btn} !min-h-[50px] !text-[15px]`}
           ghostClass={ghost}

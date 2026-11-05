@@ -21,6 +21,9 @@ export const useTr = () => useContext(TrContext);
 export const LocaleContext = createContext("en-IN");
 export const useLocale = () => useContext(LocaleContext);
 
+/** True when the app is showing Hindi. Games use it to pick Hindi wording for text they build from parts. */
+export const useHindi = () => useContext(LocaleContext).startsWith("hi");
+
 /** Renders text where <b>…</b> marks the bold parts, so a whole sentence can be translated as one piece. */
 export function Rich({ text }: { text: string }) {
   return (

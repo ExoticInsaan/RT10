@@ -5,29 +5,43 @@ import CardExcuse from "@/components/fun/cards/CardExcuse";
 import CardActions from "@/components/fun/CardActions";
 import { GameShell, hash, useTimers } from "@/components/fun/kit";
 import { resultLink } from "@/lib/fun/results";
+import { useHindi, useTr } from "@/lib/tools/useTr";
 
 const LISTS = [
   ["My neighbour’s goat", "A random auto driver", "Nani’s WhatsApp group", "The wifi router", "A very confident pigeon", "My little cousin", "Mercury in retrograde", "The building lift", "My phone’s autocorrect", "A sus monsoon cloud"],
   ["ate my charger", "kidnapped my alarm", "sent a 40 min voice note", "locked the bathroom door", "started a staring contest", "hid my left shoe", "updated itself overnight", "declared a holiday", "sat on my notebook", "got stuck between floors"],
   ["so I had to negotiate", "and I'm still not okay", "so time just stopped", "and they almost called the police", "so I took the long way via Bhopal", "and ngl, respect", "so I followed the rules", "my horoscope literally warned me", "so I waited for justice", "and nobody believes me fr"],
 ];
+// Hindi wording is written to join as "<who> ने <did>, <then>।": every "did" phrase is a transitive one, so the "ने" always fits.
+const LISTS_HI = [
+  ["पड़ोस की बकरी", "एक रैंडम ऑटो वाले", "नानी के WhatsApp ग्रुप", "वाईफ़ाई राउटर", "एक बहुत कॉन्फ़िडेंट कबूतर", "मेरे छोटे कज़िन", "बुध की वक्री चाल", "बिल्डिंग की लिफ़्ट", "मेरे फ़ोन के ऑटोकरेक्ट", "एक शक्की मानसूनी बादल"],
+  ["मेरा चार्जर खा लिया", "मेरा अलार्म अग़वा कर लिया", "40 मिनट का वॉइस नोट भेज दिया", "बाथरूम का दरवाज़ा बंद कर दिया", "घूरने की प्रतियोगिता शुरू कर दी", "मेरा बायाँ जूता छिपा दिया", "रातों-रात ख़ुद को अपडेट कर लिया", "छुट्टी घोषित कर दी", "मेरी नोटबुक पर क़ब्ज़ा कर लिया", "मुझे दो फ़्लोर के बीच फँसा दिया"],
+  ["इसलिए मुझे मोलभाव करना पड़ा", "और मैं अब भी ठीक नहीं हूँ", "तो समय बस रुक गया", "और बात पुलिस तक पहुँचने वाली थी", "तो मैं भोपाल वाले लंबे रास्ते से गया", "और सच कहूँ तो, रिस्पेक्ट", "तो मैंने नियम मान लिए", "मेरे राशिफल में तो पहले ही चेतावनी थी", "तो मैंने इंसाफ़ का इंतज़ार किया", "और कोई मेरी बात पर यक़ीन नहीं करता, सच में"],
+];
 const LABELS = ["WHO", "DID WHAT", "AND THEN"];
+
+/** The three chosen pieces as one sentence (the story card text). */
+const joinParts = (idx: number[], hi: boolean) =>
+  hi ? `${LISTS_HI[0][idx[0]]} ने ${LISTS_HI[1][idx[1]]}, ${LISTS_HI[2][idx[2]]}।` : `${LISTS[0][idx[0]]} ${LISTS[1][idx[1]]}, ${LISTS[2][idx[2]]}.`;
+const sorry = (situation: string, hi: boolean) => {
+  const s = situation.trim();
+  return hi ? `${s} के लिए सॉरी।` : `Sorry about ${s.charAt(0).toLowerCase() + s.slice(1)}.`;
+};
 const DURS = [1.6, 1.9, 2.2];
 
 /** Same situation + same roll number always gives the same excuse. */
-export function excuseFor(situation: string, roll: number) {
+export function excuseFor(situation: string, roll: number, hi = false) {
   const sit = situation.trim();
   const h = hash("excuse:" + sit.toLowerCase() + ":" + roll);
   const idx = [h % 10, (h >>> 4) % 10, (h >>> 8) % 10];
   const believe = 3 + (hash("believe:" + sit.toLowerCase() + ":" + roll) % 95);
-  const lead = sit.charAt(0).toLowerCase() + sit.slice(1);
-  return { idx, believe, text: `Sorry about ${lead}. ${LISTS[0][idx[0]]} ${LISTS[1][idx[1]]}, ${LISTS[2][idx[2]]}.` };
+  return { idx, believe, text: `${sorry(sit, hi)} ${joinParts(idx, hi)}` };
 }
 
 /** The pieces of the excuse as shown on the story card (same situation and roll give the same excuse). */
-export function excuseParts(situation: string, roll: number) {
-  const e = excuseFor(situation, roll);
-  return { text: `${LISTS[0][e.idx[0]]} ${LISTS[1][e.idx[1]]}, ${LISTS[2][e.idx[2]]}.`, believe: e.believe };
+export function excuseParts(situation: string, roll: number, hi = false) {
+  const e = excuseFor(situation, roll, hi);
+  return { text: joinParts(e.idx, hi), believe: e.believe };
 }
 
 const btn =
@@ -36,6 +50,9 @@ const ghost =
   "min-h-14 cursor-pointer rounded-[18px] border-2 border-[#d6ccff] bg-white px-4 py-3 text-[17px] font-extrabold text-[#3b23b8] shadow-[0_5px_0_#d6ccff] active:translate-y-[3px] active:shadow-[0_2px_0_#d6ccff] disabled:cursor-default disabled:opacity-50";
 
 export default function ExcuseGenerator() {
+  const tr = useTr();
+  const hi = useHindi();
+  const lists = hi ? LISTS_HI : LISTS;
   const [sit, setSit] = useState("");
   const [roll, setRoll] = useState(0);
   const [idx, setIdx] = useState([0, 3, 6]);
@@ -50,7 +67,7 @@ export default function ExcuseGenerator() {
   function spin(nextRoll: number) {
     const text = sit.trim();
     if (!text || spinning) return;
-    const e = excuseFor(text, nextRoll);
+    const e = excuseFor(text, nextRoll, hi);
     setRot(rot.map((prev, i) => {
       let t = -e.idx[i] * 36;
       while (t > prev - 360 * (3 + i)) t -= 360;
@@ -69,20 +86,20 @@ export default function ExcuseGenerator() {
     }, 2500);
   }
 
-  const e = excuseFor(made || " ", roll);
-  const excuse = `Sorry about ${made.charAt(0).toLowerCase() + made.slice(1)}. ${LISTS[0][idx[0]]} ${LISTS[1][idx[1]]}, ${LISTS[2][idx[2]]}.`;
+  const e = excuseFor(made || " ", roll, hi);
+  const excuse = `${sorry(made, hi)} ${joinParts(idx, hi)}`;
   const believe = e.believe;
   const believeColor = believe > 66 ? "#14a06a" : believe > 33 ? "#f0a020" : "#e5484d";
 
   const input = (
     <div className="flex flex-col gap-2 lg:col-start-2 lg:row-start-1">
-      <label htmlFor="ex-sit" className="text-sm font-bold text-[#5b4f86]">What happened?</label>
+      <label htmlFor="ex-sit" className="text-sm font-bold text-[#5b4f86]">{tr("What happened?")}</label>
       <input
         id="ex-sit"
         value={sit}
         onChange={(ev) => setSit(ev.target.value)}
         onKeyDown={(ev) => ev.key === "Enter" && spin(0)}
-        placeholder="missing the 8am class"
+        placeholder={tr("missing the 8am class")}
         maxLength={60}
         autoComplete="off"
         className="box-border w-full rounded-2xl border-2 border-[#d6ccff] bg-white px-4 py-[15px] text-base font-medium text-[#1d1340] outline-none placeholder:text-[#9a90c6] focus:border-[#6a4cff] focus:shadow-[0_0_0_4px_rgba(106,76,255,.15)] sm:text-[17px]"
@@ -98,9 +115,9 @@ export default function ExcuseGenerator() {
             <div key={i} className="size-2.5 animate-fz-bulb rounded-full bg-[#ffd23f]" style={{ animationDelay: `${(i * 0.13).toFixed(2)}s` }} />
           ))}
         </div>
-        {LISTS.map((list, i) => (
+        {lists.map((list, i) => (
           <div key={i} className="relative h-[66px] overflow-hidden rounded-xl bg-white shadow-[inset_0_0_0_3px_#ffd23f] [perspective:420px]">
-            <div className="absolute left-2 top-1 z-[2] text-[10px] font-bold tracking-[.1em] text-[#8f84bd]">{LABELS[i]}</div>
+            <div className="absolute left-2 top-1 z-[2] text-[10px] font-bold tracking-[.1em] text-[#8f84bd]">{tr(LABELS[i])}</div>
             <div
               className="absolute inset-0 [transform-style:preserve-3d]"
               style={{
@@ -137,7 +154,7 @@ export default function ExcuseGenerator() {
         <div className="flex animate-fz-pop flex-col gap-2.5 rounded-[20px] bg-white p-4 shadow-[0_6px_0_#d6ccff]">
           <div className="text-base font-medium leading-[1.4] text-[#1d1340]">“{excuse}”</div>
           <div className="flex items-center gap-2.5">
-            <span className="whitespace-nowrap text-xs font-bold text-[#5b4f86]">Believability</span>
+            <span className="whitespace-nowrap text-xs font-bold text-[#5b4f86]">{tr("Believability")}</span>
             <div className="h-3 flex-1 overflow-hidden rounded-full bg-[#ece7ff]">
               <div className="h-full rounded-full transition-[width] duration-1000 ease-out" style={{ width: `${believe}%`, background: believeColor }} />
             </div>
@@ -146,7 +163,7 @@ export default function ExcuseGenerator() {
         </div>
       ) : (
         <div className="rounded-[20px] border-2 border-dashed border-[#d6ccff] p-4 text-center text-[15px] leading-[1.4] text-[#5b4f86]">
-          {spinning ? "Cooking up an excuse…" : "Tell me what happened, then pull the lever."}
+          {spinning ? tr("Cooking up an excuse…") : tr("Tell me what happened, then pull the lever.")}
         </div>
       )}
     </div>
@@ -154,18 +171,18 @@ export default function ExcuseGenerator() {
 
   const buttons = (
     <div className="grid grid-cols-2 gap-3 lg:col-start-2">
-      <button type="button" className={btn} onClick={() => spin(0)} disabled={!sit.trim() || spinning}>Make my excuse</button>
-      <button type="button" className={ghost} onClick={() => spin(roll + 1)} disabled={!has || spinning}>Roll again</button>
+      <button type="button" className={btn} onClick={() => spin(0)} disabled={!sit.trim() || spinning}>{tr("Make my excuse")}</button>
+      <button type="button" className={ghost} onClick={() => spin(roll + 1)} disabled={!has || spinning}>{tr("Roll again")}</button>
     </div>
   );
 
   const storyCard = has && (
     <div className="flex animate-fz-pop flex-col items-center gap-3 lg:col-span-2 lg:mx-auto lg:w-full lg:max-w-[380px]">
-      <CardExcuse cardRef={cardRef} data={{ situation: made, text: `${LISTS[0][idx[0]]} ${LISTS[1][idx[1]]}, ${LISTS[2][idx[2]]}.`, believe }} />
+      <CardExcuse cardRef={cardRef} data={{ situation: made, text: joinParts(idx, hi), believe }} />
       <CardActions
         getNode={() => cardRef.current}
         fileName="excuse-toppershelf.png"
-        shareText={`My excuse for ${made}: ${believe}% believable. Make yours!`}
+        shareText={tr("My excuse for {s}: {n}% believable. Make yours!", { s: made, n: believe })}
         shareUrl={resultLink("excuse", { s: made, r: roll })}
         btnClass={btn}
         ghostClass={ghost}
