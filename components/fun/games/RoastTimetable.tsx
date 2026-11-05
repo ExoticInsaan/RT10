@@ -50,7 +50,10 @@ export function roastFor(day: string, hi = false) {
     );
   }
   if (/no\s*break|बिना\s*ब्रेक|ब्रेक\s*नहीं/.test(d)) { hits += 2; out.push(hi ? "कोई ब्रेक नहीं? आपके ब्लैडर ने शिकायत दर्ज कर दी है, सच में।" : "No breaks? Your bladder just filed a complaint, no cap."); }
-  const m2 = d.match(/(sleep|bed|sleeping|सोना|सोता|सोती|नींद)\D{0,10}(\d{1,2})\s*(am|बजे)/);
+  // "sleep at 2am", or the Hindi order "रात 2 बजे सोना" (number first)
+  const m2 =
+    d.match(/(sleep|bed|sleeping|सोना|सोता|सोती|नींद)\D{0,10}(\d{1,2})\s*(am|बजे)/) ??
+    ((x) => (x ? ([x[0], x[2], x[1]] as unknown as RegExpMatchArray) : null))(d.match(/(\d{1,2})\s*बजे\s*(?:को\s*)?(सोना|सोता|सोती|नींद)/));
   if (m2) {
     const hr = +m2[2];
     hits += hr <= 5 ? 3 : 1;

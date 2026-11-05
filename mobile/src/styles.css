@@ -10,6 +10,14 @@
 @import "@fontsource/caveat/latin-700.css";
 @import "../../app/fun-zone.css";
 
+/* Hindi fonts. Only the WOFF2 files are bundled (every Android WebView reads them), to keep the app small. */
+@font-face { font-family: "Noto Sans Devanagari"; font-style: normal; font-weight: 400; font-display: swap; src: url("../node_modules/@fontsource/noto-sans-devanagari/files/noto-sans-devanagari-devanagari-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Noto Sans Devanagari"; font-style: normal; font-weight: 700; font-display: swap; src: url("../node_modules/@fontsource/noto-sans-devanagari/files/noto-sans-devanagari-devanagari-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Noto Sans Devanagari"; font-style: normal; font-weight: 800; font-display: swap; src: url("../node_modules/@fontsource/noto-sans-devanagari/files/noto-sans-devanagari-devanagari-800-normal.woff2") format("woff2"); }
+@font-face { font-family: "Noto Serif Devanagari"; font-style: normal; font-weight: 400; font-display: swap; src: url("../node_modules/@fontsource/noto-serif-devanagari/files/noto-serif-devanagari-devanagari-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Kalam"; font-style: normal; font-weight: 400; font-display: swap; src: url("../node_modules/@fontsource/kalam/files/kalam-devanagari-400-normal.woff2") format("woff2"); }
+
+
 /* Scan the shared website components and the app screens for Tailwind classes. */
 @source "../../components";
 @source "../../lib";
@@ -17,8 +25,9 @@
 
 /* Same design tokens as the website (app/globals.css), so the shared tools look identical. */
 @theme inline {
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "DM Serif Display", Georgia, serif;
+  --font-sans: "Inter", "Noto Sans Devanagari", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "DM Serif Display", "Noto Serif Devanagari", Georgia, serif;
+  --font-hand: "Caveat", "Kalam", cursive;
 }
 @theme {
   --color-ivory: #fffbf7;
@@ -130,4 +139,12 @@ select:focus-visible {
   background:
     radial-gradient(circle at 1px 1px, rgb(255 255 255 / 16%) 1.2px, transparent 1.7px) 0 0 / 18px 18px,
     linear-gradient(150deg, #6d28d9 0%, #a21caf 38%, #e11d48 70%, #f97316 100%);
+}
+
+/* Hindi: Devanagari letters join into shapes, so spaced-out or squeezed text and slanted letters look broken. */
+html[lang="hi"] * {
+  letter-spacing: normal !important;
+}
+html[lang="hi"] .italic {
+  font-style: normal;
 }

@@ -29,9 +29,9 @@ export function mix(a: string, b: string, t: number) {
 }
 
 /** Today's date the way story cards print it, for example "WED · 28 OCT". */
-export function storyDate(d: Date) {
-  const day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][d.getDay()];
-  const mon = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][d.getMonth()];
+export function storyDate(d: Date, hi = false) {
+  const day = (hi ? ["रवि", "सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि"] : ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"])[d.getDay()];
+  const mon = (hi ? ["जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"] : ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"])[d.getMonth()];
   return `${day} · ${d.getDate()} ${mon}`;
 }
 

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { Ref } from "react";
+import { useTr } from "@/lib/tools/useTr";
 import { FitBox, hand } from "@/components/fun/kit";
 
 export type SaplingCardData = {
@@ -26,6 +27,7 @@ export const saplingSample: SaplingCardData = {
 
 /** 9:16 story card (drawn at 540x960, exported at 1080x1920). The tree grows with the day and wears its own colours. */
 export default function CardSapling({ data = saplingSample, cardRef }: { data?: SaplingCardData; cardRef?: Ref<HTMLDivElement> }) {
+  const tr = useTr();
   const grow = 0.3 + 0.7 * Math.min(1, Math.max(0, data.day) / 365);
   const fruiting = data.day >= 301;
   const flowering = data.day >= 241;
@@ -38,7 +40,7 @@ export default function CardSapling({ data = saplingSample, cardRef }: { data?: 
         <div className="absolute inset-0 [background:radial-gradient(circle_at_1px_1px,rgba(31,58,40,.07)_1px,transparent_1.5px)_0_0/6px_6px]"></div>
 
         <div className="absolute left-[44px] right-[44px] top-[104px] flex justify-between text-[14px] font-extrabold tracking-[.2em] text-[#4d7a58]">
-          <span>GARDEN JOURNAL</span>
+          <span>{tr("GARDEN JOURNAL")}</span>
           <span>{data.species.toUpperCase()}</span>
         </div>
 
@@ -131,10 +133,10 @@ export default function CardSapling({ data = saplingSample, cardRef }: { data?: 
 
         <div className="absolute left-[44px] right-[44px] top-[600px]">
           <div className="font-display text-[96px] leading-[.9]">
-            <span className="italic">day</span> {Math.max(1, data.day)}
+            <span className="italic">{tr("day")}</span> {Math.max(1, data.day)}
           </div>
           <div className="font-display italic text-[32px] leading-[1.1] mt-[6px] text-[#4d7a58]">
-            of keeping something alive.
+            {tr("of keeping something alive.")}
           </div>
           <div className="flex gap-[10px] mt-[18px]">
             <span className="inline-flex items-center gap-[6px] bg-[#fff] rounded-[99px] p-[8px_14px] font-extrabold text-[15px]">
@@ -149,10 +151,10 @@ export default function CardSapling({ data = saplingSample, cardRef }: { data?: 
                   fill="#f97316"
                 />
               </svg>
-              {data.streak} day streak
+              {tr("{n} day streak", { n: data.streak })}
             </span>
             <span className="inline-flex items-center gap-[6px] bg-[#fff] rounded-[99px] p-[8px_14px] font-extrabold text-[15px]">
-              {data.trees === 0 ? "first tree growing" : `${data.trees} ${data.trees === 1 ? "tree" : "trees"} in my garden`}
+              {data.trees === 0 ? tr("first tree growing") : tr(data.trees === 1 ? "{n} tree in my garden" : "{n} trees in my garden", { n: data.trees })}
             </span>
           </div>
         </div>
@@ -168,12 +170,12 @@ export default function CardSapling({ data = saplingSample, cardRef }: { data?: 
               className="h-auto w-[62px] block"
             />
             <div className="text-[14px] leading-[1.3]">
-              <div className="font-extrabold">grow a sapling</div>
+              <div className="font-extrabold">{tr("grow a sapling")}</div>
               <div className="text-[#4d7a58]">toppershelf.online/fun</div>
             </div>
           </div>
           <div className="font-hand text-[28px] [transform:rotate(-4deg)] text-[#2f5d3a]">
-            plant yours
+            {tr("plant yours")}
           </div>
         </div>
       </div>
