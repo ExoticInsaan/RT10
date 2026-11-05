@@ -310,7 +310,9 @@ export default function FocusTimer() {
   }, [fullscreen]);
 
   const ring = 2 * Math.PI * 120;
-  const bigSize = "min(84vw, 58vh)"; // diameter of the ring in the full screen view
+  // Diameter of the ring in the full screen view: as wide as the screen allows, but never so tall that it runs into the
+  // top bar or the Start button (about 200px together), so short landscape screens stay clear too.
+  const bigSize = "max(140px, min(84vw, calc(100dvh - 200px)))";
 
   return (
     <div className="mx-auto grid max-w-xl justify-items-center gap-6">
@@ -327,7 +329,7 @@ export default function FocusTimer() {
           onClick={openFullscreen}
           aria-label="Full screen"
           title="Full screen"
-          className="absolute -right-8 -top-[18px] z-10 grid size-9 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy shadow-sm transition hover:bg-blue-soft"
+          className="absolute right-0 top-0 z-10 grid size-9 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy shadow-sm transition hover:bg-blue-soft"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3" />
