@@ -10,6 +10,7 @@ import { GameShell, copyText, useTimers } from "@/components/fun/kit";
 import { SITE_URL } from "@/lib/site";
 import { createLink, getLink, latestLink, linkLabel, linkUrl, listResponses, submitResponse, type FriendAnswer,  } from "@/lib/fun/friends";
 import ShareButton from "@/components/fun/ShareButton";
+import { useTr } from "@/lib/tools/useTr";
 
 type Phase = "loading" | "missing" | "create" | "share" | "results" | "friendName" | "quiz" | "result";
 
@@ -74,6 +75,7 @@ function Hearts() {
  * Friend (opens the link, no account): answers 8 questions about the owner and sees the score. `friendCode` switches to this side.
  */
 export default function FriendshipScore({ friendCode }: { friendCode?: string } = {}) {
+  const tr = useTr();
   const { user, ready } = useAuth();
   const [rawPhase, setPhase] = useState<Phase>("loading");
   const [me, setMe] = useState("");
@@ -123,13 +125,13 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
     return () => { cancelled = true; };
   }, [friendCode, ready, userId]);
 
-  const meName = me.trim() || "You";
+  const meName = me.trim() || tr("You");
   const Q = questions(meName);
   const cur = Q[Math.min(q, 7)];
   const sc = phase === "result" ? friendScore(meName, picks) : 0;
   const titles = verdict(sc);
   const url = code ? linkUrl("friendship-score", code) : "";
-  const shareText = `${meName} wants to know how strong your friendship is. Answer 8 quick questions:`;
+  const shareText = tr("{name} wants to know how strong your friendship is. Answer 8 quick questions:", { name: meName });
   const friendName = friend.trim() || "Friend";
 
   async function makeLink() {
@@ -203,7 +205,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
   const single = (children: React.ReactNode) => <div className="mx-auto flex w-full max-w-md flex-col gap-3.5 lg:col-span-2">{children}</div>;
 
   if (phase === "loading") {
-    return <GameShell {...shellProps} body={single(<p className="m-0 py-16 text-center text-[15px] font-bold text-[#3d5a80]" role="status">Loading…</p>)} />;
+    return <GameShell {...shellProps} body={single(<p className="m-0 py-16 text-center text-[15px] font-bold text-[#3d5a80]" role="status">{tr("Loading…")}</p>)} />;
   }
 
   if (phase === "missing") {
@@ -230,7 +232,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
         <Hearts />
         <div className="relative h-[150px] w-[220px] animate-fz-float8 [transform-style:preserve-3d]" style={{ transform: "rotateX(14deg) rotateY(-18deg)" }}>
           <div className="absolute left-0 top-5 flex size-[120px] items-center justify-center rounded-[30px] bg-[#0ea5e9] font-display text-[52px] text-white shadow-[0_10px_0_#0369a1] [transform:translateZ(10px)_rotate(-8deg)]">
-            {(me.trim()[0] || "Y").toUpperCase()}
+            {(me.trim()[0] || tr("You")[0]).toUpperCase()}
           </div>
           <div className="absolute right-0 top-0 flex size-[120px] items-center justify-center rounded-[30px] bg-[#d946ef] font-display text-[52px] text-white shadow-[0_10px_0_#a21caf] [transform:translateZ(30px)_rotate(8deg)]">?</div>
         </div>
@@ -239,23 +241,23 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
     const controls = (
       <>
         <div className="flex flex-wrap items-center gap-1.5 text-xs font-extrabold text-[#0369a1]">
-          <span className="rounded-full bg-[#0284c7] px-2.5 py-1 text-white">1 You make a link</span>
-          <span className="rounded-full bg-white px-2.5 py-1">2 Friend answers</span>
-          <span className="rounded-full bg-white px-2.5 py-1">3 Score</span>
+          <span className="rounded-full bg-[#0284c7] px-2.5 py-1 text-white">{tr("1 You make a link")}</span>
+          <span className="rounded-full bg-white px-2.5 py-1">{tr("2 Friend answers")}</span>
+          <span className="rounded-full bg-white px-2.5 py-1">{tr("3 Score")}</span>
         </div>
-        <label htmlFor="fs-me" className="text-sm font-bold text-[#3d5a80]">Your name</label>
+        <label htmlFor="fs-me" className="text-sm font-bold text-[#3d5a80]">{tr("Your name")}</label>
         <input
           id="fs-me"
           className={`${input} -mt-1.5`}
           value={me}
           onChange={(e) => setMe(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && void makeLink()}
-          placeholder="e.g. Jatin"
+          placeholder={tr("e.g. Jatin")}
           maxLength={24}
           autoComplete="off"
         />
-        {error && <p role="alert" className="m-0 text-sm font-bold text-[#b91c1c]">{error}</p>}
-        <button type="button" className={fzBtn} onClick={() => void makeLink()} disabled={!me.trim() || busy}>{busy ? "Making your link…" : "Make my friendship link"}</button>
+        {error && <p role="alert" className="m-0 text-sm font-bold text-[#b91c1c]">{tr(error)}</p>}
+        <button type="button" className={fzBtn} onClick={() => void makeLink()} disabled={!me.trim() || busy}>{busy ? tr("Making your link…") : tr("Make my friendship link")}</button>
       </>
     );
     return <GameShell {...shellProps} stage={stage} controls={controls} />;
@@ -269,27 +271,27 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
           <>
             <div className="flex animate-fz-pop flex-col items-center gap-3.5 rounded-[26px] bg-white p-[22px] text-center shadow-[0_8px_0_#bfdbfe]">
               <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
-              <div className="break-words font-display text-[30px] leading-[1.05]">Your link is ready, {meName}!</div>
-              <div className="text-[15px] leading-[1.4] text-[#3d5a80]">Send it to a friend. They answer 8 quick questions about you two, and you see their score here.</div>
+              <div className="break-words font-display text-[30px] leading-[1.05]">{tr("Your link is ready, {name}!", { name: meName })}</div>
+              <div className="text-[15px] leading-[1.4] text-[#3d5a80]">{tr("Send it to a friend. They answer 8 quick questions about you two, and you see their score here.")}</div>
               <div className="box-border flex w-full items-center gap-2 rounded-[14px] border-2 border-dashed border-[#93c5fd] bg-[#f0f7ff] px-3 py-2.5">
                 <span className="min-w-0 flex-1 truncate text-left text-sm font-bold">{code ? linkLabel("friendship-score", code) : ""}</span>
                 <button type="button" className={`${ghost} !min-h-10 !px-3 !py-1.5 !text-[13px]`} onClick={() => { copyText(url); setCopied(true); later(() => setCopied(false), 1600); }}>
-                  {copied ? "Copied" : "Copy"}
+                  {copied ? tr("Copied") : tr("Copy")}
                 </button>
               </div>
             </div>
             <ShareButton
-              title="Friendship Score"
+              title={tr("Friendship Score")}
               text={shareText}
               url={url}
               shareClass={fzBtn}
               whatsappClass={`${fzBtn} !bg-[#25a244] !shadow-[0_6px_0_#17762f,0_14px_24px_rgba(23,118,47,.3)]`}
               onFallback={() => { copyText(url); setCopied(true); later(() => setCopied(false), 1600); }}
             />
-            <button type="button" className={ghost} onClick={() => void showResults()} disabled={busy}>{busy ? "Loading…" : "See who answered"}</button>
-            {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
+            <button type="button" className={ghost} onClick={() => void showResults()} disabled={busy}>{busy ? tr("Loading…") : tr("See who answered")}</button>
+            {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{tr(error)}</p>}
             <div className="grid grid-cols-1 gap-3">
-              <button type="button" className={ghost} onClick={() => { setPhase("create"); setError(""); }}>New link</button>
+              <button type="button" className={ghost} onClick={() => { setPhase("create"); setError(""); }}>{tr("New link")}</button>
             </div>
           </>,
         )}
@@ -306,25 +308,25 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
         body={single(
           <>
             <div className="flex animate-fz-pop flex-col gap-1 rounded-[26px] bg-white p-[22px] shadow-[0_8px_0_#bfdbfe]">
-              <div className="text-xs font-black tracking-[.12em] text-[#0284c7]">YOUR FRIENDSHIP SCORES</div>
-              <div className="break-words font-display text-[34px] leading-none">{list.length ? `${list.length} ${list.length === 1 ? "friend" : "friends"} answered` : "Nobody yet"}</div>
-              {list.length > 0 && <div className="text-[15px] text-[#3d5a80]">Average score {average} out of 100</div>}
+              <div className="text-xs font-black tracking-[.12em] text-[#0284c7]">{tr("YOUR FRIENDSHIP SCORES")}</div>
+              <div className="break-words font-display text-[34px] leading-none">{list.length ? tr(list.length === 1 ? "{n} friend answered" : "{n} friends answered", { n: list.length }) : tr("Nobody yet")}</div>
+              {list.length > 0 && <div className="text-[15px] text-[#3d5a80]">{tr("Average score {n} out of 100", { n: average })}</div>}
             </div>
-            {list.length === 0 && <div className="rounded-2xl border-2 border-dashed border-[#93c5fd] p-4 text-center text-sm text-[#3d5a80]">No answers yet. Send your link to a friend!</div>}
+            {list.length === 0 && <div className="rounded-2xl border-2 border-dashed border-[#93c5fd] p-4 text-center text-sm text-[#3d5a80]">{tr("No answers yet. Send your link to a friend!")}</div>}
             {list.map((r) => (
               <div key={r.responder_name + r.created_at} className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_4px_0_#dbeafe]">
                 <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#0284c7] font-display text-xl text-white">{(r.responder_name[0] || "?").toUpperCase()}</div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-base font-extrabold">{r.responder_name}</div>
-                  <div className="truncate text-[13px] text-[#3d5a80]">{verdict(r.score ?? 0)[0]}</div>
+                  <div className="truncate text-[13px] text-[#3d5a80]">{tr(verdict(r.score ?? 0)[0])}</div>
                 </div>
                 <div className="font-display text-[30px] leading-none">{r.score ?? 0}</div>
               </div>
             ))}
-            {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
+            {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{tr(error)}</p>}
             <div className="grid grid-cols-2 gap-3">
-              <button type="button" className={ghost} onClick={() => setPhase("share")}>Back to my link</button>
-              <button type="button" className={`${fzBtn} !min-h-[52px] !text-[15px]`} onClick={() => void showResults()} disabled={busy}>{busy ? "Loading…" : "Refresh"}</button>
+              <button type="button" className={ghost} onClick={() => setPhase("share")}>{tr("Back to my link")}</button>
+              <button type="button" className={`${fzBtn} !min-h-[52px] !text-[15px]`} onClick={() => void showResults()} disabled={busy}>{busy ? tr("Loading…") : tr("Refresh")}</button>
             </div>
           </>,
         )}

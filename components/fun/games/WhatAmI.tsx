@@ -9,6 +9,7 @@ import CardActions from "@/components/fun/CardActions";
 import { GameShell, copyText, useTimers } from "@/components/fun/kit";
 import { createLink, getLink, latestLink, linkLabel, linkUrl, listResponses, submitResponse } from "@/lib/fun/friends";
 import ShareButton from "@/components/fun/ShareButton";
+import { useTr } from "@/lib/tools/useTr";
 
 type Phase = "loading" | "missing" | "create" | "share" | "friend" | "sent" | "inbox";
 type Answer = { l: number; note: string; name: string };
@@ -46,6 +47,7 @@ function Icon({ d, size, stroke = "#fff", sw = 2.2 }: { d: string; size: number;
  * adds an optional note and sends it. `friendCode` switches to the friend side.
  */
 export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
+  const tr = useTr();
   const { user, ready } = useAuth();
   const [rawPhase, setPhase] = useState<Phase>("loading");
   const [me, setMe] = useState("");
@@ -90,16 +92,16 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
     return () => { cancelled = true; };
   }, [friendCode, ready, userId]);
 
-  const meName = me.trim() || "You";
+  const meName = me.trim() || tr("You");
   const url = code ? linkUrl("what-am-i-to-you", code) : "";
-  const shareText = `What am I to you? Tell ${meName} what you really call them (one tap, with an optional note):`;
+  const shareText = tr("What am I to you? Tell {name} what you really call them (one tap, with an optional note):", { name: meName });
   const counts = LABELS.map((_, i) => answers.filter((a) => a.l === i).length);
   const max = Math.max(1, ...counts);
   const top = counts.indexOf(Math.max(...counts));
   const notes = answers
     .map((a, i) => ({ a, i }))
     .filter((x) => x.a.note)
-    .map((x, j) => ({ text: `“${x.a.note}”`, label: `${LABELS[x.a.l].t.toUpperCase()} · ${x.a.name.toUpperCase()}`, bg: NOTE_BGS[x.i % 5], r: NOTE_ROT[j % 4], d: (j * 0.08).toFixed(2) }));
+    .map((x, j) => ({ text: `“${x.a.note}”`, label: `${tr(LABELS[x.a.l].t).toUpperCase()} · ${x.a.name.toUpperCase()}`, bg: NOTE_BGS[x.i % 5], r: NOTE_ROT[j % 4], d: (j * 0.08).toFixed(2) }));
 
   async function makeLink() {
     if (busy || !me.trim()) return;
@@ -149,7 +151,7 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
   );
   const single = (children: ReactNode) => <div className="mx-auto flex w-full max-w-[34rem] flex-col gap-3.5 lg:col-span-2">{children}</div>;
 
-  if (phase === "loading") return shell({ body: single(<p className="m-0 py-16 text-center text-[15px] font-bold text-[#5b3a86]" role="status">Loading…</p>) });
+  if (phase === "loading") return shell({ body: single(<p className="m-0 py-16 text-center text-[15px] font-bold text-[#5b3a86]" role="status">{tr("Loading…")}</p>) });
 
   if (phase === "missing") {
     return shell({
@@ -184,21 +186,21 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
       controls: (
         <>
           <div className="flex flex-col gap-2.5 rounded-[22px] bg-white p-[18px] shadow-[0_6px_0_#ddd0fe]">
-            <div className="text-[15px] leading-[1.45] text-[#5b3a86]">Share your link. Friends pick one label for you, like best friend, sibling vibe or chaos partner, and can leave a note.</div>
-            <label htmlFor="wa-me" className="text-sm font-bold text-[#5b3a86]">Your name</label>
+            <div className="text-[15px] leading-[1.45] text-[#5b3a86]">{tr("Share your link. Friends pick one label for you, like best friend, sibling vibe or chaos partner, and can leave a note.")}</div>
+            <label htmlFor="wa-me" className="text-sm font-bold text-[#5b3a86]">{tr("Your name")}</label>
             <input
               id="wa-me"
               className={input}
               value={me}
               onChange={(e) => setMe(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void makeLink()}
-              placeholder="e.g. Jatin"
+              placeholder={tr("e.g. Jatin")}
               maxLength={24}
               autoComplete="off"
             />
           </div>
           {error && <p role="alert" className="m-0 text-sm font-bold text-[#b91c1c]">{error}</p>}
-          <button type="button" className={fzBtn} onClick={() => void makeLink()} disabled={!me.trim() || busy}>{busy ? "Making your link…" : "Make my link"}</button>
+          <button type="button" className={fzBtn} onClick={() => void makeLink()} disabled={!me.trim() || busy}>{busy ? tr("Making your link…") : tr("Make my link")}</button>
         </>
       ),
     });
@@ -210,12 +212,12 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
         <>
           <div className="flex animate-fz-pop flex-col items-center gap-3.5 rounded-[26px] bg-white p-[22px] text-center shadow-[0_6px_0_#ddd0fe]">
             <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
-            <div className="break-words font-display text-[30px] leading-[1.05]">Your link is ready, {meName}!</div>
-            <div className="text-[15px] leading-[1.4] text-[#5b3a86]">Send it to friends. Each one picks a label for you and can leave a note. You see them in your inbox.</div>
+            <div className="break-words font-display text-[30px] leading-[1.05]">{tr("Your link is ready, {name}!", { name: meName })}</div>
+            <div className="text-[15px] leading-[1.4] text-[#5b3a86]">{tr("Send it to friends. Each one picks a label for you and can leave a note. You see them in your inbox.")}</div>
             <div className="box-border flex w-full items-center gap-2 rounded-[14px] border-2 border-dashed border-[#c4b5fd] bg-[#f8f4ff] px-3 py-2.5">
               <span className="min-w-0 flex-1 truncate text-left text-sm font-bold">{code ? linkLabel("what-am-i-to-you", code) : ""}</span>
               <button type="button" className={`${ghost} !min-h-10 !px-3 !py-1.5 !text-[13px]`} onClick={() => { copyText(url); setCopied(true); later(() => setCopied(false), 1600); }}>
-                {copied ? "Copied" : "Copy"}
+                {copied ? tr("Copied") : tr("Copy")}
               </button>
             </div>
           </div>
@@ -231,17 +233,17 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
             />
           </div>
           <ShareButton
-            title="What am I to you?"
+            title={tr("What am I to you?")}
             text={shareText}
             url={url}
             shareClass={fzBtn}
             whatsappClass={`${fzBtn} flex items-center justify-center no-underline !bg-[#25a244] !shadow-[0_6px_0_#17762f,0_14px_24px_rgba(23,118,47,.3)]`}
             onFallback={() => { copyText(url); setCopied(true); later(() => setCopied(false), 1600); }}
           />
-          <button type="button" className={ghost} onClick={() => void showInbox()} disabled={busy}>{busy ? "Loading…" : "Open my inbox"}</button>
+          <button type="button" className={ghost} onClick={() => void showInbox()} disabled={busy}>{busy ? tr("Loading…") : tr("Open my inbox")}</button>
           {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
           <div className="grid grid-cols-1 gap-2.5">
-            <button type="button" className={ghost} onClick={() => { setPhase("create"); setError(""); }}>New link</button>
+            <button type="button" className={ghost} onClick={() => { setPhase("create"); setError(""); }}>{tr("New link")}</button>
           </div>
         </>,
       ),
@@ -309,10 +311,10 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
       <>
         <div className="flex items-end justify-between gap-2">
           <div className="min-w-0">
-            <div className="break-words text-xs font-black tracking-[.12em] text-[#a21caf]">{meName.toUpperCase()}&apos;S INBOX</div>
-            <div className="font-display text-[26px] leading-[1.05]">{answers.length ? `Mostly your ${LABELS[top].t.toLowerCase()}` : "Waiting for answers"}</div>
+            <div className="break-words text-xs font-black tracking-[.12em] text-[#a21caf]">{tr("{name}'S INBOX", { name: meName.toUpperCase() })}</div>
+            <div className="font-display text-[26px] leading-[1.05]">{answers.length ? tr("Mostly your {label}", { label: tr(LABELS[top].t).toLowerCase() }) : tr("Waiting for answers")}</div>
           </div>
-          <div className="whitespace-nowrap text-[13px] font-extrabold text-[#6b21a8]">{answers.length} answers</div>
+          <div className="whitespace-nowrap text-[13px] font-extrabold text-[#6b21a8]">{tr("{n} answers", { n: answers.length })}</div>
         </div>
         <div className="rounded-[22px] bg-white px-3 pb-2.5 pt-4 shadow-[0_6px_0_#ddd0fe] [--d:7px] sm:[--d:9px]">
           <div className="flex h-[168px] items-end justify-between gap-1 border-b-2 border-[#efe7ff]">
@@ -331,7 +333,7 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
           </div>
           <div className="flex justify-between gap-1 pt-2">
             {LABELS.map((l) => (
-              <div key={l.t} className="flex flex-1 justify-center" role="img" aria-label={l.t}>
+              <div key={l.t} className="flex flex-1 justify-center" role="img" aria-label={tr(l.t)}>
                 <Icon d={l.icon} size={20} stroke={l.c} sw={2.4} />
               </div>
             ))}
@@ -348,11 +350,11 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
               <div className="mt-1.5 text-[11px] font-extrabold text-[#6b21a8]">{n.label}</div>
             </div>
           ))}
-          {notes.length === 0 && <div className="col-span-full rounded-2xl border-2 border-dashed border-[#ddd0fe] p-3.5 text-center text-sm text-[#6b21a8]">{answers.length ? "No notes yet, only labels." : "Nobody has answered yet. Share your link!"}</div>}
+          {notes.length === 0 && <div className="col-span-full rounded-2xl border-2 border-dashed border-[#ddd0fe] p-3.5 text-center text-sm text-[#6b21a8]">{answers.length ? tr("No notes yet, only labels.") : tr("Nobody has answered yet. Share your link!")}</div>}
         </div>
         <div className="mt-auto grid grid-cols-2 gap-2.5">
-          <button type="button" className={ghost} onClick={() => setPhase("share")}>Back to my link</button>
-          <button type="button" className={ghost} onClick={() => void showInbox()} disabled={busy}>{busy ? "Loading…" : "Refresh"}</button>
+          <button type="button" className={ghost} onClick={() => setPhase("share")}>{tr("Back to my link")}</button>
+          <button type="button" className={ghost} onClick={() => void showInbox()} disabled={busy}>{busy ? tr("Loading…") : tr("Refresh")}</button>
         </div>
       </>,
     ),

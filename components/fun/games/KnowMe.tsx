@@ -9,6 +9,7 @@ import CardActions from "@/components/fun/CardActions";
 import { GameShell, copyText, useTimers } from "@/components/fun/kit";
 import { createLink, getLink, knowCheck, latestLink, linkLabel, linkUrl, listResponses, submitResponse } from "@/lib/fun/friends";
 import ShareButton from "@/components/fun/ShareButton";
+import { useTr } from "@/lib/tools/useTr";
 
 type Phase = "loading" | "missing" | "name" | "quiz" | "saving" | "saveFail" | "share" | "friendName" | "score" | "board";
 type Mode = "own" | "guess";
@@ -42,6 +43,7 @@ const card = "flex animate-fz-pop flex-col items-center gap-3 rounded-[26px] bg-
  * The owner's answers stay on the server; a friend only learns the right answer to a question after guessing it.
  */
 export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
+  const tr = useTr();
   const { user, ready } = useAuth();
   const [rawPhase, setPhase] = useState<Phase>("loading");
   const [me, setMe] = useState("");
@@ -91,12 +93,12 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
     return () => { cancelled = true; };
   }, [friendCode, ready, userId]);
 
-  const meName = me.trim() || "You";
+  const meName = me.trim() || tr("You");
   const own = mode === "own";
   const cur = QS[Math.min(q, 9)];
   const correct = own ? key[q] : revealed[q];
   const url = code ? linkUrl("how-well-do-you-know-me", code) : "";
-  const shareText = `How well do you know ${meName}? Guess 10 answers and see your score:`;
+  const shareText = tr("How well do you know {name}? Guess 10 answers and see your score:", { name: meName });
   const friendName = friend.trim();
 
   async function makeQuizLink(answers: number[]) {
@@ -185,17 +187,17 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
   );
 
   if (phase === "loading" || phase === "saving") {
-    return shell(<p className="m-0 py-16 text-center text-[15px] font-bold text-[#3d5a80]" role="status">{phase === "saving" ? "Making your link…" : "Loading…"}</p>);
+    return shell(<p className="m-0 py-16 text-center text-[15px] font-bold text-[#3d5a80]" role="status">{phase === "saving" ? tr("Making your link…") : tr("Loading…")}</p>);
   }
 
   if (phase === "saveFail") {
     return shell(
       <>
         <div className={card}>
-          <div className="font-display text-[28px] leading-[1.1]">Could not save your quiz</div>
-          <div className="text-[15px] leading-[1.4] text-[#3d5a80]">{error}</div>
+          <div className="font-display text-[28px] leading-[1.1]">{tr("Could not save your quiz")}</div>
+          <div className="text-[15px] leading-[1.4] text-[#3d5a80]">{tr(error)}</div>
         </div>
-        <button type="button" className={fzBtn} onClick={() => void makeQuizLink(key)}>Try again</button>
+        <button type="button" className={fzBtn} onClick={() => void makeQuizLink(key)}>{tr("Try again")}</button>
       </>,
     );
   }
@@ -218,27 +220,27 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
       <>
         <div className={card}>
           <Image src="/mascot/owl-peek.webp" alt="" width={160} height={126} className="h-auto w-[160px]" />
-          <div className="font-display text-[28px] leading-[1.1]">Answer 10 questions about yourself. Friends try to guess.</div>
-          <div className="text-sm text-[#3d5a80]">You get a leaderboard of who knows you best.</div>
+          <div className="font-display text-[28px] leading-[1.1]">{tr("Answer 10 questions about yourself. Friends try to guess.")}</div>
+          <div className="text-sm text-[#3d5a80]">{tr("You get a leaderboard of who knows you best.")}</div>
         </div>
-        <label htmlFor="km-me" className="text-sm font-bold text-[#3d5a80]">Your name</label>
+        <label htmlFor="km-me" className="text-sm font-bold text-[#3d5a80]">{tr("Your name")}</label>
         <input
           id="km-me"
           className={`${input} -mt-1.5`}
           value={me}
           onChange={(e) => setMe(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && me.trim()) { setPhase("quiz"); setMode("own"); setQ(0); setKey([]); } }}
-          placeholder="e.g. Jatin"
+          placeholder={tr("e.g. Jatin")}
           maxLength={24}
           autoComplete="off"
         />
-        <button type="button" className={fzBtn} onClick={() => { setPhase("quiz"); setMode("own"); setQ(0); setKey([]); setSel(-1); }} disabled={!me.trim()}>Make my quiz</button>
+        <button type="button" className={fzBtn} onClick={() => { setPhase("quiz"); setMode("own"); setQ(0); setKey([]); setSel(-1); }} disabled={!me.trim()}>{tr("Make my quiz")}</button>
       </>,
     );
   }
 
   if (phase === "quiz") {
-    const qText = own ? cur[0] : cur[0].replace(/\bMy\b/, meName + "’s").replace(/\bI\b/, meName).replace(/\bme\b/, meName);
+    const qText = own ? tr(cur[0]) : cur[0].replace(/\bMy\b/, meName + "’s").replace(/\bI\b/, meName).replace(/\bme\b/, meName);
     let feedback = "";
     let fbBad = false;
     // Friend side: the person has tapped but the server has not told us the right answer yet (or the check failed).
@@ -250,7 +252,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
     return shell(
       <>
         <div className="flex items-center justify-between gap-2">
-          <span className="break-words text-xs font-black tracking-[.12em]" style={{ color: own ? "#0f9f8f" : "#3b82f6" }}>{own ? "ABOUT YOU" : `GUESS ${meName.toUpperCase()}’S ANSWER`}</span>
+          <span className="break-words text-xs font-black tracking-[.12em]" style={{ color: own ? "#0f9f8f" : "#3b82f6" }}>{own ? tr("ABOUT YOU") : `GUESS ${meName.toUpperCase()}’S ANSWER`}</span>
           <span className="shrink-0 text-[13px] font-extrabold text-[#3d5a80]">{q + 1}/10</span>
         </div>
         <div className="grid grid-cols-10 gap-1">
@@ -294,7 +296,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
                   className={`flex min-h-[52px] min-w-0 cursor-pointer items-center gap-3 rounded-2xl border-2 px-3.5 py-2.5 text-left text-[15px] font-bold text-[#102a4c] transition-[transform,border-color,background] duration-100 hover:border-[#5eead4] disabled:cursor-default ${sel < 0 ? "active:translate-y-[3px]" : ""} ${cls}`}
                 >
                   <span className="flex size-[30px] shrink-0 items-center justify-center rounded-[10px] text-sm font-black text-white" style={{ background: BADGES[i] }}>{"ABCD"[i]}</span>
-                  <span className="min-w-0 flex-1 break-words">{t}</span>
+                  <span className="min-w-0 flex-1 break-words">{own ? tr(t) : t}</span>
                   <span className="max-w-[40%] shrink-0 break-words text-right text-xs font-black" style={{ color: tagC }}>{tag}</span>
                 </button>
               );
@@ -313,27 +315,27 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
           <div className="flex size-[84px] -rotate-6 items-center justify-center rounded-[26px] bg-[#0f9f8f] shadow-[0_8px_0_#0b6f64]">
             <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
           </div>
-          <div className="break-words font-display text-[30px] leading-[1.05]">Your quiz is ready, {meName}!</div>
-          <div className="text-[15px] leading-[1.4] text-[#3d5a80]">Send the link to friends. Everyone who plays lands on your leaderboard. Your answers stay hidden until they guess.</div>
+          <div className="break-words font-display text-[30px] leading-[1.05]">{tr("Your quiz is ready, {name}!", { name: meName })}</div>
+          <div className="text-[15px] leading-[1.4] text-[#3d5a80]">{tr("Send the link to friends. Everyone who plays lands on your leaderboard. Your answers stay hidden until they guess.")}</div>
           <div className="box-border flex w-full items-center gap-2 rounded-[14px] border-2 border-dashed border-[#7dd3e0] bg-[#f0fbfd] px-3 py-2.5">
             <span className="min-w-0 flex-1 truncate text-left text-sm font-bold">{code ? linkLabel("how-well-do-you-know-me", code) : ""}</span>
             <button type="button" className={`${ghost} !min-h-10 !px-3 !py-1.5 !text-[13px]`} onClick={() => { copyText(url); setCopied(true); later(() => setCopied(false), 1600); }}>
-              {copied ? "Copied" : "Copy"}
+              {copied ? tr("Copied") : tr("Copy")}
             </button>
           </div>
         </div>
         <ShareButton
-          title="How well do you know me?"
+          title={tr("How well do you know me?")}
           text={shareText}
           url={url}
           shareClass={fzBtn}
           whatsappClass={`${fzBtn} flex items-center justify-center no-underline !bg-[#25a244] !shadow-[0_6px_0_#17762f,0_14px_24px_rgba(23,118,47,.3)]`}
           onFallback={() => { copyText(url); setCopied(true); later(() => setCopied(false), 1600); }}
         />
-        <button type="button" className={ghost} onClick={() => void showBoard()} disabled={busy}>{busy ? "Loading…" : "See my leaderboard"}</button>
+        <button type="button" className={ghost} onClick={() => void showBoard()} disabled={busy}>{busy ? tr("Loading…") : tr("See my leaderboard")}</button>
         {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
         <div className="grid grid-cols-1 gap-2.5">
-          <button type="button" className={ghost} onClick={() => { setPhase("name"); setMode("own"); setQ(0); setKey([]); setSel(-1); setError(""); }}>New quiz</button>
+          <button type="button" className={ghost} onClick={() => { setPhase("name"); setMode("own"); setQ(0); setKey([]); setSel(-1); setError(""); }}>{tr("New quiz")}</button>
         </div>
       </>,
     );
@@ -392,17 +394,17 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
   return shell(
     <>
       <div className="animate-fz-pop text-center">
-        <div className="break-words text-[13px] font-extrabold text-[#3d5a80]">{meName.toUpperCase()}&apos;S LEADERBOARD</div>
-        <div className="font-display text-[34px] leading-none">{sorted.length ? `${sorted.length} ${sorted.length === 1 ? "friend" : "friends"} played` : "Nobody has played yet"}</div>
+        <div className="break-words text-[13px] font-extrabold text-[#3d5a80]">{tr("{name}'S LEADERBOARD", { name: meName.toUpperCase() })}</div>
+        <div className="font-display text-[34px] leading-none">{sorted.length ? tr(sorted.length === 1 ? "{n} friend played" : "{n} friends played", { n: sorted.length }) : tr("Nobody has played yet")}</div>
       </div>
-      {sorted.length === 0 && <div className="rounded-2xl border-2 border-dashed border-[#7dd3e0] p-4 text-center text-sm text-[#3d5a80]">Send your link to friends and watch the leaderboard fill up.</div>}
+      {sorted.length === 0 && <div className="rounded-2xl border-2 border-dashed border-[#7dd3e0] p-4 text-center text-sm text-[#3d5a80]">{tr("Send your link to friends and watch the leaderboard fill up.")}</div>}
       {sorted.length > 0 && (
         <div className="flex animate-fz-pop flex-col items-center gap-3">
           <CardKnowMe cardRef={cardRef} data={{ owner: meName, top: sorted.slice(0, 3).map((e) => ({ name: e.name, score: e.score })) }} />
           <CardActions
             getNode={() => cardRef.current}
             fileName="who-knows-me-toppershelf.png"
-            shareText={`${meName}'s quiz: who knows me best? Think you can beat ${sorted[0].name}?`}
+            shareText={tr("{name}'s quiz: who knows me best? Think you can beat {top}?", { name: meName, top: sorted[0].name })}
             shareUrl={url}
             btnClass={fzBtn}
             ghostClass={ghost}
@@ -420,8 +422,8 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
       </div>
       {error && <p role="alert" className="m-0 text-center text-sm font-bold text-[#b91c1c]">{error}</p>}
       <div className="mt-auto grid grid-cols-2 gap-2.5">
-        <button type="button" className={ghost} onClick={() => setPhase("share")}>Back to my link</button>
-        <button type="button" className={ghost} onClick={() => void showBoard()} disabled={busy}>{busy ? "Loading…" : "Refresh"}</button>
+        <button type="button" className={ghost} onClick={() => setPhase("share")}>{tr("Back to my link")}</button>
+        <button type="button" className={ghost} onClick={() => void showBoard()} disabled={busy}>{busy ? tr("Loading…") : tr("Refresh")}</button>
       </div>
     </>,
   );
