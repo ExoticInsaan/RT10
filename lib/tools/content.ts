@@ -128,7 +128,7 @@ const shelfContent: Record<string, ToolContent> = {
     ],
     faq: [
       { q: "Does the timer keep going if I switch tabs?", a: "Yes. It counts against the clock, so it stays accurate in the background and the tab title shows the time left. Keep the tab open." },
-      { q: "Can I change the session lengths?", a: "Yes. Use Change times to set focus, short break, long break and how many sessions come before a long break. Your times are remembered." },
+      { q: "Can I change the session lengths?", a: "Yes, in two ways. Tap the time in the circle and type the minutes and seconds you want, or use Change times to set whole minutes for focus, short break and long break, and how many sessions come before a long break. Your times are remembered." },
       { q: "Will it notify me when time is up?", a: "It plays a chime. Turn on Notify me when time's up to also get a notification from your browser." },
       { q: "Does skipping count as a session?", a: "No. Only focus sessions you finish count towards today's total." },
     ],
