@@ -749,6 +749,8 @@ export const toolStringsHi: Record<string, string> = {
   "be honest, i can take it": "सच बताओ, सब चलेगा",
   "{name} is": "{name}",
   "cooked.": "पक चुके हैं।",
+  "How strong is your friendship, really?": "आपकी दोस्ती असल में कितनी पक्की है?",
+  "BELIEVABILITY": "यक़ीन के लायक",
   "new one tomorrow": "कल नया आएगा",
   "totally legit": "एकदम पक्का",
   "prove it": "साबित करो",
