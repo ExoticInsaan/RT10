@@ -6,6 +6,7 @@ import { StatusBar, Style } from "@capacitor/status-bar";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { TAB_PATHS } from "./components/BottomNav";
 import { navigate } from "./shims/router";
+import { tStatic } from "./i18n/static";
 
 export const isNative = Capacitor.isNativePlatform();
 
@@ -75,7 +76,7 @@ async function saveDownload(url: string, filename: string) {
       /* Android 9 or older, or the phone refused: use the Share sheet below */
     }
     const saved = await Filesystem.writeFile({ path: filename, data, directory: Directory.Cache });
-    await Share.share({ title: filename, url: saved.uri, dialogTitle: "Save or share" });
+    await Share.share({ title: filename, url: saved.uri, dialogTitle: tStatic("Save or share") });
   } catch {
     /* the person closed the Share sheet, or storage is full: nothing to do */
   }
@@ -116,14 +117,14 @@ export function initNative() {
   handleBackButton();
   // The friend games call this to open the Android share sheet (WhatsApp, Messages, Instagram and so on).
   (window as unknown as { __tsShare?: (o: { title: string; text: string; url: string }) => Promise<void> }).__tsShare = async ({ title, text, url }) => {
-    await Share.share({ title, text, url, dialogTitle: "Share with friends" });
+    await Share.share({ title, text, url, dialogTitle: tStatic("Share with friends") });
   };
   // Story cards: the picture goes to the app cache and the Android share sheet opens with it (WhatsApp, Instagram, Messages…) with Story and Status shortcuts.
   (window as unknown as { __tsShareImage?: (o: { blob: Blob; filename: string; text: string }) => Promise<void> }).__tsShareImage = async ({ blob, filename, text }) => {
     const data = await blobToBase64(blob);
     const saved = await Filesystem.writeFile({ path: filename, data, directory: Directory.Cache });
     // Same Android share dialog as before, plus "Instagram Story" and "WhatsApp Status" in the app row.
-    await StoryShare.shareImage({ uri: saved.uri, text, title: "Share your card" });
+    await StoryShare.shareImage({ uri: saved.uri, text, title: tStatic("Share your card") });
   };
   void SplashScreen.hide().catch(() => {});
 }

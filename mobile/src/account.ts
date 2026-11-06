@@ -1,4 +1,5 @@
 import { createClient } from "./shims/supabase-client";
+import { tStatic } from "./i18n/static";
 
 /**
  * Delete the signed-in person's account and everything saved in it.
@@ -9,11 +10,11 @@ export async function deleteMyAccount(): Promise<string | null> {
   try {
     const supabase = createClient();
     const { error } = await supabase.functions.invoke("delete-account", { method: "POST" });
-    if (error) return "We could not delete your account right now. Please try again, or email support@toppershelf.online.";
+    if (error) return tStatic("We could not delete your account right now. Please try again, or email support@toppershelf.online.");
     await supabase.auth.signOut({ scope: "local" }).catch(() => {});
     return null;
   } catch {
-    return "We could not reach the server. Check your internet connection and try again.";
+    return tStatic("We could not reach the server. Check your internet connection and try again.");
   }
 }
 
