@@ -117,6 +117,13 @@ const iconPaths = {
     </>
   ),
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  edit: (
+    <>
+      <path d="M4 20h4L19 9l-4-4L4 16z" />
+      <path d="m13.5 6.5 4 4" />
+    </>
+  ),
+  trash: <path d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7M10 11v6M14 11v6" />,
   close: <path d="m6 6 12 12M18 6 6 18" />,
   home: <path d="m3 11 9-8 9 8v10h-6v-6H9v6H3z" />,
   grid: (

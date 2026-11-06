@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import ToolIcon from "@/components/tools/ToolIcon";
 import { Button } from "@/components/tools/ui";
-import { Field, Hint, inputClass } from "@/components/tools/kit";
+import { Field, inputClass } from "@/components/tools/kit";
 import { useAccountData } from "@/lib/tools/useAccountData";
 
 type Card = { id: string; front: string; back: string };
@@ -27,6 +27,11 @@ export function parseCards(text: string): { cards: Card[]; skipped: number } {
   return { cards, skipped };
 }
 
+// Each deck gets one of the site's own accent pairs, picked from its id so it never changes.
+const accents: [string, string][] = [["#3b82f6", "#60a5fa"], ["#7c3aed", "#a78bfa"], ["#0f9f8f", "#5eead4"], ["#f97355", "#fdba74"]];
+const accentFor = (id: string) => accents[[...id].reduce((n, c) => n + c.charCodeAt(0), 0) % accents.length];
+const confettiColors = ["#3b82f6", "#7c3aed", "#0f9f8f", "#f97355", "#fbbf24", "#10b981"];
+
 function shuffle<T>(list: T[]) {
   const copy = [...list];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -43,10 +48,32 @@ export default function FlashcardMaker() {
   const [newName, setNewName] = useState("");
 
 
+  // A deck that already has cards opens straight into revision; an empty one opens the editor.
+  const openDeck = (target: Deck) => {
+    setOpenId(target.id);
+    setStudying(target.cards.length > 0);
+  };
+
   const deck = decks.find((d) => d.id === openId) ?? null;
   const updateDeck = (next: Deck) => setDecks(decks.map((d) => (d.id === next.id ? next : d)));
 
-  if (deck && studying) return <Study deck={deck} onExit={() => setStudying(false)} />;
+  if (deck && studying) {
+    return (
+      <Study
+        deck={deck}
+        onEdit={() => setStudying(false)}
+        onDelete={() => {
+          setDecks(decks.filter((d) => d.id !== deck.id));
+          setStudying(false);
+          setOpenId(null);
+        }}
+        onExit={() => {
+          setStudying(false);
+          setOpenId(null);
+        }}
+      />
+    );
+  }
   if (deck) {
     return (
       <DeckEditor
@@ -85,18 +112,29 @@ export default function FlashcardMaker() {
         <Button type="submit">Create deck</Button>
       </form>
 
-      {decks.length === 0 && <Hint>Your decks appear here and are saved to your account.</Hint>}
+      {decks.length === 0 && (
+        <div className="fc-empty">
+          <div className="fc-floaters" aria-hidden="true">
+            {[["-1.6rem", "-10deg", "#3b82f6", "0s"], ["0rem", "4deg", "#7c3aed", ".5s"], ["1.6rem", "14deg", "#f97355", "1s"]].map(([x, r, c, d]) => (
+              <span key={c} style={{ "--x": x, "--r": r, "--c": c, "--d": d } as CSSProperties} />
+            ))}
+          </div>
+          Your decks appear here and are saved to your account.
+        </div>
+      )}
       {decks.length > 0 && (
         <ul className="m-0 grid grid-cols-1 list-none gap-3 p-0 sm:grid-cols-2">
-          {decks.map((d) => (
+          {decks.map((d, i) => (
             <li key={d.id}>
               <button
                 type="button"
-                onClick={() => setOpenId(d.id)}
-                className="block w-full cursor-pointer rounded-2xl border border-line bg-white p-5 text-left transition hover:border-blue-hover hover:shadow-card"
+                onClick={() => openDeck(d)}
+                className="fc-tile"
+                style={{ "--i": i, "--a": accentFor(d.id)[0], "--b": accentFor(d.id)[1] } as CSSProperties}
               >
                 <span className="block text-base font-bold text-navy">{d.name}</span>
-                <span className="mt-1 block text-sm text-muted">
+                <span className="fc-count">
+                  <i aria-hidden="true" />
                   {d.cards.length} card{d.cards.length === 1 ? "" : "s"}
                 </span>
               </button>
@@ -104,6 +142,38 @@ export default function FlashcardMaker() {
           ))}
         </ul>
       )}
+    </div>
+  );
+}
+
+function DeleteDialog({ name, count, onCancel, onConfirm }: { name: string; count: number; onCancel: () => void; onConfirm: () => void }) {
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    box.current?.querySelector("button")?.focus(); // "Keep deck" is the first button
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onCancel();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onCancel]);
+  return (
+    <div className="fc-modal" onClick={onCancel}>
+      <div ref={box} className="fc-dialog" role="alertdialog" aria-modal="true" aria-labelledby="fc-del-title" onClick={(e) => e.stopPropagation()}>
+        <div className="fc-dialog-icon">
+          <ToolIcon name="trash" size={22} />
+        </div>
+        <h2 id="fc-del-title">Delete “{name}”?</h2>
+        <p>
+          This permanently deletes the deck and its {count} card{count === 1 ? "" : "s"}. You can&apos;t undo this.
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          {/* Keep deck is focused first, so a stray Enter never deletes anything. */}
+          <Button variant="secondary" onClick={onCancel}>
+            Keep deck
+          </Button>
+          <Button className="bg-red-600 hover:bg-red-700" onClick={onConfirm}>
+            Delete deck
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -126,6 +196,10 @@ function DeckEditor({
   const [bulk, setBulk] = useState("");
   const [showBulk, setShowBulk] = useState(false);
   const [message, setMessage] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+  const frontRef = useRef<HTMLTextAreaElement>(null);
+  const backRef = useRef<HTMLTextAreaElement>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   return (
     <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
@@ -140,26 +214,75 @@ function DeckEditor({
       <h3 className="m-0 text-2xl font-extrabold tracking-tight text-navy">{deck.name}</h3>
 
       <form
-        className="grid grid-cols-1 gap-3 rounded-2xl bg-surface p-5"
+        ref={formRef}
+        className="grid scroll-mt-24 grid-cols-1 gap-2.5 rounded-2xl bg-surface p-3.5 sm:gap-3 sm:p-5"
+        // When a field is focused on a phone, lift the whole form to the top so both fields and the
+        // Add card button sit above the keyboard (no scrolling down to add, then back up to type).
+        onFocus={() => setTimeout(() => formRef.current?.scrollIntoView({ block: "start", behavior: "smooth" }), 250)}
         onSubmit={(event) => {
           event.preventDefault();
-          if (!front.trim() || !back.trim()) return setMessage("Fill in both sides of the card.");
+          if (!front.trim()) {
+            setMessage("Fill in both sides of the card.");
+            return frontRef.current?.focus();
+          }
+          if (!back.trim()) {
+            setMessage("Fill in both sides of the card.");
+            return backRef.current?.focus();
+          }
           onChange({ ...deck, cards: [...deck.cards, { id: uid(), front: front.trim(), back: back.trim() }] });
           setFront("");
           setBack("");
-          setMessage("");
+          setMessage("Card added. Type the next one.");
+          frontRef.current?.focus(); // keep the keyboard open for the next card
         }}
       >
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="Front (question)">
-            <textarea className={`${inputClass} h-24 py-3`} value={front} onChange={(e) => setFront(e.target.value)} maxLength={300} />
+            <textarea
+              ref={frontRef}
+              className={`${inputClass} h-20 py-2.5 sm:h-24 sm:py-3`}
+              value={front}
+              onChange={(e) => setFront(e.target.value)}
+              maxLength={300}
+              enterKeyHint="next"
+              onKeyDown={(e) => {
+                // Enter jumps to the answer; Shift+Enter still adds a new line.
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  backRef.current?.focus();
+                }
+              }}
+            />
           </Field>
           <Field label="Back (answer)">
-            <textarea className={`${inputClass} h-24 py-3`} value={back} onChange={(e) => setBack(e.target.value)} maxLength={600} />
+            <textarea
+              ref={backRef}
+              className={`${inputClass} h-20 py-2.5 sm:h-24 sm:py-3`}
+              value={back}
+              onChange={(e) => setBack(e.target.value)}
+              maxLength={600}
+              onKeyDown={(e) => {
+                // Ctrl/Cmd + Enter adds the card from the keyboard.
+                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                  e.preventDefault();
+                  formRef.current?.requestSubmit();
+                }
+              }}
+            />
           </Field>
         </div>
-        <div className="flex flex-wrap items-center gap-4">
-          <Button type="submit">Add card</Button>
+        <button type="button" className="fc-live hidden sm:block" aria-label="Preview of your card. Hover or focus to flip." tabIndex={-1}>
+          <span className="fc-inner" style={{ display: "block", height: "100%" }}>
+            <span className="fc-face fc-front" style={{ padding: "1rem" }}>
+              <span className="line-clamp-3 text-sm font-bold text-navy">{front || "Your question shows here"}</span>
+            </span>
+            <span className="fc-face fc-back" style={{ padding: "1rem" }}>
+              <span className="line-clamp-3 text-sm font-semibold text-navy">{back || "…and the answer on the back"}</span>
+            </span>
+          </span>
+        </button>
+        <div className="grid grid-cols-1 items-center gap-3 sm:flex sm:flex-wrap sm:gap-4">
+          <Button type="submit" className="w-full sm:w-auto">Add card</Button>
           <button
             type="button"
             onClick={() => setShowBulk(!showBulk)}
@@ -199,7 +322,7 @@ function DeckEditor({
       {deck.cards.length > 0 && (
         <ol className="m-0 grid grid-cols-1 list-none gap-2 p-0">
           {deck.cards.map((card) => (
-            <li key={card.id} className="flex items-start gap-3 rounded-2xl border border-line bg-white px-4 py-3">
+            <li key={card.id} className="fc-row flex items-start gap-3 rounded-2xl border border-line bg-white px-4 py-3">
               <span className="grid min-w-0 flex-1 gap-1 sm:grid-cols-2 sm:gap-4">
                 <span className="text-sm font-bold text-navy">{card.front}</span>
                 <span className="text-sm text-slate-700">{card.back}</span>
@@ -219,37 +342,60 @@ function DeckEditor({
 
       <button
         type="button"
-        onClick={() => {
-          if (window.confirm(`Delete “${deck.name}” and all its cards?`)) onDelete();
-        }}
+        onClick={() => setConfirmDelete(true)}
         className="cursor-pointer justify-self-start border-0 bg-transparent p-0 text-sm font-semibold text-red-600 underline-offset-4 hover:underline"
       >
         Delete this deck
       </button>
+      {confirmDelete && <DeleteDialog name={deck.name} count={deck.cards.length} onCancel={() => setConfirmDelete(false)} onConfirm={onDelete} />}
     </div>
   );
 }
 
-function Study({ deck, onExit }: { deck: Deck; onExit: () => void }) {
+function Study({ deck, onExit, onEdit, onDelete }: { deck: Deck; onExit: () => void; onEdit: () => void; onDelete: () => void }) {
   const [queue, setQueue] = useState<Card[]>(() => shuffle(deck.cards));
   const [flipped, setFlipped] = useState(false);
   const [known, setKnown] = useState(0);
   const [againCount, setAgainCount] = useState(0);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [leaving, setLeaving] = useState<"known" | "again" | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const card = queue[0];
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
 
   function answer(gotIt: boolean) {
-    const [current, ...rest] = queue;
-    if (gotIt) setKnown(known + 1);
-    else setAgainCount(againCount + 1);
-    // Cards marked "Again" come back after a few others, until every card is known.
-    setQueue(gotIt ? rest : [...rest.slice(0, 3), current, ...rest.slice(3)]);
-    setFlipped(false);
+    if (leaving) return;
+    // The card slides away first, then the next one is dealt.
+    setLeaving(gotIt ? "known" : "again");
+    timer.current = setTimeout(() => {
+      const [current, ...rest] = queue;
+      if (gotIt) setKnown(known + 1);
+      else setAgainCount(againCount + 1);
+      // Cards marked "Again" come back after a few others, until every card is known.
+      setQueue(gotIt ? rest : [...rest.slice(0, 3), current, ...rest.slice(3)]);
+      setFlipped(false);
+      setLeaving(null);
+    }, 300);
   }
 
   if (!card) {
     return (
-      <div className="mx-auto grid max-w-xl justify-items-center gap-4 py-6 text-center">
-        <p className="m-0 text-5xl" aria-hidden="true">🎉</p>
+      <div className="fc-party">
+        <div className="fc-confetti" aria-hidden="true">
+          {Array.from({ length: 28 }, (_, n) => (
+            <i
+              key={n}
+              style={{
+                "--c": confettiColors[n % confettiColors.length],
+                "--x": `${Math.round(Math.cos(n * 2.4) * (90 + (n % 5) * 38))}px`,
+                "--y": `${Math.round(Math.sin(n * 2.4) * (70 + (n % 4) * 30)) - 40}px`,
+                "--rot": `${n * 47}deg`,
+                "--d": `${(n % 7) * 40}ms`,
+              } as CSSProperties}
+            />
+          ))}
+        </div>
+        <p className="fc-emoji m-0" aria-hidden="true">🎉</p>
         <h3 className="m-0 text-2xl font-extrabold text-navy">You know all {deck.cards.length} cards</h3>
         <p className="m-0 text-sm text-muted">
           {againCount === 0 ? "First try, every one." : `${againCount} card${againCount === 1 ? " needed" : "s needed"} another go along the way.`}
@@ -264,10 +410,13 @@ function Study({ deck, onExit }: { deck: Deck; onExit: () => void }) {
           >
             Study again
           </Button>
-          <Button variant="secondary" onClick={onExit}>
-            Back to deck
+          <Button variant="secondary" onClick={onEdit}>
+            <ToolIcon name="edit" size={16} /> Edit cards
           </Button>
         </div>
+        <button type="button" onClick={onExit} className="cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-blue-hover">
+          All decks
+        </button>
       </div>
     );
   }
@@ -276,30 +425,53 @@ function Study({ deck, onExit }: { deck: Deck; onExit: () => void }) {
     <div className="mx-auto grid grid-cols-1 max-w-xl gap-5">
       <div className="flex items-center justify-between text-sm">
         <button type="button" onClick={onExit} className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover">
-          ← Stop
+          ← All decks
         </button>
-        <span className="font-semibold text-muted">
-          {known} of {deck.cards.length} known
+        <span className="flex items-center gap-2 font-semibold text-muted">
+          <span>
+            <span key={known} className="fc-tick">{known}</span> of {deck.cards.length} known
+          </span>
+          <button
+            type="button"
+            onClick={onEdit}
+            aria-label="Edit cards"
+            title="Edit cards"
+            className="grid size-9 cursor-pointer place-items-center rounded-full border-0 bg-blue-soft text-blue-hover transition hover:bg-blue-hover hover:text-white"
+          >
+            <ToolIcon name="edit" size={17} />
+          </button>
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-surface">
-        <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${(known / deck.cards.length) * 100}%` }} />
+      <div className="fc-bar">
+        <div style={{ width: `${(known / deck.cards.length) * 100}%` }} />
       </div>
-      <button
-        type="button"
-        onClick={() => setFlipped(!flipped)}
-        aria-label={flipped ? "Show question" : "Show answer"}
-        className={`grid min-h-64 cursor-pointer place-items-center rounded-3xl border-2 p-8 text-center transition ${
-          flipped ? "border-emerald-200 bg-emerald-50" : "border-line bg-white hover:border-blue-hover"
-        }`}
-      >
-        <span>
-          <span className="mb-3 block text-xs font-semibold text-muted">{flipped ? "Answer" : "Question · tap to flip"}</span>
-          <span className="block whitespace-pre-wrap text-2xl font-bold leading-snug text-navy">{flipped ? card.back : card.front}</span>
-        </span>
-      </button>
+      <div className="fc-stage">
+        <button
+          key={`${card.id}-${known}-${againCount}`}
+          type="button"
+          onClick={() => !leaving && setFlipped(!flipped)}
+          aria-label={flipped ? "Show question" : "Show answer"}
+          className={`fc-card ${flipped ? "fc-flip" : ""} ${leaving ? `fc-${leaving}` : ""}`}
+        >
+          <span className="fc-inner" style={{ display: "block", minHeight: "16rem" }}>
+            <span className="fc-face fc-front" aria-hidden={flipped}>
+              <span className="fc-corner" aria-hidden="true"><i /><i /><i /></span>
+              <span>
+                <span className="mb-3 block text-xs font-semibold text-muted">Question · tap to flip</span>
+                <span className="block whitespace-pre-wrap text-2xl font-bold leading-snug text-navy">{card.front}</span>
+              </span>
+            </span>
+            <span className="fc-face fc-back" aria-hidden={!flipped}>
+              <span>
+                <span className="mb-3 block text-xs font-semibold text-emerald-700">Answer</span>
+                <span className="block whitespace-pre-wrap text-2xl font-bold leading-snug text-navy">{card.back}</span>
+              </span>
+            </span>
+          </span>
+        </button>
+      </div>
       {flipped ? (
-        <div className="grid grid-cols-2 gap-3">
+        <div key="answers" className="fc-actions grid grid-cols-2 gap-3">
           <Button variant="secondary" onClick={() => answer(false)}>
             Again
           </Button>
@@ -312,6 +484,14 @@ function Study({ deck, onExit }: { deck: Deck; onExit: () => void }) {
           Show answer
         </Button>
       )}
+      <button
+        type="button"
+        onClick={() => setConfirmDelete(true)}
+        className="cursor-pointer justify-self-center border-0 bg-transparent p-1 text-xs font-semibold text-muted underline-offset-4 hover:text-red-600 hover:underline"
+      >
+        Delete deck
+      </button>
+      {confirmDelete && <DeleteDialog name={deck.name} count={deck.cards.length} onCancel={() => setConfirmDelete(false)} onConfirm={onDelete} />}
     </div>
   );
 }
