@@ -15,6 +15,30 @@ export function isLang(value: unknown): value is Lang {
   return value === "en" || value === "hi";
 }
 
+/**
+ * Hindi only when the phone's FIRST (main) language is Hindi. A phone set to English with Hindi as a second language stays English,
+ * and so does anything we cannot read clearly. Hindi written in Latin letters ("hi-Latn") also stays English.
+ */
+export function phoneLang(): Lang {
+  try {
+    const main = (navigator.languages && navigator.languages[0]) || navigator.language || "";
+    return /^hi([-_](?!latn)\w+)*$/i.test(main) ? "hi" : "en";
+  } catch {
+    return "en";
+  }
+}
+
+/** The person's own choice if they made one, otherwise the phone's language. Never throws; any doubt gives English. */
+export function resolveLang(): Lang {
+  try {
+    const saved = localStorage.getItem(LANG_STORAGE_KEY);
+    if (isLang(saved)) return saved;
+  } catch {
+    /* storage blocked: fall through to the phone's language */
+  }
+  return phoneLang();
+}
+
 // Every dotted key that exists in the English file, e.g. "nav.home". A wrong key is a type error.
 type Join<K, P> = K extends string ? (P extends string ? `${K}.${P}` : never) : never;
 type Paths<T> = {
