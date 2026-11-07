@@ -5,8 +5,17 @@ import CardCooked from "@/components/fun/cards/CardCooked";
 import CardActions from "@/components/fun/CardActions";
 import { FitBox, GameShell, OwlPeek, hash, useTimers } from "@/components/fun/kit";
 import { resultLink } from "@/lib/fun/results";
+import { useHindi, useTr } from "@/lib/tools/useTr";
 
 type Phase = "input" | "loading" | "result";
+
+const TIERS_HI = [
+  { tier: "कच्चे", v: ["कच्चे। आपकी नींद सच में पूरी है?? हमें भी अपना तरीक़ा सिखाओ भाई।", "बस हल्के गरम। क्या आपके कोई डेडलाइन भी हैं? सच में लकी हो।", "बिल्कुल नहीं पके। फ़्री टाइम वाले मेन कैरेक्टर, कोई झूठ नहीं।"] },
+  { tier: "हल्के सिके", v: ["हल्के सिके हुए। अभी उम्मीद भी है और सोने का टाइम भी, सच में।", "सुनहरे भूरे। बस एक और असाइनमेंट और आप कुरकुरे हो जाओगे।", "बस गुनगुने। आपने सिलेबस एक बार खोला, वो भी गिना जाता है।"] },
+  { tier: "मीडियम", v: ["मीडियम पके। सिर्फ़ चाय और वाइब पर चल रहे हैं।", "आधे पके। आपकी टू-डू लिस्ट को अपनी अलग टू-डू लिस्ट चाहिए।", "धीमी आँच पर। आपने “बस 5 मिनट और” बोला था कोई 4 घंटे पहले।"] },
+  { tier: "अच्छे से पके", v: ["अच्छे से पक गए भाई। 47 टैब खुले हैं और एक में गाना चल रहा है।", "किनारे कुरकुरे हो गए। आपने अपने बेस्टी को एक हफ़्ते से सीन छोड़ रखा है।", "छन-छन। आपके अलार्म ने भी आपसे हार मान ली।"] },
+  { tier: "कोयला", v: ["पूरे पक गए, सच में। कोयला बन गए। फिर भी लेजेंड हो।", "जलकर राख। स्मोक अलार्म भी आपका नाम जानता है।", "पकने से भी आगे। सब ख़त्म है, पर स्टाइल के साथ।"] },
+];
 
 const TIERS = [
   { max: 20, tier: "RAW", bg: "#2f9e6e", v: ["Raw. You're actually well-rested?? Teach us your ways bro.", "Barely warm. Do you even have deadlines? Lucky you fr.", "Not cooked at all. Main character with free time, no cap."] },
@@ -17,11 +26,13 @@ const TIERS = [
 ];
 
 /** Same name, same result: the score comes from a hash of the name. */
-export function cookedResult(name: string) {
+export function cookedResult(name: string, hi = false) {
   const h = hash("cooked:" + name.trim().toLowerCase());
   const score = h % 101;
-  const t = TIERS.find((x) => score <= x.max)!;
-  return { score, tier: t.tier, bg: t.bg, verdict: t.v[(h >>> 8) % t.v.length] };
+  const ti = TIERS.findIndex((x) => score <= x.max);
+  const t = TIERS[ti];
+  const words = hi ? TIERS_HI[ti] : t;
+  return { score, tier: words.tier, bg: t.bg, verdict: words.v[(h >>> 8) % words.v.length] };
 }
 
 const MSGS = ["Heating the pot…", "Counting your open tabs…", "Checking your sleep debt…", "Lowkey almost cooked…"];
@@ -58,6 +69,8 @@ const ghost =
   "min-h-12 cursor-pointer rounded-2xl border-2 border-[#f0c9b4] bg-white px-4 py-3 text-[15px] font-bold text-[#7a2e0e] shadow-[0_4px_0_#f0c9b4] active:translate-y-[3px] active:shadow-[0_1px_0_#f0c9b4]";
 
 export default function HowCooked() {
+  const tr = useTr();
+  const hi = useHindi();
   const [phase, setPhase] = useState<Phase>("input");
   const [name, setName] = useState("");
   const [shown, setShown] = useState(0);
@@ -67,7 +80,7 @@ export default function HowCooked() {
   const raf = useRef(0);
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
 
-  const r = phase === "result" ? cookedResult(name) : null;
+  const r = phase === "result" ? cookedResult(name, hi) : null;
   const score = r ? r.score : 0;
   const heat = phase === "input" ? 0.55 : phase === "loading" ? 1.25 : 0.5 + (score / 100) * 0.9;
   const soup = r
@@ -81,7 +94,7 @@ export default function HowCooked() {
     x: 120 + ((i * 41) % 120), r: 1.2 + (i % 3) * 0.6, d: i * 0.31, dx: (i % 2 ? 1 : -1) * (8 + ((i * 7) % 20)),
   }));
   const heatTf = `translate(180 258) scale(1 ${heat.toFixed(2)}) translate(-180 -258)`;
-  const potLabel = phase === "result" ? `${score}%` : "CHAOS";
+  const potLabel = phase === "result" ? `${score}%` : tr("CHAOS");
 
   function reveal() {
     if (!name.trim() || phase !== "input") return;
@@ -91,7 +104,7 @@ export default function HowCooked() {
     [450, 900, 1350].forEach((ms, i) => later(() => setLoadIdx(i + 1), ms));
     later(() => {
       setPhase("result");
-      const target = cookedResult(name).score;
+      const target = cookedResult(name, hi).score;
       const t0 = performance.now();
       const step = (now: number) => {
         const p = Math.min(1, (now - t0) / 1100);
@@ -114,7 +127,7 @@ export default function HowCooked() {
             style={{ left: 95 + ((i * 53) % 150), animationDelay: `${(i * 0.42).toFixed(2)}s` }}
           />
         ))}
-        <svg width="360" height="300" viewBox="0 0 360 300" className="absolute bottom-0 left-0" role="img" aria-label="A steel pot boiling on a gas flame">
+        <svg width="360" height="300" viewBox="0 0 360 300" className="absolute bottom-0 left-0" role="img" aria-label={tr("A steel pot boiling on a gas flame")}>
           <defs>
             <linearGradient id="ck-steel" x1="0" x2="1" y1="0" y2="0">
               <stop offset="0" stopColor="#2c3038" /><stop offset=".1" stopColor="#6f7782" /><stop offset=".24" stopColor="#d9dfe6" /><stop offset=".31" stopColor="#ffffff" /><stop offset=".4" stopColor="#aeb6c0" /><stop offset=".62" stopColor="#5d646e" /><stop offset=".82" stopColor="#9aa3ae" /><stop offset=".93" stopColor="#4a5059" /><stop offset="1" stopColor="#23262c" />
@@ -186,8 +199,8 @@ export default function HowCooked() {
             <path d="M80 208 L280 208" stroke="#ffd7b5" strokeWidth="1.5" opacity=".6" />
             <path className="animate-fz-glow" d="M80 196 L80 214 Q80 240 112 242 L248 242 Q280 240 280 214 L280 196 Z" fill="url(#ck-heat)" opacity={glowOp} />
             <rect x="118" y="146" width="7" height="56" rx="3.5" fill="#ffffff" opacity=".55" />
-            <text x="181" y="185" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="900" fontSize="19" letterSpacing="4" fill="#ffffff" opacity=".55">{potLabel}</text>
-            <text x="180" y="184" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="900" fontSize="19" letterSpacing="4" fill="#3a3f47" opacity=".75">{potLabel}</text>
+            <text x="181" y="185" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="900" fontSize="19" letterSpacing={hi ? 0 : 4} fill="#ffffff" opacity=".55">{potLabel}</text>
+            <text x="180" y="184" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="900" fontSize="19" letterSpacing={hi ? 0 : 4} fill="#3a3f47" opacity=".75">{potLabel}</text>
             <ellipse cx="180" cy="134" rx="104" ry="20" fill="url(#ck-rim)" />
             <ellipse cx="180" cy="135" rx="95" ry="15.5" fill="#1b1d22" />
             <ellipse cx="180" cy="137" rx="90" ry="12" fill="url(#ck-soup)" />
@@ -244,21 +257,21 @@ export default function HowCooked() {
     <>
       {phase === "input" && (
         <div className="flex flex-col gap-3.5 px-6 lg:px-0">
-          <label htmlFor="cooked-name" className="text-sm font-bold text-[#7a4a35]">Your name</label>
+          <label htmlFor="cooked-name" className="text-sm font-bold text-[#7a4a35]">{tr("Your name")}</label>
           <input
             id="cooked-name"
             className="w-full rounded-2xl border-2 border-[#f0c9b4] bg-white px-[18px] py-4 text-lg font-medium text-[#3a1406] outline-none focus:border-[#e8501f] focus:shadow-[0_0_0_4px_rgba(232,80,31,.15)]"
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && reveal()}
-            placeholder="e.g. Jatin"
+            placeholder={tr("e.g. Jatin")}
             maxLength={30}
             autoComplete="off"
           />
-          <button className={btn} onClick={reveal} disabled={!name.trim()}>Reveal my result</button>
+          <button className={btn} onClick={reveal} disabled={!name.trim()}>{tr("Reveal my result")}</button>
           <div className="pointer-events-none flex items-end justify-center gap-1 overflow-hidden pt-2">
             <div className="mb-[58px] animate-fz-peek rounded-[16px_16px_4px_16px] bg-white px-3 py-2.5 text-[13px] font-bold text-navy shadow-[0_6px_16px_rgba(16,42,76,.12)]">
-              Same name, same result.<br />Every time. Hoot!
+              {tr("Same name, same result.")}<br />{tr("Every time. Hoot!")}
             </div>
             <OwlPeek className="w-[132px]" />
           </div>
@@ -267,11 +280,11 @@ export default function HowCooked() {
 
       {phase === "loading" && (
         <div className="flex flex-col items-center gap-3.5 px-8 py-2 lg:px-0">
-          <div className="text-center font-display text-[28px] font-normal text-navy">{MSGS[loadIdx % 4]}</div>
+          <div className="text-center font-display text-[28px] font-normal text-navy">{tr(MSGS[loadIdx % 4])}</div>
           <div className="h-4 w-full overflow-hidden rounded-full bg-[#f6d9c8]">
             <div className="h-full animate-fz-fill rounded-full bg-[#e8501f]" />
           </div>
-          <div className="text-sm text-[#9a6a55]">Analysing {name}&apos;s stress levels…</div>
+          <div className="text-sm text-[#9a6a55]">{tr("Analysing {name}'s stress levels…", { name })}</div>
         </div>
       )}
 
@@ -293,12 +306,12 @@ export default function HowCooked() {
           <CardActions
             getNode={() => cardRef.current}
             fileName="how-cooked-toppershelf.png"
-            shareText={`${name.trim()} is ${r.score}% cooked. How cooked are you?`}
+            shareText={tr("{name} is {n}% cooked. How cooked are you?", { name: name.trim(), n: r.score })}
             shareUrl={resultLink("cooked", { n: name.trim() })}
             btnClass={`${btn} min-h-12 p-3 text-base`}
             ghostClass={ghost}
           />
-          <button type="button" className={`${ghost} w-full`} onClick={() => { setPhase("input"); setName(""); setShown(0); }}>Try another name</button>
+          <button type="button" className={`${ghost} w-full`} onClick={() => { setPhase("input"); setName(""); setShown(0); }}>{tr("Try another name")}</button>
         </div>
       )}
     </>

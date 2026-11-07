@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Field, Hint, NumberField, ResultPanel, Segmented, inputClass, toNumber } from "@/components/tools/kit";
 import ToolIcon from "@/components/tools/ToolIcon";
 import { ModeCards, ModeHeader, type ModeCard } from "@/components/tools/ModeCards";
+import { Rich, useTr } from "@/lib/tools/useTr";
 
 /*
  * Conversion formulas in common use in India. A board's or university's own rule (printed on the marksheet or in its
@@ -112,6 +113,7 @@ const round2 = (n: number) => Math.round(n * 100) / 100;
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 export default function CgpaCalculator() {
+  const tr = useTr();
   const [mode, setMode] = useState<Mode>("to-percent");
   const [formulaId, setFormulaId] = useState("cbse");
   const [custom, setCustom] = useState("");
@@ -124,7 +126,8 @@ export default function CgpaCalculator() {
   const [subjects, setSubjects] = useState<Subject[]>([newSubject(), newSubject(), newSubject()]);
   // Phones and tablets start on the cards; desktop always shows the pills and the calculator.
   const [picked, setPicked] = useState(false);
-  const currentCard = cards.find((c) => c.value === mode)!;
+  const shownCards = cards.map((c) => ({ ...c, label: tr(c.label), intro: tr(c.intro) }));
+  const currentCard = shownCards.find((c) => c.value === mode)!;
 
   const multiplier = toNumber(custom);
   const formula: Formula =
@@ -132,7 +135,7 @@ export default function CgpaCalculator() {
       ? {
           id: "custom",
           label: "Custom",
-          rule: `Percentage = CGPA × ${Number.isFinite(multiplier) ? multiplier : "?"}`,
+          rule: tr("Percentage = CGPA × {m}", { m: Number.isFinite(multiplier) ? multiplier : "?" }),
           toPercent: (c) => c * multiplier,
           toCgpa: (p) => p / multiplier,
         }
@@ -143,8 +146,8 @@ export default function CgpaCalculator() {
     <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       {!picked && (
         <ModeCards
-          title="What do you want to work out?"
-          cards={cards}
+          title={tr("What do you want to work out?")}
+          cards={shownCards}
           onPick={(value) => {
             setMode(value as Mode);
             setPicked(true);
@@ -153,42 +156,42 @@ export default function CgpaCalculator() {
       )}
 
       <div className={`grid grid-cols-1 gap-6 ${picked ? "" : "max-lg:hidden"}`}>
-      {picked && <ModeHeader card={currentCard} onBack={() => setPicked(false)} backLabel="Back to all calculators" />}
+      {picked && <ModeHeader card={currentCard} onBack={() => setPicked(false)} backLabel={tr("Back to all calculators")} />}
       {picked && <p className="m-0 text-sm text-muted lg:hidden">{currentCard.intro}</p>}
       <div className="max-lg:hidden">
         <Segmented
-          label="What do you want to work out?"
+          label={tr("What do you want to work out?")}
           value={mode}
           onChange={setMode}
-          options={cards.map(({ value, label }) => ({ value: value as Mode, label }))}
+          options={shownCards.map(({ value, label }) => ({ value: value as Mode, label }))}
         />
       </div>
 
       {(mode === "to-percent" || mode === "to-cgpa") && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {mode === "to-percent" ? (
-            <NumberField label="Your CGPA" value={cgpa} onChange={setCgpa} min={0} max={10} placeholder="e.g. 8.4" hint="On a 10-point scale." />
+            <NumberField label={tr("Your CGPA")} value={cgpa} onChange={setCgpa} min={0} max={10} placeholder={tr("e.g. 8.4")} hint={tr("On a 10-point scale.")} />
           ) : (
-            <NumberField label="Your percentage" value={percent} onChange={setPercent} min={0} max={100} placeholder="e.g. 76" suffix="%" />
+            <NumberField label={tr("Your percentage")} value={percent} onChange={setPercent} min={0} max={100} placeholder={tr("e.g. 76")} suffix="%" />
           )}
-          <Field label="Conversion rule" hint="Pick the rule your board or university uses.">
+          <Field label={tr("Conversion rule")} hint={tr("Pick the rule your board or university uses.")}>
             <select className={inputClass} value={formulaId} onChange={(event) => setFormulaId(event.target.value)}>
               {formulas.map((f) => (
                 <option key={f.id} value={f.id}>
-                  {f.label}
+                  {tr(f.label)}
                 </option>
               ))}
-              <option value="custom">Custom multiplier</option>
+              <option value="custom">{tr("Custom multiplier")}</option>
             </select>
           </Field>
           {formulaId === "custom" && (
             <NumberField
-              label="Multiply CGPA by"
+              label={tr("Multiply CGPA by")}
               value={custom}
               onChange={setCustom}
               min={0}
-              placeholder="e.g. 9.5"
-              hint="Use the number printed on your marksheet."
+              placeholder={tr("e.g. 9.5")}
+              hint={tr("Use the number printed on your marksheet.")}
             />
           )}
         </div>
@@ -204,40 +207,44 @@ export default function CgpaCalculator() {
 }
 
 function RuleNote({ formula }: { formula: Formula }) {
+  const tr = useTr();
   return (
-    <>
-      Worked out with <strong>{formula.rule}</strong>. If your marksheet or university gives a different rule, that one is
-      the official figure.
-    </>
+    <Rich
+      text={tr("Worked out with <b>{rule}</b>. If your marksheet or university gives a different rule, that one is the official figure.", {
+        rule: tr(formula.rule),
+      })}
+    />
   );
 }
 
 function ToPercent({ cgpa, formula, customMissing }: { cgpa: number; formula: Formula; customMissing: boolean }) {
-  if (customMissing) return <Hint>Enter the multiplier your university uses.</Hint>;
-  if (!Number.isFinite(cgpa)) return <Hint>Enter your CGPA to see the percentage.</Hint>;
-  if (cgpa < 0 || cgpa > 10) return <Hint error>CGPA should be between 0 and 10.</Hint>;
+  const tr = useTr();
+  if (customMissing) return <Hint>{tr("Enter the multiplier your university uses.")}</Hint>;
+  if (!Number.isFinite(cgpa)) return <Hint>{tr("Enter your CGPA to see the percentage.")}</Hint>;
+  if (cgpa < 0 || cgpa > 10) return <Hint error>{tr("CGPA should be between 0 and 10.")}</Hint>;
   const result = clamp(formula.toPercent(cgpa), 0, 100);
   return (
-    <ResultPanel label={`${cgpa} CGPA is`} value={`${round2(result)}%`}>
+    <ResultPanel label={tr("{n} CGPA is", { n: cgpa })} value={`${round2(result)}%`}>
       <RuleNote formula={formula} />
     </ResultPanel>
   );
 }
 
 function ToCgpa({ percent, formula, customMissing }: { percent: number; formula: Formula; customMissing: boolean }) {
-  if (customMissing) return <Hint>Enter the multiplier your university uses.</Hint>;
-  if (!Number.isFinite(percent)) return <Hint>Enter your percentage to see the CGPA.</Hint>;
-  if (percent < 0 || percent > 100) return <Hint error>Percentage should be between 0 and 100.</Hint>;
+  const tr = useTr();
+  if (customMissing) return <Hint>{tr("Enter the multiplier your university uses.")}</Hint>;
+  if (!Number.isFinite(percent)) return <Hint>{tr("Enter your percentage to see the CGPA.")}</Hint>;
+  if (percent < 0 || percent > 100) return <Hint error>{tr("Percentage should be between 0 and 100.")}</Hint>;
   const result = formula.toCgpa(percent);
   if (result > 10) {
     return (
       <Hint error>
-        Under {formula.rule}, {percent}% would need a CGPA above 10, so this rule can&apos;t produce it.
+        {tr("Under {rule}, {percent}% would need a CGPA above 10, so this rule can't produce it.", { rule: tr(formula.rule), percent })}
       </Hint>
     );
   }
   return (
-    <ResultPanel label={`${percent}% is about`} value={`${round2(clamp(result, 0, 10))} CGPA`}>
+    <ResultPanel label={tr("{n}% is about", { n: percent })} value={tr("{n} CGPA", { n: round2(clamp(result, 0, 10)) })}>
       <RuleNote formula={formula} />
     </ResultPanel>
   );
@@ -250,6 +257,7 @@ function SgpaToCgpa({
   semesters: Semester[];
   setSemesters: (next: Semester[]) => void;
 }) {
+  const tr = useTr();
   const update = (index: number, patch: Partial<Semester>) =>
     setSemesters(semesters.map((s, i) => (i === index ? { ...s, ...patch } : s)));
 
@@ -264,18 +272,17 @@ function SgpaToCgpa({
   return (
     <div className="grid grid-cols-1 gap-5">
       <p className="m-0 text-sm leading-6 text-muted">
-        Add each semester&apos;s SGPA. Add credits too if you know them: CGPA is then weighted by credits, which is how most
-        universities calculate it. Without credits, every semester counts equally.
+        {tr("Add each semester's SGPA. Add credits too if you know them: CGPA is then weighted by credits, which is how most universities calculate it. Without credits, every semester counts equally.")}
       </p>
       <ol className="m-0 grid grid-cols-1 list-none gap-3 p-0">
         {semesters.map((s, index) => (
           <li key={index} className="grid grid-cols-[auto_1fr_1fr_auto] items-end gap-3">
             <span className="mb-3.5 w-10 text-sm font-bold text-muted">S{index + 1}</span>
-            <NumberField label="SGPA" value={s.sgpa} onChange={(v) => update(index, { sgpa: v })} min={0} max={10} placeholder="8.2" />
-            <NumberField label="Credits" value={s.credits} onChange={(v) => update(index, { credits: v })} min={0} placeholder="Optional" />
+            <NumberField label={tr("SGPA")} value={s.sgpa} onChange={(v) => update(index, { sgpa: v })} min={0} max={10} placeholder="8.2" />
+            <NumberField label={tr("Credits")} value={s.credits} onChange={(v) => update(index, { credits: v })} min={0} placeholder={tr("Optional")} />
             <button
               type="button"
-              aria-label={`Remove semester ${index + 1}`}
+              aria-label={tr("Remove semester {n}", { n: index + 1 })}
               disabled={semesters.length <= 1}
               onClick={() => setSemesters(semesters.filter((_, i) => i !== index))}
               className="mb-1 grid size-10 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-muted hover:bg-surface hover:text-navy disabled:cursor-not-allowed disabled:opacity-40"
@@ -291,17 +298,20 @@ function SgpaToCgpa({
         onClick={() => setSemesters([...semesters, { sgpa: "", credits: "" }])}
         className="min-h-11 cursor-pointer justify-self-start rounded-xl border border-dashed border-line bg-white px-4 text-sm font-semibold text-navy hover:border-blue-hover disabled:opacity-50"
       >
-        + Add a semester
+        {tr("+ Add a semester")}
       </button>
       {invalid ? (
-        <Hint error>SGPA should be between 0 and 10, and credits more than 0.</Hint>
+        <Hint error>{tr("SGPA should be between 0 and 10, and credits more than 0.")}</Hint>
       ) : filled.length === 0 ? (
-        <Hint>Enter at least one SGPA to see your CGPA.</Hint>
+        <Hint>{tr("Enter at least one SGPA to see your CGPA.")}</Hint>
       ) : (
-        <ResultPanel label={`CGPA over ${filled.length} semester${filled.length === 1 ? "" : "s"}`} value={round2(cgpa).toFixed(2)}>
+        <ResultPanel
+          label={tr(filled.length === 1 ? "CGPA over {n} semester" : "CGPA over {n} semesters", { n: filled.length })}
+          value={round2(cgpa).toFixed(2)}
+        >
           {useCredits
-            ? `Weighted by ${totalCredits} total credits.`
-            : "Simple average. Add credits for every semester to weight it by credits."}
+            ? tr("Weighted by {n} total credits.", { n: totalCredits })
+            : tr("Simple average. Add credits for every semester to weight it by credits.")}
         </ResultPanel>
       )}
     </div>
@@ -309,6 +319,7 @@ function SgpaToCgpa({
 }
 
 function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSubjects: (next: Subject[]) => void }) {
+  const tr = useTr();
   const update = (index: number, patch: Partial<Subject>) => setSubjects(subjects.map((s, i) => (i === index ? { ...s, ...patch } : s)));
 
   const rows = subjects.map((s, index) => {
@@ -316,7 +327,7 @@ function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSub
     const max = toNumber(s.max);
     const filled = Number.isFinite(got);
     const bad = filled && (!(max > 0) || got < 0 || got > max);
-    return { index, name: s.name.trim() || `Subject ${index + 1}`, got, max, filled, bad };
+    return { index, name: s.name.trim() || tr("Subject {n}", { n: index + 1 }), got, max, filled, bad };
   });
   const used = rows.filter((r) => r.filled && !r.bad);
   const anyBad = rows.some((r) => r.bad);
@@ -326,24 +337,24 @@ function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSub
   return (
     <div className="grid grid-cols-1 gap-5">
       <p className="m-0 text-sm leading-6 text-muted max-lg:hidden">
-        Add the marks you got in each subject and what it was out of. You get the percentage for every subject and your overall percentage.
+        {tr("Add the marks you got in each subject and what it was out of. You get the percentage for every subject and your overall percentage.")}
       </p>
       <ol className="m-0 grid grid-cols-1 list-none gap-3 p-0">
         {subjects.map((s, index) => (
           <li key={index} className="grid grid-cols-1 gap-3 rounded-2xl border border-line bg-white p-3 sm:grid-cols-[1.2fr_1fr_1fr_auto] sm:items-end">
             <div className="flex items-end gap-2 sm:contents">
-              <Field label={`Subject ${index + 1}`}>
+              <Field label={tr("Subject {n}", { n: index + 1 })}>
                 <input
                   className={inputClass}
                   value={s.name}
                   maxLength={40}
-                  placeholder="e.g. Physics (optional)"
+                  placeholder={tr("e.g. Physics (optional)")}
                   onChange={(e) => update(index, { name: e.target.value })}
                 />
               </Field>
               <button
                 type="button"
-                aria-label={`Remove subject ${index + 1}`}
+                aria-label={tr("Remove subject {n}", { n: index + 1 })}
                 disabled={subjects.length <= 1}
                 onClick={() => setSubjects(subjects.filter((_, i) => i !== index))}
                 className="mb-1 grid size-10 shrink-0 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-muted hover:bg-surface hover:text-navy disabled:cursor-not-allowed disabled:opacity-40 sm:order-last"
@@ -352,8 +363,8 @@ function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSub
               </button>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:contents">
-              <NumberField label="Marks got" value={s.got} onChange={(v) => update(index, { got: v })} min={0} placeholder="e.g. 78" />
-              <NumberField label="Out of" value={s.max} onChange={(v) => update(index, { max: v })} min={0} placeholder="100" />
+              <NumberField label={tr("Marks got")} value={s.got} onChange={(v) => update(index, { got: v })} min={0} placeholder={tr("e.g. 78")} />
+              <NumberField label={tr("Out of")} value={s.max} onChange={(v) => update(index, { max: v })} min={0} placeholder="100" />
             </div>
           </li>
         ))}
@@ -364,17 +375,22 @@ function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSub
         onClick={() => setSubjects([...subjects, newSubject()])}
         className="min-h-11 cursor-pointer justify-self-start rounded-xl border border-dashed border-line bg-white px-4 text-sm font-semibold text-navy hover:border-blue-hover disabled:opacity-50"
       >
-        + Add a subject
+        {tr("+ Add a subject")}
       </button>
 
       {anyBad ? (
-        <Hint error>Marks should be between 0 and the “Out of” value, and “Out of” should be more than 0.</Hint>
+        <Hint error>{tr("Marks should be between 0 and the “Out of” value, and “Out of” should be more than 0.")}</Hint>
       ) : used.length === 0 ? (
-        <Hint>Enter your marks in at least one subject to see the percentages.</Hint>
+        <Hint>{tr("Enter your marks in at least one subject to see the percentages.")}</Hint>
       ) : (
         <div className="grid grid-cols-1 gap-4">
-          <ResultPanel label={`Total percentage · ${round2(totalGot)} out of ${round2(totalMax)}`} value={`${round2((totalGot / totalMax) * 100)}%`}>
-            {used.length === 1 ? "Based on 1 subject." : `Added up over ${used.length} subjects, not an average of the subject percentages.`}
+          <ResultPanel
+            label={tr("Total percentage · {got} out of {max}", { got: round2(totalGot), max: round2(totalMax) })}
+            value={`${round2((totalGot / totalMax) * 100)}%`}
+          >
+            {used.length === 1
+              ? tr("Based on 1 subject.")
+              : tr("Added up over {n} subjects, not an average of the subject percentages.", { n: used.length })}
           </ResultPanel>
           <ul className="m-0 grid grid-cols-1 list-none gap-2 p-0">
             {used.map((r) => {
@@ -389,7 +405,7 @@ function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSub
                     <div className="h-full rounded-full bg-blue-hover" style={{ width: `${clamp(pct, 0, 100)}%` }} />
                   </div>
                   <div className="mt-1.5 text-xs text-muted">
-                    {round2(r.got)} out of {round2(r.max)}
+                    {tr("{got} out of {max}", { got: round2(r.got), max: round2(r.max) })}
                   </div>
                 </li>
               );

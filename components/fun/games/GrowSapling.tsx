@@ -11,6 +11,7 @@ import { linkLabel, linkUrl } from "@/lib/fun/friends";
 import ShareButton from "@/components/fun/ShareButton";
 import { SITE_URL } from "@/lib/site";
 import { Button } from "@/components/tools/ui";
+import { useHindi, useTr } from "@/lib/tools/useTr";
 import { FitBox, GameShell, copyText, loadJSON, rng, saveJSON, useTimers } from "@/components/fun/kit";
 
 /* ---------- garden data ---------- */
@@ -41,12 +42,13 @@ const SPECIES = [
 const SLOTS = [[62, 230], [330, 232], [118, 224], [272, 226], [24, 236], [366, 236], [160, 220], [232, 221]];
 const TUFTS = [20, 70, 110, 150, 240, 290, 330, 372];
 const DAY_NAMES = ["S", "M", "T", "W", "T", "F", "S"];
+const DAY_NAMES_HI = ["र", "सो", "मं", "बु", "गु", "शु", "श"];
 
 const stageOf = (d: number) =>
   d <= 0 ? "SEED" : d <= 6 ? "SPROUT" : d <= 30 ? "SEEDLING" : d <= 90 ? "SAPLING" : d <= 180 ? "YOUNG TREE" : d <= 240 ? "LEAFY TREE" : d <= 300 ? "FLOWERING" : d < 365 ? "FRUITING" : "FULLY GROWN";
 
-const milestone = (d: number, sp: string) =>
-  ({ 1: `Your ${sp} seed sprouted!`, 7: "First true leaves!", 31: "It is a sapling now", 91: "Growing into a young tree", 181: "Full green canopy", 241: "First flowers bloomed!", 301: "First fruits!", 365: "Tree fully grown! Seed unlocked" } as Record<number, string>)[d] || "";
+const milestone = (d: number) =>
+  ({ 1: "Your {sp} seed sprouted!", 7: "First true leaves!", 31: "It is a sapling now", 91: "Growing into a young tree", 181: "Full green canopy", 241: "First flowers bloomed!", 301: "First fruits!", 365: "Tree fully grown! Seed unlocked" } as Record<number, string>)[d] || "";
 
 const epoch = () => {
   const n = new Date();
@@ -178,6 +180,7 @@ const noop = () => () => {};
  * this check sits in the game itself, so every way in (tool page, app, full-screen preview) asks for sign-in.
  */
 export default function GrowSapling() {
+  const tr = useTr();
   const mounted = useSyncExternalStore(noop, () => true, () => false);
   const { user, ready, openSignIn } = useAuth();
   const frame = "mx-auto min-h-[640px] w-full max-w-[28rem] rounded-[28px] bg-[#ecfdf3] lg:max-w-[64rem]";
@@ -186,11 +189,11 @@ export default function GrowSapling() {
     return (
       <div className={`${frame} grid place-items-center p-6 text-center`}>
         <div className="max-w-sm">
-          <h2 className="m-0 text-xl font-extrabold text-[#064e3b]">Sign in to grow your sapling</h2>
+          <h2 className="m-0 text-xl font-extrabold text-[#064e3b]">{tr("Sign in to grow your sapling")}</h2>
           <p className="mb-5 mt-2 text-sm leading-6 text-[#25483a]">
-            It takes one tap with Google. Your tree and streak are saved to your account, so they follow you to any phone.
+            {tr("It takes one tap with Google. Your tree and streak are saved to your account, so they follow you to any phone.")}
           </p>
-          <Button onClick={openSignIn}>Continue with Google</Button>
+          <Button onClick={openSignIn}>{tr("Continue with Google")}</Button>
         </div>
       </div>
     );
@@ -199,6 +202,8 @@ export default function GrowSapling() {
 }
 
 function GardenGame() {
+  const tr = useTr();
+  const hi = useHindi();
   const [g, setG] = useState<Garden>(loadGarden);
   const [watering, setWatering] = useState(false);
   const [boing, setBoing] = useState(false);
@@ -220,7 +225,8 @@ function GardenGame() {
     setG(next);
     saveJSON(KEY, next);
   };
-  const nm = (k: Who) => g.names[k] || (k === "a" ? "You" : "Buddy");
+  const nm = (k: Who) => g.names[k] || (k === "a" ? tr("You") : tr("Buddy"));
+  const initial = (k: Who, fallback: string) => (g.names[k][0] || fallback).toUpperCase();
   const say = (msg: string) => {
     setNudge(msg);
     window.clearTimeout(nudgeTimer.current);
@@ -250,9 +256,9 @@ function GardenGame() {
   for (let t = Math.max(0, comp - 8); t < comp; t++) {
     const sl = SLOTS[(comp - 1 - t) % 8];
     const sc = 0.36 + ((t * 37) % 7) / 100;
-    const tr = tree(t % 5, 365, sl[0], sl[1], sc, false, 1000 + t * 77);
-    back.paths.push(...tr.paths);
-    back.circles.push(...tr.circles);
+    const bt = tree(t % 5, 365, sl[0], sl[1], sc, false, 1000 + t * 77);
+    back.paths.push(...bt.paths);
+    back.circles.push(...bt.circles);
   }
   const roots: { d: string; sw: string }[] = [];
   if (d > 0) {
@@ -270,7 +276,7 @@ function GardenGame() {
     const day = today - 6 + i;
     const who = g.log[day];
     const dow = new Date(day * 86400000).getUTCDay();
-    return { t: who ? nm(who)[0].toUpperCase() : DAY_NAMES[dow], bg: who === "a" ? "#f59e0b" : who === "b" ? "#8b5cf6" : "#e2e8f0", ring: day === today };
+    return { t: who ? nm(who)[0].toUpperCase() : (hi ? DAY_NAMES_HI : DAY_NAMES)[dow], bg: who === "a" ? "#f59e0b" : who === "b" ? "#8b5cf6" : "#e2e8f0", ring: day === today };
   });
   const ticks = ([[1, "Sprout"], [31, "Sapling"], [91, "Tree"], [241, "Flowers"], [301, "Fruits"]] as const).map((t) => ({ p: ((t[0] / 365) * 100).toFixed(1), c: d >= t[0] ? "#047857" : "#a7f3d0" }));
   const seeds = SPECIES.map((s, k) => {
@@ -279,15 +285,15 @@ function GardenGame() {
     if (d >= 365 && si === k) grown++;
     const growing = k === si && d < 365;
     const locked = k > comp;
-    const status = locked ? `Day ${365 * k}` : growing ? "Growing" : grown > 0 ? `Grown ×${grown}` : "Ready";
-    return { name: s.name, c: locked ? "#94a3b8" : s.seed, bg: locked ? "#f1f5f9" : s.pack, edge: locked ? "#e2e8f0" : "rgba(6,78,59,.18)", tc: locked ? "#475569" : "#3b1d0a", locked, status, growing };
+    const status = locked ? tr("Day {n}", { n: 365 * k }) : growing ? tr("Growing") : grown > 0 ? tr("Grown ×{n}", { n: grown }) : tr("Ready");
+    return { name: tr(s.name), c: locked ? "#94a3b8" : s.seed, bg: locked ? "#f1f5f9" : s.pack, edge: locked ? "#e2e8f0" : "rgba(6,78,59,.18)", tc: locked ? "#475569" : "#3b1d0a", locked, status, growing };
   });
 
   function water() {
     if (watering) return;
     if (g.lastW === today) {
       const who = g.log[today];
-      say(!who || who === g.me ? "You already watered today. Come back tomorrow!" : `${nm(who)} already watered today. Come back tomorrow!`);
+      say(!who || who === g.me ? tr("You already watered today. Come back tomorrow!") : tr("{name} already watered today. Come back tomorrow!", { name: nm(who) }));
       return;
     }
     setWatering(true);
@@ -298,8 +304,8 @@ function GardenGame() {
       const c2 = Math.floor((cared - 1) / 365);
       const dd = cared - c2 * 365;
       const sp = SPECIES[c2 % 5].name;
-      let msg = milestone(dd, sp);
-      if (dd === 1 && c2 > 0) msg = `Planted your ${sp} seed!`;
+      let msg = tr(milestone(dd) || "", { sp: tr(sp) });
+      if (dd === 1 && c2 > 0) msg = tr("Planted your {sp} seed!", { sp: tr(sp) });
       const log = trimLog({ ...snap.log, [today]: snap.me }, today);
       const next = { ...snap, cared, streak, best: Math.max(snap.best, streak), lastW: today, log };
       setG(next);
@@ -314,12 +320,12 @@ function GardenGame() {
   }
   const wilting = wilted;
   const sky = wilting ? "#cbd5e1" : "#bae6fd";
-  const sceneLabel = `${S.name} tree, day ${d}, garden of ${totalTrees} trees`;
+  const sceneLabel = tr("{species} tree, day {d}, garden of {n} trees", { species: tr(S.name), d, n: totalTrees });
   const waterLabel = watering
-    ? "Watering…"
+    ? tr("Watering…")
     : wateredToday
-      ? waterer && waterer !== g.me ? `${nm(waterer)} watered today` : "You watered today"
-      : d >= 365 ? "Water to plant your next seed" : wilting ? "Water to revive" : `Water today (day ${d + 1})`;
+      ? waterer && waterer !== g.me ? tr("{name} watered today", { name: nm(waterer) }) : tr("You watered today")
+      : d >= 365 ? tr("Water to plant your next seed") : wilting ? tr("Water to revive") : tr("Water today (day {n})", { n: d + 1 });
   const seedOp = d <= 8 ? (d <= 6 ? 1 : (8 - d) / 2) : 0;
 
   const stage = (
@@ -362,15 +368,15 @@ function GardenGame() {
         </svg>
 
         <div className="absolute left-3 top-3 z-[3] max-w-[200px] rounded-[14px] bg-white/95 px-[11px] py-[7px]">
-          <div className="text-[11px] font-black tracking-[.1em] text-[#047857]">{wilting ? "WILTING, WATER ME" : stageOf(d)}</div>
-          <div className="text-[13px] font-extrabold text-[#064e3b]">{S.name} · Day {d}/365</div>
+          <div className="text-[11px] font-black tracking-[.1em] text-[#047857]">{wilting ? tr("WILTING, WATER ME") : tr(stageOf(d))}</div>
+          <div className="text-[13px] font-extrabold text-[#064e3b]">{tr("{species} · Day {d}/365", { species: tr(S.name), d })}</div>
         </div>
         <div className="absolute right-3 top-[78px] z-[3] flex items-center gap-[5px] rounded-full bg-white/95 py-1.5 pl-2 pr-[11px]">
           <svg className="origin-[50%_90%] animate-fz-flame" width="18" height="20" viewBox="0 0 18 20" aria-hidden="true">
             <path d="M9 1c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-4 2-7 2 1 3 3 3 5 1-2 1-6 1-9z" fill={streakNow > 0 ? "#f97316" : "#cbd5e1"} />
           </svg>
           <span className="text-[15px] font-black">{streakNow}</span>
-          <span className="text-[11px] font-bold text-[#047857]">day streak</span>
+          <span className="text-[11px] font-bold text-[#047857]">{tr("day streak")}</span>
         </div>
 
         {watering && (
@@ -389,7 +395,7 @@ function GardenGame() {
             </div>
           </>
         )}
-        {plus && <div className="absolute left-1/2 top-[44%] -ml-6 animate-fz-plus text-xl font-black text-[#047857]">+1 day</div>}
+        {plus && <div className="absolute left-1/2 top-[44%] -ml-6 animate-fz-plus text-xl font-black text-[#047857]">{tr("+1 day")}</div>}
         {toast && (
           <div className="absolute bottom-3 left-1/2 z-[6] flex animate-fz-toast items-center gap-2 whitespace-nowrap rounded-[18px] bg-[#102a4c] py-1.5 pl-1.5 pr-3.5 text-white shadow-[0_10px_24px_rgba(16,42,76,.35)]">
             <Image src="/mascot/owl-peek.webp" alt="" width={46} height={36} className="block h-auto w-[46px]" />
@@ -404,41 +410,41 @@ function GardenGame() {
     <>
       <div className="flex items-center gap-2.5 rounded-2xl bg-white px-2.5 py-2 shadow-[0_4px_0_#bbf7d0]">
         <div className="flex items-center">
-          <div className={avatar} style={{ background: "#f59e0b" }}>{(g.names.a[0] || "Y").toUpperCase()}</div>
+          <div className={avatar} style={{ background: "#f59e0b" }}>{initial("a", tr("You")[0])}</div>
           {paired ? (
-            <div className={`${avatar} -ml-2.5`} style={{ background: "#8b5cf6" }}>{(g.names.b[0] || "B").toUpperCase()}</div>
+            <div className={`${avatar} -ml-2.5`} style={{ background: "#8b5cf6" }}>{initial("b", tr("Buddy")[0])}</div>
           ) : (
             <div className={`${avatar} -ml-2 !border-2 !border-dashed !border-[#34d399] !bg-white !text-[#059669]`}>+</div>
           )}
         </div>
         <div className="min-w-0 flex-1">
           <div className="truncate text-[13px] font-black">
-            {paired ? `${nm("a")} & ${nm("b")}’s garden` : `${g.names.a ? g.names.a + "’s garden" : "Your garden"} · solo`}
+            {paired ? tr("{a} & {b}’s garden", { a: nm("a"), b: nm("b") }) : g.names.a ? tr("{name}’s garden · solo", { name: g.names.a }) : tr("Your garden · solo")}
           </div>
-          <div className="mt-1 flex gap-[3px]" role="img" aria-label="Who watered in the last 7 days">
+          <div className="mt-1 flex gap-[3px]" role="img" aria-label={tr("Who watered in the last 7 days")}>
             {week.map((w, i) => (
               <div key={i} className="flex size-[17px] items-center justify-center rounded-md text-[10px] font-black text-white" style={{ background: w.bg, outline: w.ring ? "2px solid #047857" : "none" }}>{w.t}</div>
             ))}
           </div>
         </div>
         {paired ? (
-          <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => { setConfirmReset(false); setSheet("manage"); }}>Garden crew</button>
+          <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => { setConfirmReset(false); setSheet("manage"); }}>{tr("Garden crew")}</button>
         ) : (
-          <button type="button" className={buddyBtn} onClick={() => setSheet("invite")}>Add a buddy</button>
+          <button type="button" className={buddyBtn} onClick={() => setSheet("invite")}>{tr("Add a buddy")}</button>
         )}
       </div>
 
       <div className="flex flex-col gap-[7px] rounded-2xl bg-white px-3 py-2.5 shadow-[0_4px_0_#bbf7d0]">
         <div className="flex items-center justify-between gap-2 text-xs font-extrabold">
-          <span className="text-[#047857]">Tree {comp + 1} progress</span>
-          <span className="text-right">Garden: {totalTrees} {totalTrees === 1 ? "tree" : "trees"} · Best streak: {g.best}</span>
+          <span className="text-[#047857]">{tr("Tree {n} progress", { n: comp + 1 })}</span>
+          <span className="text-right">{tr(totalTrees === 1 ? "Garden: {n} tree · Best streak: {best}" : "Garden: {n} trees · Best streak: {best}", { n: totalTrees, best: g.best })}</span>
         </div>
-        <div className="relative h-3 rounded-full bg-[#d1fae5]" role="img" aria-label={`Day ${d} of 365`}>
+        <div className="relative h-3 rounded-full bg-[#d1fae5]" role="img" aria-label={tr("Day {d} of 365", { d })}>
           <div className="h-full rounded-full bg-[#22c55e] transition-[width] duration-[600ms]" style={{ width: `${((d / 365) * 100).toFixed(1)}%` }} />
           {ticks.map((k, i) => <div key={i} className="absolute -top-[3px] -ml-0.5 h-[18px] w-1 rounded-sm" style={{ left: `${k.p}%`, background: k.c }} />)}
         </div>
         <div className="flex justify-between text-[11px] font-bold text-[#3f6b55]">
-          <span>Seed</span><span>Sapling</span><span>Tree</span><span>Flowers</span><span>Fruits</span>
+          <span>{tr("Seed")}</span><span>{tr("Sapling")}</span><span>{tr("Tree")}</span><span>{tr("Flowers")}</span><span>{tr("Fruits")}</span>
         </div>
       </div>
 
@@ -473,8 +479,8 @@ function GardenGame() {
         </button>
       </div>
       <div className="flex items-center justify-center">
-        <button type="button" className={`${mini} !flex-none px-4`} onClick={() => { setConfirmReset(false); setSheet("manage"); }}>Garden options</button>
-        {g.cared > 0 && <button type="button" className={`${mini} !flex-none px-4`} onClick={() => setSheet("share")}>Share my garden</button>}
+        <button type="button" className={`${mini} !flex-none px-4`} onClick={() => { setConfirmReset(false); setSheet("manage"); }}>{tr("Garden options")}</button>
+        {g.cared > 0 && <button type="button" className={`${mini} !flex-none px-4`} onClick={() => setSheet("share")}>{tr("Share my garden")}</button>}
       </div>
     </>
   );
@@ -502,34 +508,34 @@ function GardenGame() {
     <>
       {sheet && <div className="fixed inset-0 z-50 animate-fz-fade bg-[rgba(6,40,25,.45)]" onClick={() => setSheet("")} />}
       {sheet === "invite" && (
-        <div className={sheetCls} role="dialog" aria-label="Invite a garden buddy">
+        <div className={sheetCls} role="dialog" aria-label={tr("Invite a garden buddy")}>
           {handle}
           <div className="flex items-center gap-3">
             <div className="flex">
-              <div className={`${avatar} !size-[46px] !text-lg`} style={{ background: "#f59e0b" }}>{(g.names.a[0] || "Y").toUpperCase()}</div>
+              <div className={`${avatar} !size-[46px] !text-lg`} style={{ background: "#f59e0b" }}>{initial("a", tr("You")[0])}</div>
               <div className={`${avatar} -ml-3 !size-[46px] !border-2 !border-dashed !border-[#34d399] !bg-white !text-xl !text-[#059669]`}>+</div>
             </div>
             <div>
-              <div className="font-display text-[28px] leading-none">Grow together</div>
-              <div className="mt-[3px] text-[13px] text-[#3f6b55]">Room for one buddy</div>
+              <div className="font-display text-[28px] leading-none">{tr("Grow together")}</div>
+              <div className="mt-[3px] text-[13px] text-[#3f6b55]">{tr("Room for one buddy")}</div>
             </div>
           </div>
-          <div className="text-[15px] leading-[1.45] text-[#25483a]">Invite one friend. Either of you can water each day, and one watering keeps your streak alive.</div>
+          <div className="text-[15px] leading-[1.45] text-[#25483a]">{tr("Invite one friend. Either of you can water each day, and one watering keeps your streak alive.")}</div>
           {!buddy.linked ? (
             <>
-              <label htmlFor="g-name" className="text-[13px] font-extrabold text-[#3f6b55]">Your name</label>
+              <label htmlFor="g-name" className="text-[13px] font-extrabold text-[#3f6b55]">{tr("Your name")}</label>
               <input
                 id="g-name"
                 className={`${sheetInput} -mt-1.5`}
                 value={draftA || g.names.a}
                 onChange={(e) => setDraftA(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && void createInvite()}
-                placeholder="e.g. Jatin"
+                placeholder={tr("e.g. Jatin")}
                 maxLength={20}
                 autoComplete="off"
               />
-              {buddy.error && <div role="alert" className="text-sm font-bold text-[#b91c1c]">{buddy.error}</div>}
-              <button type="button" className={bigBtn} onClick={() => void createInvite()} disabled={!nameForInvite}>Create invite link</button>
+              {buddy.error && <div role="alert" className="text-sm font-bold text-[#b91c1c]">{tr(buddy.error)}</div>}
+              <button type="button" className={bigBtn} onClick={() => void createInvite()} disabled={!nameForInvite}>{tr("Create invite link")}</button>
             </>
           ) : (
             <>
@@ -540,12 +546,12 @@ function GardenGame() {
                   className={`${buddyBtn} ${buddyGhost} !min-h-10`}
                   onClick={() => { copyText(inviteUrl); setCopied(true); later(() => setCopied(false), 1600); }}
                 >
-                  {copied ? "Copied" : "Copy"}
+                  {copied ? tr("Copied") : tr("Copy")}
                 </button>
               </div>
               <ShareButton
-                title="Grow a Sapling"
-                text={`Help me grow our ${S.name.toLowerCase()} tree on TopperShelf! Water it on days I forget so our streak never breaks:`}
+                title={tr("Grow a Sapling")}
+                text={tr("Help me grow our {tree} tree on TopperShelf! Water it on days I forget so our streak never breaks:", { tree: tr(S.name).toLowerCase() })}
                 url={inviteUrl}
                 shareClass={bigBtn}
                 whatsappClass="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-[#25a244] text-base font-black text-white no-underline shadow-[0_5px_0_#17762f] active:translate-y-[3px] active:shadow-[0_2px_0_#17762f]"
@@ -554,50 +560,50 @@ function GardenGame() {
             </>
           )}
           <div className="flex items-center justify-between gap-2.5">
-            <span className="text-[13px] leading-[1.35] text-[#3f6b55]">{paired ? `${nm("b")} is in your garden.` : "No buddy yet? Keep growing solo. You can invite anytime."}</span>
-            <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("")}>Close</button>
+            <span className="text-[13px] leading-[1.35] text-[#3f6b55]">{paired ? tr("{name} is in your garden.", { name: nm("b") }) : tr("No buddy yet? Keep growing solo. You can invite anytime.")}</span>
+            <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("")}>{tr("Close")}</button>
           </div>
         </div>
       )}
       {sheet === "share" && (
-        <div className={sheetCls} role="dialog" aria-label="Share my garden">
+        <div className={sheetCls} role="dialog" aria-label={tr("Share my garden")}>
           {handle}
-          <div className="font-display text-[28px] leading-none">Share my garden</div>
+          <div className="font-display text-[28px] leading-none">{tr("Share my garden")}</div>
           <CardSapling
             cardRef={cardRef}
-            data={{ species: S.name, day: d, stage: stageOf(d), streak: streakNow, trees: totalTrees, trunk: S.trunk, leaf1: S.l1, leaf2: S.l2, bloom: S.fl, fruit: S.fr }}
+            data={{ species: tr(S.name), day: d, stage: tr(stageOf(d)), streak: streakNow, trees: totalTrees, trunk: S.trunk, leaf1: S.l1, leaf2: S.l2, bloom: S.fl, fruit: S.fr }}
           />
           <CardActions
             getNode={() => cardRef.current}
             fileName="grow-a-sapling-toppershelf.png"
-            shareText={`My ${S.name.toLowerCase()} tree is on day ${d} with a ${streakNow} day streak. Grow yours!`}
+            shareText={tr("My {tree} tree is on day {d} with a {n} day streak. Grow yours!", { tree: tr(S.name).toLowerCase(), d, n: streakNow })}
             shareUrl={`${SITE_URL}/tool/grow-a-sapling`}
             btnClass={buddyBtn}
             ghostClass={`${buddyBtn} ${buddyGhost}`}
           />
-          <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("")}>Close</button>
+          <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("")}>{tr("Close")}</button>
         </div>
       )}
       {sheet === "manage" && (
-        <div className={sheetCls} role="dialog" aria-label="Garden options">
+        <div className={sheetCls} role="dialog" aria-label={tr("Garden options")}>
           {handle}
-          <div className="font-display text-[28px] leading-none">Your garden crew</div>
+          <div className="font-display text-[28px] leading-none">{tr("Your garden crew")}</div>
           <div className="flex items-center gap-3 rounded-2xl bg-[#f0fdf4] px-3 py-2.5">
-            <div className={avatar} style={{ background: "#f59e0b" }}>{(g.names.a[0] || "Y").toUpperCase()}</div>
+            <div className={avatar} style={{ background: "#f59e0b" }}>{initial("a", tr("You")[0])}</div>
             <div className="min-w-0 flex-1">
-              <div className="truncate text-[15px] font-black">{nm("a")} (you)</div>
-              <div className="text-xs text-[#3f6b55]">Planted the garden</div>
+              <div className="truncate text-[15px] font-black">{tr("{name} (you)", { name: nm("a") })}</div>
+              <div className="text-xs text-[#3f6b55]">{tr("Planted the garden")}</div>
             </div>
           </div>
           <div className="flex items-center gap-3 rounded-2xl bg-[#f0fdf4] px-3 py-2.5">
-            <div className={avatar} style={{ background: paired ? "#8b5cf6" : "#cbd5e1" }}>{(g.names.b[0] || "?").toUpperCase()}</div>
+            <div className={avatar} style={{ background: paired ? "#8b5cf6" : "#cbd5e1" }}>{initial("b", "?")}</div>
             <div className="min-w-0 flex-1">
-              <div className="truncate text-[15px] font-black">{paired ? nm("b") : "No buddy yet"}</div>
-              <div className="text-xs text-[#3f6b55]">{paired ? "Waters when you forget" : buddy.linked ? "Waiting for them to open the link" : "Invite one friend"}</div>
+              <div className="truncate text-[15px] font-black">{paired ? nm("b") : tr("No buddy yet")}</div>
+              <div className="text-xs text-[#3f6b55]">{paired ? tr("Waters when you forget") : buddy.linked ? tr("Waiting for them to open the link") : tr("Invite one friend")}</div>
             </div>
-            {!paired && <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("invite")}>{buddy.linked ? "Link" : "Invite"}</button>}
+            {!paired && <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setSheet("invite")}>{buddy.linked ? tr("Link") : tr("Invite")}</button>}
           </div>
-          {buddy.error && <div role="alert" className="text-sm font-bold text-[#b91c1c]">{buddy.error}</div>}
+          {buddy.error && <div role="alert" className="text-sm font-bold text-[#b91c1c]">{tr(buddy.error)}</div>}
           {paired && (
             <button
               type="button"
@@ -605,25 +611,25 @@ function GardenGame() {
               onClick={async () => {
                 if (!(await buddy.unlink())) return;
                 set({ names: { ...g.names, b: "" }, code: newCode() });
-                flash(`${nm("b")} was removed`);
+                flash(tr("{name} was removed", { name: nm("b") }));
                 setSheet("");
               }}
             >
-              Remove {nm("b")}
+              {tr("Remove {name}", { name: nm("b") })}
             </button>
           )}
           <div className="mt-1 border-t border-[#d1fae5] pt-3">
-            <div className="text-[13px] leading-[1.4] text-[#3f6b55]">Want a fresh start? This resets your trees and streak, and removes your buddy.</div>
+            <div className="text-[13px] leading-[1.4] text-[#3f6b55]">{tr("Want a fresh start? This resets your trees and streak, and removes your buddy.")}</div>
             {confirmReset ? (
               <div className="mt-2 grid grid-cols-2 gap-2.5">
-                <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setConfirmReset(false)}>Keep my garden</button>
-                <button type="button" className={`${buddyBtn} !bg-[#b91c1c] !shadow-[0_3px_0_#7f1d1d]`} onClick={() => void startOver()}>Yes, start over</button>
+                <button type="button" className={`${buddyBtn} ${buddyGhost}`} onClick={() => setConfirmReset(false)}>{tr("Keep my garden")}</button>
+                <button type="button" className={`${buddyBtn} !bg-[#b91c1c] !shadow-[0_3px_0_#7f1d1d]`} onClick={() => void startOver()}>{tr("Yes, start over")}</button>
               </div>
             ) : (
-              <button type="button" className={`${buddyBtn} ${buddyGhost} mt-2 !border-[#fecaca] !text-[#b91c1c] !shadow-[0_3px_0_#fecaca]`} onClick={() => setConfirmReset(true)}>Start a new garden</button>
+              <button type="button" className={`${buddyBtn} ${buddyGhost} mt-2 !border-[#fecaca] !text-[#b91c1c] !shadow-[0_3px_0_#fecaca]`} onClick={() => setConfirmReset(true)}>{tr("Start a new garden")}</button>
             )}
           </div>
-          <button type="button" className={buddyBtn} onClick={() => setSheet("")}>Done</button>
+          <button type="button" className={buddyBtn} onClick={() => setSheet("")}>{tr("Done")}</button>
         </div>
       )}
     </>

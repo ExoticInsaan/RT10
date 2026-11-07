@@ -2,6 +2,7 @@ import { Capacitor } from "@capacitor/core";
 import { App } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
 import { createClient } from "./shims/supabase-client";
+import { tStatic } from "./i18n/static";
 
 /** Deep link Google sends the person back to. Add it to Supabase → Authentication → URL Configuration → Redirect URLs. */
 export const REDIRECT = "online.toppershelf.app://auth";
@@ -15,11 +16,11 @@ export async function signInWithGoogle(): Promise<string | null> {
       return error ? error.message : null;
     }
     const { data, error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: REDIRECT, skipBrowserRedirect: true } });
-    if (error || !data?.url) return error?.message ?? "Could not start Google sign-in.";
+    if (error || !data?.url) return error?.message ?? tStatic("Could not start Google sign-in.");
     await Browser.open({ url: data.url });
     return null;
   } catch (e) {
-    return e instanceof Error ? e.message : "Sign-in is not available right now.";
+    return e instanceof Error ? e.message : tStatic("Sign-in is not available right now.");
   }
 }
 

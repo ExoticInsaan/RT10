@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Hint, NumberField, ResultPanel, toNumber } from "@/components/tools/kit";
+import { Rich, useTr } from "@/lib/tools/useTr";
 
 /** Classes you can still miss while staying at or above the target (target as a fraction, 0 < t <= 1). */
 export function canSkip(attended: number, total: number, t: number) {
@@ -18,6 +19,7 @@ export function mustAttend(attended: number, total: number, t: number) {
 const pct = (n: number) => `${(Math.round(n * 1000) / 10).toFixed(1)}%`;
 
 export default function AttendanceCalculator() {
+  const tr = useTr();
   const [attended, setAttended] = useState("");
   const [total, setTotal] = useState("");
   const [target, setTarget] = useState("75");
@@ -30,13 +32,13 @@ export default function AttendanceCalculator() {
 
   let body;
   if (!Number.isFinite(a) || !Number.isFinite(n)) {
-    body = <Hint>Enter the classes you attended and the classes held so far.</Hint>;
+    body = <Hint>{tr("Enter the classes you attended and the classes held so far.")}</Hint>;
   } else if (n <= 0 || a < 0 || !Number.isInteger(a) || !Number.isInteger(n)) {
-    body = <Hint error>Use whole numbers, with at least one class held.</Hint>;
+    body = <Hint error>{tr("Use whole numbers, with at least one class held.")}</Hint>;
   } else if (a > n) {
-    body = <Hint error>You can&apos;t have attended more classes than were held.</Hint>;
+    body = <Hint error>{tr("You can't have attended more classes than were held.")}</Hint>;
   } else if (!(t > 0 && t <= 1)) {
-    body = <Hint error>The target should be between 1% and 100%.</Hint>;
+    body = <Hint error>{tr("The target should be between 1% and 100%.")}</Hint>;
   } else {
     const current = a / n;
     const ok = current >= t;
@@ -47,43 +49,52 @@ export default function AttendanceCalculator() {
 
     body = (
       <div className="grid grid-cols-1 gap-4">
-        <ResultPanel
-          tone={ok ? "green" : "amber"}
-          label="Your attendance right now"
-          value={pct(current)}
-        >
+        <ResultPanel tone={ok ? "green" : "amber"} label={tr("Your attendance right now")} value={pct(current)}>
           {ok ? (
             skip > 0 ? (
-              <>
-                You can miss the next <strong>{skip}</strong> class{skip === 1 ? "" : "es"} and still stay at or above{" "}
-                {pct(t)}. Miss one more and you drop to {pct(a / (n + skip + 1))}.
-              </>
+              <Rich
+                text={tr(
+                  skip === 1
+                    ? "You can miss the next <b>{n}</b> class and still stay at or above {target}. Miss one more and you drop to {after}."
+                    : "You can miss the next <b>{n}</b> classes and still stay at or above {target}. Miss one more and you drop to {after}.",
+                  { n: skip, target: pct(t), after: pct(a / (n + skip + 1)) },
+                )}
+              />
             ) : (
-              <>You are right at the line. Missing even the next class takes you to {pct(a / (n + 1))}.</>
+              <>{tr("You are right at the line. Missing even the next class takes you to {after}.", { after: pct(a / (n + 1)) })}</>
             )
           ) : need === Infinity ? (
-            <>A 100% target can&apos;t be reached once a class has been missed.</>
+            <>{tr("A 100% target can't be reached once a class has been missed.")}</>
           ) : (
-            <>
-              Attend the next <strong>{need}</strong> class{need === 1 ? "" : "es"} in a row to reach {pct(t)}. That brings you
-              to {pct((a + need) / (n + need))}.
-            </>
+            <Rich
+              text={tr(
+                need === 1
+                  ? "Attend the next <b>{n}</b> class in a row to reach {target}. That brings you to {after}."
+                  : "Attend the next <b>{n}</b> classes in a row to reach {target}. That brings you to {after}.",
+                { n: need, target: pct(t), after: pct((a + need) / (n + need)) },
+              )}
+            />
           )}
         </ResultPanel>
         {hasLeft && (
           <p className="m-0 rounded-2xl bg-surface px-5 py-4 text-sm leading-6 text-slate-700">
             {remaining === 0 ? (
-              <>With no classes left, your final attendance is {pct(current)}.</>
+              <>{tr("With no classes left, your final attendance is {current}.", { current: pct(current) })}</>
             ) : best < t ? (
               <>
-                Even if you attend all {remaining} remaining classes, you finish at {pct(best)}, below {pct(t)}. Ask your
-                department about condonation early.
+                {tr("Even if you attend all {n} remaining classes, you finish at {best}, below {target}. Ask your department about condonation early.", {
+                  n: remaining,
+                  best: pct(best),
+                  target: pct(t),
+                })}
               </>
             ) : (
-              <>
-                With {remaining} classes left, attending all of them gets you to {pct(best)}. You can afford to miss{" "}
-                <strong>{canSkip(a + remaining, n + remaining, t)}</strong> of them and still finish at or above {pct(t)}.
-              </>
+              <Rich
+                text={tr(
+                  "With {n} classes left, attending all of them gets you to {best}. You can afford to miss <b>{skip}</b> of them and still finish at or above {target}.",
+                  { n: remaining, best: pct(best), skip: canSkip(a + remaining, n + remaining, t), target: pct(t) },
+                )}
+              />
             )}
           </p>
         )}
@@ -94,17 +105,17 @@ export default function AttendanceCalculator() {
   return (
     <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <NumberField label="Classes attended" value={attended} onChange={setAttended} min={0} step={1} placeholder="e.g. 42" />
-        <NumberField label="Classes held so far" value={total} onChange={setTotal} min={1} step={1} placeholder="e.g. 60" />
-        <NumberField label="Target attendance" value={target} onChange={setTarget} min={1} max={100} suffix="%" hint="75% is the most common rule." />
+        <NumberField label={tr("Classes attended")} value={attended} onChange={setAttended} min={0} step={1} placeholder={tr("e.g. 42")} />
+        <NumberField label={tr("Classes held so far")} value={total} onChange={setTotal} min={1} step={1} placeholder={tr("e.g. 60")} />
+        <NumberField label={tr("Target attendance")} value={target} onChange={setTarget} min={1} max={100} suffix="%" hint={tr("75% is the most common rule.")} />
         <NumberField
-          label="Classes left this semester"
+          label={tr("Classes left this semester")}
           value={left}
           onChange={setLeft}
           min={0}
           step={1}
-          placeholder="Optional"
-          hint="Add this to see where you can finish."
+          placeholder={tr("Optional")}
+          hint={tr("Add this to see where you can finish.")}
         />
       </div>
       {body}

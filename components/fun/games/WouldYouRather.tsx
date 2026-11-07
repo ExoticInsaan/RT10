@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { GameShell } from "@/components/fun/kit";
+import { useTr } from "@/lib/tools/useTr";
 
 const QS: [string, string, number][] = [
   ["Unlimited chai forever", "Unlimited Maggi forever", 58],
@@ -24,6 +25,7 @@ const btn =
   "min-h-14 w-full cursor-pointer rounded-[18px] border-0 bg-[#102a4c] px-[18px] py-3.5 text-lg font-black text-white shadow-[0_6px_0_#050f1f,0_14px_24px_rgba(16,42,76,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#050f1f]";
 
 export default function WouldYouRather() {
+  const tr = useTr();
   const [q, setQ] = useState(0);
   const [pick, setPick] = useState<number | null>(null);
   const [agree, setAgree] = useState(0);
@@ -36,17 +38,17 @@ export default function WouldYouRather() {
   const pa = cur[2];
   const pb = 100 - cur[2];
   const sides = [
-    { letter: "A" as const, text: cur[0], pct: pa, bg: "#7c3aed", edge: "#5b21b6" },
-    { letter: "B" as const, text: cur[1], pct: pb, bg: "#e11d48", edge: "#9f1239" },
+    { letter: "A" as const, text: tr(cur[0]), pct: pa, bg: "#7c3aed", edge: "#5b21b6" },
+    { letter: "B" as const, text: tr(cur[1]), pct: pb, bg: "#e11d48", edge: "#9f1239" },
   ];
   const mine = pick === null ? 0 : pick === 0 ? pa : pb;
-  const verdict = !answered ? "Tap the one you would pick." : mine >= 50 ? "You are with the majority. Safe choice." : `Bold. Only ${mine}% agree with you.`;
+  const verdict = !answered ? tr("Tap the one you would pick.") : mine >= 50 ? tr("You are with the majority. Safe choice.") : tr("Bold. Only {n}% agree with you.", { n: mine });
   const types =
     agree >= 8
-      ? ["Crowd Whisperer", "You think exactly like everyone else, which makes you weirdly good at predicting things."]
+      ? [tr("Crowd Whisperer"), tr("You think exactly like everyone else, which makes you weirdly good at predicting things.")]
       : agree >= 5
-        ? ["Balanced Brain", "Half sensible, half chaos. The perfect group project partner."]
-        : ["Certified Rebel", "You see a popular opinion and run the other way. Iconic."];
+        ? [tr("Balanced Brain"), tr("Half sensible, half chaos. The perfect group project partner.")]
+        : [tr("Certified Rebel"), tr("You see a popular opinion and run the other way. Iconic.")];
 
   function choose(i: number) {
     if (pick !== null) return;
@@ -70,21 +72,21 @@ export default function WouldYouRather() {
           <div className="mx-auto flex w-full max-w-md flex-col gap-3.5 lg:col-span-2">
             <div className="flex animate-fz-pop flex-col items-center gap-2.5 rounded-[28px] bg-white px-[22px] py-[26px] text-center shadow-[0_8px_0_#e3cffd]">
               <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
-              <div className="text-xs font-black tracking-[.14em] text-[#a21caf]">YOU ARE A</div>
+              <div className="text-xs font-black tracking-[.14em] text-[#a21caf]">{tr("YOU ARE A")}</div>
               <div className="font-display text-[38px] leading-none text-[#2e1065]">{types[0]}</div>
               <div className="text-[15px] leading-[1.45] text-[#5b3a86]">{types[1]}</div>
               <div className="mt-1.5 flex gap-2.5">
                 <div className="rounded-2xl bg-[#f6edff] px-3.5 py-2.5">
                   <div className="font-display text-[30px]">{agree}</div>
-                  <div className="text-xs font-bold text-[#6b21a8]">with the crowd</div>
+                  <div className="text-xs font-bold text-[#6b21a8]">{tr("with the crowd")}</div>
                 </div>
                 <div className="rounded-2xl bg-[#f6edff] px-3.5 py-2.5">
                   <div className="font-display text-[30px]">{total - agree}</div>
-                  <div className="text-xs font-bold text-[#6b21a8]">against it</div>
+                  <div className="text-xs font-bold text-[#6b21a8]">{tr("against it")}</div>
                 </div>
               </div>
             </div>
-            <button type="button" className={btn} onClick={() => { setQ(0); setPick(null); setAgree(0); setRound(round + 1); }}>Play again</button>
+            <button type="button" className={btn} onClick={() => { setQ(0); setPick(null); setAgree(0); setRound(round + 1); }}>{tr("Play again")}</button>
           </div>
         }
       />
@@ -93,7 +95,7 @@ export default function WouldYouRather() {
 
   const progress = (
     <div className="flex items-center gap-2.5 lg:col-start-2 lg:row-start-1 lg:self-end">
-      <span className="whitespace-nowrap text-[13px] font-extrabold text-[#6b21a8]">{Math.min(q + 1, total)} of {total}</span>
+      <span className="whitespace-nowrap text-[13px] font-extrabold text-[#6b21a8]">{tr("{n} of {total}", { n: Math.min(q + 1, total), total })}</span>
       <div className="flex flex-1 gap-1">
         {QS.map((_, i) => (
           <div key={i} className="h-2 flex-1 rounded-full transition-[background] duration-300" style={{ background: i < q ? "#a21caf" : i === q ? "#f0abfc" : "#e9d8fd" }} />
@@ -126,7 +128,7 @@ export default function WouldYouRather() {
                 style={{ transform: `rotateX(${answered ? 180 : 0}deg)` }}
               >
                 <span className={`${face} text-white`} style={{ background: s.bg, boxShadow: `0 8px 0 ${s.edge},0 20px 30px -10px rgba(46,16,101,.45)` }}>
-                  <span className="text-xs font-black tracking-[.14em] opacity-85">OPTION {s.letter}</span>
+                  <span className="text-xs font-black tracking-[.14em] opacity-85">{tr("OPTION {letter}", { letter: s.letter })}</span>
                   <span className="mt-2 font-display text-[27px] leading-[1.12]">{s.text}</span>
                 </span>
                 <span
@@ -134,8 +136,8 @@ export default function WouldYouRather() {
                   style={{ boxShadow: `0 8px 0 ${s.edge},0 20px 30px -10px rgba(46,16,101,.35)`, borderColor: chosen ? s.bg : "transparent" }}
                 >
                   <span className="flex items-center justify-between">
-                    <span className="text-xs font-black tracking-[.14em]" style={{ color: s.bg }}>OPTION {s.letter}</span>
-                    {chosen && <span className="rounded-full px-[9px] py-1 text-[11px] font-black text-white" style={{ background: s.bg }}>YOUR PICK</span>}
+                    <span className="text-xs font-black tracking-[.14em]" style={{ color: s.bg }}>{tr("OPTION {letter}", { letter: s.letter })}</span>
+                    {chosen && <span className="rounded-full px-[9px] py-1 text-[11px] font-black text-white" style={{ background: s.bg }}>{tr("YOUR PICK")}</span>}
                   </span>
                   <span className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-[15px] font-bold leading-[1.3]">{s.text}</span>
                   <span className="mt-1.5 font-display text-[56px] leading-none" style={{ color: s.bg }}>{s.pct}%</span>
@@ -150,8 +152,8 @@ export default function WouldYouRather() {
       })}
       <div className="pointer-events-none absolute left-1/2 top-1/2 z-[5] -ml-8 -mt-8 size-16 [perspective:300px]">
         <div className="relative size-16 animate-fz-coin [transform-style:preserve-3d]">
-          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#facc15] text-xl font-black text-[#713f12] shadow-[inset_0_-5px_0_#ca8a04,0_6px_14px_rgba(46,16,101,.35)] [backface-visibility:hidden]">OR</div>
-          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#facc15] text-xl font-black text-[#713f12] shadow-[inset_0_-5px_0_#ca8a04] [backface-visibility:hidden] [transform:rotateY(180deg)]">OR</div>
+          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#facc15] text-xl font-black text-[#713f12] shadow-[inset_0_-5px_0_#ca8a04,0_6px_14px_rgba(46,16,101,.35)] [backface-visibility:hidden]">{tr("OR")}</div>
+          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#facc15] text-xl font-black text-[#713f12] shadow-[inset_0_-5px_0_#ca8a04] [backface-visibility:hidden] [transform:rotateY(180deg)]">{tr("OR")}</div>
         </div>
       </div>
     </div>
@@ -176,7 +178,7 @@ export default function WouldYouRather() {
             <div className="min-h-14">
             {answered && (
               <button type="button" className={`${btn} animate-fz-pop`} onClick={() => { setQ(q + 1); setPick(null); setRound(round + 1); }}>
-                {q === total - 1 ? "See my result" : "Next question"}
+                {q === total - 1 ? tr("See my result") : tr("Next question")}
               </button>
             )}
             </div>

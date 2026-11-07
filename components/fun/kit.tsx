@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { Caveat } from "next/font/google";
+import { useTr } from "@/lib/tools/useTr";
 
 /* Shared building blocks for the Fun Zone games. Each game keeps its own colours; this file only holds the frame,
    the scale-to-fit box for fixed-size artwork, and small helpers. */
@@ -28,9 +29,9 @@ export function mix(a: string, b: string, t: number) {
 }
 
 /** Today's date the way story cards print it, for example "WED · 28 OCT". */
-export function storyDate(d: Date) {
-  const day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][d.getDay()];
-  const mon = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][d.getMonth()];
+export function storyDate(d: Date, hi = false) {
+  const day = (hi ? ["रवि", "सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि"] : ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"])[d.getDay()];
+  const mon = (hi ? ["जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"] : ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"])[d.getMonth()];
   return `${day} · ${d.getDate()} ${mon}`;
 }
 
@@ -179,6 +180,7 @@ export function GameShell({
   overlay?: ReactNode;
   stickerShadow?: string;
 }) {
+  const tr = useTr();
   const dot = status === "LIVE" ? "bg-lime-500" : status === "SOLO" ? "bg-amber-500" : "bg-pink-500";
   return (
     <div
@@ -194,7 +196,7 @@ export function GameShell({
           </div>
           <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-[11px] py-1.5 text-xs font-extrabold text-navy">
             <span className={`size-[7px] rounded-full ${dot}`} />
-            <span className="max-[359px]:hidden">FUN ZONE · </span>{status}
+            <span className="max-[359px]:hidden">{tr("FUN ZONE")} · </span>{tr(status)}
           </span>
         </div>
         <div className="mt-4 flex items-center gap-3.5 lg:mt-6 lg:gap-5">
@@ -212,8 +214,8 @@ export function GameShell({
             />
           </div>
           <div className="min-w-0">
-            <h2 className="m-0 font-display text-[31px] font-normal leading-[1.02] tracking-[-.01em] lg:text-[42px]">{title}</h2>
-            <p className="mb-0 mt-[5px] text-sm leading-[1.35] opacity-90 lg:text-base">{subtitle}</p>
+            <h2 className="m-0 font-display text-[31px] font-normal leading-[1.02] tracking-[-.01em] lg:text-[42px]">{tr(title)}</h2>
+            <p className="mb-0 mt-[5px] text-sm leading-[1.35] opacity-90 lg:text-base">{tr(subtitle)}</p>
           </div>
         </div>
       </div>

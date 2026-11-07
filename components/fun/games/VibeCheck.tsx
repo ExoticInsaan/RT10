@@ -5,6 +5,7 @@ import CardVibe from "@/components/fun/cards/CardVibe";
 import CardActions from "@/components/fun/CardActions";
 import { GameShell, OwlPeek, hash, useTimers } from "@/components/fun/kit";
 import { resultLink } from "@/lib/fun/results";
+import { useHindi, useTr } from "@/lib/tools/useTr";
 
 type Phase = "input" | "loading" | "result";
 
@@ -38,14 +39,30 @@ export const dayKey = (t: number) => {
 };
 
 /** Same name on the same day gives the same vibe; it changes at midnight. */
-export function vibeFor(name: string, day: string) {
+const VIBES_HI = [
+  { n: "मेन कैरेक्टर", l: "आज आप मेन कैरेक्टर हैं। धीरे चलें, खिड़की से बाहर देखें, कोई झूठ नहीं।" },
+  { n: "अच्छी अफ़रा-तफ़री", l: "आप गड़बड़ करेंगे, पर मदद वाली गड़बड़। नेक दिल की अफ़रा-तफ़री।" },
+  { n: "ऊँघता जीनियस", l: "दिमाग़ 200% पर, आँखें 12% पर। आपका सबसे अच्छा आइडिया रात 2 बजे आएगा।" },
+  { n: "बेफ़िक्र शहज़ादा", l: "आज कुछ भी आपको हिला नहीं सकता। सरप्राइज़ टेस्ट भी नहीं।" },
+  { n: "गोल्डन रिट्रीवर", l: "पूरी धूप वाली एनर्जी। आज आप कम से कम 3 लोगों का हौसला बढ़ाएँगे।" },
+  { n: "लो-फ़ाई फ़ोकस", l: "हेडफ़ोन ऑन, दुनिया ऑफ़। आज आप सच में काम पूरा कर लेंगे।" },
+  { n: "चाय के दार्शनिक", l: "गहरे विचार, एक-एक कप के साथ। दोपहर से पहले बहस से बचें।" },
+  { n: "प्लॉट ट्विस्ट आने वाला है", l: "कुछ ज़बरदस्त लोड हो रहा है। फ़ोन चार्ज रखें।" },
+  { n: "सॉफ़्ट लॉन्च", l: "चुपचाप लेवल अप हो रहे हैं। अभी किसी को पता नहीं, और यही मज़ा है।" },
+  { n: "विलेन आर्क (काम का)", l: "बदला, लेकिन एकदम परफ़ेक्ट असाइनमेंट के रूप में। छोटी बात है पर काम करती है।" },
+];
+const METERS_HI: Record<string, string> = { ENERGY: "एनर्जी", AURA: "ऑरा", CHAOS: "अफ़रा-तफ़री" };
+
+export function vibeFor(name: string, day: string, hi = false) {
   const h = hash("vibe:" + name.trim().toLowerCase() + ":" + day);
+  const base = VIBES[h % VIBES.length];
+  const label = (l: string) => (hi ? METERS_HI[l] : l);
   return {
-    v: VIBES[h % VIBES.length],
+    v: hi ? { ...base, ...VIBES_HI[h % VIBES.length] } : base,
     meters: [
-      { label: "ENERGY", v: 20 + ((h >>> 4) % 81) },
-      { label: "AURA", v: 30 + ((h >>> 9) % 71) },
-      { label: "CHAOS", v: (h >>> 14) % 101 },
+      { label: label("ENERGY"), v: 20 + ((h >>> 4) % 81) },
+      { label: label("AURA"), v: 30 + ((h >>> 9) % 71) },
+      { label: label("CHAOS"), v: (h >>> 14) % 101 },
     ],
   };
 }
@@ -56,6 +73,8 @@ const ghost =
   "min-h-[50px] cursor-pointer rounded-2xl border-2 border-[#d4d7fb] bg-white px-3.5 py-3 text-[15px] font-extrabold text-[#312e81] shadow-[0_5px_0_#d4d7fb] active:translate-y-[3px] active:shadow-[0_2px_0_#d4d7fb]";
 
 export default function VibeCheck() {
+  const tr = useTr();
+  const hi = useHindi();
   const [phase, setPhase] = useState<Phase>("input");
   const [name, setName] = useState("");
   const cardRef = useRef<HTMLDivElement>(null);
@@ -66,7 +85,7 @@ export default function VibeCheck() {
     return () => window.clearInterval(id);
   }, []);
 
-  const r = phase === "result" ? vibeFor(name, dayKey(now)) : null;
+  const r = phase === "result" ? vibeFor(name, dayKey(now), hi) : null;
   const orb = r ? { a: r.v.a, b: r.v.b } : phase === "loading" ? { a: "#f0abfc", b: "#c026d3" } : { a: "#a5b4fc", b: "#6366f1" };
   const speed = phase === "loading" ? 0.35 : 1;
   const d = new Date(now);
@@ -108,7 +127,7 @@ export default function VibeCheck() {
           }}
         />
         <div className="absolute inset-x-0 bottom-4 text-center font-display text-[22px] text-white">
-          {phase === "loading" ? "Reading your aura, hold up…" : "Your aura is waiting fr"}
+          {phase === "loading" ? tr("Reading your aura, hold up…") : tr("Your aura is waiting fr")}
         </div>
       </div>
     ) : (
@@ -125,36 +144,36 @@ export default function VibeCheck() {
     phase === "input" ? (
       <>
         <div className="flex flex-col gap-2">
-          <label htmlFor="vibe-name" className="text-sm font-bold text-[#4b4a7a]">Your name</label>
+          <label htmlFor="vibe-name" className="text-sm font-bold text-[#4b4a7a]">{tr("Your name")}</label>
           <input
             id="vibe-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && check()}
-            placeholder="Type your name"
+            placeholder={tr("Type your name")}
             maxLength={30}
             autoComplete="off"
             className="box-border w-full rounded-2xl border-2 border-[#d4d7fb] bg-white px-4 py-[15px] text-base font-medium text-[#1e1b4b] outline-none placeholder:text-[#9a9ccc] focus:border-[#6366f1] focus:shadow-[0_0_0_4px_rgba(99,102,241,.18)] sm:text-[17px]"
           />
         </div>
-        <button type="button" className={btn} onClick={check} disabled={!name.trim()}>Check the vibe</button>
-        <p className="m-0 text-center text-[13px] font-semibold text-[#4b4a7a]">Your vibe changes every day at midnight.</p>
+        <button type="button" className={btn} onClick={check} disabled={!name.trim()}>{tr("Check the vibe")}</button>
+        <p className="m-0 text-center text-[13px] font-semibold text-[#4b4a7a]">{tr("Your vibe changes every day at midnight.")}</p>
         <div className="-mb-6 flex h-[92px] justify-end overflow-hidden pr-0 lg:hidden">
           <OwlPeek className="w-[118px]" />
         </div>
       </>
     ) : phase === "result" ? (
       <div className="flex flex-col items-center gap-3.5">
-        <div className="text-[13px] font-bold text-[#4b4a7a]">New vibe in {Math.floor(mins / 60)}h {mins % 60}m</div>
+        <div className="text-[13px] font-bold text-[#4b4a7a]">{tr("New vibe in {h}h {m}m", { h: Math.floor(mins / 60), m: mins % 60 })}</div>
         <CardActions
           getNode={() => cardRef.current}
           fileName="vibe-check-toppershelf.png"
-          shareText={`${name.trim()}'s vibe today: ${r!.v.n}. What's yours?`}
+          shareText={tr("{name}'s vibe today: {vibe}. What's yours?", { name: name.trim(), vibe: r!.v.n })}
           shareUrl={resultLink("vibe", { n: name.trim(), d: dayKey(now) })}
           btnClass={`${btn} !min-h-[50px] !text-[15px]`}
           ghostClass={ghost}
         />
-        <button type="button" className={`${ghost} w-full`} onClick={() => { setPhase("input"); setName(""); }}>Check someone</button>
+        <button type="button" className={`${ghost} w-full`} onClick={() => { setPhase("input"); setName(""); }}>{tr("Check someone")}</button>
       </div>
     ) : null;
 

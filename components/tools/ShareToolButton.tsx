@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SITE_URL } from "@/lib/site";
+import { useTr } from "@/lib/tools/useTr";
 
 type Bridge = (o: { title: string; text: string; url: string }) => Promise<void>;
 
@@ -11,11 +12,12 @@ type Bridge = (o: { title: string; text: string; url: string }) => Promise<void>
  * such as a desktop browser, it opens a small menu with WhatsApp, Telegram and Copy link instead.
  */
 export default function ShareToolButton({ toolId, toolName, onDark = false }: { toolId: string; toolName: string; onDark?: boolean }) {
+  const tr = useTr();
   const [menu, setMenu] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const url = `${SITE_URL}/tool/${toolId}`;
-  const text = `Try the free ${toolName} on TopperShelf:`;
+  const text = tr("Try the free {name} on TopperShelf:", { name: toolName });
 
   async function share() {
     const bridge = (window as unknown as { __tsShare?: Bridge }).__tsShare; // set by the Android app
@@ -57,7 +59,7 @@ export default function ShareToolButton({ toolId, toolName, onDark = false }: { 
           <circle cx="18" cy="19" r="3" />
           <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
         </svg>
-        Share
+        {tr("Share")}
       </button>
       {menu && (
         <div role="menu" className="absolute right-0 top-full z-30 mt-2 w-48 rounded-xl border border-line bg-white p-1.5 shadow-float sm:left-0 sm:right-auto">
@@ -68,7 +70,7 @@ export default function ShareToolButton({ toolId, toolName, onDark = false }: { 
             Telegram
           </a>
           <button role="menuitem" type="button" className={item} onClick={copy}>
-            {copied ? "Link copied" : "Copy link"}
+            {copied ? tr("Link copied") : tr("Copy link")}
           </button>
         </div>
       )}

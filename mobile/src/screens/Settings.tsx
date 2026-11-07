@@ -9,6 +9,8 @@ import { BackIcon } from "../components/icons";
 import { openExternal } from "../external";
 import { disablePush, enablePush, pushSupported, pushWanted } from "../push";
 import { back, navigate } from "../shims/router";
+import { useLanguage } from "../i18n/LanguageProvider";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const SUPPORT_EMAIL = "support@toppershelf.online";
 const SITE = "https://www.toppershelf.online";
@@ -69,6 +71,7 @@ function Switch({ on, onChange, label }: { on: boolean; onChange: () => void; la
 
 export default function Settings() {
   const { user, ready, openSignIn, signOut } = useAuth();
+  const { t } = useLanguage();
   const [, setFavs] = useStoredList(FAVOURITES_KEY);
   const [, setRecent] = useStoredList(RECENT_KEY);
   const [pushOn, setPushOn] = useState(pushWanted);
@@ -105,7 +108,7 @@ export default function Settings() {
     setFavs([]);
     setRecent([]);
     clearLocalData();
-    setNote("Favourites and recent tools were cleared.");
+    setNote(t("settings.cleared"));
   }
 
   async function removeAccount() {
@@ -128,17 +131,21 @@ export default function Settings() {
   return (
     <div className="hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-10">
       <header className="sticky top-0 z-10 flex items-center gap-2 bg-ivory/95 px-3 pt-4 pb-2 backdrop-blur">
-        <button type="button" onClick={back} aria-label="Back" className="grid size-11 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-navy">
+        <button type="button" onClick={back} aria-label={t("common.back")} className="grid size-11 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-navy">
           <BackIcon />
         </button>
-        <h1 className="m-0 font-display text-[30px] leading-none font-normal">Settings</h1>
+        <h1 className="m-0 font-display text-[30px] leading-none font-normal">{t("settings.title")}</h1>
       </header>
 
-      <Group title="Account">
+      <Group title={t("language.title")}>
+        <Row label={t("language.label")} hint={t("language.hint")} right={<LanguageSwitcher />} />
+      </Group>
+
+      <Group title={t("settings.account")}>
         {ready && (
           <Row
-            label={user ? "Signed in" : "You are browsing as a guest"}
-            hint={user ? name : "Sign in to run the tools"}
+            label={user ? t("settings.signedIn") : t("settings.guest")}
+            hint={user ? name : t("settings.guestHint")}
             right={
               <span
                 role="button"
@@ -147,44 +154,44 @@ export default function Settings() {
                 onKeyDown={(e) => e.key === "Enter" && (user ? void signOut() : openSignIn())}
                 className="inline-flex min-h-10 shrink-0 cursor-pointer items-center rounded-full bg-navy px-5 text-sm font-bold text-white"
               >
-                {user ? "Sign out" : "Sign in"}
+                {user ? t("settings.signOut") : t("settings.signIn")}
               </span>
             }
           />
         )}
-        {user && <Row label="Delete my account" hint="Removes your login and everything saved in it" danger onClick={() => setConfirmDelete(true)} right={<Chevron />} />}
+        {user && <Row label={t("settings.deleteAccount")} hint={t("settings.deleteAccountHint")} danger onClick={() => setConfirmDelete(true)} right={<Chevron />} />}
       </Group>
 
-      <Group title="Notifications">
+      <Group title={t("settings.notifications")}>
         <Row
-          label="Updates and new tools"
-          hint={pushSupported() ? "Get a nudge when we add something new" : "Works in the Android app"}
-          right={pushSupported() ? <Switch on={pushOn} onChange={() => void togglePush()} label="Notifications" /> : undefined}
+          label={t("settings.updates")}
+          hint={pushSupported() ? t("settings.updatesHint") : t("settings.updatesUnsupported")}
+          right={pushSupported() ? <Switch on={pushOn} onChange={() => void togglePush()} label={t("settings.notifications")} /> : undefined}
         />
       </Group>
 
-      <Group title="Help and feedback">
-        <Row label="Ask for a tool" hint="Tell us what to build next" onClick={() => navigate("/request-tool")} right={<Chevron />} />
+      <Group title={t("settings.help")}>
+        <Row label={t("settings.askTool")} hint={t("settings.askToolHint")} onClick={() => navigate("/request-tool")} right={<Chevron />} />
         <Row
-          label="Report a problem"
+          label={t("settings.report")}
           hint={SUPPORT_EMAIL}
           onClick={() => goMail(mail("Problem in the TopperShelf app", `What went wrong:\n\n\n---\nApp version: ${version}\nAndroid: ${androidVersion()}`))}
           right={<Chevron />}
         />
-        <Row label="Share TopperShelf" hint="Send the app to a friend" onClick={() => void share()} right={<Chevron />} />
-        <Row label="Rate us on Google Play" onClick={() => void openExternal(PLAY_LINK)} right={<Chevron />} />
+        <Row label={t("settings.share")} hint={t("settings.shareHint")} onClick={() => void share()} right={<Chevron />} />
+        <Row label={t("settings.rate")} onClick={() => void openExternal(PLAY_LINK)} right={<Chevron />} />
       </Group>
 
-      <Group title="About">
-        <Row label="Terms of use" onClick={() => void openExternal(`${SITE}/terms`)} right={<Chevron />} />
-        <Row label="Privacy policy" onClick={() => void openExternal(`${SITE}/privacy`)} right={<Chevron />} />
-        <Row label="Meet the founders" onClick={() => void openExternal(`${SITE}/founders`)} right={<Chevron />} />
+      <Group title={t("settings.about")}>
+        <Row label={t("settings.terms")} onClick={() => void openExternal(`${SITE}/terms`)} right={<Chevron />} />
+        <Row label={t("settings.privacy")} onClick={() => void openExternal(`${SITE}/privacy`)} right={<Chevron />} />
+        <Row label={t("settings.founders")} onClick={() => void openExternal(`${SITE}/founders`)} right={<Chevron />} />
         <Row label="Instagram" hint="@toppershelf_official" onClick={() => void openExternal(INSTAGRAM)} right={<Chevron />} />
-        <Row label="App version" right={<span className="text-sm font-semibold text-[#5b6675]">{version}</span>} />
+        <Row label={t("settings.version")} right={<span className="text-sm font-semibold text-[#5b6675]">{version}</span>} />
       </Group>
 
-      <Group title="Data on this phone">
-        <Row label="Clear favourites and recent tools" hint="Also clears the copy saved in your account" onClick={clearData} right={<Chevron />} />
+      <Group title={t("settings.data")}>
+        <Row label={t("settings.clear")} hint={t("settings.clearHint")} onClick={clearData} right={<Chevron />} />
       </Group>
 
       {note && (
@@ -196,9 +203,9 @@ export default function Settings() {
       {confirmDelete && (
         <div className="fixed inset-0 z-50 grid place-items-end bg-[#102a4c]/55 sm:place-items-center" role="dialog" aria-modal="true" aria-labelledby="del-title">
           <div className="mx-auto w-full max-w-[480px] rounded-t-[32px] bg-white p-6 pb-8">
-            <h2 id="del-title" className="m-0 text-xl font-extrabold">Delete your account?</h2>
+            <h2 id="del-title" className="m-0 text-xl font-extrabold">{t("settings.deleteTitle")}</h2>
             <p className="mt-2 mb-0 text-[15px] leading-6 text-[#5b6675]">
-              This permanently removes your TopperShelf login and your saved flashcards, reminders and countdowns. It cannot be undone.
+              {t("settings.deleteBody")}
             </p>
             {deleteError && <p role="alert" className="mt-3 mb-0 text-sm font-semibold text-[#b91c1c]">{deleteError}</p>}
             <button
@@ -207,7 +214,7 @@ export default function Settings() {
               onClick={() => void removeAccount()}
               className="mt-5 min-h-12 w-full cursor-pointer rounded-[28px] border-0 bg-[#b91c1c] text-base font-extrabold text-white disabled:opacity-60"
             >
-              {busy ? "Deleting…" : "Yes, delete everything"}
+              {busy ? t("settings.deleting") : t("settings.deleteYes")}
             </button>
             <button
               type="button"
@@ -218,7 +225,7 @@ export default function Settings() {
               }}
               className="mt-2 min-h-12 w-full cursor-pointer rounded-[28px] border-0 bg-transparent text-base font-bold text-navy"
             >
-              Keep my account
+              {t("settings.deleteKeep")}
             </button>
           </div>
         </div>

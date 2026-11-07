@@ -1,6 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { navigate } from "./shims/router";
+import { tStatic } from "./i18n/static";
 
 /*
  * Reminders for the Android app. Each reminder becomes a notification scheduled with Android's own alarm service,
@@ -77,7 +78,7 @@ export async function syncReminders(items: ReminderItem[]) {
         notifications: upcoming.map((i) => ({
           id: notificationId(i.id),
           title: i.title,
-          body: i.note || "Reminder from TopperShelf",
+          body: i.note || tStatic("Reminder from TopperShelf"),
           channelId: CHANNEL,
           smallIcon: "ic_stat_toppershelf",
           iconColor: "#2563eb",

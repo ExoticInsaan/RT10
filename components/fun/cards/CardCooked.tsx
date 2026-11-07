@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { Ref } from "react";
+import { useHindi, useTr } from "@/lib/tools/useTr";
 import { FitBox, hand, mix, storyDate, useToday } from "@/components/fun/kit";
 
 export type CookedCardData = { name: string; score: number; tier: string; bg: string; verdict: string };
@@ -16,6 +17,8 @@ export const cookedSample: CookedCardData = {
 
 /** 9:16 story card (drawn at 540x960, exported at 1080x1920). The colours follow the result. */
 export default function CardCooked({ data = cookedSample, cardRef, date }: { data?: CookedCardData; cardRef?: Ref<HTMLDivElement>; date?: Date }) {
+  const tr = useTr();
+  const hi = useHindi();
   const today = useToday();
   const when = date ?? today;
   const { name, score, tier, bg, verdict } = data;
@@ -31,24 +34,24 @@ export default function CardCooked({ data = cookedSample, cardRef, date }: { dat
         <div className="absolute -left-[120px] top-[520px] w-[520px] h-[520px] rounded-full" style={{ background: dark }}></div>
 
         <div className="absolute left-[44px] right-[44px] top-[104px] flex justify-between text-[15px] font-extrabold tracking-[.18em]">
-          <span>HOW COOKED ARE YOU?</span>
-          <span className="opacity-[.75]">{when ? storyDate(when).split(" · ")[1] : "TODAY"}</span>
+          <span>{tr("HOW COOKED ARE YOU?")}</span>
+          <span className="opacity-[.75]">{when ? storyDate(when, hi).split(" · ")[1] : tr("TODAY")}</span>
         </div>
 
         <div className="absolute left-[44px] right-[44px] top-[170px] font-display italic leading-[1] overflow-hidden whitespace-nowrap text-ellipsis" style={{ fontSize: nm.length > 16 ? 30 : nm.length > 10 ? 38 : 44 }}>
-          {nm} is
+          {tr("{name} is", { name: nm })}
         </div>
         <div className="absolute left-[34px] top-[206px] font-display leading-[.86] tracking-[-.04em]" style={{ fontSize: score > 99 ? 190 : 250 }}>
           {score}%
         </div>
         <div className="absolute left-[44px] top-[420px] font-display italic text-[104px] leading-[1]" style={{ color: accent }}>
-          cooked.
+          {tr("cooked.")}
         </div>
 
         <div className="absolute right-[50px] top-[548px] w-[150px] h-[150px] rounded-full [border:4px_solid_#fff3e6] flex items-center justify-center [transform:rotate(-14deg)] text-center">
           <div className="absolute inset-[7px] rounded-full [border:2px_dashed_rgba(255,243,230,.7)]"></div>
           <div>
-            <div className="text-[12px] font-black tracking-[.2em]">CERTIFIED</div>
+            <div className="text-[12px] font-black tracking-[.2em]">{tr("CERTIFIED")}</div>
             <div className="font-display text-[30px] leading-[1]">
               {w1}
               {rest.length > 0 && (<><br />{rest.join(" ")}</>)}
@@ -64,8 +67,8 @@ export default function CardCooked({ data = cookedSample, cardRef, date }: { dat
           <rect x="22" y="52" width="156" height="14" rx="7" fill={accent} />
           <rect x="6" y="72" width="24" height="10" rx="5" fill="#fff3e6" />
           <rect x="170" y="72" width="24" height="10" rx="5" fill="#fff3e6" />
-          <text x="100" y="104" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="900" fontSize="16" letterSpacing="3" fill={bg}>
-            CHAOS
+          <text x="100" y="104" textAnchor="middle" fontFamily="Inter,'Noto Sans Devanagari',sans-serif" fontWeight="900" fontSize="16" letterSpacing={hi ? 0 : 3} fill={bg}>
+            {tr("CHAOS")}
           </text>
         </svg>
 
@@ -76,11 +79,11 @@ export default function CardCooked({ data = cookedSample, cardRef, date }: { dat
             <Image src="/mascot/owl-peek.webp"
               unoptimized alt="" width={62} height={49} className="h-auto w-[62px] block" />
             <div className="text-[14px] leading-[1.3]">
-              <div className="font-extrabold">how cooked are you?</div>
+              <div className="font-extrabold">{tr("how cooked are you?")}</div>
               <div className="opacity-[.8]">toppershelf.online/fun</div>
             </div>
           </div>
-          <div className="font-hand text-[28px] [transform:rotate(-4deg)]">your turn</div>
+          <div className="font-hand text-[28px] [transform:rotate(-4deg)]">{tr("your turn")}</div>
         </div>
       </div>
     </FitBox>

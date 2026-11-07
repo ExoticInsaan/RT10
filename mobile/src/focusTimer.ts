@@ -1,5 +1,6 @@
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { allowReminders, remindersSupported } from "./reminders";
+import { tStatic } from "./i18n/static";
 
 /*
  * Focus Timer in the Android app: while the timer runs there is exactly one phone notification scheduled for its end time,
@@ -40,8 +41,8 @@ async function apply({ endAt, phase }: Detail) {
       notifications: [
         {
           id: TIMER_ID,
-          title: phase === "focus" ? "Focus session done" : "Break's over",
-          body: phase === "focus" ? "Take a break." : "Back to it.",
+          title: tStatic(phase === "focus" ? "Focus session done" : "Break's over"),
+          body: tStatic(phase === "focus" ? "Take a break." : "Back to it."),
           channelId: CHANNEL,
           smallIcon: "ic_stat_toppershelf",
           iconColor: "#2563eb",

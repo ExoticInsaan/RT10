@@ -5,6 +5,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/tools/ui";
 import { Field, inputClass } from "@/components/tools/kit";
+import { useTr } from "@/lib/tools/useTr";
 
 const NAME_MAX = 100;
 const DETAILS_MAX = 1000;
@@ -14,6 +15,7 @@ const DETAILS_MAX = 1000;
  * People must be signed in (the table only accepts signed-in people, and each person can read only their own requests).
  */
 export default function RequestToolForm() {
+  const tr = useTr();
   const { user, ready, openSignIn } = useAuth();
   const [name, setName] = useState("");
   const [details, setDetails] = useState("");
@@ -42,58 +44,58 @@ export default function RequestToolForm() {
   return (
     <section id="request-a-tool" aria-labelledby="request-title" className="mt-8 rounded-2xl border border-line bg-white p-6 shadow-card">
       <h2 id="request-title" className="m-0 text-xl font-extrabold text-navy">
-        Request a tool
+        {tr("Request a tool")}
       </h2>
       <p className="mb-5 mt-1 text-sm leading-6 text-muted">
-        Tell us the small job you keep doing the hard way. The most-asked tools get built first.
+        {tr("Tell us the small job you keep doing the hard way. The most-asked tools get built first.")}
       </p>
 
       {!ready ? (
-        <p className="m-0 text-sm text-muted">Loading…</p>
+        <p className="m-0 text-sm text-muted">{tr("Loading…")}</p>
       ) : !user ? (
         <div>
           <p className="mb-4 mt-0 text-sm leading-6 text-slate-700">
-            Sign in with Google (one tap, free) so we can keep your request and avoid spam.
+            {tr("Sign in with Google (one tap, free) so we can keep your request and avoid spam.")}
           </p>
-          <Button onClick={openSignIn}>Continue with Google</Button>
+          <Button onClick={openSignIn}>{tr("Continue with Google")}</Button>
         </div>
       ) : status === "sent" ? (
         <div role="status">
-          <p className="m-0 text-base font-bold text-navy">Thank you, we got your request.</p>
-          <p className="mb-4 mt-1 text-sm leading-6 text-muted">We read every one. Have another idea?</p>
+          <p className="m-0 text-base font-bold text-navy">{tr("Thank you, we got your request.")}</p>
+          <p className="mb-4 mt-1 text-sm leading-6 text-muted">{tr("We read every one. Have another idea?")}</p>
           <Button variant="secondary" onClick={() => setStatus("idle")}>
-            Send another request
+            {tr("Send another request")}
           </Button>
         </div>
       ) : (
         <form onSubmit={send} className="grid gap-4">
-          <Field label="What should the tool be called?" hint="For example: Resume maker, or Photo to 50 KB.">
+          <Field label={tr("What should the tool be called?")} hint={tr("For example: Resume maker, or Photo to 50 KB.")}>
             <input
               className={inputClass}
               value={name}
               maxLength={NAME_MAX}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Tool name"
+              placeholder={tr("Tool name")}
               autoComplete="off"
             />
           </Field>
-          <Field label="What should it do? (optional)" hint="What would you type or upload, and what result do you want?">
+          <Field label={tr("What should it do? (optional)")} hint={tr("What would you type or upload, and what result do you want?")}>
             <textarea
               className={`${inputClass} h-28 py-3`}
               value={details}
               maxLength={DETAILS_MAX}
               onChange={(e) => setDetails(e.target.value)}
-              placeholder="Tell us more"
+              placeholder={tr("Tell us more")}
             />
           </Field>
           {status === "error" && (
             <p role="alert" className="m-0 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              We could not send that. Please try again, or email us instead.
+              {tr("We could not send that. Please try again, or email us instead.")}
             </p>
           )}
           <div>
             <Button type="submit" disabled={!canSend}>
-              {status === "sending" ? "Sending…" : "Send request"}
+              {status === "sending" ? tr("Sending…") : tr("Send request")}
             </Button>
           </div>
         </form>

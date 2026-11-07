@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTr } from "@/lib/tools/useTr";
 
 /*
  * Phones and tablets: the PDF Toolkit opens on a grid of cards (one per job). Tapping a card opens that job.
@@ -80,9 +81,10 @@ export function ModeIcon({ id, size = 26 }: { id: string; size?: number }) {
 }
 
 export default function PdfModeCards({ cards, onPick }: { cards: Card[]; onPick: (value: string) => void }) {
+  const tr = useTr();
   return (
     <div className="lg:hidden">
-      <p className="m-0 mb-3 text-sm font-semibold text-navy">What do you want to do?</p>
+      <p className="m-0 mb-3 text-sm font-semibold text-navy">{tr("What do you want to do?")}</p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {cards.map((card) => (
           <button

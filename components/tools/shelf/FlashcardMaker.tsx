@@ -5,6 +5,7 @@ import ToolIcon from "@/components/tools/ToolIcon";
 import { Button } from "@/components/tools/ui";
 import { Field, inputClass } from "@/components/tools/kit";
 import { useAccountData } from "@/lib/tools/useAccountData";
+import { useTr } from "@/lib/tools/useTr";
 
 type Card = { id: string; front: string; back: string };
 type Deck = { id: string; name: string; cards: Card[] };
@@ -42,6 +43,7 @@ function shuffle<T>(list: T[]) {
 }
 
 export default function FlashcardMaker() {
+  const tr = useTr();
   const [decks, setDecks, status] = useAccountData<Deck[]>("flashcard-maker", []);
   const [openId, setOpenId] = useState<string | null>(null);
   const [studying, setStudying] = useState(false);
@@ -89,8 +91,8 @@ export default function FlashcardMaker() {
     );
   }
 
-  if (status === "loading") return <p className="m-0 py-16 text-center text-sm text-muted">Loading your decks…</p>;
-  if (status === "error") return <p className="m-0 py-16 text-center text-sm text-muted">Could not load your decks. Please refresh the page.</p>;
+  if (status === "loading") return <p className="m-0 py-16 text-center text-sm text-muted">{tr("Loading your decks…")}</p>;
+  if (status === "error") return <p className="m-0 py-16 text-center text-sm text-muted">{tr("Could not load your decks. Please refresh the page.")}</p>;
 
   return (
     <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
@@ -106,10 +108,10 @@ export default function FlashcardMaker() {
           setOpenId(created.id);
         }}
       >
-        <Field label="New deck">
-          <input className={inputClass} value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Organic chemistry reactions" />
+        <Field label={tr("New deck")}>
+          <input className={inputClass} value={newName} onChange={(e) => setNewName(e.target.value)} placeholder={tr("e.g. Organic chemistry reactions")} />
         </Field>
-        <Button type="submit">Create deck</Button>
+        <Button type="submit">{tr("Create deck")}</Button>
       </form>
 
       {decks.length === 0 && (
@@ -119,7 +121,7 @@ export default function FlashcardMaker() {
               <span key={c} style={{ "--x": x, "--r": r, "--c": c, "--d": d } as CSSProperties} />
             ))}
           </div>
-          Your decks appear here and are saved to your account.
+          {tr("Your decks appear here and are saved to your account.")}
         </div>
       )}
       {decks.length > 0 && (
@@ -135,7 +137,7 @@ export default function FlashcardMaker() {
                 <span className="block text-base font-bold text-navy">{d.name}</span>
                 <span className="fc-count">
                   <i aria-hidden="true" />
-                  {d.cards.length} card{d.cards.length === 1 ? "" : "s"}
+                  {tr(d.cards.length === 1 ? "{n} card" : "{n} cards", { n: d.cards.length })}
                 </span>
               </button>
             </li>
@@ -147,6 +149,7 @@ export default function FlashcardMaker() {
 }
 
 function DeleteDialog({ name, count, onCancel, onConfirm }: { name: string; count: number; onCancel: () => void; onConfirm: () => void }) {
+  const tr = useTr();
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
     box.current?.querySelector("button")?.focus(); // "Keep deck" is the first button
@@ -160,17 +163,17 @@ function DeleteDialog({ name, count, onCancel, onConfirm }: { name: string; coun
         <div className="fc-dialog-icon">
           <ToolIcon name="trash" size={22} />
         </div>
-        <h2 id="fc-del-title">Delete “{name}”?</h2>
+        <h2 id="fc-del-title">{tr("Delete “{name}”?", { name })}</h2>
         <p>
-          This permanently deletes the deck and its {count} card{count === 1 ? "" : "s"}. You can&apos;t undo this.
+          {tr(count === 1 ? "This permanently deletes the deck and its {n} card. You can't undo this." : "This permanently deletes the deck and its {n} cards. You can't undo this.", { n: count })}
         </p>
         <div className="grid grid-cols-2 gap-3">
           {/* Keep deck is focused first, so a stray Enter never deletes anything. */}
           <Button variant="secondary" onClick={onCancel}>
-            Keep deck
+            {tr("Keep deck")}
           </Button>
           <Button className="bg-red-600 hover:bg-red-700" onClick={onConfirm}>
-            Delete deck
+            {tr("Delete deck")}
           </Button>
         </div>
       </div>
@@ -191,6 +194,7 @@ function DeckEditor({
   onStudy: () => void;
   onDelete: () => void;
 }) {
+  const tr = useTr();
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
   const [bulk, setBulk] = useState("");
@@ -205,10 +209,10 @@ function DeckEditor({
     <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <button type="button" onClick={onBack} className="cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-blue-hover">
-          ← All decks
+          {tr("← All decks")}
         </button>
         <Button onClick={onStudy} disabled={deck.cards.length === 0}>
-          Study {deck.cards.length} card{deck.cards.length === 1 ? "" : "s"}
+          {tr(deck.cards.length === 1 ? "Study {n} card" : "Study {n} cards", { n: deck.cards.length })}
         </Button>
       </div>
       <h3 className="m-0 text-2xl font-extrabold tracking-tight text-navy">{deck.name}</h3>
@@ -222,22 +226,22 @@ function DeckEditor({
         onSubmit={(event) => {
           event.preventDefault();
           if (!front.trim()) {
-            setMessage("Fill in both sides of the card.");
+            setMessage(tr("Fill in both sides of the card."));
             return frontRef.current?.focus();
           }
           if (!back.trim()) {
-            setMessage("Fill in both sides of the card.");
+            setMessage(tr("Fill in both sides of the card."));
             return backRef.current?.focus();
           }
           onChange({ ...deck, cards: [...deck.cards, { id: uid(), front: front.trim(), back: back.trim() }] });
           setFront("");
           setBack("");
-          setMessage("Card added. Type the next one.");
+          setMessage(tr("Card added. Type the next one."));
           frontRef.current?.focus(); // keep the keyboard open for the next card
         }}
       >
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field label="Front (question)">
+          <Field label={tr("Front (question)")}>
             <textarea
               ref={frontRef}
               className={`${inputClass} h-20 py-2.5 sm:h-24 sm:py-3`}
@@ -254,7 +258,7 @@ function DeckEditor({
               }}
             />
           </Field>
-          <Field label="Back (answer)">
+          <Field label={tr("Back (answer)")}>
             <textarea
               ref={backRef}
               className={`${inputClass} h-20 py-2.5 sm:h-24 sm:py-3`}
@@ -271,34 +275,34 @@ function DeckEditor({
             />
           </Field>
         </div>
-        <button type="button" className="fc-live hidden sm:block" aria-label="Preview of your card. Hover or focus to flip." tabIndex={-1}>
+        <button type="button" className="fc-live hidden sm:block" aria-label={tr("Preview of your card. Hover or focus to flip.")} tabIndex={-1}>
           <span className="fc-inner" style={{ display: "block", height: "100%" }}>
             <span className="fc-face fc-front" style={{ padding: "1rem" }}>
-              <span className="line-clamp-3 text-sm font-bold text-navy">{front || "Your question shows here"}</span>
+              <span className="line-clamp-3 text-sm font-bold text-navy">{front || tr("Your question shows here")}</span>
             </span>
             <span className="fc-face fc-back" style={{ padding: "1rem" }}>
-              <span className="line-clamp-3 text-sm font-semibold text-navy">{back || "…and the answer on the back"}</span>
+              <span className="line-clamp-3 text-sm font-semibold text-navy">{back || tr("…and the answer on the back")}</span>
             </span>
           </span>
         </button>
         <div className="grid grid-cols-1 items-center gap-3 sm:flex sm:flex-wrap sm:gap-4">
-          <Button type="submit" className="w-full sm:w-auto">Add card</Button>
+          <Button type="submit" className="w-full sm:w-auto">{tr("Add card")}</Button>
           <button
             type="button"
             onClick={() => setShowBulk(!showBulk)}
             className="cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-blue-hover underline-offset-4 hover:underline"
           >
-            {showBulk ? "Hide" : "Paste many at once"}
+            {showBulk ? tr("Hide") : tr("Paste many at once")}
           </button>
         </div>
         {showBulk && (
           <div className="grid grid-cols-1 gap-3">
-            <Field label="One card per line" hint="Write “question - answer”, “question: answer”, or paste two columns from a spreadsheet.">
+            <Field label={tr("One card per line")} hint={tr("Write “question - answer”, “question: answer”, or paste two columns from a spreadsheet.")}>
               <textarea
                 className={`${inputClass} h-40 py-3 font-mono`}
                 value={bulk}
                 onChange={(e) => setBulk(e.target.value)}
-                placeholder={"Mitochondria - Powerhouse of the cell\nH2O: Water"}
+                placeholder={tr("Mitochondria - Powerhouse of the cell\nH2O: Water")}
               />
             </Field>
             <Button
@@ -306,13 +310,16 @@ function DeckEditor({
               className="justify-self-start"
               onClick={() => {
                 const { cards, skipped } = parseCards(bulk);
-                if (!cards.length) return setMessage("No cards found. Put a dash, colon or tab between the two sides.");
+                if (!cards.length) return setMessage(tr("No cards found. Put a dash, colon or tab between the two sides."));
                 onChange({ ...deck, cards: [...deck.cards, ...cards] });
                 setBulk("");
-                setMessage(`Added ${cards.length} card${cards.length === 1 ? "" : "s"}.${skipped ? ` Skipped ${skipped} line${skipped === 1 ? "" : "s"} without a separator.` : ""}`);
+                setMessage(
+                  tr(cards.length === 1 ? "Added {n} card." : "Added {n} cards.", { n: cards.length }) +
+                    (skipped ? " " + tr(skipped === 1 ? "Skipped {n} line without a separator." : "Skipped {n} lines without a separator.", { n: skipped }) : ""),
+                );
               }}
             >
-              Add these cards
+              {tr("Add these cards")}
             </Button>
           </div>
         )}
@@ -329,7 +336,7 @@ function DeckEditor({
               </span>
               <button
                 type="button"
-                aria-label={`Delete card ${card.front}`}
+                aria-label={tr("Delete card {front}", { front: card.front })}
                 onClick={() => onChange({ ...deck, cards: deck.cards.filter((c) => c.id !== card.id) })}
                 className="grid size-8 shrink-0 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-muted hover:bg-surface hover:text-navy"
               >
@@ -345,7 +352,7 @@ function DeckEditor({
         onClick={() => setConfirmDelete(true)}
         className="cursor-pointer justify-self-start border-0 bg-transparent p-0 text-sm font-semibold text-red-600 underline-offset-4 hover:underline"
       >
-        Delete this deck
+        {tr("Delete this deck")}
       </button>
       {confirmDelete && <DeleteDialog name={deck.name} count={deck.cards.length} onCancel={() => setConfirmDelete(false)} onConfirm={onDelete} />}
     </div>
@@ -353,6 +360,7 @@ function DeckEditor({
 }
 
 function Study({ deck, onExit, onEdit, onDelete }: { deck: Deck; onExit: () => void; onEdit: () => void; onDelete: () => void }) {
+  const tr = useTr();
   const [queue, setQueue] = useState<Card[]>(() => shuffle(deck.cards));
   const [flipped, setFlipped] = useState(false);
   const [known, setKnown] = useState(0);
@@ -361,6 +369,8 @@ function Study({ deck, onExit, onEdit, onDelete }: { deck: Deck; onExit: () => v
   const [leaving, setLeaving] = useState<"known" | "again" | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const card = queue[0];
+  // "3 of 10 known": the number stays in its animated span, whatever order the language puts it in.
+  const knownText = tr("{known} of {total} known", { known: "\u0001", total: deck.cards.length }).split("\u0001");
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
 
   function answer(gotIt: boolean) {
@@ -396,9 +406,11 @@ function Study({ deck, onExit, onEdit, onDelete }: { deck: Deck; onExit: () => v
           ))}
         </div>
         <p className="fc-emoji m-0" aria-hidden="true">🎉</p>
-        <h3 className="m-0 text-2xl font-extrabold text-navy">You know all {deck.cards.length} cards</h3>
+        <h3 className="m-0 text-2xl font-extrabold text-navy">{tr("You know all {n} cards", { n: deck.cards.length })}</h3>
         <p className="m-0 text-sm text-muted">
-          {againCount === 0 ? "First try, every one." : `${againCount} card${againCount === 1 ? " needed" : "s needed"} another go along the way.`}
+          {againCount === 0
+            ? tr("First try, every one.")
+            : tr(againCount === 1 ? "{n} card needed another go along the way." : "{n} cards needed another go along the way.", { n: againCount })}
         </p>
         <div className="flex gap-3">
           <Button
@@ -408,14 +420,14 @@ function Study({ deck, onExit, onEdit, onDelete }: { deck: Deck; onExit: () => v
               setAgainCount(0);
             }}
           >
-            Study again
+            {tr("Study again")}
           </Button>
           <Button variant="secondary" onClick={onEdit}>
-            <ToolIcon name="edit" size={16} /> Edit cards
+            <ToolIcon name="edit" size={16} /> {tr("Edit cards")}
           </Button>
         </div>
         <button type="button" onClick={onExit} className="cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-blue-hover">
-          All decks
+          {tr("All decks")}
         </button>
       </div>
     );
@@ -425,17 +437,17 @@ function Study({ deck, onExit, onEdit, onDelete }: { deck: Deck; onExit: () => v
     <div className="mx-auto grid grid-cols-1 max-w-xl gap-5">
       <div className="flex items-center justify-between text-sm">
         <button type="button" onClick={onExit} className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover">
-          ← All decks
+          {tr("← All decks")}
         </button>
         <span className="flex items-center gap-2 font-semibold text-muted">
           <span>
-            <span key={known} className="fc-tick">{known}</span> of {deck.cards.length} known
+            {knownText[0]}<span key={known} className="fc-tick">{known}</span>{knownText[1]}
           </span>
           <button
             type="button"
             onClick={onEdit}
-            aria-label="Edit cards"
-            title="Edit cards"
+            aria-label={tr("Edit cards")}
+            title={tr("Edit cards")}
             className="grid size-9 cursor-pointer place-items-center rounded-full border-0 bg-blue-soft text-blue-hover transition hover:bg-blue-hover hover:text-white"
           >
             <ToolIcon name="edit" size={17} />
@@ -450,20 +462,20 @@ function Study({ deck, onExit, onEdit, onDelete }: { deck: Deck; onExit: () => v
           key={`${card.id}-${known}-${againCount}`}
           type="button"
           onClick={() => !leaving && setFlipped(!flipped)}
-          aria-label={flipped ? "Show question" : "Show answer"}
+          aria-label={flipped ? tr("Show question") : tr("Show answer")}
           className={`fc-card ${flipped ? "fc-flip" : ""} ${leaving ? `fc-${leaving}` : ""}`}
         >
           <span className="fc-inner" style={{ display: "block", minHeight: "16rem" }}>
             <span className="fc-face fc-front" aria-hidden={flipped}>
               <span className="fc-corner" aria-hidden="true"><i /><i /><i /></span>
               <span>
-                <span className="mb-3 block text-xs font-semibold text-muted">Question · tap to flip</span>
+                <span className="mb-3 block text-xs font-semibold text-muted">{tr("Question · tap to flip")}</span>
                 <span className="block whitespace-pre-wrap text-2xl font-bold leading-snug text-navy">{card.front}</span>
               </span>
             </span>
             <span className="fc-face fc-back" aria-hidden={!flipped}>
               <span>
-                <span className="mb-3 block text-xs font-semibold text-emerald-700">Answer</span>
+                <span className="mb-3 block text-xs font-semibold text-emerald-700">{tr("Answer")}</span>
                 <span className="block whitespace-pre-wrap text-2xl font-bold leading-snug text-navy">{card.back}</span>
               </span>
             </span>
@@ -473,15 +485,15 @@ function Study({ deck, onExit, onEdit, onDelete }: { deck: Deck; onExit: () => v
       {flipped ? (
         <div key="answers" className="fc-actions grid grid-cols-2 gap-3">
           <Button variant="secondary" onClick={() => answer(false)}>
-            Again
+            {tr("Again")}
           </Button>
           <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => answer(true)}>
-            Got it
+            {tr("Got it")}
           </Button>
         </div>
       ) : (
         <Button variant="secondary" onClick={() => setFlipped(true)}>
-          Show answer
+          {tr("Show answer")}
         </Button>
       )}
       <button
@@ -489,7 +501,7 @@ function Study({ deck, onExit, onEdit, onDelete }: { deck: Deck; onExit: () => v
         onClick={() => setConfirmDelete(true)}
         className="cursor-pointer justify-self-center border-0 bg-transparent p-1 text-xs font-semibold text-muted underline-offset-4 hover:text-red-600 hover:underline"
       >
-        Delete deck
+        {tr("Delete deck")}
       </button>
       {confirmDelete && <DeleteDialog name={deck.name} count={deck.cards.length} onCancel={() => setConfirmDelete(false)} onConfirm={onDelete} />}
     </div>

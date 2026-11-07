@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { Ref } from "react";
+import { useHindi, useTr } from "@/lib/tools/useTr";
 import { FitBox, hand, storyDate, useToday } from "@/components/fun/kit";
 
 export type VibeCardData = {
@@ -27,6 +28,8 @@ export const vibeSample: VibeCardData = {
 
 /** 9:16 story card (drawn at 540x960, exported at 1080x1920). The colours follow the vibe. */
 export default function CardVibe({ data = vibeSample, cardRef, date }: { data?: VibeCardData; cardRef?: Ref<HTMLDivElement>; date?: Date }) {
+  const tr = useTr();
+  const hi = useHindi();
   const today = useToday();
   const when = date ?? today;
   const { name, vibe, line, a, b, bg, meters } = data;
@@ -40,8 +43,8 @@ export default function CardVibe({ data = vibeSample, cardRef, date }: { data?: 
         <div className="absolute inset-0 [background:radial-gradient(circle_at_1px_1px,rgba(255,255,255,.07)_1px,transparent_1.5px)_0_0/6px_6px]"></div>
 
         <div className="absolute left-[44px] right-[44px] top-[104px] flex justify-between text-[14px] font-extrabold tracking-[.2em] opacity-[.9]">
-          <span>TODAY&apos;S VIBE</span>
-          <span>{when ? storyDate(when) : "TODAY"}</span>
+          <span>{tr("TODAY'S VIBE")}</span>
+          <span>{when ? storyDate(when, hi) : tr("TODAY")}</span>
         </div>
 
         <div
@@ -54,7 +57,7 @@ export default function CardVibe({ data = vibeSample, cardRef, date }: { data?: 
         <div className="absolute left-[50%] top-[296px] w-[360px] h-[40px] -ml-[180px] rounded-full [border:2px_solid_rgba(255,255,255,.55)] [transform:rotate(-12deg)]"></div>
 
         <div className="absolute left-[44px] right-[44px] top-[488px] text-center">
-          <div className="text-[18px] font-semibold opacity-[.85] overflow-hidden whitespace-nowrap text-ellipsis">{nm}&apos;s aura says</div>
+          <div className="text-[18px] font-semibold opacity-[.85] overflow-hidden whitespace-nowrap text-ellipsis">{tr("{name}'s aura says", { name: nm })}</div>
           <div className="font-display italic leading-[1] mt-[6px] whitespace-nowrap" style={{ fontSize: vibe.length > 18 ? 40 : vibe.length > 14 ? 50 : 62 }}>
             {vibe}
           </div>
@@ -78,12 +81,12 @@ export default function CardVibe({ data = vibeSample, cardRef, date }: { data?: 
             <Image src="/mascot/owl-peek.webp"
               unoptimized alt="" width={62} height={49} className="h-auto w-[62px] block" />
             <div className="text-[14px] leading-[1.3]">
-              <div className="font-extrabold">check your vibe</div>
+              <div className="font-extrabold">{tr("check your vibe")}</div>
               <div className="opacity-[.8]">toppershelf.online/fun</div>
             </div>
           </div>
           <div className="font-hand text-[28px] [transform:rotate(-4deg)]" style={{ color: a }}>
-            new one tomorrow
+            {tr("new one tomorrow")}
           </div>
         </div>
       </div>

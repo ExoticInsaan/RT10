@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { Ref } from "react";
+import { useTr } from "@/lib/tools/useTr";
 import { FitBox, hand, hash } from "@/components/fun/kit";
 
 export type WhatAmICardData = { owner: string; link: string };
@@ -18,6 +19,7 @@ const THEMES = [
 
 /** 9:16 story card (drawn at 540x960, exported at 1080x1920). The link on it is the owner's own link. */
 export default function CardWhatAmI({ data = whatAmISample, cardRef }: { data?: WhatAmICardData; cardRef?: Ref<HTMLDivElement> }) {
+  const tr = useTr();
   const t = THEMES[hash(data.owner.trim().toLowerCase()) % THEMES.length];
   const owner = data.owner.trim() || "Me";
   return (
@@ -32,7 +34,7 @@ export default function CardWhatAmI({ data = whatAmISample, cardRef }: { data?: 
         <div className="absolute inset-0 [background:radial-gradient(circle_at_1px_1px,rgba(255,255,255,.08)_1px,transparent_1.5px)_0_0/7px_7px]"></div>
 
         <div className="absolute left-[44px] top-[104px] text-[14px] font-extrabold tracking-[.2em]" style={{ color: t.soft }}>
-          ASK ME ANYTHING, KINDA
+          {tr("ASK ME ANYTHING, KINDA")}
         </div>
 
         <Image
@@ -49,35 +51,35 @@ export default function CardWhatAmI({ data = whatAmISample, cardRef }: { data?: 
             {owner.charAt(0).toUpperCase()}
           </div>
           <div className="text-center font-display text-[50px] leading-[1]">
-            what am i to you?
+            {tr("what am i to you?")}
           </div>
           <div className="text-center text-[17px] text-[#6b4c8f] mt-[10px]">
-            pick one. it&apos;s anonymous.
+            {tr("pick one. it's anonymous.")}
           </div>
           <div className="grid [grid-template-columns:repeat(2,minmax(0,1fr))] gap-[10px] mt-[22px]">
             <div className="bg-[#fce7f3] rounded-[14px] p-[12px] font-extrabold text-[16px] text-center">
-              best friend
+              {tr("best friend")}
             </div>
             <div className="bg-[#fef3c7] rounded-[14px] p-[12px] font-extrabold text-[16px] text-center">
-              sibling vibe
+              {tr("sibling vibe")}
             </div>
             <div className="bg-[#fee2e2] rounded-[14px] p-[12px] font-extrabold text-[16px] text-center">
-              chaos partner
+              {tr("chaos partner")}
             </div>
             <div className="bg-[#dbeafe] rounded-[14px] p-[12px] font-extrabold text-[16px] text-center">
-              study buddy
+              {tr("study buddy")}
             </div>
             <div className="bg-[#ccfbf1] rounded-[14px] p-[12px] font-extrabold text-[16px] text-center">
-              my therapist
+              {tr("my therapist")}
             </div>
             <div className="bg-[#ede9fe] rounded-[14px] p-[12px] font-extrabold text-[16px] text-center">
-              meme supplier
+              {tr("meme supplier")}
             </div>
             <div className="bg-[#ffedd5] rounded-[14px] p-[12px] font-extrabold text-[16px] text-center">
-              food partner
+              {tr("food partner")}
             </div>
             <div className="bg-[#e2e8f0] rounded-[14px] p-[12px] font-extrabold text-[16px] text-center">
-              a mystery
+              {tr("a mystery")}
             </div>
           </div>
         </div>
@@ -100,7 +102,7 @@ export default function CardWhatAmI({ data = whatAmISample, cardRef }: { data?: 
         </div>
 
         <div className="absolute left-[44px] right-[44px] bottom-[110px] text-center font-hand text-[30px]" style={{ color: t.soft }}>
-          be honest, i can take it
+          {tr("be honest, i can take it")}
         </div>
       </div>
     </FitBox>

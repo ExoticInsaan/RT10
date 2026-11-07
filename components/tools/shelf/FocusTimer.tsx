@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/tools/ui";
 import { NumberField, Segmented, readStored, toNumber, writeStored } from "@/components/tools/kit";
+import { useTr } from "@/lib/tools/useTr";
 
 type Phase = "focus" | "short" | "long";
 // focus, short and long are lengths in SECONDS, so the clock can be set to any minutes and seconds.
@@ -80,6 +81,7 @@ function chime() {
 }
 
 export default function FocusTimer() {
+  const tr = useTr();
   // Tools only render in the browser, so saved settings and today's count can be read straight away.
   const [settings, setSettings] = useState<Settings>(loadSettings);
   const [draft, setDraft] = useState<Draft>(() => draftFrom(settings));
@@ -128,7 +130,7 @@ export default function FocusTimer() {
     }
     if (completed && notify) {
       try {
-        new Notification(phase === "focus" ? "Focus session done. Take a break." : "Break's over. Back to it.", { icon: "/icon.png" });
+        new Notification(phase === "focus" ? tr("Focus session done. Take a break.") : tr("Break's over. Back to it."), { icon: "/icon.png" });
       } catch {
         /* notifications unavailable */
       }
@@ -137,7 +139,7 @@ export default function FocusTimer() {
     setPhase(next);
     setEndAt(null);
     setRemaining(lengthOf(next));
-  }, [phase, round, settings.rounds, doneToday, notify, lengthOf]);
+  }, [phase, round, settings.rounds, doneToday, notify, lengthOf, tr]);
 
   // Tells anything listening (the Android app schedules a phone notification for the end time) when the timer starts or stops.
   // The website has no listener, so nothing happens there.
@@ -162,13 +164,13 @@ export default function FocusTimer() {
       if (left <= 0) finish(true);
       else {
         setRemaining(left);
-        document.title = `${clock(left)} · ${names[phase]}`;
+        document.title = `${clock(left)} · ${tr(names[phase])}`;
       }
     };
     tick();
     const timer = setInterval(tick, 250);
     return () => clearInterval(timer);
-  }, [endAt, phase, finish]);
+  }, [endAt, phase, finish, tr]);
 
   const running = endAt !== null;
   const total = lengthOf(phase);
@@ -182,7 +184,7 @@ export default function FocusTimer() {
   }
 
   // Shown under a field whose length has seconds (set on the clock), so the form never hides them. Information only.
-  const secondsNote = (p: Phase) => (settings[p] % 60 === 0 ? undefined : `Now ${Math.floor(settings[p] / 60)}:${pad(settings[p] % 60)}`);
+  const secondsNote = (p: Phase) => (settings[p] % 60 === 0 ? undefined : tr("Now {time}", { time: `${Math.floor(settings[p] / 60)}:${pad(settings[p] % 60)}` }));
 
   function save() {
     const shown = draftFrom(settings);
@@ -195,7 +197,7 @@ export default function FocusTimer() {
     const parsed: Settings = { focus: read("focus"), short: read("short"), long: read("long"), rounds: toNumber(draft.rounds) };
     const valid = (n: number, max: number) => Number.isInteger(n) && n >= 1 && n <= max;
     if (!valid(parsed.focus, limits.focus) || !valid(parsed.short, limits.short) || !valid(parsed.long, limits.long) || !valid(parsed.rounds, 12)) {
-      setFormError("Check the times: whole minutes only (Focus up to 180, Short break up to 60, Long break up to 90) and 1 to 12 sessions.");
+      setFormError(tr("Check the times: whole minutes only (Focus up to 180, Short break up to 60, Long break up to 90) and 1 to 12 sessions."));
       return;
     }
     setFormError("");
@@ -212,11 +214,11 @@ export default function FocusTimer() {
     timeEdit === null
       ? ""
       : Number(timeEdit.s || 0) > 59
-        ? "Seconds must be 0 to 59"
+        ? tr("Seconds must be 0 to 59")
         : typedSeconds < 1
-          ? "Enter a time above 00:00"
+          ? tr("Enter a time above 00:00")
           : typedSeconds > limits[phase]
-            ? `Longest is ${limits[phase] / 60} minutes`
+            ? tr("Longest is {n} minutes", { n: limits[phase] / 60 })
             : "";
   const typedValid = timeEdit !== null && typedProblem === "";
 
@@ -317,18 +319,18 @@ export default function FocusTimer() {
   return (
     <div className="mx-auto grid max-w-xl justify-items-center gap-6">
       <Segmented
-        label="Session type"
+        label={tr("Session type")}
         value={phase}
         onChange={switchTo}
-        options={(["focus", "short", "long"] as Phase[]).map((p) => ({ value: p, label: names[p] }))}
+        options={(["focus", "short", "long"] as Phase[]).map((p) => ({ value: p, label: tr(names[p]) }))}
       />
 
       <div className="relative grid size-64 place-items-center sm:size-72">
         <button
           type="button"
           onClick={openFullscreen}
-          aria-label="Full screen"
-          title="Full screen"
+          aria-label={tr("Full screen")}
+          title={tr("Full screen")}
           className="absolute right-0 top-0 z-10 grid size-9 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy shadow-sm transition hover:bg-blue-soft"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -356,7 +358,7 @@ export default function FocusTimer() {
               <button
                 type="button"
                 onClick={startTimeEdit}
-                aria-label={`${names[phase]} is ${clock(settings[phase] * 1000)}. Tap to change it.`}
+                aria-label={tr("{name} is {time}. Tap to change it.", { name: tr(names[phase]), time: clock(settings[phase] * 1000) })}
                 className="cursor-pointer rounded-2xl border-0 bg-transparent px-3 py-1 transition hover:bg-blue-soft focus-visible:bg-blue-soft"
               >
                 <span className={`block font-extrabold tracking-tight tabular-nums text-navy underline decoration-blue-hover/40 decoration-dotted decoration-[3px] underline-offset-[12px] ${digitSize(clock(remaining).length > 5)}`} role="timer">
@@ -364,7 +366,7 @@ export default function FocusTimer() {
                 </span>
               </button>
               <p className="m-0 mt-1 text-sm font-semibold text-muted">
-                {phase === "focus" ? `Session ${round} of ${settings.rounds}` : names[phase]}
+                {phase === "focus" ? tr("Session {n} of {total}", { n: round, total: settings.rounds }) : tr(names[phase])}
               </p>
             </>
           ) : (
@@ -377,7 +379,7 @@ export default function FocusTimer() {
                 if (event.key === "Escape") setTimeEdit(null);
               }}
             >
-              <div className="flex items-center justify-center" role="group" aria-label={`${names[phase]} length`}>
+              <div className="flex items-center justify-center" role="group" aria-label={tr("{name} length", { name: tr(names[phase]) })}>
                 <input
                   autoFocus
                   onFocus={(event) => event.target.select()}
@@ -385,7 +387,7 @@ export default function FocusTimer() {
                   inputMode="numeric"
                   pattern="[0-9]*"
                   autoComplete="off"
-                  aria-label="Minutes"
+                  aria-label={tr("Minutes")}
                   value={timeEdit.m}
                   onChange={(event) => setTimeEdit({ ...timeEdit, m: event.target.value.replace(/\D/g, "").slice(0, 3) })}
                   onKeyDown={(event) => {
@@ -405,7 +407,7 @@ export default function FocusTimer() {
                   inputMode="numeric"
                   pattern="[0-9]*"
                   autoComplete="off"
-                  aria-label="Seconds"
+                  aria-label={tr("Seconds")}
                   value={timeEdit.s}
                   onChange={(event) => setTimeEdit({ ...timeEdit, s: event.target.value.replace(/\D/g, "").slice(0, 2) })}
                   style={{ width: "calc(2ch + 0.25rem)" }}
@@ -413,7 +415,7 @@ export default function FocusTimer() {
                 />
               </div>
               <p className={`m-0 mt-1 text-xs font-semibold ${typedValid ? "text-muted" : "text-red-600"}`}>
-                {typedValid ? `${names[phase]}: minutes and seconds` : typedProblem}
+                {typedValid ? tr("{name}: minutes and seconds", { name: tr(names[phase]) }) : typedProblem}
               </p>
               <div className="mt-2 flex justify-center gap-2">
                 <button
@@ -421,14 +423,14 @@ export default function FocusTimer() {
                   disabled={!typedValid}
                   className="min-h-10 cursor-pointer rounded-full border-0 bg-blue-hover px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Save
+                  {tr("Save")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setTimeEdit(null)}
                   className="min-h-10 cursor-pointer rounded-full border border-line bg-white px-4 text-sm font-bold text-navy"
                 >
-                  Cancel
+                  {tr("Cancel")}
                 </button>
               </div>
             </form>
@@ -438,18 +440,20 @@ export default function FocusTimer() {
 
       <div className="flex flex-wrap justify-center gap-3">
         <Button className="min-w-36" onClick={() => setEndAt(running ? null : Date.now() + remaining)}>
-          {running ? "Pause" : remaining < total ? "Resume" : "Start"}
+          {running ? tr("Pause") : remaining < total ? tr("Resume") : tr("Start")}
         </Button>
         <Button variant="secondary" onClick={() => switchTo(phase)}>
-          Reset
+          {tr("Reset")}
         </Button>
         <Button variant="ghost" onClick={() => finish(false)}>
-          Skip
+          {tr("Skip")}
         </Button>
       </div>
 
       <p className="m-0 text-sm text-muted">
-        {doneToday === 0 ? "No focus sessions finished today yet." : `${doneToday} focus session${doneToday === 1 ? "" : "s"} finished today.`}
+        {doneToday === 0
+          ? tr("No focus sessions finished today yet.")
+          : tr(doneToday === 1 ? "{n} focus session finished today." : "{n} focus sessions finished today.", { n: doneToday })}
       </p>
 
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
@@ -461,7 +465,7 @@ export default function FocusTimer() {
             }
             setEditing(!editing);
           }} className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover underline-offset-4 hover:underline">
-          {editing ? "Close settings" : "Change times"}
+          {editing ? tr("Close settings") : tr("Change times")}
         </button>
         {typeof Notification !== "undefined" && !notify && (
           <button
@@ -469,7 +473,7 @@ export default function FocusTimer() {
             onClick={() => Notification.requestPermission().then((p) => setNotify(p === "granted"))}
             className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover underline-offset-4 hover:underline"
           >
-            Notify me when time&apos;s up
+            {tr("Notify me when time's up")}
           </button>
         )}
       </div>
@@ -483,18 +487,18 @@ export default function FocusTimer() {
             save();
           }}
         >
-          <NumberField label="Focus" value={draft.focus} onChange={(v) => setDraft({ ...draft, focus: v })} max={180} step={1} suffix="min" hint={secondsNote("focus")} />
-          <NumberField label="Short break" value={draft.short} onChange={(v) => setDraft({ ...draft, short: v })} max={60} step={1} suffix="min" hint={secondsNote("short")} />
-          <NumberField label="Long break" value={draft.long} onChange={(v) => setDraft({ ...draft, long: v })} max={90} step={1} suffix="min" hint={secondsNote("long")} />
-          <NumberField label="Sessions before a long break" value={draft.rounds} onChange={(v) => setDraft({ ...draft, rounds: v })} min={1} max={12} step={1} />
+          <NumberField label={tr("Focus")} value={draft.focus} onChange={(v) => setDraft({ ...draft, focus: v })} max={180} step={1} suffix={tr("min")} hint={secondsNote("focus")} />
+          <NumberField label={tr("Short break")} value={draft.short} onChange={(v) => setDraft({ ...draft, short: v })} max={60} step={1} suffix={tr("min")} hint={secondsNote("short")} />
+          <NumberField label={tr("Long break")} value={draft.long} onChange={(v) => setDraft({ ...draft, long: v })} max={90} step={1} suffix={tr("min")} hint={secondsNote("long")} />
+          <NumberField label={tr("Sessions before a long break")} value={draft.rounds} onChange={(v) => setDraft({ ...draft, rounds: v })} min={1} max={12} step={1} />
           {formError && <p className="col-span-2 m-0 text-sm font-semibold text-red-600">{formError}</p>}
           <Button type="submit" className="col-span-2">
-            Save times
+            {tr("Save times")}
           </Button>
         </form>
       )}
       <p className="m-0 max-w-md text-center text-xs leading-5 text-muted">
-        Keep this tab open. The timer keeps time when you switch tabs and plays a chime when a session ends.
+        {tr("Keep this tab open. The timer keeps time when you switch tabs and plays a chime when a session ends.")}
       </p>
 
       {fullscreen &&
@@ -502,7 +506,7 @@ export default function FocusTimer() {
           <div
             role="dialog"
             aria-modal="true"
-            aria-label={`${names[phase]} timer, full screen`}
+            aria-label={tr("{name} timer, full screen", { name: tr(names[phase]) })}
             className="fixed inset-0 z-[1000] grid grid-rows-[auto_1fr_auto] bg-ivory px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]"
           >
             <div className="flex items-center justify-between gap-3">
@@ -510,8 +514,8 @@ export default function FocusTimer() {
               <button
                 type="button"
                 onClick={closeFullscreen}
-                aria-label="Minimize"
-                title="Minimize"
+                aria-label={tr("Minimize")}
+                title={tr("Minimize")}
                 className="grid size-11 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy shadow-sm transition hover:bg-blue-soft"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -547,7 +551,7 @@ export default function FocusTimer() {
             </div>
             <div className="flex justify-center">
               <Button className="min-w-44" onClick={() => setEndAt(running ? null : Date.now() + remaining)}>
-                {running ? "Pause" : remaining < total ? "Resume" : "Start"}
+                {running ? tr("Pause") : remaining < total ? tr("Resume") : tr("Start")}
               </Button>
             </div>
           </div>,

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTr } from "@/lib/tools/useTr";
 import { SAVED_EVENT, openSaved, shareSaved, type SavedFile } from "../native";
 
 /**
@@ -6,6 +7,7 @@ import { SAVED_EVENT, openSaved, shareSaved, type SavedFile } from "../native";
  * Without it people would not know where the file went. Disappears by itself after a few seconds.
  */
 export default function SavedToast() {
+  const tr = useTr();
   const [file, setFile] = useState<SavedFile | null>(null);
   const [note, setNote] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -32,7 +34,7 @@ export default function SavedToast() {
       await openSaved(file);
       setFile(null);
     } catch {
-      setNote("No app can open this file. Use Share instead.");
+      setNote(tr("No app can open this file. Use Share instead."));
     }
   }
 
@@ -44,18 +46,18 @@ export default function SavedToast() {
       style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)" }}
     >
       <div className="min-w-0 flex-1">
-        <div className="text-[15px] font-extrabold">{file.folder === "Pictures" ? "Saved to Gallery" : "Saved to Downloads"}</div>
+        <div className="text-[15px] font-extrabold">{file.folder === "Pictures" ? tr("Saved to Gallery") : tr("Saved to Downloads")}</div>
         <div className="truncate text-xs text-white/70">{note || file.name}</div>
       </div>
       <button type="button" className="min-h-10 cursor-pointer rounded-xl border-0 bg-white px-4 text-sm font-extrabold text-navy" onClick={() => void open()}>
-        Open
+        {tr("Open")}
       </button>
       <button
         type="button"
         className="min-h-10 cursor-pointer rounded-xl border-0 bg-white/15 px-4 text-sm font-extrabold text-white"
         onClick={() => void shareSaved(file).catch(() => {})}
       >
-        Share
+        {tr("Share")}
       </button>
     </div>
   );

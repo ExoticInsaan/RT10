@@ -5,9 +5,11 @@ import { openExternal } from "../external";
 import { navigate } from "../shims/router";
 import { useAuth } from "@/components/AuthProvider";
 import { setOnboarded } from "../storage";
+import { useLanguage } from "../i18n/LanguageProvider";
 
 export default function SignIn() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,8 +41,8 @@ export default function SignIn() {
       </div>
 
       <div className="flex flex-col gap-2.5 px-6 pt-8 text-center">
-        <h1 className="m-0 font-display text-[32px] leading-[1.08] font-normal">One sign-in. Every tool.</h1>
-        <p className="m-0 text-base leading-normal text-[#5b6675]">Free to use. Sign in once with Google to run any tool and keep your favourites.</p>
+        <h1 className="m-0 font-display text-[32px] leading-[1.08] font-normal">{t("signin.title")}</h1>
+        <p className="m-0 text-base leading-normal text-[#5b6675]">{t("signin.body")}</p>
       </div>
 
       <div className="flex flex-col gap-1.5 px-6 pt-7">
@@ -51,7 +53,7 @@ export default function SignIn() {
           className="box-border flex min-h-14 cursor-pointer items-center justify-center gap-3 rounded-[28px] border-[1.5px] border-[#cbd5e1] bg-white text-[17px] font-bold text-ink shadow-[0_4px_0_#e2e8f0] disabled:opacity-60"
         >
           <GoogleIcon />
-          {busy ? "Opening Google…" : "Continue with Google"}
+          {busy ? t("signin.opening") : t("signin.google")}
         </button>
         {error && <p role="alert" className="m-0 px-2 text-center text-[13px] leading-5 text-rose-600">{error}</p>}
         <a
@@ -59,16 +61,16 @@ export default function SignIn() {
           onClick={() => setOnboarded()}
           className="flex min-h-[52px] items-center justify-center text-base font-bold text-[#2563eb]"
         >
-          Browse tools first
+          {t("signin.browse")}
         </a>
       </div>
 
       <div className="mt-auto px-8 pt-6 pb-7 text-center text-[13px] leading-normal text-[#5b6675]">
-        No watermarks, no popups. File tools work on your device wherever they can.
+        {t("signin.footer")}
         <br />
-        By continuing you agree to the{" "}
-        <button type="button" onClick={() => openExternal("https://www.toppershelf.online/terms")} className="border-0 bg-transparent p-0 font-semibold text-[#2563eb]">Terms</button> and{" "}
-        <button type="button" onClick={() => openExternal("https://www.toppershelf.online/privacy")} className="border-0 bg-transparent p-0 font-semibold text-[#2563eb]">Privacy Policy</button>.
+        {t("signin.agree")}{" "}
+        <button type="button" onClick={() => openExternal("https://www.toppershelf.online/terms")} className="border-0 bg-transparent p-0 font-semibold text-[#2563eb]">{t("signin.terms")}</button> {t("signin.and")}{" "}
+        <button type="button" onClick={() => openExternal("https://www.toppershelf.online/privacy")} className="border-0 bg-transparent p-0 font-semibold text-[#2563eb]">{t("signin.privacy")}</button>.
       </div>
     </div>
   );

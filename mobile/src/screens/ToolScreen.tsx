@@ -11,10 +11,15 @@ import AppReminder from "../components/AppReminder";
 import WidgetTip from "../components/WidgetTip";
 import { BackIcon } from "../components/icons";
 import { back } from "../shims/router";
+import { useTr } from "@/lib/tools/useTr";
+import { useToolText } from "../i18n/toolText";
 
 /** One tool or game, full screen. Same sign-in rule as the website: browse freely, sign in to run a tool. */
 export default function ToolScreen({ id }: { id: string }) {
   const tool = toolById(id);
+  const tr = useTr();
+  const toolText = useToolText();
+  const name = tool ? toolText(tool).name : "";
   const { user, ready, openSignIn } = useAuth();
   const [, setRecent] = useStoredList(RECENT_KEY);
   const fun = hasFunGame(id);
@@ -32,8 +37,8 @@ export default function ToolScreen({ id }: { id: string }) {
 
   if (!tool || (!fun && !Shelf)) {
     return (
-      <Frame fun={false} backLabel="Back" title="Not found">
-        <p className="m-0 py-10 text-center text-[#5b6675]">This tool is not in the app yet.</p>
+      <Frame fun={false} backLabel={tr("Back")} title={tr("Not found")}>
+        <p className="m-0 py-10 text-center text-[#5b6675]">{tr("This tool is not in the app yet.")}</p>
       </Frame>
     );
   }
@@ -42,23 +47,23 @@ export default function ToolScreen({ id }: { id: string }) {
   const gate = (
     <div className="mx-auto mt-6 max-w-sm rounded-3xl bg-white p-6 text-center text-navy shadow-card">
       <img src="./mascot/owl-peek.webp" alt="" className="mx-auto mb-3 w-28" />
-      <h2 className="m-0 text-xl font-extrabold">Sign in to use {tool.name}</h2>
-      <p className="mt-2 mb-5 text-sm leading-6 text-[#5b6675]">One quick Google sign-in. Free, no watermarks.</p>
+      <h2 className="m-0 text-xl font-extrabold">{tr("Sign in to use {name}", { name })}</h2>
+      <p className="mt-2 mb-5 text-sm leading-6 text-[#5b6675]">{tr("One quick Google sign-in. Free, no watermarks.")}</p>
       <button type="button" onClick={openSignIn} className="min-h-12 w-full cursor-pointer rounded-[28px] border-0 bg-[#2563eb] text-base font-extrabold text-white shadow-[0_4px_0_#1e40af]">
-        {ready ? "Continue" : "Loading…"}
+        {ready ? tr("Continue") : tr("Loading…")}
       </button>
     </div>
   );
 
   if (fun) {
     return (
-      <Frame fun backLabel="Fun Zone" title={tool.name} toolId={tool.id}>
+      <Frame fun backLabel={tr("Fun Zone")} title={name} toolId={tool.id}>
         {signedIn ? <FunGame id={id} /> : gate}
       </Frame>
     );
   }
   return (
-    <Frame fun={false} backLabel="The Shelf" title={tool.name} toolId={tool.id}>
+    <Frame fun={false} backLabel={tr("The Shelf")} title={name} toolId={tool.id}>
       {signedIn ? <div className="rounded-3xl border border-[#e8e4dd] bg-white p-4 shadow-card">{Shelf && <Shelf />}</div> : gate}
       {signedIn && id === "days-countdown" && <WidgetTip />}
     </Frame>

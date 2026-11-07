@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { Ref } from "react";
+import { useLocale, useTr } from "@/lib/tools/useTr";
 import { FitBox, hand, useToday } from "@/components/fun/kit";
 
 export type RoastCardData = { day: string; lines: string[]; level: string; score: number };
@@ -40,11 +41,13 @@ const CHILI = "M10 6c4 0 6 3 5 8-1 5-6 9-10 9 3-3 3-6 2-9-1-4 0-8 3-8z";
 
 /** 9:16 story card (drawn at 540x960, exported at 1080x1920). The colours follow the roast level. */
 export default function CardRoast({ data = roastSample, cardRef, date }: { data?: RoastCardData; cardRef?: Ref<HTMLDivElement>; date?: Date }) {
+  const tr = useTr();
+  const locale = useLocale();
   const today = useToday();
   const stamp = date ?? today;
   const h = heat(data.score);
   const day = data.day.trim();
-  const when = !stamp ? "Today" : stamp.toLocaleString("en-IN", { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true }).replace(",", " at");
+  const when = !stamp ? tr("Today") : stamp.toLocaleString(locale, { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true }).replace(",", tr(" at"));
   return (
     <FitBox width={540} height={960} max={1} className="mx-auto max-w-[540px]">
       <div ref={cardRef} className={`${hand.variable} w-[540px] h-[960px] relative overflow-hidden bg-[#fffcf3] text-[#1c1917]`}>
@@ -55,12 +58,12 @@ export default function CardRoast({ data = roastSample, cardRef, date }: { data?
             </svg>
             Notes
           </span>
-          <span className="text-[15px]">Done</span>
+          <span className="text-[15px]">{tr("Done")}</span>
         </div>
         <div className="absolute left-[40px] right-[40px] top-[150px] text-center text-[14px] text-[#a8a29e]">{when}</div>
 
         <div className="absolute left-[40px] right-[40px] top-[190px]">
-          <div className="text-[36px] font-extrabold leading-[1.1] tracking-[-.02em]">my timetable got roasted</div>
+          <div className="text-[36px] font-extrabold leading-[1.1] tracking-[-.02em]">{tr("my timetable got roasted")}</div>
           <div className="mt-[16px] text-[18px] text-[#57534e] leading-[1.5] h-[54px] overflow-hidden">“{day.length > 90 ? day.slice(0, 88) + "…" : day}”</div>
           <div className="h-[1px] bg-[#e7e5e4] m-[22px_0]"></div>
           <div className="flex flex-col gap-[18px] text-[22px] leading-[1.45]">
@@ -72,7 +75,7 @@ export default function CardRoast({ data = roastSample, cardRef, date }: { data?
 
         <div className="absolute left-[40px] right-[40px] top-[686px] bg-[#fff] [border:2px_solid_#f5e9cf] rounded-[18px] p-[14px_16px] flex items-center justify-between [transform:rotate(-1.5deg)] shadow-[0_10px_20px_-12px_rgba(120,53,15,.3)]">
           <div>
-            <div className="text-[12px] font-extrabold tracking-[.16em] text-[#a16207]">ROAST LEVEL</div>
+            <div className="text-[12px] font-extrabold tracking-[.16em] text-[#a16207]">{tr("ROAST LEVEL")}</div>
             <div className="font-display text-[34px] leading-[1]" style={{ color: h.word }}>
               {data.level.charAt(0) + data.level.slice(1).toLowerCase()}
             </div>
@@ -91,12 +94,12 @@ export default function CardRoast({ data = roastSample, cardRef, date }: { data?
             <Image src="/mascot/owl-peek.webp"
               unoptimized alt="" width={62} height={49} className="h-auto w-[62px] block" />
             <div className="text-[14px] leading-[1.3]">
-              <div className="font-extrabold">roast my timetable</div>
+              <div className="font-extrabold">{tr("roast my timetable")}</div>
               <div className="text-[#78716c]">toppershelf.online/fun</div>
             </div>
           </div>
           <div className="font-hand text-[28px] [transform:rotate(-4deg)]" style={{ color: h.accent }}>
-            i felt that
+            {tr("i felt that")}
           </div>
         </div>
       </div>

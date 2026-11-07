@@ -3,6 +3,27 @@
  * (for compressing and PDF → JPG). Both are imported on demand, so they only download when a PDF action runs.
  */
 
+import { fillParams, type Tr } from "@/lib/tools/useTr";
+
+/**
+ * An error whose English text can be shown in another language: `template` is the English sentence with {name} slots
+ * and `params` fills them. The English message is unchanged, so the website reads exactly as before.
+ */
+export class PdfError extends Error {
+  constructor(
+    public template: string,
+    public params: Record<string, string | number> = {},
+  ) {
+    super(fillParams(template, params));
+  }
+}
+
+/** The text to show for a caught error, in the current language. */
+export function errorText(error: unknown, tr: Tr, fallback: string) {
+  if (error instanceof PdfError) return tr(error.template, error.params);
+  return error instanceof Error && error.message ? error.message : tr(fallback);
+}
+
 export async function loadPdfLib() {
   return import("pdf-lib");
 }
@@ -23,15 +44,15 @@ export function parseRanges(input: string, pageCount: number): number[] {
   const out: number[] = [];
   const seen = new Set<number>();
   const parts = input.split(",").map((p) => p.trim()).filter(Boolean);
-  if (!parts.length) throw new Error("Type the pages you want, like 1-3, 5.");
+  if (!parts.length) throw new PdfError("Type the pages you want, like 1-3, 5.");
   for (const part of parts) {
     const match = /^(\d+)?\s*(?:-\s*(\d+)?)?$/.exec(part);
-    if (!match || (!match[1] && !match[2])) throw new Error(`“${part}” isn't a page or a range like 2-5.`);
+    if (!match || (!match[1] && !match[2])) throw new PdfError("“{part}” isn't a page or a range like 2-5.", { part });
     const isRange = part.includes("-");
     const start = match[1] ? Number(match[1]) : 1;
     const end = isRange ? (match[2] ? Number(match[2]) : pageCount) : start;
     if (start < 1 || end > pageCount || start > end) {
-      throw new Error(`Pages go from 1 to ${pageCount}; “${part}” is outside that.`);
+      throw new PdfError("Pages go from 1 to {pageCount}; “{part}” is outside that.", { pageCount, part });
     }
     for (let page = start; page <= end; page++) {
       if (!seen.has(page)) {
@@ -45,17 +66,15 @@ export function parseRanges(input: string, pageCount: number): number[] {
 
 const bytesOf = async (file: File) => new Uint8Array(await file.arrayBuffer());
 
-export class PdfError extends Error {}
-
 async function openPdf(file: File) {
   const { PDFDocument } = await loadPdfLib();
   try {
     return await PDFDocument.load(await bytesOf(file), { updateMetadata: false });
   } catch (error) {
     if (String(error).toLowerCase().includes("encrypt")) {
-      throw new PdfError(`“${file.name}” is password-protected. Remove the password first, then try again.`);
+      throw new PdfError("“{name}” is password-protected. Remove the password first, then try again.", { name: file.name });
     }
-    throw new PdfError(`“${file.name}” couldn't be read as a PDF.`);
+    throw new PdfError("“{name}” couldn't be read as a PDF.", { name: file.name });
   }
 }
 
@@ -124,7 +143,7 @@ async function addImagePage(doc: import("pdf-lib").PDFDocument, file: File) {
     const { bytes, type } = await imageAsJpegOrPng(file);
     image = type === "jpg" ? await doc.embedJpg(bytes) : await doc.embedPng(bytes);
   } catch {
-    throw new PdfError(`“${file.name}” couldn't be read as an image.`);
+    throw new PdfError("“{name}” couldn't be read as an image.", { name: file.name });
   }
   const page = doc.addPage([A4.width, A4.height]);
   const maxW = A4.width - A4.margin * 2;
@@ -151,9 +170,9 @@ async function renderPages(file: File, scale: number, onPage: (canvas: HTMLCanva
     pdf = await task.promise;
   } catch (error) {
     if (String((error as Error)?.name).includes("Password")) {
-      throw new PdfError(`“${file.name}” is password-protected. Remove the password first, then try again.`);
+      throw new PdfError("“{name}” is password-protected. Remove the password first, then try again.", { name: file.name });
     }
-    throw new PdfError(`“${file.name}” couldn't be read as a PDF.`);
+    throw new PdfError("“{name}” couldn't be read as a PDF.", { name: file.name });
   }
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
@@ -259,7 +278,7 @@ export async function imageThumbnail(file: File): Promise<Thumb> {
   try {
     bitmap = await createImageBitmap(file);
   } catch {
-    throw new PdfError(`“${file.name}” couldn't be read as an image.`);
+    throw new PdfError("“{name}” couldn't be read as an image.", { name: file.name });
   }
   // Image pages are A4 portrait with the picture centred, so preview them that way.
   const canvas = document.createElement("canvas");
