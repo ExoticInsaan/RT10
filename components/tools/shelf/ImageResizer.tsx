@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/tools/ui";
 import { DropZone, Hint, NumberField, Segmented, downloadBlob, formatBytes, renameFile, toNumber } from "@/components/tools/kit";
-import { loadImage } from "./ImageCompressor";
+import { compress, loadImage } from "./ImageCompressor";
 
-type Result = { blob: Blob; url: string; width: number; height: number; ext: "jpg" | "png" };
+type Result = { blob: Blob; url: string; width: number; height: number; ext: "jpg" | "png"; limitKb: number | null; hitTarget: boolean };
+
+const limits = [20, 50, 100, 200, 500];
 
 const MIN = 16;
 const MAX = 8000;
@@ -37,6 +39,9 @@ export default function ImageResizer() {
   const [lock, setLock] = useState(true);
   const [percent, setPercent] = useState("50");
   const [ext, setExt] = useState<"jpg" | "png">("jpg");
+  // Like the old tool, resizing also makes the file smaller by default. "none" keeps full quality.
+  const [size, setSize] = useState("100");
+  const [customKb, setCustomKb] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<Result | null>(null);
@@ -79,6 +84,7 @@ export default function ImageResizer() {
     if (lock && img && n > 0) setWidth(String(Math.round((n * img.naturalWidth) / img.naturalHeight)));
   }
 
+  const limitKb = size === "none" ? null : size === "custom" ? toNumber(customKb) : Number(size);
   const pct = toNumber(percent);
   const outW = img ? (by === "pixels" ? Math.round(toNumber(width)) : Math.round((img.naturalWidth * pct) / 100)) : 0;
   const outH = img ? (by === "pixels" ? Math.round(toNumber(height)) : Math.round((img.naturalHeight * pct) / 100)) : 0;
@@ -89,11 +95,18 @@ export default function ImageResizer() {
     if (!(outW >= MIN && outH >= MIN && outW <= MAX && outH <= MAX)) {
       return setError(`Width and height should be between ${MIN} and ${MAX} pixels.`);
     }
+    if (limitKb !== null && !(limitKb >= 5)) return setError("Choose a size limit of at least 5 KB.");
     setBusy(true);
     setError("");
     try {
-      const blob = await render(img, outW, outH, ext);
-      setResult({ blob, url: URL.createObjectURL(blob), width: outW, height: outH, ext });
+      if (limitKb !== null) {
+        // Exact pixels stay as set; the JPG quality is lowered until the file fits under the limit.
+        const r = await compress(img, limitKb * 1024, outW, outH, true);
+        setResult({ blob: r.blob, url: URL.createObjectURL(r.blob), width: outW, height: outH, ext: "jpg", limitKb, hitTarget: r.hitTarget });
+      } else {
+        const blob = await render(img, outW, outH, ext);
+        setResult({ blob, url: URL.createObjectURL(blob), width: outW, height: outH, ext, limitKb: null, hitTarget: true });
+      }
     } catch {
       setError("Couldn't resize that image. Try a smaller size.");
     } finally {
@@ -195,21 +208,47 @@ export default function ImageResizer() {
         )}
       </div>
 
-      <Segmented
-        label="Save as"
-        value={ext}
-        onChange={(v) => {
-          setExt(v);
-          setResult(null);
-        }}
-        options={[
-          { value: "jpg", label: "JPG: smaller file" },
-          { value: "png", label: "PNG: sharp, keeps transparency" },
-        ]}
-      />
+      <div className="grid grid-cols-1 gap-2">
+        <Segmented
+          label="File size"
+          value={size}
+          onChange={(v) => {
+            setSize(v);
+            setResult(null);
+          }}
+          options={[
+            { value: "none", label: "No limit" },
+            ...limits.map((kb) => ({ value: String(kb), label: `${kb} KB` })),
+            { value: "custom", label: "Other" },
+          ]}
+        />
+        {size === "custom" && (
+          <div className="max-w-xs">
+            <NumberField label="Size limit" value={customKb} onChange={setCustomKb} min={5} suffix="KB" placeholder="e.g. 30" />
+          </div>
+        )}
+        <p className="m-0 text-xs leading-5 text-muted">
+          {limitKb === null ? "The picture is resized and saved without squeezing the file." : `Resizes, then compresses the picture to stay under ${limitKb >= 5 ? limitKb : "…"} KB. Saved as JPG.`}
+        </p>
+      </div>
+
+      {limitKb === null && (
+        <Segmented
+          label="Save as"
+          value={ext}
+          onChange={(v) => {
+            setExt(v);
+            setResult(null);
+          }}
+          options={[
+            { value: "jpg", label: "JPG: smaller file" },
+            { value: "png", label: "PNG: sharp, keeps transparency" },
+          ]}
+        />
+      )}
 
       <Button onClick={run} disabled={busy} className="w-full sm:w-auto sm:justify-self-start">
-        {busy ? "Resizing…" : "Resize image"}
+        {busy ? "Working…" : limitKb === null ? "Resize image" : "Resize and compress"}
       </Button>
       {error && <Hint error>{error}</Hint>}
 
@@ -223,8 +262,14 @@ export default function ImageResizer() {
               {result.width} × {result.height} px
             </p>
             <p className="m-0 mt-1 text-sm text-slate-700">
-              {formatBytes(result.blob.size)} · {result.ext.toUpperCase()} · was {img.naturalWidth} × {img.naturalHeight} px, {formatBytes(file.size)}
+              {formatBytes(result.blob.size)}
+              {result.limitKb !== null && result.hitTarget && ` (under ${result.limitKb} KB)`} · {result.ext.toUpperCase()} · was {img.naturalWidth} × {img.naturalHeight} px, {formatBytes(file.size)}
             </p>
+            {!result.hitTarget && (
+              <p className="m-0 mt-2 text-sm text-red-700">
+                This is as small as a {result.width} × {result.height} picture gets. Use smaller pixel sizes or a bigger limit.
+              </p>
+            )}
             <Button className="mt-4" onClick={() => downloadBlob(result.blob, renameFile(file.name, `-${result.width}x${result.height}`, result.ext))}>
               Download {result.ext.toUpperCase()}
             </Button>

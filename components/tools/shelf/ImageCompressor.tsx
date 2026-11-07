@@ -53,7 +53,7 @@ function draw(img: HTMLImageElement, width: number, height: number) {
  * Finds the best JPEG quality that fits under `limit` bytes (binary search). If even the lowest quality is too big
  * and the size is not fixed, shrinks the picture step by step until it fits.
  */
-async function compress(img: HTMLImageElement, limit: number, width: number, height: number, fixedSize: boolean) {
+export async function compress(img: HTMLImageElement, limit: number, width: number, height: number, fixedSize: boolean) {
   let w = width;
   let h = height;
   for (let attempt = 0; attempt < 12; attempt++) {
