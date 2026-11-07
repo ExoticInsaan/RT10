@@ -136,7 +136,6 @@ export const toolStringsHi: Record<string, string> = {
   "{n} focus sessions finished today.": "आज {n} फ़ोकस सेशन पूरे हुए।",
   "Close settings": "सेटिंग्स बंद करें",
   "Change times": "समय बदलें",
-  "Notify me when time's up": "समय पूरा होने पर बताएँ",
   "Sessions before a long break": "लंबे ब्रेक से पहले सेशन",
   "min": "मिनट",
   "Save times": "समय सेव करें",
