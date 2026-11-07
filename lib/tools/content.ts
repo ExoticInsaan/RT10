@@ -107,13 +107,15 @@ const shelfContent: Record<string, ToolContent> = {
   "image-compressor": {
     howTo: [
       "Sign in with Google (one tap, free).",
+      "Choose Compress or Resize.",
       "Drop in a JPG, PNG or WebP photo or signature.",
-      "Pick the size limit, such as 20 KB or 50 KB, and set exact pixels if the form asks for them.",
-      "Press Compress image and download the JPG.",
+      "To compress, pick the size limit, such as 20 KB or 50 KB. To resize, enter the pixels or a percentage.",
+      "Press the button and download the result.",
     ],
     faq: [
       { q: "Will the image really be under the size I choose?", a: "Yes. The tool tries quality levels until the file fits under your limit. If it can't fit at the pixel size you set, it says so and shows the smallest it could get." },
-      { q: "How do I resize a photo to 200 × 230 pixels for a form?", a: "Choose Set exact pixels and enter the width and height. The picture is stretched to that exact size, so crop it to roughly that shape first for the best look." },
+      { q: "How do I resize a photo to 200 × 230 pixels for a form?", a: "Choose Resize, then Pixels, and enter the width and height. Turn off Keep the picture's shape to set both sides freely. The picture is stretched to that exact size, so crop it to roughly that shape first for the best look." },
+      { q: "Can I resize a photo by percentage?", a: "Yes. In Resize, choose Percentage and enter how much to scale it, for example 50% for half the width and height. Pick JPG for a smaller file or PNG to keep sharp edges and transparency." },
       { q: "Why is the result a JPG?", a: "Exam and job portals almost always ask for JPG, and JPG gets photos smallest. Transparent backgrounds become white." },
       { q: "Can I compress iPhone HEIC photos?", a: "Browsers can't open HEIC files. Share the photo as a JPG from the Photos app first (or set the camera to Most Compatible), then compress it here." },
     ],
@@ -229,9 +231,9 @@ const shelfSeo: Record<string, Pick<ToolContent, "seoTitle" | "seoDescription"> 
     },
   },
   "image-compressor": {
-    seoTitle: "Compress Image to 20KB, 50KB or 100KB Online",
+    seoTitle: "Compress & Resize Image to 20KB, 50KB or Exact Pixels",
     seoDescription:
-      "Compress a photo or signature to an exact size like 20 KB, 50 KB, 100 KB or 200 KB, and set exact pixels for exam and job forms. Free, in your browser.",
+      "Compress a photo or signature to an exact size like 20 KB, 50 KB, 100 KB or 200 KB, or resize it to exact pixels or a percentage for exam and job forms. Free, in your browser.",
   },
   "pdf-toolkit": {
     seoTitle: "Merge, Compress & Split PDF Online Free",

@@ -17,7 +17,7 @@ type Result = { blob: Blob; url: string; width: number; height: number; quality:
 
 const presets = [20, 50, 100, 200, 500];
 
-function loadImage(file: File) {
+export function loadImage(file: File) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();

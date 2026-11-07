@@ -40,7 +40,7 @@ TopperShelf is a free, fast tools website for everyone: student tools, document 
 | Home, The Shelf (All Tools, search and filter), tool page, Fun Zone, My Shelf | Done |
 | Bottom mobile navigation, dark mode | Done |
 | Google sign-in with a popup on the tool page (`AuthProvider`, `AuthPanel`) and the sign-in gate (`ToolGate`) | Done |
-| Real tool screens: PDF Toolkit, Image Compressor, Focus Timer, Flashcard Maker, CGPA & Percentage Calculator, Attendance Calculator, Reminder, Days Countdown | Done (`components/tools/shelf/`) |
+| Real tool screens: PDF Toolkit, Image Toolkit, Focus Timer, Flashcard Maker, CGPA & Percentage Calculator, Attendance Calculator, Reminder, Days Countdown | Done (`components/tools/shelf/`) |
 | Fun Zone games and share cards (9:16 page plus 1080x1920 PNG, `app/share/[id]`) | Done |
 | Per-tool SEO template (how-to steps, FAQ, app structured data, trust note, breadcrumbs) | Done, filled from `lib/tools/content.ts` |
 | Sitemap, robots, JSON-LD on home, 404 page with tool search, link-preview image | Done |
@@ -104,7 +104,7 @@ Every tool page follows one template so new tools are quick to add: H1 that matc
 | Search | `components/tools/ui.tsx` (`SearchBox`) and `ToolsBrowser`. Plain text match today; typo and Hinglish tolerance still to do. |
 | Tool page template | `app/tool/[id]/page.tsx` plus `ToolGate` |
 | Share-card generator | `components/tools/ShareCard.tsx`, `app/share/[id]/image/route.tsx`, `lib/tools/fun.ts` |
-| File handler (PDF and image processing in the browser) | `components/tools/shelf/pdf-engine.ts`, `PdfToolkit.tsx`, `ImageCompressor.tsx` |
+| File handler (PDF and image processing in the browser) | `components/tools/shelf/pdf-engine.ts`, `PdfToolkit.tsx`, `ImageToolkit.tsx` (Compress and Resize) |
 | Favourites and recents | `useStoredList` (device copy) plus `AccountListsSync` (account copy in `user_tools`). Saved tool data (flashcards, reminders, countdowns) uses `useAccountData`. |
 | SEO engine | Metadata on each page, `app/sitemap.ts` (lists only ready tools and categories with a ready tool), `components/seo/JsonLd.tsx` |
 | Accounts and sign-in | `components/AuthProvider.tsx`, `AuthPanel.tsx`, `lib/supabase/` |
@@ -112,7 +112,7 @@ Every tool page follows one template so new tools are quick to add: H1 that matc
 
 ### Tools today (18, all live)
 
-- **The Shelf (8):** PDF Toolkit, Image Compressor, Focus Timer, Flashcard Maker, CGPA & Percentage Calculator, Attendance Calculator, Reminder, Days Countdown
+- **The Shelf (8):** PDF Toolkit, Image Toolkit, Focus Timer, Flashcard Maker, CGPA & Percentage Calculator, Attendance Calculator, Reminder, Days Countdown
 - **Fun Zone (10):** Decision Wheel, Would You Rather, Grow a Sapling, Friendship Score, What Am I to You?, How Well Do You Know Me?, How Cooked Are You?, Excuse Generator, Roast My Timetable, Instant Vibe Check
 
 Later ideas: Photo & Signature Resizer for exact exam-form sizes, Image to PDF, Leave & Application Letter Maker, Marks Needed Calculator, assignment cover page maker, resume maker, syllabus planner.
