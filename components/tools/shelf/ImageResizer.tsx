@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ToolIcon from "@/components/tools/ToolIcon";
 import { Button } from "@/components/tools/ui";
 import { DropZone, Hint, NumberField, downloadBlob, formatBytes, renameFile, toNumber } from "@/components/tools/kit";
 import { useTr } from "@/lib/tools/useTr";
@@ -202,12 +203,26 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       role="radio"
       aria-checked={active}
       onClick={onClick}
-      className={`min-h-10 cursor-pointer rounded-full border-0 px-4 text-sm font-semibold transition ${
-        active ? "bg-teal/10 text-teal ring-1 ring-teal/40" : "bg-surface text-navy hover:bg-blue-soft"
+      className={`min-h-10 cursor-pointer rounded-full border-0 px-4 text-sm font-semibold transition active:scale-95 ${
+        active ? "bg-teal text-white shadow-sm" : "bg-surface text-navy hover:bg-blue-soft"
       }`}
     >
       {children}
     </button>
+  );
+}
+
+/** A numbered section: one clear job per step, so the page reads top to bottom. */
+function Step({ n, title, aside, children }: { n: number; title: string; aside?: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <section className="grid grid-cols-1 gap-3">
+      <div className="flex items-center gap-2.5">
+        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-navy text-xs font-extrabold text-white">{n}</span>
+        <h3 className="m-0 text-base font-extrabold text-navy">{title}</h3>
+        {aside && <span className="ml-auto text-sm font-bold text-teal tabular-nums">{aside}</span>}
+      </div>
+      {children}
+    </section>
   );
 }
 
@@ -366,7 +381,6 @@ export default function ImageResizer() {
         : hasMin
           ? tr("At least {n} KB", { n: minV })
           : tr("Any size");
-  const rangeTag = preset === "custom" ? tr("Custom range") : preset === "any" ? tr("Automatic") : tr("Preset");
   const formatNote =
     ext === "jpg"
       ? tr("JPG gives the smallest files for photos. Transparent areas become white.")
@@ -375,64 +389,74 @@ export default function ImageResizer() {
         : tr("WebP makes small files, but some forms and portals don't accept it.");
 
   return (
-    <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
-      <div className="grid grid-cols-1 gap-6 sm:rounded-3xl sm:border sm:border-line sm:bg-white sm:p-7 sm:shadow-card">
-        <h3 className="m-0 text-xl font-extrabold text-navy">{tr("Image Resizer")}</h3>
-
-        <div className="flex items-center gap-4 rounded-2xl bg-surface p-3">
+    <div className="mx-auto grid max-w-3xl grid-cols-1 items-start gap-6 md:grid-cols-[1fr_17rem]">
+      <div className="grid grid-cols-1 gap-7">
+        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white p-2.5 pr-3">
           {/* eslint-disable-next-line @next/next/no-img-element -- a local preview of the visitor's own file */}
-          <img src={img.src} alt="" className="size-16 rounded-xl bg-white object-contain" />
+          <img src={img.src} alt="" className="size-12 rounded-xl bg-surface object-contain" />
           <div className="min-w-0 flex-1">
             <p className="m-0 truncate text-sm font-bold text-navy">{file.name}</p>
-            <p className="m-0 text-sm text-muted">
+            <p className="m-0 text-xs text-muted">
               {formatBytes(file.size)} · {img.naturalWidth} × {img.naturalHeight} px
             </p>
           </div>
-          <Button
-            variant="ghost"
+          <button
+            type="button"
             onClick={() => {
               setFile(null);
               setImg(null);
               setDone(null);
             }}
+            className="cursor-pointer rounded-full border-0 bg-blue-soft px-3.5 py-1.5 text-sm font-bold text-blue-hover transition hover:bg-blue-hover hover:text-white"
           >
             {tr("Change")}
-          </Button>
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 rounded-2xl bg-surface p-4">
-          <div className="grid grid-cols-2 gap-4">
+        <Step n={1} title={tr("Picture size")}>
+          <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
             <NumberField label={tr("Width")} value={width} onChange={changeWidth} min={MIN} max={MAX} step={1} suffix="px" />
+            <button
+              type="button"
+              aria-pressed={lock}
+              aria-label={tr("Keep the picture's shape")}
+              title={tr("Keep the picture's shape")}
+              onClick={() => setLock(!lock)}
+              className={`mb-0.5 grid size-11 cursor-pointer place-items-center rounded-full border-0 transition active:scale-90 ${
+                lock ? "bg-teal text-white shadow-sm" : "bg-surface text-muted hover:bg-blue-soft"
+              }`}
+            >
+              <ToolIcon name={lock ? "link" : "unlink"} size={18} />
+            </button>
             <NumberField label={tr("Height")} value={height} onChange={changeHeight} min={MIN} max={MAX} step={1} suffix="px" />
           </div>
-          <label className="flex cursor-pointer items-center gap-2 text-sm text-navy">
-            <input type="checkbox" checked={lock} onChange={(e) => setLock(e.target.checked)} className="size-4 accent-blue-hover" />
-            {tr("Keep the picture's shape")}
-          </label>
           <p className="m-0 text-xs leading-5 text-muted">
+            <span className="font-bold text-navy">{tr("Keep the picture's shape")}: </span>
             {tr("Forms often ask for a fixed size, for example 200 × 230 px for a photo or 140 × 60 px for a signature. Turn off the shape lock to set both sides freely; the picture is stretched to fit, so crop it close to that shape first.")}
           </p>
-        </div>
+        </Step>
 
-        <div className="grid grid-cols-1 gap-3">
-          <p className="m-0 text-base font-extrabold text-navy">{tr("Output format")}</p>
-          <div role="radiogroup" aria-label={tr("Output format")} className="flex flex-wrap gap-2">
+        <Step n={2} title={tr("Output format")}>
+          <div role="radiogroup" aria-label={tr("Output format")} className="grid grid-cols-3 gap-1 rounded-2xl bg-surface p-1">
             {formats.map((f) => (
-              <Chip key={f.value} active={ext === f.value} onClick={() => setExt(f.value)}>
+              <button
+                key={f.value}
+                type="button"
+                role="radio"
+                aria-checked={ext === f.value}
+                onClick={() => setExt(f.value)}
+                className={`min-h-11 cursor-pointer rounded-xl border-0 text-sm font-bold transition ${
+                  ext === f.value ? "bg-white text-navy shadow-sm" : "bg-transparent text-muted hover:text-navy"
+                }`}
+              >
                 {f.label}
-              </Chip>
+              </button>
             ))}
           </div>
           <p className="m-0 text-xs leading-5 text-muted">{formatNote}</p>
-        </div>
+        </Step>
 
-        <div className="grid grid-cols-1 gap-3">
-          <p className="m-0 text-base font-extrabold text-navy">{tr("Target file size")}</p>
-          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-            <p className="m-0 whitespace-nowrap text-3xl font-extrabold tracking-tight text-teal tabular-nums sm:text-4xl">{rangeLabel}</p>
-            <span className="shrink-0 rounded-full bg-surface px-4 py-1.5 text-sm font-semibold text-navy">{rangeTag}</span>
-          </div>
-          <p className="m-0 text-sm text-muted">{tr("Adjust quality automatically to achieve the target size.")}</p>
+        <Step n={3} title={tr("Target file size")} aside={rangeLabel}>
           <div role="radiogroup" aria-label={tr("Target file size")} className="flex flex-wrap gap-2">
             {presets.map((p) => (
               <Chip key={p.id} active={preset === p.id} onClick={() => choosePreset(p.id)}>
@@ -449,38 +473,61 @@ export default function ImageResizer() {
               <NumberField label={tr("Maximum")} value={maxKb} onChange={setMaxKb} min={1} suffix="KB" placeholder={tr("e.g. 50")} />
             </div>
           )}
+          <p className="m-0 text-xs leading-5 text-muted">{tr("Adjust quality automatically to achieve the target size.")}</p>
+        </Step>
+      </div>
+
+      {/* The result stays in view next to the settings on wider screens, and sits right under them on phones. */}
+      <aside
+        className="grid grid-cols-1 gap-4 rounded-3xl border border-line bg-white p-4 shadow-card md:sticky md:top-24"
+        aria-live="polite"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="m-0 text-base font-extrabold text-navy">{tr("Output preview")}</h3>
+          <span className={`rounded-full px-3 py-1 text-xs font-bold ${badge.cls} ${status === "working" ? "animate-pulse" : ""}`}>{badge.text}</span>
         </div>
 
-        <div className="grid grid-cols-1 gap-2 rounded-2xl bg-surface p-4" aria-live="polite">
-          <div className="flex items-center justify-between gap-3">
-            <p className="m-0 text-xl font-extrabold text-navy">{tr("Output preview")}</p>
-            <span className={`rounded-full px-3 py-1 text-sm font-semibold ${badge.cls}`}>{badge.text}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            {shown && (
-              // eslint-disable-next-line @next/next/no-img-element -- the resized result, generated in the browser
-              <img src={shown.url} alt={tr("Resized result")} className="max-h-16 max-w-28 shrink-0 rounded-lg bg-white object-contain ring-1 ring-line" />
-            )}
-            <p className="m-0 text-base text-slate-700 tabular-nums sm:text-lg">
-              {inputError ? "–" : `${outW} × ${outH} px · ${ext.toUpperCase()}${shown ? ` · ${formatBytes(shown.blob.size)}` : ""}`}
-            </p>
-          </div>
-          {(inputError || current?.problem) && <p className="m-0 text-sm text-red-700">{inputError || current?.problem}</p>}
-          {shown?.padded && (
-            <p className="m-0 text-xs leading-5 text-muted">
-              {tr("The picture was already smaller than your minimum, so invisible filler was added to the file. The picture itself is unchanged.")}
-            </p>
+        <div
+          className="grid min-h-40 place-items-center overflow-hidden rounded-2xl p-3 ring-1 ring-line"
+          style={{ backgroundColor: "#f7f0e6", backgroundImage: "radial-gradient(#e6dccb 1px, transparent 1px)", backgroundSize: "14px 14px" }}
+        >
+          {shown ? (
+            // eslint-disable-next-line @next/next/no-img-element -- the resized result, generated in the browser
+            <img key={shown.url} src={shown.url} alt={tr("Resized result")} className="max-h-48 max-w-full animate-[fc-pop_.35s_ease_both] rounded-lg bg-white object-contain shadow-sm" />
+          ) : (
+            <span className="size-10 animate-spin rounded-full border-4 border-line border-t-teal" aria-hidden="true" />
           )}
         </div>
+
+        {!inputError && (
+          <div className="grid grid-cols-1 gap-1">
+            <p className="m-0 flex flex-wrap items-baseline gap-x-2 text-navy tabular-nums">
+              <span className="text-3xl font-extrabold tracking-tight">{shown ? formatBytes(shown.blob.size) : "…"}</span>
+              <span className="text-sm font-semibold text-muted">
+                {outW} × {outH} px · {ext.toUpperCase()}
+              </span>
+            </p>
+            {shown && <p className="m-0 text-xs text-muted tabular-nums">{formatBytes(file.size)} → {formatBytes(shown.blob.size)}</p>}
+          </div>
+        )}
+
+        {(inputError || current?.problem) && (
+          <p className="m-0 rounded-xl bg-red-50 p-3 text-sm leading-5 text-red-700">{inputError || current?.problem}</p>
+        )}
+        {shown?.padded && (
+          <p className="m-0 text-xs leading-5 text-muted">
+            {tr("The picture was already smaller than your minimum, so invisible filler was added to the file. The picture itself is unchanged.")}
+          </p>
+        )}
 
         <Button
           className="w-full"
           disabled={!shown}
           onClick={() => shown && downloadBlob(shown.blob, renameFile(file.name, `-${shown.width}x${shown.height}`, shown.ext))}
         >
-          {tr("Download Image")}
+          <ToolIcon name="download" size={18} /> {tr("Download Image")}
         </Button>
-      </div>
+      </aside>
     </div>
   );
 }
