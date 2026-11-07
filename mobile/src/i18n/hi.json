@@ -136,5 +136,10 @@
     "terms": "उपयोग की शर्तें",
     "and": "और",
     "privacy": "गोपनीयता नीति"
+  },
+  "splash": {
+    "logoAlt": "TopperShelf का लोगो",
+    "getStarted": "शुरू करें",
+    "tagline": "बेहतर संसाधन। बेहतर नतीजे।"
   }
 }
