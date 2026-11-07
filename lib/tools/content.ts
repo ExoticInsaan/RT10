@@ -113,9 +113,9 @@ const shelfContent: Record<string, ToolContent> = {
       "Press the button and download the result.",
     ],
     faq: [
-      { q: "Will the image really be under the size I choose?", a: "Yes. The tool tries quality levels until the file fits under your limit. If it can't fit at the pixel size you set, it says so and shows the smallest it could get." },
+      { q: "Will the image really be under the size I choose?", a: "Yes. The tool tries quality levels until the file fits under your limit. If quality alone can't get it that small, it also shrinks the picture a little and tells you the new size." },
       { q: "How do I resize a photo to 200 × 230 pixels for a form?", a: "Choose Resize, then Pixels, and enter the width and height. Turn off Keep the picture's shape to set both sides freely. The picture is stretched to that exact size, so crop it to roughly that shape first for the best look." },
-      { q: "Can I resize a photo by percentage?", a: "Yes. In Resize, choose Percentage and enter how much to scale it, for example 50% for half the width and height. Resize can also compress in the same step: pick a size limit like 50 KB, or choose No limit and save as PNG to keep sharp edges and transparency." },
+      { q: "Can I resize a photo by percentage?", a: "Yes. In Resize, choose Percentage and enter how much to scale it, for example 50% for half the width and height. Resize only changes the pixels, not how hard the file is squeezed, so use Compress when you need a smaller KB size. Save as PNG to keep sharp edges and transparency, or JPG for a smaller file." },
       { q: "Why is the result a JPG?", a: "Exam and job portals almost always ask for JPG, and JPG gets photos smallest. Transparent backgrounds become white." },
       { q: "Can I compress iPhone HEIC photos?", a: "Browsers can't open HEIC files. Share the photo as a JPG from the Photos app first (or set the camera to Most Compatible), then compress it here." },
     ],
