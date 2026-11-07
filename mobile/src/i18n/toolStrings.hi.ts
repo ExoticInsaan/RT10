@@ -846,4 +846,9 @@ export const toolStringsHi: Record<string, string> = {
   "Couldn't land inside that range. Make the range a little wider.": "फ़ाइल उस रेंज में नहीं आ पाई। रेंज थोड़ी बढ़ाएँ।",
   "This browser can't save WebP. Choose JPG or PNG.": "यह ब्राउज़र WebP सेव नहीं कर सकता। JPG या PNG चुनें।",
   "Couldn't resize that image. Try a smaller size.": "इमेज रिसाइज़ नहीं हो पाई। छोटा साइज़ आज़माएँ।",
+  "Resize": "रीसाइज़",
+  "Shrink a photo or signature under the KB size a form asks for.": "फ़ोटो या सिग्नेचर को फ़ॉर्म में माँगे गए KB साइज़ से छोटा करें।",
+  "Set exact pixels, pick JPG, PNG or WebP, and keep the file inside a KB range.": "ठीक पिक्सल तय करें, JPG, PNG या WebP चुनें, और फ़ाइल को KB की सीमा में रखें।",
+  "Back to all image tools": "सभी इमेज टूल पर वापस",
+  "Quality alone couldn't get it under {kb} KB, so the picture was also made smaller ({iw} × {ih} → {w} × {h} px). Choose a bigger limit to keep the original size.": "सिर्फ़ क्वालिटी घटाकर यह {kb} KB से कम नहीं हो सकी, इसलिए फ़ोटो को छोटा भी किया गया ({iw} × {ih} → {w} × {h} px)। असली साइज़ रखने के लिए बड़ी सीमा चुनें।",
 };

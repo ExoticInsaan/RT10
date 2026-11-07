@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ToolIcon from "@/components/tools/ToolIcon";
 import { Segmented } from "@/components/tools/kit";
+import { useTr } from "@/lib/tools/useTr";
 import ImageCompressor from "./ImageCompressor";
 import ImageResizer from "./ImageResizer";
 import PdfModeCards, { ModeIcon } from "./PdfModeCards";
@@ -16,15 +17,17 @@ const modes: { value: Mode; label: string; intro: string }[] = [
 
 /** Same pattern as the PDF Toolkit: cards on phones and tablets, a one-line switch on desktop. */
 export default function ImageToolkit() {
+  const tr = useTr();
   const [mode, setMode] = useState<Mode>("compress");
   const [picked, setPicked] = useState(false);
-  const current = modes.find((m) => m.value === mode)!;
+  const shownModes = modes.map((m) => ({ ...m, label: tr(m.label), intro: tr(m.intro) }));
+  const current = shownModes.find((m) => m.value === mode)!;
 
   return (
     <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       {!picked && (
         <PdfModeCards
-          cards={modes}
+          cards={shownModes}
           onPick={(value) => {
             setMode(value as Mode);
             setPicked(true);
@@ -38,7 +41,7 @@ export default function ImageToolkit() {
             <button
               type="button"
               onClick={() => setPicked(false)}
-              aria-label="Back to all image tools"
+              aria-label={tr("Back to all image tools")}
               className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy"
             >
               <span className="rotate-180">
@@ -53,7 +56,7 @@ export default function ImageToolkit() {
         )}
         <div className="grid grid-cols-1 gap-2">
           <div className="max-lg:hidden">
-            <Segmented label="What do you want to do?" value={mode} onChange={setMode} options={modes.map(({ value, label }) => ({ value, label }))} />
+            <Segmented label={tr("What do you want to do?")} value={mode} onChange={setMode} options={shownModes.map(({ value, label }) => ({ value, label }))} />
           </div>
           <p className="m-0 text-sm text-muted">{current.intro}</p>
         </div>

@@ -6,16 +6,9 @@ import CardActions from "@/components/fun/CardActions";
 import { FitBox, GameShell, OwlPeek, hash, useTimers } from "@/components/fun/kit";
 import { resultLink } from "@/lib/fun/results";
 import { useHindi, useTr } from "@/lib/tools/useTr";
+import { appContent } from "@/lib/tools/appContent";
 
 type Phase = "input" | "loading" | "result";
-
-const TIERS_HI = [
-  { tier: "कच्चे", v: ["कच्चे। आपकी नींद सच में पूरी है?? हमें भी अपना तरीक़ा सिखाओ भाई।", "बस हल्के गरम। क्या आपके कोई डेडलाइन भी हैं? सच में लकी हो।", "बिल्कुल नहीं पके। फ़्री टाइम वाले मेन कैरेक्टर, कोई झूठ नहीं।"] },
-  { tier: "हल्के सिके", v: ["हल्के सिके हुए। अभी उम्मीद भी है और सोने का टाइम भी, सच में।", "सुनहरे भूरे। बस एक और असाइनमेंट और आप कुरकुरे हो जाओगे।", "बस गुनगुने। आपने सिलेबस एक बार खोला, वो भी गिना जाता है।"] },
-  { tier: "मीडियम", v: ["मीडियम पके। सिर्फ़ चाय और वाइब पर चल रहे हैं।", "आधे पके। आपकी टू-डू लिस्ट को अपनी अलग टू-डू लिस्ट चाहिए।", "धीमी आँच पर। आपने “बस 5 मिनट और” बोला था कोई 4 घंटे पहले।"] },
-  { tier: "अच्छे से पके", v: ["अच्छे से पक गए भाई। 47 टैब खुले हैं और एक में गाना चल रहा है।", "किनारे कुरकुरे हो गए। आपने अपने बेस्टी को एक हफ़्ते से सीन छोड़ रखा है।", "छन-छन। आपके अलार्म ने भी आपसे हार मान ली।"] },
-  { tier: "कोयला", v: ["पूरे पक गए, सच में। कोयला बन गए। फिर भी लेजेंड हो।", "जलकर राख। स्मोक अलार्म भी आपका नाम जानता है।", "पकने से भी आगे। सब ख़त्म है, पर स्टाइल के साथ।"] },
-];
 
 const TIERS = [
   { max: 20, tier: "RAW", bg: "#2f9e6e", v: ["Raw. You're actually well-rested?? Teach us your ways bro.", "Barely warm. Do you even have deadlines? Lucky you fr.", "Not cooked at all. Main character with free time, no cap."] },
@@ -31,7 +24,7 @@ export function cookedResult(name: string, hi = false) {
   const score = h % 101;
   const ti = TIERS.findIndex((x) => score <= x.max);
   const t = TIERS[ti];
-  const words = hi ? TIERS_HI[ti] : t;
+  const words = (hi ? appContent().cooked?.tiers[ti] : undefined) ?? t;
   return { score, tier: words.tier, bg: t.bg, verdict: words.v[(h >>> 8) % words.v.length] };
 }
 

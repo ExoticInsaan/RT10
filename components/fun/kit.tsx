@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { Caveat } from "next/font/google";
 import { useTr } from "@/lib/tools/useTr";
+import { appContent } from "@/lib/tools/appContent";
 
 /* Shared building blocks for the Fun Zone games. Each game keeps its own colours; this file only holds the frame,
    the scale-to-fit box for fixed-size artwork, and small helpers. */
@@ -30,8 +31,9 @@ export function mix(a: string, b: string, t: number) {
 
 /** Today's date the way story cards print it, for example "WED · 28 OCT". */
 export function storyDate(d: Date, hi = false) {
-  const day = (hi ? ["रवि", "सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि"] : ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"])[d.getDay()];
-  const mon = (hi ? ["जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"] : ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"])[d.getMonth()];
+  const pack = hi ? appContent().date : undefined;
+  const day = (pack?.days ?? ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"])[d.getDay()];
+  const mon = (pack?.months ?? ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"])[d.getMonth()];
   return `${day} · ${d.getDate()} ${mon}`;
 }
 
