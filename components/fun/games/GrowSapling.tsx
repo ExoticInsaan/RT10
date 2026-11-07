@@ -12,6 +12,7 @@ import ShareButton from "@/components/fun/ShareButton";
 import { SITE_URL } from "@/lib/site";
 import { Button } from "@/components/tools/ui";
 import { useHindi, useTr } from "@/lib/tools/useTr";
+import { appContent } from "@/lib/tools/appContent";
 import { FitBox, GameShell, copyText, loadJSON, rng, saveJSON, useTimers } from "@/components/fun/kit";
 
 /* ---------- garden data ---------- */
@@ -42,7 +43,6 @@ const SPECIES = [
 const SLOTS = [[62, 230], [330, 232], [118, 224], [272, 226], [24, 236], [366, 236], [160, 220], [232, 221]];
 const TUFTS = [20, 70, 110, 150, 240, 290, 330, 372];
 const DAY_NAMES = ["S", "M", "T", "W", "T", "F", "S"];
-const DAY_NAMES_HI = ["र", "सो", "मं", "बु", "गु", "शु", "श"];
 
 const stageOf = (d: number) =>
   d <= 0 ? "SEED" : d <= 6 ? "SPROUT" : d <= 30 ? "SEEDLING" : d <= 90 ? "SAPLING" : d <= 180 ? "YOUNG TREE" : d <= 240 ? "LEAFY TREE" : d <= 300 ? "FLOWERING" : d < 365 ? "FRUITING" : "FULLY GROWN";
@@ -276,7 +276,7 @@ function GardenGame() {
     const day = today - 6 + i;
     const who = g.log[day];
     const dow = new Date(day * 86400000).getUTCDay();
-    return { t: who ? nm(who)[0].toUpperCase() : (hi ? DAY_NAMES_HI : DAY_NAMES)[dow], bg: who === "a" ? "#f59e0b" : who === "b" ? "#8b5cf6" : "#e2e8f0", ring: day === today };
+    return { t: who ? nm(who)[0].toUpperCase() : ((hi ? appContent().sapling?.dayNames : undefined) ?? DAY_NAMES)[dow], bg: who === "a" ? "#f59e0b" : who === "b" ? "#8b5cf6" : "#e2e8f0", ring: day === today };
   });
   const ticks = ([[1, "Sprout"], [31, "Sapling"], [91, "Tree"], [241, "Flowers"], [301, "Fruits"]] as const).map((t) => ({ p: ((t[0] / 365) * 100).toFixed(1), c: d >= t[0] ? "#047857" : "#a7f3d0" }));
   const seeds = SPECIES.map((s, k) => {

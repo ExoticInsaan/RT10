@@ -6,6 +6,7 @@ import CardActions from "@/components/fun/CardActions";
 import { FitBox, GameShell, hash, useTimers } from "@/components/fun/kit";
 import { resultLink } from "@/lib/fun/results";
 import { useHindi, useTr } from "@/lib/tools/useTr";
+import { appContent } from "@/lib/tools/appContent";
 
 type Phase = "input" | "roasting" | "result";
 
@@ -17,63 +18,48 @@ const GENERIC = [
   "A sleep doctor somewhere just got chills.",
   "This isn't time management, it's pure chaos with extra steps.",
 ];
-const GENERIC_HI = [
-  "यह टाइमटेबल किसी ऐसे ने बनाया है जो आपसे नफ़रत करता है, और वो कोई और नहीं, आप ख़ुद हैं।",
-  "Google Calendar ने भी इसे देखा और लॉग आउट कर दिया।",
-  "फ़्री टाइम? ये नाम तो पहली बार सुना।",
-  "इसमें अगर कुछ लगातार है तो वो है अफ़रा-तफ़री।",
-  "कहीं किसी स्लीप डॉक्टर को अभी-अभी सिहरन हुई है।",
-  "यह टाइम मैनेजमेंट नहीं, एक्स्ट्रा स्टेप्स वाली पूरी अफ़रा-तफ़री है।",
-];
 const LEVELS = ["MILD", "MILD", "MILD", "WARM", "WARM", "SPICY", "SPICY", "HOT", "EXTRA HOT", "VOLCANIC", "VOLCANIC"];
-const LEVELS_HI = ["हल्का", "हल्का", "हल्का", "गुनगुना", "गुनगुना", "तीखा", "तीखा", "गरम", "बहुत गरम", "ज्वालामुखी", "ज्वालामुखी"];
 const TIMES = ["7:00", "9:30", "1:00", "6:00", "11:45"];
 const FLAME_COLORS = ["#ff5b1f", "#ffb020", "#ff7a1f", "#ffd23f"];
 const FLAME_H = [60, 84, 96, 72, 100, 80, 90, 64];
 
 /** Same line about your day always gives the same roast. */
-/** Works on English, Hindi or mixed (Hinglish) text. With `hi` the roast lines come out in Hindi. */
+/** Same line about your day always gives the same roast. In the Android app (Hindi) the app's own roast is used. */
 export function roastFor(day: string, hi = false) {
+  const pack = hi ? appContent().roast : undefined;
+  if (pack) return pack.roastFor(day);
   const raw = day.trim();
   const d = raw.toLowerCase();
   const h = hash("roast:" + d);
   const out: string[] = [];
   let hits = 0;
-  const m1 = d.match(/(\d+)\s*(classes|class|lectures|periods|subjects|क्लास|क्लासेस|लेक्चर|पीरियड|विषय)/);
+  const m1 = d.match(/(\d+)\s*(classes|class|lectures|periods|subjects)/);
   if (m1) {
     const n = +m1[1];
     hits += n >= 5 ? 3 : 1;
-    out.push(
-      hi
-        ? n >= 5 ? `${n} क्लास? ये टाइमटेबल नहीं है भाई, ये तो बंधक बनाने वाली हालत है।` : `${n} क्लास में ही थक गए? बेंच भी आपसे थक चुकी है।`
-        : n >= 5 ? `${n} classes? That's not a timetable bro, that's a hostage situation.` : `${n} classes and you're already tired? Even the bench is tired of you.`,
-    );
+    out.push(n >= 5 ? `${n} classes? That's not a timetable bro, that's a hostage situation.` : `${n} classes and you're already tired? Even the bench is tired of you.`);
   }
-  if (/no\s*break|बिना\s*ब्रेक|ब्रेक\s*नहीं/.test(d)) { hits += 2; out.push(hi ? "कोई ब्रेक नहीं? आपके ब्लैडर ने शिकायत दर्ज कर दी है, सच में।" : "No breaks? Your bladder just filed a complaint, no cap."); }
-  // "sleep at 2am", or the Hindi order "रात 2 बजे सोना" (number first)
-  const m2 =
-    d.match(/(sleep|bed|sleeping|सोना|सोता|सोती|नींद)\D{0,10}(\d{1,2})\s*(am|बजे)/) ??
-    ((x) => (x ? ([x[0], x[2], x[1]] as unknown as RegExpMatchArray) : null))(d.match(/(\d{1,2})\s*बजे\s*(?:को\s*)?(सोना|सोता|सोती|नींद)/));
+  if (/no\s*break/.test(d)) { hits += 2; out.push("No breaks? Your bladder just filed a complaint, no cap."); }
+  const m2 = d.match(/(sleep|bed|sleeping)\D{0,10}(\d{1,2})\s*(am)/);
   if (m2) {
     const hr = +m2[2];
     hits += hr <= 5 ? 3 : 1;
-    out.push(hi ? `${hr} बजे सोना शेड्यूल नहीं है, ये तो आपके वाईफ़ाई का स्पॉन्सर किया हुआ लाइफ़स्टाइल है।` : `Sleeping at ${hr}am isn't a schedule, it's a lifestyle sponsored by your wifi.`);
+    out.push(`Sleeping at ${hr}am isn't a schedule, it's a lifestyle sponsored by your wifi.`);
   }
-  if (/gym|workout|जिम|वर्कआउट/.test(d)) { hits += 1; out.push(hi ? "आपने टाइमटेबल में “जिम” लिखा है। जिम को पता ही नहीं कि आप कौन हैं।" : 'You wrote "gym" in the timetable. The gym has no idea who you are.'); }
-  if (/netflix|reels|insta|youtube|scroll|phone|रील|इंस्टा|यूट्यूब|फ़ोन|फोन|स्क्रॉल/.test(d)) { hits += 2; out.push(hi ? "वो “थोड़ा-सा स्क्रॉल” पिछले 3 दिन से लगातार चल रहा है।" : 'That "quick scroll" has been going for 3 days straight.'); }
-  if (/coaching|tuition|कोचिंग|ट्यूशन/.test(d)) { hits += 2; out.push(hi ? "स्कूल, फिर कोचिंग, फिर ट्यूशन। आपकी परछाईं भी ब्रेक माँग रही है।" : "School, then coaching, then tuition. Even your shadow wants a break."); }
-  if ((/\b(6|7|8)\s*am\b/.test(d) || /सुबह\s*(6|7|8)\s*बजे/.test(d)) && !m2) { hits += 1; out.push(hi ? "सुबह की क्लास? आपके अलार्म को अब आप पर भरोसा नहीं रहा।" : "Early morning class? Your alarm has trust issues now."); }
-  if (/self.?study|revision|study|सेल्फ़?\s*स्टडी|पढ़ाई|रिवीज़न/.test(d)) { hits += 1; out.push(hi ? "“सेल्फ़ स्टडी” एक मिथक है, यूनिकॉर्न और फ़्री पीरियड की तरह।" : '"Self study" is lowkey a myth, like unicorns and free periods.'); }
-  if (/chai|coffee|tea|maggi|चाय|कॉफ़ी|कॉफी|मैगी/.test(d)) { hits += 1; out.push(hi ? "चाय और मैगी अब आधिकारिक विषय हैं। सम्मान।" : "Chai and Maggi are officially subjects now. Respect."); }
-  const generic = hi ? GENERIC_HI : GENERIC;
-  const finisher = generic[h % generic.length];
+  if (/gym|workout/.test(d)) { hits += 1; out.push('You wrote "gym" in the timetable. The gym has no idea who you are.'); }
+  if (/netflix|reels|insta|youtube|scroll|phone/.test(d)) { hits += 2; out.push('That "quick scroll" has been going for 3 days straight.'); }
+  if (/coaching|tuition/.test(d)) { hits += 2; out.push("School, then coaching, then tuition. Even your shadow wants a break."); }
+  if (/\b(6|7|8)\s*am\b/.test(d) && !m2) { hits += 1; out.push("Early morning class? Your alarm has trust issues now."); }
+  if (/self.?study|revision|study/.test(d)) { hits += 1; out.push('"Self study" is lowkey a myth, like unicorns and free periods.'); }
+  if (/chai|coffee|tea|maggi/.test(d)) { hits += 1; out.push("Chai and Maggi are officially subjects now. Respect."); }
+  const finisher = GENERIC[h % GENERIC.length];
   const lines = out.slice(0, 2);
-  if (lines.length < 2) lines.push(generic[(h >>> 5) % generic.length] === finisher ? generic[(h + 1) % generic.length] : generic[(h >>> 5) % generic.length]);
+  if (lines.length < 2) lines.push(GENERIC[(h >>> 5) % GENERIC.length] === finisher ? GENERIC[(h + 1) % GENERIC.length] : GENERIC[(h >>> 5) % GENERIC.length]);
   lines.push(finisher);
   const score = Math.max(2, Math.min(10, 3 + (h % 3) + hits));
-  const parts = raw.split(/,|\band\b|;|\sऔर\s/).map((s) => s.trim()).filter(Boolean).slice(0, 5);
-  const rows = (parts.length ? parts : [hi ? "यहाँ आपका दिन आएगा" : "your day goes here"]).map((text, i) => ({ time: TIMES[i], text }));
-  return { lines, score, rows, level: hi ? LEVELS_HI[score] : LEVELS[score] };
+  const parts = raw.split(/,|\band\b|;/).map((s) => s.trim()).filter(Boolean).slice(0, 5);
+  const rows = (parts.length ? parts : ["your day goes here"]).map((text, i) => ({ time: TIMES[i], text }));
+  return { lines, score, rows, level: LEVELS[score] };
 }
 
 const btn =

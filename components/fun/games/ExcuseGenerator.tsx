@@ -6,26 +6,25 @@ import CardActions from "@/components/fun/CardActions";
 import { GameShell, hash, useTimers } from "@/components/fun/kit";
 import { resultLink } from "@/lib/fun/results";
 import { useHindi, useTr } from "@/lib/tools/useTr";
+import { appContent } from "@/lib/tools/appContent";
 
 const LISTS = [
   ["My neighbour’s goat", "A random auto driver", "Nani’s WhatsApp group", "The wifi router", "A very confident pigeon", "My little cousin", "Mercury in retrograde", "The building lift", "My phone’s autocorrect", "A sus monsoon cloud"],
   ["ate my charger", "kidnapped my alarm", "sent a 40 min voice note", "locked the bathroom door", "started a staring contest", "hid my left shoe", "updated itself overnight", "declared a holiday", "sat on my notebook", "got stuck between floors"],
   ["so I had to negotiate", "and I'm still not okay", "so time just stopped", "and they almost called the police", "so I took the long way via Bhopal", "and ngl, respect", "so I followed the rules", "my horoscope literally warned me", "so I waited for justice", "and nobody believes me fr"],
 ];
-// Hindi wording is written to join as "<who> ने <did>, <then>।": every "did" phrase is a transitive one, so the "ने" always fits.
-const LISTS_HI = [
-  ["पड़ोस की बकरी", "एक रैंडम ऑटो वाले", "नानी के WhatsApp ग्रुप", "वाईफ़ाई राउटर", "एक बहुत कॉन्फ़िडेंट कबूतर", "मेरे छोटे कज़िन", "बुध की वक्री चाल", "बिल्डिंग की लिफ़्ट", "मेरे फ़ोन के ऑटोकरेक्ट", "एक शक्की मानसूनी बादल"],
-  ["मेरा चार्जर खा लिया", "मेरा अलार्म अग़वा कर लिया", "40 मिनट का वॉइस नोट भेज दिया", "बाथरूम का दरवाज़ा बंद कर दिया", "घूरने की प्रतियोगिता शुरू कर दी", "मेरा बायाँ जूता छिपा दिया", "रातों-रात ख़ुद को अपडेट कर लिया", "छुट्टी घोषित कर दी", "मेरी नोटबुक पर क़ब्ज़ा कर लिया", "मुझे दो फ़्लोर के बीच फँसा दिया"],
-  ["इसलिए मुझे मोलभाव करना पड़ा", "और मैं अब भी ठीक नहीं हूँ", "तो समय बस रुक गया", "और पुलिस आने ही वाली थी", "तो मैं भोपाल के रास्ते गया", "और सच कहूँ तो, रिस्पेक्ट", "तो मैंने नियम मान लिए", "राशिफल ने पहले ही चेताया था", "तो मैंने इंसाफ़ का इंतज़ार किया", "और कोई यक़ीन नहीं करता, सच में"],
-];
 const LABELS = ["WHO", "DID WHAT", "AND THEN"];
 
 /** The three chosen pieces as one sentence (the story card text). */
-const joinParts = (idx: number[], hi: boolean) =>
-  hi ? `${LISTS_HI[0][idx[0]]} ने ${LISTS_HI[1][idx[1]]}, ${LISTS_HI[2][idx[2]]}।` : `${LISTS[0][idx[0]]} ${LISTS[1][idx[1]]}, ${LISTS[2][idx[2]]}.`;
+const joinParts = (idx: number[], hi: boolean) => {
+  const pack = hi ? appContent().excuse : undefined;
+  return pack ? pack.join(idx) : `${LISTS[0][idx[0]]} ${LISTS[1][idx[1]]}, ${LISTS[2][idx[2]]}.`;
+};
 const sorry = (situation: string, hi: boolean) => {
+  const pack = hi ? appContent().excuse : undefined;
+  if (pack) return pack.sorry(situation);
   const s = situation.trim();
-  return hi ? `सॉरी, ${s}।` : `Sorry about ${s.charAt(0).toLowerCase() + s.slice(1)}.`;
+  return `Sorry about ${s.charAt(0).toLowerCase() + s.slice(1)}.`;
 };
 const DURS = [1.6, 1.9, 2.2];
 
@@ -52,7 +51,7 @@ const ghost =
 export default function ExcuseGenerator() {
   const tr = useTr();
   const hi = useHindi();
-  const lists = hi ? LISTS_HI : LISTS;
+  const lists = (hi ? appContent().excuse?.lists : undefined) ?? LISTS;
   const [sit, setSit] = useState("");
   const [roll, setRoll] = useState(0);
   const [idx, setIdx] = useState([0, 3, 6]);
