@@ -11,7 +11,11 @@ export default function Splash() {
   }, []);
 
   return (
-    <div className="bg-onboard-dots relative size-full overflow-hidden">
+    <div
+      className="bg-onboard-dots relative size-full overflow-hidden"
+      // Where the tagline starts: 75% down, but never closer than 12px under the button (button = 66% down + 56px tall).
+      style={{ "--tagline-top": "max(75vh, calc(66vh + 68px))" } as React.CSSProperties}
+    >
       <div className="absolute inset-x-0 top-[17%] flex flex-col items-center gap-3.5 text-center">
         <img src="./logo-mark.png" alt="TopperShelf logo" className="size-[132px]" />
         <div className="text-[40px] leading-none font-extrabold tracking-[-0.03em] text-navy">
@@ -27,8 +31,11 @@ export default function Splash() {
       >
         Get started
       </a>
-      <div className="absolute inset-x-0 top-[75%] text-center text-[13px] tracking-[0.04em] text-[#5b6675]">Better resources. Better results.</div>
-      <img src="./mascot/owl-peek.webp" alt="" aria-hidden="true" className="absolute bottom-0 left-1/2 block w-[240px] -translate-x-1/2" />
+      <div className="absolute inset-x-0 top-[var(--tagline-top)] text-center text-[13px] tracking-[0.04em] text-[#5b6675]">Better resources. Better results.</div>
+      <img src="./mascot/owl-peek.webp" alt="" aria-hidden="true" className="absolute bottom-0 left-1/2 block -translate-x-1/2 [@media(max-height:520px)]:hidden"
+        // Never taller than the space under the tagline (about 26px for the tagline itself and a small gap), so it cannot reach the button.
+        style={{ width: "max(0px, min(240px, calc((100vh - var(--tagline-top) - 26px) * 1.2766)))" }}
+      />
     </div>
   );
 }
