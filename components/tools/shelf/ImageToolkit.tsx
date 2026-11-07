@@ -11,7 +11,7 @@ type Mode = "compress" | "resize";
 
 const modes: { value: Mode; label: string; intro: string }[] = [
   { value: "compress", label: "Compress", intro: "Shrink a photo or signature under the KB size a form asks for." },
-  { value: "resize", label: "Resize", intro: "Change a picture's width and height in pixels, or scale it by a percentage." },
+  { value: "resize", label: "Resize", intro: "Set exact pixels, pick JPG, PNG or WebP, and keep the file inside a KB range." },
 ];
 
 /** Same pattern as the PDF Toolkit: cards on phones and tablets, a one-line switch on desktop. */
