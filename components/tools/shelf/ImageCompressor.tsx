@@ -18,7 +18,7 @@ type Result = { blob: Blob; url: string; width: number; height: number; quality:
 
 const presets = [20, 50, 100, 200, 500];
 
-function loadImage(file: File) {
+export function loadImage(file: File) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -94,9 +94,6 @@ export default function ImageCompressor() {
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [preset, setPreset] = useState("50");
   const [customKb, setCustomKb] = useState("");
-  const [resize, setResize] = useState<"keep" | "exact">("keep");
-  const [width, setWidth] = useState("");
-  const [height, setHeight] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<Result | null>(null);
@@ -117,29 +114,21 @@ export default function ImageCompressor() {
       const loaded = await loadImage(chosen);
       setFile(chosen);
       setImg(loaded);
-      setWidth(String(loaded.naturalWidth));
-      setHeight(String(loaded.naturalHeight));
     } catch {
       setError(tr("That image couldn't be opened. Try saving it again as a JPG."));
     }
   }
 
   const targetKb = preset === "custom" ? toNumber(customKb) : Number(preset);
-  const w = toNumber(width);
-  const h = toNumber(height);
 
   async function run() {
     if (!img || !file) return;
     if (!(targetKb >= 5)) return setError(tr("Choose a target of at least 5 KB."));
-    if (resize === "exact" && !(w >= 16 && h >= 16 && w <= 8000 && h <= 8000)) {
-      return setError(tr("Width and height should be between 16 and 8000 pixels."));
-    }
     setBusy(true);
     setError("");
     try {
-      const outW = resize === "exact" ? Math.round(w) : img.naturalWidth;
-      const outH = resize === "exact" ? Math.round(h) : img.naturalHeight;
-      const r = await compress(img, targetKb * 1024, outW, outH, resize === "exact");
+      // Compress only changes the file size. The picture keeps its own pixels (see the note below if it ever can't).
+      const r = await compress(img, targetKb * 1024, img.naturalWidth, img.naturalHeight, false);
       setResult({ ...r, url: URL.createObjectURL(r.blob) });
     } catch {
       setError(tr("Couldn't get the image that small. Try a bigger target size."));
@@ -203,30 +192,6 @@ export default function ImageCompressor() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-3">
-        <Segmented
-          label={tr("Picture size")}
-          value={resize}
-          onChange={(v) => {
-            setResize(v);
-            setResult(null);
-          }}
-          options={[
-            { value: "keep", label: tr("Keep the same size") },
-            { value: "exact", label: tr("Set exact pixels") },
-          ]}
-        />
-        {resize === "exact" && (
-          <div className="grid grid-cols-2 gap-4">
-            <NumberField label={tr("Width")} value={width} onChange={setWidth} min={16} step={1} suffix="px" />
-            <NumberField label={tr("Height")} value={height} onChange={setHeight} min={16} step={1} suffix="px" />
-            <p className="col-span-2 m-0 text-xs leading-5 text-muted">
-              {tr("Exam forms often ask for a fixed size, for example 200 × 230 px for a photo or 140 × 60 px for a signature. The picture is stretched to fit exactly, so crop it close to that shape first for the best look.")}
-            </p>
-          </div>
-        )}
-      </div>
-
       <Button onClick={run} disabled={busy} className="w-full sm:w-auto sm:justify-self-start">
         {busy ? tr("Compressing…") : tr("Compress image")}
       </Button>
@@ -244,9 +209,9 @@ export default function ImageCompressor() {
             <p className="m-0 mt-1 text-sm text-slate-700">
               {tr("{w} × {h} px · JPG · down from {size}", { w: result.width, h: result.height, size: formatBytes(file.size) })}
             </p>
-            {result.hitTarget && resize === "keep" && result.width < img.naturalWidth && (
+            {result.hitTarget && result.width < img.naturalWidth && (
               <p className="m-0 mt-2 text-sm text-slate-700">
-                {tr("The picture was made smaller ({iw} × {ih} → {w} × {h} px) to fit under {kb} KB.", {
+                {tr("Quality alone couldn't get it under {kb} KB, so the picture was also made smaller ({iw} × {ih} → {w} × {h} px). Choose a bigger limit to keep the original size.", {
                   iw: img.naturalWidth,
                   ih: img.naturalHeight,
                   w: result.width,

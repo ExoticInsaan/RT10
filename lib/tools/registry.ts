@@ -40,8 +40,8 @@ export const tools: Tool[] = [
   },
   {
     id: "image-compressor",
-    name: "Image Compressor",
-    description: "Shrink photos to the exact KB size a form asks for, without visible loss.",
+    name: "Image Toolkit",
+    description: "Compress photos to the exact KB size a form asks for, or resize them to exact pixels or a percentage.",
     category: "The Shelf",
     ready: true,
     icon: "image",

@@ -60,6 +60,15 @@ const art: Record<string, { tone: string; icon: ReactNode }> = {
       </>
     ),
   },
+  resize: {
+    tone: "bg-violet-50 text-violet",
+    icon: (
+      <>
+        <rect x="3" y="3" width="11" height="11" rx="2" />
+        <path d="M14 21h7v-7M21 21l-8-8" />
+      </>
+    ),
+  },
   "to-images": {
     tone: "bg-amber-50 text-amber-600",
     icon: (
