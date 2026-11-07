@@ -101,7 +101,6 @@ export default function FocusTimer() {
   // Full screen view: a big clock with Start/Pause and a minimize button. The timer itself keeps running underneath.
   const [fullscreen, setFullscreen] = useState(false);
   const usedBrowserFullscreen = useRef(false);
-  const [notify, setNotify] = useState(() => typeof Notification !== "undefined" && Notification.permission === "granted");
   const originalTitle = useRef("");
 
   useEffect(() => {
@@ -128,7 +127,7 @@ export default function FocusTimer() {
       next = "focus";
       setRound(phase === "long" ? 1 : round + 1);
     }
-    if (completed && notify) {
+    if (completed && typeof Notification !== "undefined" && Notification.permission === "granted") {
       try {
         new Notification(phase === "focus" ? tr("Focus session done. Take a break.") : tr("Break's over. Back to it."), { icon: "/icon.png" });
       } catch {
@@ -139,7 +138,7 @@ export default function FocusTimer() {
     setPhase(next);
     setEndAt(null);
     setRemaining(lengthOf(next));
-  }, [phase, round, settings.rounds, doneToday, notify, lengthOf, tr]);
+  }, [phase, round, settings.rounds, doneToday, lengthOf, tr]);
 
   // Tells anything listening (the Android app schedules a phone notification for the end time) when the timer starts or stops.
   // The website has no listener, so nothing happens there.
@@ -467,15 +466,6 @@ export default function FocusTimer() {
           }} className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover underline-offset-4 hover:underline">
           {editing ? tr("Close settings") : tr("Change times")}
         </button>
-        {typeof Notification !== "undefined" && !notify && (
-          <button
-            type="button"
-            onClick={() => Notification.requestPermission().then((p) => setNotify(p === "granted"))}
-            className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-blue-hover underline-offset-4 hover:underline"
-          >
-            {tr("Notify me when time's up")}
-          </button>
-        )}
       </div>
 
       {editing && (

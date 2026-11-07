@@ -107,13 +107,15 @@ const shelfContent: Record<string, ToolContent> = {
   "image-compressor": {
     howTo: [
       "Sign in with Google (one tap, free).",
+      "Choose Compress or Resize.",
       "Drop in a JPG, PNG or WebP photo or signature.",
-      "Pick the size limit, such as 20 KB or 50 KB, and set exact pixels if the form asks for them.",
-      "Press Compress image and download the JPG.",
+      "To compress, pick the size limit, such as 20 KB or 50 KB. To resize, enter the width and height, choose JPG, PNG or WebP, and set a KB range.",
+      "Press the button and download the result.",
     ],
     faq: [
-      { q: "Will the image really be under the size I choose?", a: "Yes. The tool tries quality levels until the file fits under your limit. If it can't fit at the pixel size you set, it says so and shows the smallest it could get." },
-      { q: "How do I resize a photo to 200 × 230 pixels for a form?", a: "Choose Set exact pixels and enter the width and height. The picture is stretched to that exact size, so crop it to roughly that shape first for the best look." },
+      { q: "Will the image really be under the size I choose?", a: "Yes. The tool tries quality levels until the file fits under your limit. If quality alone can't get it that small, it also shrinks the picture a little and tells you the new size." },
+      { q: "How do I resize a photo to 200 × 230 pixels for a form?", a: "Choose Resize and enter the width and height. Turn off Keep the picture's shape to set both sides freely. The picture is stretched to that exact size, so crop it to roughly that shape first for the best look." },
+      { q: "Can I set a minimum and maximum file size when resizing?", a: "Yes. In Resize, choose a size range such as 20–50 KB, or pick Custom range and type your own minimum and maximum. The tool adjusts quality until the file lands inside the range. If the picture is naturally smaller than your minimum, invisible filler is added to the file so it reaches the minimum without making the picture look worse. PNG is lossless, so for small KB limits choose JPG or WebP." },
       { q: "Why is the result a JPG?", a: "Exam and job portals almost always ask for JPG, and JPG gets photos smallest. Transparent backgrounds become white." },
       { q: "Can I compress iPhone HEIC photos?", a: "Browsers can't open HEIC files. Share the photo as a JPG from the Photos app first (or set the camera to Most Compatible), then compress it here." },
     ],
@@ -129,7 +131,7 @@ const shelfContent: Record<string, ToolContent> = {
     faq: [
       { q: "Does the timer keep going if I switch tabs?", a: "Yes. It counts against the clock, so it stays accurate in the background and the tab title shows the time left. Keep the tab open." },
       { q: "Can I change the session lengths?", a: "Yes, in two ways. Tap the time in the circle and type the minutes and seconds you want, or use Change times to set whole minutes for focus, short break and long break, and how many sessions come before a long break. Your times are remembered." },
-      { q: "Will it notify me when time is up?", a: "It plays a chime. Turn on Notify me when time's up to also get a notification from your browser." },
+      { q: "Will it notify me when time is up?", a: "It plays a chime when a session or break ends. The Android app also sends a phone notification." },
       { q: "Does skipping count as a session?", a: "No. Only focus sessions you finish count towards today's total." },
     ],
     privacyNote: savedNote,
@@ -229,9 +231,9 @@ const shelfSeo: Record<string, Pick<ToolContent, "seoTitle" | "seoDescription"> 
     },
   },
   "image-compressor": {
-    seoTitle: "Compress Image to 20KB, 50KB or 100KB Online",
+    seoTitle: "Compress & Resize Image to 20KB, 50KB or Exact Pixels",
     seoDescription:
-      "Compress a photo or signature to an exact size like 20 KB, 50 KB, 100 KB or 200 KB, and set exact pixels for exam and job forms. Free, in your browser.",
+      "Compress a photo or signature to an exact size like 20 KB, 50 KB, 100 KB or 200 KB, or resize it to exact pixels or a percentage for exam and job forms. Free, in your browser.",
   },
   "pdf-toolkit": {
     seoTitle: "Merge, Compress & Split PDF Online Free",
