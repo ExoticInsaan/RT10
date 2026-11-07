@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/terms" },
 };
 
-const COURTS = "Bharatpur, Rajasthan";
+const COURTS = "Rajasthan";
 
 export default function TermsPage() {
   return (
@@ -97,7 +97,7 @@ export default function TermsPage() {
 
       <H2>11. Governing law</H2>
       <P>
-        These Terms are governed by the laws of India. Courts at {COURTS} have jurisdiction over any dispute, subject to any right
+        These Terms are governed by the laws of India. Courts in {COURTS} have jurisdiction over any dispute, subject to any right
         you have under law to go to a different court.
       </P>
 

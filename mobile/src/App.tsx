@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import AccountListsSync from "@/components/AccountListsSync";
 import AuthProvider from "@/components/AuthProvider";
+import ErrorBoundary from "./components/ErrorBoundary";
 import BottomNav, { TAB_PATHS } from "./components/BottomNav";
 import OfflineBanner from "./components/OfflineBanner";
 import CountdownWidgetSync from "./components/CountdownWidgetSync";
@@ -12,6 +13,7 @@ import FunZone from "./screens/FunZone";
 import Home from "./screens/Home";
 import MyShelf from "./screens/MyShelf";
 import { Onboard1, Onboard2, Onboard3 } from "./screens/Onboard";
+import RequestTool from "./screens/RequestTool";
 import Settings from "./screens/Settings";
 import Shelf from "./screens/Shelf";
 import SignIn from "./screens/SignIn";
@@ -37,6 +39,8 @@ function Screen({ path }: { path: string }) {
       return <FunZone />;
     case "/my-shelf":
       return <MyShelf />;
+    case "/request-tool":
+      return <RequestTool />;
     case "/settings":
       return <Settings />;
     default:
@@ -53,7 +57,9 @@ export default function App() {
       <ReminderScheduler />
       <CountdownWidgetSync />
       <div className="relative mx-auto h-dvh w-full max-w-[480px] overflow-hidden bg-ivory text-navy">
-        <Screen key={path} path={path} />
+        <ErrorBoundary key={path}>
+          <Screen path={path} />
+        </ErrorBoundary>
         {TAB_PATHS.includes(path) && <BottomNav path={path} />}
         <SavedToast />
         <OfflineBanner />

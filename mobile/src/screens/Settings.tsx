@@ -171,7 +171,7 @@ export default function Settings() {
       </Group>
 
       <Group title={t("settings.help")}>
-        <Row label={t("settings.askTool")} hint={t("settings.askToolHint")} onClick={() => goMail(mail("Tool request for TopperShelf", "Hi TopperShelf team,\n\nI would love a tool that can:\n\n"))} right={<Chevron />} />
+        <Row label={t("settings.askTool")} hint={t("settings.askToolHint")} onClick={() => navigate("/request-tool")} right={<Chevron />} />
         <Row
           label={t("settings.report")}
           hint={SUPPORT_EMAIL}

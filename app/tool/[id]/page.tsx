@@ -7,6 +7,7 @@ import Image from "next/image";
 import FunSticker from "@/components/tools/FunSticker";
 import ShelfViewAll from "@/components/tools/ShelfViewAll";
 import ToolIcon from "@/components/tools/ToolIcon";
+import ShareToolButton from "@/components/tools/ShareToolButton";
 import ToolGate from "@/components/tools/ToolGate";
 import { ShelfGrid } from "@/components/tools/ToolsBrowser";
 import { SaveButton } from "@/components/tools/ui";
@@ -22,9 +23,10 @@ export async function generateMetadata({ params }: PageProps<"/tool/[id]">): Pro
   const { id } = await params;
   const tool = toolById(id);
   if (!tool) return {};
+  const seo = toolContent[tool.id];
   return {
-    title: `${tool.name}: free online ${tool.category === "Fun Zone" ? "game" : "tool"}`,
-    description: `${tool.description} Free online ${tool.name.toLowerCase()} on TopperShelf.`,
+    title: seo?.seoTitle ?? `${tool.name}: free online ${tool.category === "Fun Zone" ? "game" : "tool"}`,
+    description: seo?.seoDescription ?? `${tool.description} Free online ${tool.name.toLowerCase()} on TopperShelf.`,
     alternates: { canonical: `/tool/${tool.id}` },
     // Tools that are not built yet stay out of Google until they work.
     robots: tool.ready ? undefined : { index: false, follow: true },
@@ -146,7 +148,10 @@ export default async function ToolPage({ params }: PageProps<"/tool/[id]">) {
               <p className={`mb-6 mt-4 text-base leading-7 sm:text-lg ${fun ? "text-white/90" : "text-muted"}`}>
                 {tool.description}
               </p>
-              <SaveButton id={tool.id} onDark={fun} />
+              <div className="flex flex-wrap items-center gap-3">
+                <SaveButton id={tool.id} onDark={fun} />
+                <ShareToolButton toolId={tool.id} toolName={tool.name} onDark={fun} />
+              </div>
             </div>
             {picture && <div className="shrink-0 self-start sm:self-auto">{picture}</div>}
           </div>

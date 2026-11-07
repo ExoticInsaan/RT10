@@ -104,6 +104,16 @@ export async function submitResponse(code: string, name: string, answers: object
   });
 }
 
+export type FriendRank = { rank: number; total: number; score: number; ahead: number; above: { name: string; score: number }[] };
+
+/** Friendship Score, friend side: where this friend ranks among everyone who answered. Null if their answers are not saved yet. */
+export async function friendRank(code: string, name: string): Promise<Result<FriendRank | null>> {
+  return run<FriendRank | null>(async () => {
+    const { data, error } = await createClient().rpc("fun_friend_rank", { p_code: code, p_name: name });
+    return { data: (data as FriendRank | null) ?? null, error };
+  });
+}
+
 export type FriendAnswer = { responder_name: string; answers: Record<string, unknown>; score: number | null; created_at: string };
 
 /** Answers on the signed-in person's own link (newest first). */

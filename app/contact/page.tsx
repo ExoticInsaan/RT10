@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ToolIcon, { type ToolIconName } from "@/components/tools/ToolIcon";
+import RequestToolForm from "@/components/RequestToolForm";
 import { ADDRESS, BUSINESS, GRIEVANCE_NAME, SUPPORT_EMAIL } from "@/components/shell/Legal";
 
 export const metadata: Metadata = {
@@ -12,8 +13,8 @@ export const metadata: Metadata = {
 
 const topics: { title: string; body: string; subject: string; hint: string; icon: ToolIconName }[] = [
   {
-    title: "Request a tool",
-    body: "Tell us the small job you keep doing the hard way. The most-asked tools get built first.",
+    title: "Request a tool by email",
+    body: "Prefer email? Tell us the small job you keep doing the hard way.",
     subject: "Tool request",
     hint: "What should the tool do? What would you type or upload, and what result do you want?",
     icon: "sparkles",
@@ -69,6 +70,8 @@ export default function ContactPage() {
           If your message is about your account, please write from the email address you signed in with so we can find it quickly.
         </p>
       </div>
+
+      <RequestToolForm />
 
       <h2 className="mb-1 mt-12 text-2xl font-extrabold tracking-tight text-navy">What do you need?</h2>
       <p className="m-0 text-sm text-muted">

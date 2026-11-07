@@ -42,3 +42,4 @@ next-env.d.ts
 
 # keep the template of env variable names
 !.env.example
+!mobile/.env.production

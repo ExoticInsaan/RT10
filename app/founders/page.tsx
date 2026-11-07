@@ -50,7 +50,7 @@ export default function FoundersPage() {
               <br />
               Sinsinwar
             </p>
-            <p className="mb-0 mt-3 text-sm text-muted">TopperShelf · Bharatpur, Rajasthan</p>
+            <p className="mb-0 mt-3 text-sm text-muted">TopperShelf · Rajasthan, India</p>
           </div>
         </div>
       </section>
