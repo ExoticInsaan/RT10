@@ -6,6 +6,7 @@ import SiteHeader from "@/components/shell/SiteHeader";
 import SiteFooter from "@/components/shell/SiteFooter";
 import MobileNav from "@/components/shell/MobileNav";
 import AccountListsSync from "@/components/AccountListsSync";
+import { DiwaliBanner, DiwaliLights } from "@/components/festive/Diwali";
 import AuthProvider from "@/components/AuthProvider";
 import Analytics from "@/components/Analytics";
 import { SITE_URL } from "@/lib/site";
@@ -63,7 +64,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col bg-ivory font-sans text-ink antialiased">
         <AuthProvider>
           <AccountListsSync />
+          <DiwaliBanner />
           <SiteHeader />
+          <DiwaliLights />
           <main className="flex-1">{children}</main>
           <SiteFooter />
           <Suspense fallback={null}>

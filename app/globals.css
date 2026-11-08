@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./fun-zone.css";
 @import "./flashcard-maker.css";
+@import "./diwali.css";
 
 /* Toppershelf design system: tokens from the new website experience. */
 @theme inline {
