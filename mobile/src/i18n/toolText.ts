@@ -5,7 +5,7 @@ import { useLanguage } from "./LanguageProvider";
 // this is a lookup that only the app reads. A tool without an entry here simply shows its English text.
 const hi: Record<string, { name: string; description: string }> = {
   "pdf-toolkit": { name: "PDF टूलकिट", description: "अपने ब्राउज़र में ही PDF मर्ज, कंप्रेस, एडिट और कन्वर्ट करें, और पेज जोड़ें।" },
-  "image-compressor": { name: "इमेज कंप्रेसर", description: "फ़ोटो को फ़ॉर्म में माँगे गए ठीक KB साइज़ तक छोटा करें, क्वालिटी में दिखने लायक कमी के बिना।" },
+  "image-compressor": { name: "इमेज टूलकिट", description: "फ़ोटो को फ़ॉर्म में माँगे गए ठीक KB साइज़ तक कंप्रेस करें, या KB की सीमा के भीतर ठीक पिक्सल में रीसाइज़ करें।" },
   "focus-timer": { name: "फ़ोकस टाइमर", description: "छोटे ब्रेक के साथ फ़ोकस्ड सेशन में पढ़ाई करें।" },
   "flashcard-maker": { name: "फ़्लैशकार्ड मेकर", description: "अपने नोट्स को कार्ड में बदलें और याद होने तक खुद को टेस्ट करें।" },
   "cgpa-calculator": { name: "CGPA और प्रतिशत कैलकुलेटर", description: "CGPA या SGPA को प्रतिशत में बदलें और वापस भी, या अंकों से अपना प्रतिशत निकालें।" },
