@@ -18,7 +18,7 @@ export default function FunSticker({ tool, tilt = 0 }: { tool: Tool; tilt?: numb
   );
 
   return (
-    <article className="fun-sticker group relative flex w-full flex-col rounded-[1.75rem] bg-white p-2.5 sm:p-3" style={style}>
+    <article className="fun-sticker group relative flex w-full flex-col rounded-[1.75rem] bg-card p-2.5 sm:p-3" style={style}>
       <Link
         href={`/tool/${tool.id}`}
         className="flex flex-1 flex-col rounded-[1.4rem] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
@@ -32,12 +32,12 @@ export default function FunSticker({ tool, tilt = 0 }: { tool: Tool; tilt?: numb
           </h3>
           <span className="h-3 sm:hidden" aria-hidden="true" />
           <p className="m-0 mb-3 mt-1 hidden text-sm leading-6 text-muted sm:block">{tool.description}</p>
-          <span className="mt-auto inline-flex min-h-9 items-center rounded-full bg-navy px-4 text-sm font-bold text-white transition-colors group-hover:bg-purple-600">
+          <span className="mt-auto inline-flex min-h-9 items-center rounded-full bg-deep px-4 text-sm font-bold text-white transition-colors group-hover:bg-purple-600">
             Play now
           </span>
         </div>
       </Link>
-      <FavoriteButton id={tool.id} className="absolute right-4 top-4 scale-90 bg-white/95 shadow-sm sm:right-5 sm:top-5 sm:scale-100" />
+      <FavoriteButton id={tool.id} className="absolute right-4 top-4 scale-90 bg-card/95 shadow-sm sm:right-5 sm:top-5 sm:scale-100" />
     </article>
   );
 }

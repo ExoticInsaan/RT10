@@ -15,7 +15,7 @@ import { dayKey, vibeFor } from "@/components/fun/games/VibeCheck";
 import { resultLink, type ResultKind } from "@/lib/fun/results";
 
 const btn =
-  "min-h-12 w-full cursor-pointer rounded-[18px] border-0 bg-white px-4 py-3 text-base font-extrabold text-navy shadow-[0_5px_0_rgba(0,0,0,.25)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_1px_0_rgba(0,0,0,.25)] disabled:cursor-default disabled:opacity-60";
+  "min-h-12 w-full cursor-pointer rounded-[18px] border-0 bg-card px-4 py-3 text-base font-extrabold text-navy shadow-[0_5px_0_rgba(0,0,0,.25)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_1px_0_rgba(0,0,0,.25)] disabled:cursor-default disabled:opacity-60";
 const ghost =
   "min-h-12 w-full cursor-pointer rounded-[18px] border-2 border-white/60 bg-white/10 px-4 py-3 text-base font-extrabold text-white active:translate-y-0.5 disabled:cursor-default disabled:opacity-60";
 
@@ -100,7 +100,7 @@ export default function SharedResult({ kind }: { kind: ResultKind }) {
       ) : (
         <p className="m-0 text-center text-white/90">The link is missing its details. You can still try it yourself.</p>
       )}
-      <Link href={`/tool/${tool.id}`} className="inline-flex min-h-12 w-full items-center justify-center rounded-[18px] bg-white px-4 py-3 text-center text-base font-extrabold text-navy no-underline shadow-[0_5px_0_rgba(0,0,0,.25)]">
+      <Link href={`/tool/${tool.id}`} className="inline-flex min-h-12 w-full items-center justify-center rounded-[18px] bg-card px-4 py-3 text-center text-base font-extrabold text-navy no-underline shadow-[0_5px_0_rgba(0,0,0,.25)]">
         {tool.cta}
       </Link>
       <Link href="/fun" className="text-sm font-bold text-white/90 underline">More from the Fun Zone</Link>

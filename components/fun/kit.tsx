@@ -196,14 +196,14 @@ export function GameShell({
               Topper<span className="text-blue-200">Shelf</span>
             </span>
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-[11px] py-1.5 text-xs font-extrabold text-navy">
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-card px-[11px] py-1.5 text-xs font-extrabold text-navy">
             <span className={`size-[7px] rounded-full ${dot}`} />
             <span className="max-[359px]:hidden">{tr("FUN ZONE")} · </span>{tr(status)}
           </span>
         </div>
         <div className="mt-4 flex items-center gap-3.5 lg:mt-6 lg:gap-5">
           <div
-            className="size-[68px] shrink-0 animate-fz-wig rounded-[20px] bg-white p-1 transition-[rotate,translate] duration-200 rotate-[-7deg] hover:-translate-y-1 hover:rotate-0 hover:animate-none lg:size-[84px]"
+            className="size-[68px] shrink-0 animate-fz-wig rounded-[20px] bg-card p-1 transition-[rotate,translate] duration-200 rotate-[-7deg] hover:-translate-y-1 hover:rotate-0 hover:animate-none lg:size-[84px]"
             style={{ boxShadow: `0 14px 26px -10px ${stickerShadow}` }}
           >
             <Image

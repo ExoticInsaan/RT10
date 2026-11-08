@@ -147,7 +147,7 @@ export default function PdfToolkit() {
             type="button"
             onClick={() => setPicked(false)}
             aria-label={tr("Back to all PDF tools")}
-            className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy"
+            className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-line bg-card text-navy"
           >
             <span className="rotate-180">
               <ToolIcon name="arrow" size={18} />
@@ -186,7 +186,7 @@ export default function PdfToolkit() {
       {files.length > 0 && (
         <ol className="m-0 grid grid-cols-1 list-none gap-2 p-0">
           {files.map((file, index) => (
-            <li key={`${file.name}-${index}`} className="flex min-w-0 items-center gap-2 rounded-2xl border border-line bg-white py-2.5 pr-1.5 pl-3 sm:gap-3 sm:py-3 sm:pr-3 sm:pl-4">
+            <li key={`${file.name}-${index}`} className="flex min-w-0 items-center gap-2 rounded-2xl border border-line bg-card py-2.5 pr-1.5 pl-3 sm:gap-3 sm:py-3 sm:pr-3 sm:pl-4">
               <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-red-50 text-xs font-extrabold text-red-600">
                 {wantsImages ? "IMG" : "PDF"}
               </span>
@@ -290,13 +290,13 @@ export default function PdfToolkit() {
               </p>
               <ul className="m-0 grid grid-cols-1 max-h-80 list-none gap-2 overflow-y-auto p-0">
                 {outputs.map((output) => (
-                  <li key={output.name} className="flex items-center gap-3 rounded-xl bg-white px-4 py-2.5">
+                  <li key={output.name} className="flex items-center gap-3 rounded-xl bg-card px-4 py-2.5">
                     <span className="min-w-0 flex-1 truncate text-sm text-navy">{output.name}</span>
                     <span className="text-xs text-muted">{formatBytes(output.blob.size)}</span>
                     <button
                       type="button"
                       onClick={() => downloadBlob(output.blob, output.name)}
-                      className="cursor-pointer rounded-lg border-0 bg-blue-hover px-3 py-1.5 text-xs font-bold text-white hover:bg-navy"
+                      className="cursor-pointer rounded-lg border-0 bg-blue-hover px-3 py-1.5 text-xs font-bold text-white hover:bg-deep"
                     >
                       {tr("Download")}
                     </button>

@@ -53,9 +53,9 @@ const verdict = (sc: number): [string, string] =>
 const fzBtn =
   "flex min-h-14 w-full cursor-pointer items-center justify-center rounded-[18px] border-0 bg-[#0284c7] px-[18px] py-3.5 text-[17px] font-black text-white no-underline shadow-[0_6px_0_#075985,0_14px_24px_rgba(7,89,133,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#075985] disabled:cursor-default disabled:opacity-50";
 const ghost =
-  "min-h-[52px] cursor-pointer rounded-2xl border-2 border-[#bfdbfe] bg-white px-3.5 py-3 text-[15px] font-extrabold text-[#102a4c] shadow-[0_5px_0_#bfdbfe] active:translate-y-[3px] active:shadow-[0_2px_0_#bfdbfe]";
+  "min-h-[52px] cursor-pointer rounded-2xl border-2 border-[#bfdbfe] bg-card px-3.5 py-3 text-[15px] font-extrabold text-[#102a4c] shadow-[0_5px_0_#bfdbfe] active:translate-y-[3px] active:shadow-[0_2px_0_#bfdbfe]";
 const input =
-  "box-border w-full rounded-2xl border-2 border-[#bfdbfe] bg-white px-4 py-[15px] text-base font-medium text-[#102a4c] outline-none placeholder:text-[#8aa3c4] focus:border-[#0284c7] focus:shadow-[0_0_0_4px_rgba(2,132,199,.15)] sm:text-[17px]";
+  "box-border w-full rounded-2xl border-2 border-[#bfdbfe] bg-card px-4 py-[15px] text-base font-medium text-[#102a4c] outline-none placeholder:text-[#8aa3c4] focus:border-[#0284c7] focus:shadow-[0_0_0_4px_rgba(2,132,199,.15)] sm:text-[17px]";
 const heartPath = "M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.9 4.5c2.1 0 3.9 1.2 5.1 3 1.2-1.8 3-3 5.1-3 3.9 0 6 3.9 4.5 7.3C19.5 16.4 12 21 12 21z";
 
 function Hearts() {
@@ -219,7 +219,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
         {...shellProps}
         body={single(
           <>
-            <div className="flex flex-col items-center gap-3 rounded-[26px] bg-white p-[22px] text-center shadow-[0_8px_0_#bfdbfe]">
+            <div className="flex flex-col items-center gap-3 rounded-[26px] bg-card p-[22px] text-center shadow-[0_8px_0_#bfdbfe]">
               <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
               <div className="font-display text-[28px] leading-[1.1]">{error || "This link does not exist"}</div>
               <div className="text-[15px] leading-[1.4] text-[#3d5a80]">It may have been typed wrong. Ask your friend to send it again, or make your own.</div>
@@ -247,8 +247,8 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
       <>
         <div className="flex flex-wrap items-center gap-1.5 text-xs font-extrabold text-[#0369a1]">
           <span className="rounded-full bg-[#0284c7] px-2.5 py-1 text-white">{tr("1 You make a link")}</span>
-          <span className="rounded-full bg-white px-2.5 py-1">{tr("2 Friend answers")}</span>
-          <span className="rounded-full bg-white px-2.5 py-1">{tr("3 Score")}</span>
+          <span className="rounded-full bg-card px-2.5 py-1">{tr("2 Friend answers")}</span>
+          <span className="rounded-full bg-card px-2.5 py-1">{tr("3 Score")}</span>
         </div>
         <label htmlFor="fs-me" className="text-sm font-bold text-[#3d5a80]">{tr("Your name")}</label>
         <input
@@ -274,7 +274,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
         {...shellProps}
         body={single(
           <>
-            <div className="flex animate-fz-pop flex-col items-center gap-3.5 rounded-[26px] bg-white p-[22px] text-center shadow-[0_8px_0_#bfdbfe]">
+            <div className="flex animate-fz-pop flex-col items-center gap-3.5 rounded-[26px] bg-card p-[22px] text-center shadow-[0_8px_0_#bfdbfe]">
               <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
               <div className="break-words font-display text-[30px] leading-[1.05]">{tr("Your link is ready, {name}!", { name: meName })}</div>
               <div className="text-[15px] leading-[1.4] text-[#3d5a80]">{tr("Send it to a friend. They answer 8 quick questions about you two, and you see their score here.")}</div>
@@ -312,14 +312,14 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
         {...shellProps}
         body={single(
           <>
-            <div className="flex animate-fz-pop flex-col gap-1 rounded-[26px] bg-white p-[22px] shadow-[0_8px_0_#bfdbfe]">
+            <div className="flex animate-fz-pop flex-col gap-1 rounded-[26px] bg-card p-[22px] shadow-[0_8px_0_#bfdbfe]">
               <div className="text-xs font-black tracking-[.12em] text-[#0284c7]">{tr("YOUR FRIENDSHIP SCORES")}</div>
               <div className="break-words font-display text-[34px] leading-none">{list.length ? tr(list.length === 1 ? "{n} friend answered" : "{n} friends answered", { n: list.length }) : tr("Nobody yet")}</div>
               {list.length > 0 && <div className="text-[15px] text-[#3d5a80]">{tr("Average score {n} out of 100", { n: average })}</div>}
             </div>
             {list.length === 0 && <div className="rounded-2xl border-2 border-dashed border-[#93c5fd] p-4 text-center text-sm text-[#3d5a80]">{tr("No answers yet. Send your link to a friend!")}</div>}
             {list.map((r) => (
-              <div key={r.responder_name + r.created_at} className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_4px_0_#dbeafe]">
+              <div key={r.responder_name + r.created_at} className="flex items-center gap-3 rounded-2xl bg-card px-4 py-3 shadow-[0_4px_0_#dbeafe]">
                 <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#0284c7] font-display text-xl text-white">{(r.responder_name[0] || "?").toUpperCase()}</div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-base font-extrabold">{r.responder_name}</div>
@@ -345,7 +345,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
         {...shellProps}
         body={single(
           <>
-            <div className="flex animate-fz-pop flex-col gap-3 rounded-[26px] bg-white p-[22px] shadow-[0_8px_0_#bfdbfe]">
+            <div className="flex animate-fz-pop flex-col gap-3 rounded-[26px] bg-card p-[22px] shadow-[0_8px_0_#bfdbfe]">
               <div className="text-xs font-black tracking-[.12em] text-[#0284c7]">A FRIENDSHIP TEST FROM</div>
               <div className="break-words font-display text-[40px] leading-none">{meName}</div>
               <div className="text-[15px] leading-[1.4] text-[#3d5a80]">Answer 8 quick questions about you two. Be honest. {meName} will see the score.</div>
@@ -382,14 +382,14 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
               </div>
             </div>
             <div className="[perspective:1000px]">
-              <div key={q} className={`flex origin-left flex-col gap-2.5 rounded-[26px] bg-white p-5 shadow-[0_8px_0_#bfdbfe] ${q % 2 ? "animate-fz-cube2" : "animate-fz-cube"}`}>
+              <div key={q} className={`flex origin-left flex-col gap-2.5 rounded-[26px] bg-card p-5 shadow-[0_8px_0_#bfdbfe] ${q % 2 ? "animate-fz-cube2" : "animate-fz-cube"}`}>
                 <div className="min-h-[60px] font-display text-[26px] leading-[1.15]">{cur[0]}</div>
                 {cur[1].map((a, i) => (
                   <button
                     key={i}
                     type="button"
                     onClick={() => pick(i)}
-                    className={`flex min-h-[54px] min-w-0 cursor-pointer items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left text-base font-bold text-[#102a4c] shadow-[0_4px_0_#dbeafe] transition-[transform,border-color] duration-100 hover:border-[#60a5fa] active:translate-y-[3px] active:shadow-[0_1px_0_#dbeafe] ${sel === i ? "border-[#0284c7] bg-[#e0f2fe]" : "border-[#dbeafe] bg-white"}`}
+                    className={`flex min-h-[54px] min-w-0 cursor-pointer items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left text-base font-bold text-[#102a4c] shadow-[0_4px_0_#dbeafe] transition-[transform,border-color] duration-100 hover:border-[#60a5fa] active:translate-y-[3px] active:shadow-[0_1px_0_#dbeafe] ${sel === i ? "border-[#0284c7] bg-[#e0f2fe]" : "border-[#dbeafe] bg-card"}`}
                   >
                     <span className="flex size-[30px] shrink-0 items-center justify-center rounded-[10px] text-sm font-black text-white" style={{ background: BADGES[i] }}>{"ABCD"[i]}</span>
                     <span className="min-w-0 break-words">{a[0]}</span>
@@ -414,7 +414,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
         {sent === "sending" ? `Sending your answers to ${meName}…` : sent === "sent" ? `${meName} can now see your score.` : `Could not send your answers to ${meName}.`}
       </p>
       {sent === "sent" && rank && (
-        <div className="flex flex-col gap-2 rounded-2xl bg-white p-4 shadow-[0_4px_0_#dbeafe]" role="status">
+        <div className="flex flex-col gap-2 rounded-2xl bg-card p-4 shadow-[0_4px_0_#dbeafe]" role="status">
           <div className="text-xs font-black tracking-[.12em] text-[#0284c7]">YOUR RANK</div>
           <div className="font-display text-[28px] leading-none">#{rank.rank} of {rank.total} {rank.total === 1 ? "friend" : "friends"}</div>
           {rank.ahead === 0 ? (

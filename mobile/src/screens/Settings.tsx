@@ -9,7 +9,9 @@ import { BackIcon } from "../components/icons";
 import { openExternal } from "../external";
 import { disablePush, enablePush, pushSupported, pushWanted } from "../push";
 import { back, navigate } from "../shims/router";
+import { setChoice, useThemeChoice, type ThemeChoice } from "../theme";
 import { useLanguage } from "../i18n/LanguageProvider";
+import type { TranslationKey } from "../i18n";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const SUPPORT_EMAIL = "support@toppershelf.online";
@@ -26,8 +28,8 @@ const goMail = (href: string) => {
 function Group({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="mt-6 px-5">
-      <h2 className="m-0 mb-2 px-1 text-xs font-extrabold tracking-[0.08em] text-[#5b6675] uppercase">{title}</h2>
-      <div className="divide-y divide-line overflow-hidden rounded-3xl border border-line bg-white">{children}</div>
+      <h2 className="m-0 mb-2 px-1 text-xs font-extrabold tracking-[0.08em] text-sub uppercase">{title}</h2>
+      <div className="divide-y divide-line overflow-hidden rounded-3xl border border-line bg-card">{children}</div>
     </section>
   );
 }
@@ -36,8 +38,8 @@ function Row({ label, hint, onClick, right, danger }: { label: string; hint?: st
   const inner = (
     <>
       <span className="min-w-0 flex-1 text-left">
-        <span className={`block text-[15px] font-bold ${danger ? "text-[#b91c1c]" : "text-navy"}`}>{label}</span>
-        {hint && <span className="block truncate text-[13px] text-[#5b6675]">{hint}</span>}
+        <span className={`block text-[15px] font-bold ${danger ? "text-danger" : "text-navy"}`}>{label}</span>
+        {hint && <span className="block truncate text-[13px] text-sub">{hint}</span>}
       </span>
       {right}
     </>
@@ -52,6 +54,38 @@ function Row({ label, hint, onClick, right, danger }: { label: string; hint?: st
   );
 }
 
+const THEME_OPTIONS = [
+  { value: "system", key: "appearance.system" },
+  { value: "light", key: "appearance.light" },
+  { value: "dark", key: "appearance.dark" },
+] as const satisfies readonly { value: ThemeChoice; key: TranslationKey }[];
+
+/** Three-way choice: follow the phone, always light, or always dark. */
+function ThemePicker() {
+  const choice = useThemeChoice();
+  const { t } = useLanguage();
+  return (
+    <div className="px-4 py-3">
+      <span className="block text-[15px] font-bold text-navy">{t("appearance.theme")}</span>
+      <span className="mb-3 block text-[13px] text-sub">{t("appearance.hint")}</span>
+      <div role="radiogroup" aria-label={t("appearance.theme")} className="grid grid-cols-3 gap-1 rounded-2xl bg-blue-soft p-1">
+        {THEME_OPTIONS.map(({ value, key }) => (
+          <button
+            key={value}
+            type="button"
+            role="radio"
+            aria-checked={choice === value}
+            onClick={() => setChoice(value)}
+            className={`min-h-11 cursor-pointer rounded-xl border-0 text-sm font-bold ${choice === value ? "bg-[#2563eb] text-white" : "bg-transparent text-sub"}`}
+          >
+            {t(key)}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const Chevron = () => <span className="text-lg font-bold text-[#9aa3af]">›</span>;
 
 function Switch({ on, onChange, label }: { on: boolean; onChange: () => void; label: string }) {
@@ -62,9 +96,9 @@ function Switch({ on, onChange, label }: { on: boolean; onChange: () => void; la
       aria-checked={on}
       aria-label={label}
       onClick={onChange}
-      className={`relative h-8 w-14 shrink-0 cursor-pointer rounded-full border-0 transition-colors ${on ? "bg-[#2563eb]" : "bg-[#cbd5e1]"}`}
+      className={`relative h-8 w-14 shrink-0 cursor-pointer rounded-full border-0 transition-colors ${on ? "bg-[#2563eb]" : "bg-track"}`}
     >
-      <span className={`absolute top-1 left-1 size-6 rounded-full bg-white shadow transition-transform ${on ? "translate-x-6" : ""}`} />
+      <span className={`absolute top-1 left-1 size-6 rounded-full bg-card shadow transition-transform ${on ? "translate-x-6" : ""}`} />
     </button>
   );
 }
@@ -137,6 +171,10 @@ export default function Settings() {
         <h1 className="m-0 font-display text-[30px] leading-none font-normal">{t("settings.title")}</h1>
       </header>
 
+      <Group title={t("appearance.title")}>
+        <ThemePicker />
+      </Group>
+
       <Group title={t("language.title")}>
         <Row label={t("language.label")} hint={t("language.hint")} right={<LanguageSwitcher />} />
       </Group>
@@ -152,7 +190,7 @@ export default function Settings() {
                 tabIndex={0}
                 onClick={user ? () => void signOut() : openSignIn}
                 onKeyDown={(e) => e.key === "Enter" && (user ? void signOut() : openSignIn())}
-                className="inline-flex min-h-10 shrink-0 cursor-pointer items-center rounded-full bg-navy px-5 text-sm font-bold text-white"
+                className="inline-flex min-h-10 shrink-0 cursor-pointer items-center rounded-full bg-deep px-5 text-sm font-bold text-white"
               >
                 {user ? t("settings.signOut") : t("settings.signIn")}
               </span>
@@ -187,7 +225,7 @@ export default function Settings() {
         <Row label={t("settings.privacy")} onClick={() => void openExternal(`${SITE}/privacy`)} right={<Chevron />} />
         <Row label={t("settings.founders")} onClick={() => void openExternal(`${SITE}/founders`)} right={<Chevron />} />
         <Row label="Instagram" hint="@toppershelf_official" onClick={() => void openExternal(INSTAGRAM)} right={<Chevron />} />
-        <Row label={t("settings.version")} right={<span className="text-sm font-semibold text-[#5b6675]">{version}</span>} />
+        <Row label={t("settings.version")} right={<span className="text-sm font-semibold text-sub">{version}</span>} />
       </Group>
 
       <Group title={t("settings.data")}>
@@ -195,19 +233,19 @@ export default function Settings() {
       </Group>
 
       {note && (
-        <p role="status" className="mx-6 mt-4 mb-0 text-center text-[13px] leading-5 text-[#5b6675]">
+        <p role="status" className="mx-6 mt-4 mb-0 text-center text-[13px] leading-5 text-sub">
           {note}
         </p>
       )}
 
       {confirmDelete && (
         <div className="fixed inset-0 z-50 grid place-items-end bg-[#102a4c]/55 sm:place-items-center" role="dialog" aria-modal="true" aria-labelledby="del-title">
-          <div className="mx-auto w-full max-w-[480px] rounded-t-[32px] bg-white p-6 pb-8">
+          <div className="mx-auto w-full max-w-[480px] rounded-t-[32px] bg-card p-6 pb-8">
             <h2 id="del-title" className="m-0 text-xl font-extrabold">{t("settings.deleteTitle")}</h2>
-            <p className="mt-2 mb-0 text-[15px] leading-6 text-[#5b6675]">
+            <p className="mt-2 mb-0 text-[15px] leading-6 text-sub">
               {t("settings.deleteBody")}
             </p>
-            {deleteError && <p role="alert" className="mt-3 mb-0 text-sm font-semibold text-[#b91c1c]">{deleteError}</p>}
+            {deleteError && <p role="alert" className="mt-3 mb-0 text-sm font-semibold text-danger">{deleteError}</p>}
             <button
               type="button"
               disabled={busy}

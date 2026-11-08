@@ -14,7 +14,7 @@ export default function ShelfViewAll({ text = "Flashcards, reminders and more." 
       className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-hover lg:hidden"
     >
       <div className="shelf-object relative mx-2 flex aspect-[4/3] flex-col items-center justify-end overflow-hidden rounded-t-2xl rounded-b-md border-2 border-dashed border-blue/50 bg-blue-soft">
-        <span className="relative mb-2 rounded-2xl bg-white px-3 py-1.5 text-xs font-extrabold text-blue-hover shadow-sm transition-colors group-hover:bg-blue-hover group-hover:text-white sm:text-sm">
+        <span className="relative mb-2 rounded-2xl bg-card px-3 py-1.5 text-xs font-extrabold text-blue-hover shadow-sm transition-colors group-hover:bg-blue-hover group-hover:text-white sm:text-sm">
           View all {count}
           <span className="absolute -bottom-1 left-1/2 size-2.5 -translate-x-1/2 rotate-45 bg-inherit" aria-hidden="true" />
         </span>

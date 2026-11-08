@@ -21,7 +21,7 @@ export default function Splash() {
       <div className="absolute inset-x-0 top-[17%] flex flex-col items-center gap-3.5 text-center">
         <img src="./logo-mark.png" alt={t("splash.logoAlt")} className="size-[132px]" />
         <div className="text-[40px] leading-none font-extrabold tracking-[-0.03em] text-navy">
-          Topper<span className="text-[#2563eb]">Shelf</span>
+          Topper<span className="text-link2">Shelf</span>
         </div>
         <div className="mt-2.5 font-display text-[26px] leading-[1.15] text-navy">
           {t("home.hero1")}<br />{t("home.hero2")}<br />{t("home.hero3")}
@@ -33,7 +33,7 @@ export default function Splash() {
       >
         {t("splash.getStarted")}
       </a>
-      <div className="absolute inset-x-0 top-[var(--tagline-top)] text-center text-[13px] tracking-[0.04em] text-[#5b6675]">{t("splash.tagline")}</div>
+      <div className="absolute inset-x-0 top-[var(--tagline-top)] text-center text-[13px] tracking-[0.04em] text-sub">{t("splash.tagline")}</div>
       <img src="./mascot/owl-peek.webp" alt="" aria-hidden="true" className="absolute bottom-0 left-1/2 block -translate-x-1/2 [@media(max-height:520px)]:hidden"
         // Never taller than the space under the tagline (about 26px for the tagline itself and a small gap), so it cannot reach the button.
         style={{ width: "max(0px, min(240px, calc((100vh - var(--tagline-top) - 26px) * 1.2766)))" }}

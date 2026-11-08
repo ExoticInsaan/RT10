@@ -3,10 +3,10 @@ import type { TranslationKey } from "../i18n";
 import { GridIcon, HeartIcon, HomeIcon, SparkIcon } from "./icons";
 
 const tabs: { path: string; label: TranslationKey; Icon: typeof HomeIcon; active: string }[] = [
-  { path: "/home", label: "tabs.home", Icon: HomeIcon, active: "bg-[#e9f4fc] text-[#1d4ed8]" },
-  { path: "/shelf", label: "tabs.shelf", Icon: GridIcon, active: "bg-[#e9f4fc] text-[#1d4ed8]" },
+  { path: "/home", label: "tabs.home", Icon: HomeIcon, active: "bg-blue-soft text-link" },
+  { path: "/shelf", label: "tabs.shelf", Icon: GridIcon, active: "bg-blue-soft text-link" },
   { path: "/fun", label: "tabs.fun", Icon: SparkIcon, active: "bg-[#f3e8ff] text-[#6b21a8]" },
-  { path: "/my-shelf", label: "tabs.myShelf", Icon: HeartIcon, active: "bg-[#e9f4fc] text-[#1d4ed8]" },
+  { path: "/my-shelf", label: "tabs.myShelf", Icon: HeartIcon, active: "bg-blue-soft text-link" },
 ];
 
 export const TAB_PATHS = tabs.map((t) => t.path);
@@ -25,7 +25,7 @@ export default function BottomNav({ path }: { path: string }) {
             key={to}
             href={"#" + to}
             aria-current={on ? "page" : undefined}
-            className={`flex h-14 flex-col items-center justify-center gap-[3px] rounded-2xl text-[11px] font-bold ${on ? active : "text-[#5b6675]"}`}
+            className={`flex h-14 flex-col items-center justify-center gap-[3px] rounded-2xl text-[11px] font-bold ${on ? active : "text-sub"}`}
           >
             <Icon />
             {t(label)}

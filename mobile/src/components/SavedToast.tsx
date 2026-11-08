@@ -42,14 +42,14 @@ export default function SavedToast() {
     <div
       role="status"
       aria-live="polite"
-      className="absolute inset-x-3 z-50 flex animate-fz-pop items-center gap-3 rounded-2xl bg-navy p-3.5 text-white shadow-float"
+      className="absolute inset-x-3 z-50 flex animate-fz-pop items-center gap-3 rounded-2xl bg-deep p-3.5 text-white shadow-float"
       style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)" }}
     >
       <div className="min-w-0 flex-1">
         <div className="text-[15px] font-extrabold">{file.folder === "Pictures" ? tr("Saved to Gallery") : tr("Saved to Downloads")}</div>
         <div className="truncate text-xs text-white/70">{note || file.name}</div>
       </div>
-      <button type="button" className="min-h-10 cursor-pointer rounded-xl border-0 bg-white px-4 text-sm font-extrabold text-navy" onClick={() => void open()}>
+      <button type="button" className="min-h-10 cursor-pointer rounded-xl border-0 bg-card px-4 text-sm font-extrabold text-navy" onClick={() => void open()}>
         {tr("Open")}
       </button>
       <button

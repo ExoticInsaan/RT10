@@ -91,7 +91,7 @@ export default function DaysCountdown() {
               {[...rest, ...past].map((item) => {
                 const days = daysUntil(item.date, now);
                 return (
-                  <li key={item.id} className="flex items-center gap-4 rounded-2xl border border-line bg-white px-5 py-4">
+                  <li key={item.id} className="flex items-center gap-4 rounded-2xl border border-line bg-card px-5 py-4">
                     <span className="min-w-16 text-2xl font-extrabold tabular-nums text-navy">{Math.abs(days)}</span>
                     <span className="flex-1">
                       <span className="block font-bold text-navy">{item.title}</span>
@@ -121,7 +121,7 @@ function Big({ item, days, onRemove }: { item: Countdown; days: number; onRemove
     ? tr("{weeks} and {days}", { weeks: weeksText, days: tr(leftover === 1 ? "{n} day" : "{n} days", { n: leftover }) })
     : weeksText;
   return (
-    <div className="relative rounded-3xl bg-navy p-6 text-white sm:p-8" aria-live="polite">
+    <div className="relative rounded-3xl bg-deep p-6 text-white sm:p-8" aria-live="polite">
       <div className="absolute right-4 top-4">
         <RemoveButton title={item.title} onClick={onRemove} dark />
       </div>

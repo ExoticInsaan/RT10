@@ -11,7 +11,7 @@ import { useTr } from "@/lib/tools/useTr";
  */
 
 export const inputClass =
-  "h-12 w-full rounded-xl border border-line bg-white px-4 text-base text-navy outline-none transition placeholder:text-slate-400 focus:border-blue-hover focus:ring-4 focus:ring-blue-soft sm:text-sm";
+  "h-12 w-full rounded-xl border border-line bg-card px-4 text-base text-navy outline-none transition placeholder:text-slate-400 focus:border-blue-hover focus:ring-4 focus:ring-blue-soft sm:text-sm";
 
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
@@ -95,7 +95,7 @@ export function Segmented<T extends string>({
             aria-checked={active}
             onClick={() => onChange(option.value)}
             className={`min-h-10 flex-1 cursor-pointer rounded-xl border-0 px-3 text-sm font-semibold transition ${
-              active ? "bg-white text-navy shadow-sm" : "bg-transparent text-muted hover:text-navy"
+              active ? "bg-card text-navy shadow-sm" : "bg-transparent text-muted hover:text-navy"
             }`}
           >
             {option.label}
@@ -182,14 +182,14 @@ export function DropZone({
         over ? "border-blue-hover bg-blue-soft" : "border-line bg-surface/40"
       }`}
     >
-      <span className="mx-auto grid size-12 place-items-center rounded-full bg-white text-blue-hover shadow-sm">
+      <span className="mx-auto grid size-12 place-items-center rounded-full bg-card text-blue-hover shadow-sm">
         <ToolIcon name="upload" size={22} />
       </span>
       <p className="mb-1 mt-4 text-base font-bold text-navy">{title}</p>
       <p className="m-0 text-sm text-muted">{note}</p>
       <label
         htmlFor={id}
-        className="mt-5 inline-flex min-h-12 cursor-pointer items-center justify-center rounded-xl bg-blue-hover px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-navy"
+        className="mt-5 inline-flex min-h-12 cursor-pointer items-center justify-center rounded-xl bg-blue-hover px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-deep"
       >
         {multiple ? tr("Choose files") : tr("Choose a file")}
       </label>

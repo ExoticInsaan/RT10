@@ -20,6 +20,14 @@
     "english": "English",
     "hindi": "हिन्दी"
   },
+  "appearance": {
+    "title": "Appearance",
+    "theme": "Theme",
+    "hint": "System follows your phone's light or dark setting.",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
   "settings": {
     "title": "Settings",
     "account": "Account",

@@ -296,7 +296,7 @@ function SgpaToCgpa({
         type="button"
         disabled={semesters.length >= 12}
         onClick={() => setSemesters([...semesters, { sgpa: "", credits: "" }])}
-        className="min-h-11 cursor-pointer justify-self-start rounded-xl border border-dashed border-line bg-white px-4 text-sm font-semibold text-navy hover:border-blue-hover disabled:opacity-50"
+        className="min-h-11 cursor-pointer justify-self-start rounded-xl border border-dashed border-line bg-card px-4 text-sm font-semibold text-navy hover:border-blue-hover disabled:opacity-50"
       >
         {tr("+ Add a semester")}
       </button>
@@ -341,7 +341,7 @@ function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSub
       </p>
       <ol className="m-0 grid grid-cols-1 list-none gap-3 p-0">
         {subjects.map((s, index) => (
-          <li key={index} className="grid grid-cols-1 gap-3 rounded-2xl border border-line bg-white p-3 sm:grid-cols-[1.2fr_1fr_1fr_auto] sm:items-end">
+          <li key={index} className="grid grid-cols-1 gap-3 rounded-2xl border border-line bg-card p-3 sm:grid-cols-[1.2fr_1fr_1fr_auto] sm:items-end">
             <div className="flex items-end gap-2 sm:contents">
               <Field label={tr("Subject {n}", { n: index + 1 })}>
                 <input
@@ -373,7 +373,7 @@ function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSub
         type="button"
         disabled={subjects.length >= 15}
         onClick={() => setSubjects([...subjects, newSubject()])}
-        className="min-h-11 cursor-pointer justify-self-start rounded-xl border border-dashed border-line bg-white px-4 text-sm font-semibold text-navy hover:border-blue-hover disabled:opacity-50"
+        className="min-h-11 cursor-pointer justify-self-start rounded-xl border border-dashed border-line bg-card px-4 text-sm font-semibold text-navy hover:border-blue-hover disabled:opacity-50"
       >
         {tr("+ Add a subject")}
       </button>
@@ -396,7 +396,7 @@ function MarksToPercent({ subjects, setSubjects }: { subjects: Subject[]; setSub
             {used.map((r) => {
               const pct = (r.got / r.max) * 100;
               return (
-                <li key={r.index} className="rounded-2xl border border-line bg-white px-4 py-3">
+                <li key={r.index} className="rounded-2xl border border-line bg-card px-4 py-3">
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="min-w-0 truncate text-sm font-semibold text-navy">{r.name}</span>
                     <span className="shrink-0 text-base font-extrabold text-navy">{round2(pct)}%</span>

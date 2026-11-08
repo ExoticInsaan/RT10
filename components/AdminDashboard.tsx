@@ -35,7 +35,7 @@ const dateText = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { da
 
 function Card({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded-2xl border border-line bg-white p-5 shadow-card">
+    <div className="rounded-2xl border border-line bg-card p-5 shadow-card">
       <p className="m-0 text-sm font-semibold text-muted">{label}</p>
       <p className="mb-0 mt-1 text-3xl font-extrabold text-navy">{value}</p>
     </div>
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
 
   if (!user) {
     return (
-      <div className="rounded-2xl border border-line bg-white p-6 shadow-card">
+      <div className="rounded-2xl border border-line bg-card p-6 shadow-card">
         <h1 className="m-0 text-2xl font-extrabold text-navy">Admin</h1>
         <p className="mb-4 mt-2 text-sm text-muted">Sign in with the admin account to continue.</p>
         <Button onClick={openSignIn}>Continue with Google</Button>
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
 
   if (state === "denied") {
     return (
-      <div className="rounded-2xl border border-line bg-white p-6 shadow-card">
+      <div className="rounded-2xl border border-line bg-card p-6 shadow-card">
         <h1 className="m-0 text-2xl font-extrabold text-navy">No access</h1>
         <p className="mb-0 mt-2 text-sm text-muted">This account is not an admin.</p>
       </div>
@@ -226,7 +226,7 @@ export default function AdminDashboard() {
         ) : (
           <ul className="m-0 grid list-none gap-3 p-0">
             {grouped.map((g) => (
-              <li key={g.name.toLowerCase()} className="rounded-2xl border border-line bg-white p-4">
+              <li key={g.name.toLowerCase()} className="rounded-2xl border border-line bg-card p-4">
                 <div className="flex items-start justify-between gap-3">
                   <p className="m-0 text-base font-bold text-navy">{g.name}</p>
                   <p className="m-0 shrink-0 text-sm text-muted">
@@ -247,7 +247,7 @@ export default function AdminDashboard() {
         {days.length === 0 ? (
           <p className="m-0 text-sm text-muted">No sign-ups in the last 14 days.</p>
         ) : (
-          <div className="flex h-32 items-end gap-2 rounded-2xl border border-line bg-white p-4">
+          <div className="flex h-32 items-end gap-2 rounded-2xl border border-line bg-card p-4">
             {days.map((d) => (
               <div key={d.day} className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
                 <span className="text-xs font-bold text-navy">{d.count}</span>

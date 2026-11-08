@@ -7,12 +7,14 @@ import { hindiContent } from "./i18n/appContent.hi";
 
 registerAppContent(hindiContent);
 import { initNative } from "./native";
+import { initTheme } from "./theme";
 import { restorePush } from "./push";
 import { initCountdownWidget } from "./widget";
 import { initFocusTimer } from "./focusTimer";
 import { initReminders } from "./reminders";
 import "./styles.css";
 
+initTheme();
 initNative();
 void restorePush();
 initReminders();

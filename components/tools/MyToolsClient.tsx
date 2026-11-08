@@ -57,7 +57,7 @@ function RecentRow({ list }: { list: Tool[] }) {
         <li key={tool.id} className="shrink-0">
           <Link
             href={`/tool/${tool.id}`}
-            className="flex min-h-16 items-center gap-3 rounded-2xl border border-line bg-white py-2 pl-2 pr-5 transition hover:border-blue/60 hover:shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-hover"
+            className="flex min-h-16 items-center gap-3 rounded-2xl border border-line bg-card py-2 pl-2 pr-5 transition hover:border-blue/60 hover:shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-hover"
           >
             <IconTile tool={tool} />
             <span>
@@ -122,7 +122,7 @@ export default function MyToolsClient() {
     return (
       <>
         {header}
-        <div className="mb-14 rounded-3xl border border-line bg-white p-6 sm:p-8">
+        <div className="mb-14 rounded-3xl border border-line bg-card p-6 sm:p-8">
           <h2 className="m-0 text-xl font-extrabold text-navy">Your shelf is empty, for now</h2>
           <p className="mb-0 mt-2 max-w-2xl text-sm leading-6 text-muted">
             Tap the heart on any tool to keep it here. Tools you open show up here too, so you can jump straight back in

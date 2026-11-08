@@ -20,7 +20,7 @@ export default function OfflineBanner() {
   if (!offline) return null;
   return (
     <div role="status" className="pointer-events-none absolute inset-x-0 bottom-[calc(88px+env(safe-area-inset-bottom))] z-40 flex justify-center px-4">
-      <p className="m-0 max-w-sm rounded-full bg-navy px-4 py-2 text-center text-xs font-bold leading-5 text-white shadow-card">
+      <p className="m-0 max-w-sm rounded-full bg-deep px-4 py-2 text-center text-xs font-bold leading-5 text-white shadow-card">
         {tr("You’re offline. Your tools still work and changes sync when you’re back online.")}
       </p>
     </div>

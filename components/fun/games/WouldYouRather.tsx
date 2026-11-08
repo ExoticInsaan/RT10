@@ -70,7 +70,7 @@ export default function WouldYouRather() {
         rootClass="bg-[#f6edff]"
         body={
           <div className="mx-auto flex w-full max-w-md flex-col gap-3.5 lg:col-span-2">
-            <div className="flex animate-fz-pop flex-col items-center gap-2.5 rounded-[28px] bg-white px-[22px] py-[26px] text-center shadow-[0_8px_0_#e3cffd]">
+            <div className="flex animate-fz-pop flex-col items-center gap-2.5 rounded-[28px] bg-card px-[22px] py-[26px] text-center shadow-[0_8px_0_#e3cffd]">
               <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
               <div className="text-xs font-black tracking-[.14em] text-[#a21caf]">{tr("YOU ARE A")}</div>
               <div className="font-display text-[38px] leading-none text-[#2e1065]">{types[0]}</div>
@@ -132,7 +132,7 @@ export default function WouldYouRather() {
                   <span className="mt-2 font-display text-[27px] leading-[1.12]">{s.text}</span>
                 </span>
                 <span
-                  className={`${face} border-[3px] bg-white text-[#2e1065] [transform:rotateX(180deg)]`}
+                  className={`${face} border-[3px] bg-card text-[#2e1065] [transform:rotateX(180deg)]`}
                   style={{ boxShadow: `0 8px 0 ${s.edge},0 20px 30px -10px rgba(46,16,101,.35)`, borderColor: chosen ? s.bg : "transparent" }}
                 >
                   <span className="flex items-center justify-between">

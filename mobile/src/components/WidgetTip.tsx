@@ -4,7 +4,7 @@ import { Rich, useTr } from "@/lib/tools/useTr";
 export default function WidgetTip() {
   const tr = useTr();
   return (
-    <p className="mx-1 mt-4 mb-0 rounded-2xl bg-[#e8f1ff] px-4 py-3 text-sm leading-6 text-navy">
+    <p className="mx-1 mt-4 mb-0 rounded-2xl bg-tip px-4 py-3 text-sm leading-6 text-navy">
       <Rich text={tr("<b>Tip:</b> see your next countdown on the home screen. Press and hold an empty spot, tap Widgets, then pick TopperShelf “Days left”.")} />
     </p>
   );

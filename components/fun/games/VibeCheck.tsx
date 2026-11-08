@@ -59,7 +59,7 @@ export function vibeFor(name: string, day: string, hi = false) {
 const btn =
   "min-h-14 w-full cursor-pointer rounded-[18px] border-0 bg-[#4f46e5] px-[18px] py-3.5 text-[17px] font-extrabold text-white shadow-[0_6px_0_#3730a3,0_14px_24px_rgba(55,48,163,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#3730a3] disabled:cursor-default disabled:opacity-50";
 const ghost =
-  "min-h-[50px] cursor-pointer rounded-2xl border-2 border-[#d4d7fb] bg-white px-3.5 py-3 text-[15px] font-extrabold text-[#312e81] shadow-[0_5px_0_#d4d7fb] active:translate-y-[3px] active:shadow-[0_2px_0_#d4d7fb]";
+  "min-h-[50px] cursor-pointer rounded-2xl border-2 border-[#d4d7fb] bg-card px-3.5 py-3 text-[15px] font-extrabold text-[#312e81] shadow-[0_5px_0_#d4d7fb] active:translate-y-[3px] active:shadow-[0_2px_0_#d4d7fb]";
 
 export default function VibeCheck() {
   const tr = useTr();
@@ -92,7 +92,7 @@ export default function VibeCheck() {
     phase !== "result" ? (
       <div className="relative mx-auto h-[300px] w-full max-w-[26rem] shrink-0 overflow-hidden rounded-[26px] bg-[#1e1b4b] [perspective:700px]">
         {STARS.map((s, i) => (
-          <div key={i} className="absolute animate-fz-twinkle rounded-full bg-white" style={{ left: `${s.x}%`, top: s.y, width: s.r, height: s.r, animationDelay: `${s.d}s` }} />
+          <div key={i} className="absolute animate-fz-twinkle rounded-full bg-card" style={{ left: `${s.x}%`, top: s.y, width: s.r, height: s.r, animationDelay: `${s.d}s` }} />
         ))}
         <div
           className="absolute left-1/2 top-1/2 -ml-[130px] -mt-[130px] size-[260px] rounded-full opacity-45 blur-[40px] transition-[background] duration-[800ms]"
@@ -142,7 +142,7 @@ export default function VibeCheck() {
             placeholder={tr("Type your name")}
             maxLength={30}
             autoComplete="off"
-            className="box-border w-full rounded-2xl border-2 border-[#d4d7fb] bg-white px-4 py-[15px] text-base font-medium text-[#1e1b4b] outline-none placeholder:text-[#9a9ccc] focus:border-[#6366f1] focus:shadow-[0_0_0_4px_rgba(99,102,241,.18)] sm:text-[17px]"
+            className="box-border w-full rounded-2xl border-2 border-[#d4d7fb] bg-card px-4 py-[15px] text-base font-medium text-[#1e1b4b] outline-none placeholder:text-[#9a9ccc] focus:border-[#6366f1] focus:shadow-[0_0_0_4px_rgba(99,102,241,.18)] sm:text-[17px]"
           />
         </div>
         <button type="button" className={btn} onClick={check} disabled={!name.trim()}>{tr("Check the vibe")}</button>

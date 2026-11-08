@@ -143,7 +143,7 @@ export default function Reminder() {
               <button
                 type="button"
                 onClick={() => setDue(due.filter((d) => d.id !== i.id))}
-                className="cursor-pointer rounded-lg border-0 bg-white px-3 py-1.5 text-sm font-bold text-navy"
+                className="cursor-pointer rounded-lg border-0 bg-card px-3 py-1.5 text-sm font-bold text-navy"
               >
                 Done
               </button>
@@ -176,7 +176,7 @@ export default function Reminder() {
       </form>
       {error && <Hint error>{error}</Hint>}
 
-      <p className="m-0 rounded-2xl border border-line bg-white px-5 py-4 text-sm leading-6 text-slate-700">
+      <p className="m-0 rounded-2xl border border-line bg-card px-5 py-4 text-sm leading-6 text-slate-700">
         <strong className="text-navy">Want an alert even when this site is closed?</strong> Use <em>Google Calendar</em> or{" "}
         <em>Phone calendar</em> on a reminder. Your phone&apos;s calendar then alerts you at that time. Inside TopperShelf, alerts
         only show while this page is open.
@@ -203,7 +203,7 @@ function List({ title, items, now, past = false, onRemove }: { title: string; it
       <h3 className="mb-3 mt-0 text-base font-bold text-navy">{title}</h3>
       <ul className="m-0 grid grid-cols-1 list-none gap-2 p-0">
         {items.map((i) => (
-          <li key={i.id} className={`rounded-2xl border border-line bg-white px-5 py-4 ${past ? "opacity-70" : ""}`}>
+          <li key={i.id} className={`rounded-2xl border border-line bg-card px-5 py-4 ${past ? "opacity-70" : ""}`}>
             <div className="flex items-start gap-3">
               <span className="min-w-0 flex-1">
                 <span className="block font-bold text-navy">{i.title}</span>

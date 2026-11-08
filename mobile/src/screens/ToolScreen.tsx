@@ -38,17 +38,17 @@ export default function ToolScreen({ id }: { id: string }) {
   if (!tool || (!fun && !Shelf)) {
     return (
       <Frame fun={false} backLabel={tr("Back")} title={tr("Not found")}>
-        <p className="m-0 py-10 text-center text-[#5b6675]">{tr("This tool is not in the app yet.")}</p>
+        <p className="m-0 py-10 text-center text-sub">{tr("This tool is not in the app yet.")}</p>
       </Frame>
     );
   }
 
   const signedIn = ready && !!user;
   const gate = (
-    <div className="mx-auto mt-6 max-w-sm rounded-3xl bg-white p-6 text-center text-navy shadow-card">
+    <div className="mx-auto mt-6 max-w-sm rounded-3xl bg-card p-6 text-center text-navy shadow-card">
       <img src="./mascot/owl-peek.webp" alt="" className="mx-auto mb-3 w-28" />
       <h2 className="m-0 text-xl font-extrabold">{tr("Sign in to use {name}", { name })}</h2>
-      <p className="mt-2 mb-5 text-sm leading-6 text-[#5b6675]">{tr("One quick Google sign-in. Free, no watermarks.")}</p>
+      <p className="mt-2 mb-5 text-sm leading-6 text-sub">{tr("One quick Google sign-in. Free, no watermarks.")}</p>
       <button type="button" onClick={openSignIn} className="min-h-12 w-full cursor-pointer rounded-[28px] border-0 bg-[#2563eb] text-base font-extrabold text-white shadow-[0_4px_0_#1e40af]">
         {ready ? tr("Continue") : tr("Loading…")}
       </button>
@@ -64,7 +64,7 @@ export default function ToolScreen({ id }: { id: string }) {
   }
   return (
     <Frame fun={false} backLabel={tr("The Shelf")} title={name} toolId={tool.id}>
-      {signedIn ? <div className="rounded-3xl border border-[#e8e4dd] bg-white p-4 shadow-card">{Shelf && <Shelf />}</div> : gate}
+      {signedIn ? <div className="rounded-3xl border border-edge bg-card p-4 shadow-card">{Shelf && <Shelf />}</div> : gate}
       {signedIn && id === "days-countdown" && <WidgetTip />}
     </Frame>
   );
@@ -72,7 +72,7 @@ export default function ToolScreen({ id }: { id: string }) {
 
 function Frame({ fun, backLabel, title, toolId, children }: { fun: boolean; backLabel: string; title: string; toolId?: string; children: React.ReactNode }) {
   return (
-    <div className={`hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-[max(28px,env(safe-area-inset-bottom))] ${fun ? "bg-fun-field" : "bg-ivory"}`}>
+    <div className={`hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-[max(28px,env(safe-area-inset-bottom))] ${fun ? "light-island bg-fun-field" : "bg-ivory"}`}>
       <div className="flex items-center justify-between pr-3">
         <button
           type="button"

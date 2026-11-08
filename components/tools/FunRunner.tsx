@@ -24,7 +24,7 @@ export default function FunRunner({ toolId }: { toolId: string }) {
   }
 
   const fieldClass =
-    "mt-2 w-full rounded-xl border border-line bg-white px-4 text-sm text-navy outline-none focus:border-purple-400";
+    "mt-2 w-full rounded-xl border border-line bg-card px-4 text-sm text-navy outline-none focus:border-purple-400";
 
   return (
     <form

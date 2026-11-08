@@ -46,7 +46,7 @@ export function excuseParts(situation: string, roll: number, hi = false) {
 const btn =
   "min-h-14 cursor-pointer rounded-[18px] border-0 bg-[#6a4cff] px-4 py-3.5 text-[17px] font-extrabold text-white shadow-[0_6px_0_#4126c9,0_14px_24px_rgba(65,38,201,.28)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#4126c9] disabled:cursor-default disabled:opacity-50";
 const ghost =
-  "min-h-14 cursor-pointer rounded-[18px] border-2 border-[#d6ccff] bg-white px-4 py-3 text-[17px] font-extrabold text-[#3b23b8] shadow-[0_5px_0_#d6ccff] active:translate-y-[3px] active:shadow-[0_2px_0_#d6ccff] disabled:cursor-default disabled:opacity-50";
+  "min-h-14 cursor-pointer rounded-[18px] border-2 border-[#d6ccff] bg-card px-4 py-3 text-[17px] font-extrabold text-[#3b23b8] shadow-[0_5px_0_#d6ccff] active:translate-y-[3px] active:shadow-[0_2px_0_#d6ccff] disabled:cursor-default disabled:opacity-50";
 
 export default function ExcuseGenerator() {
   const tr = useTr();
@@ -101,7 +101,7 @@ export default function ExcuseGenerator() {
         placeholder={tr("missing the 8am class")}
         maxLength={60}
         autoComplete="off"
-        className="box-border w-full rounded-2xl border-2 border-[#d6ccff] bg-white px-4 py-[15px] text-base font-medium text-[#1d1340] outline-none placeholder:text-[#9a90c6] focus:border-[#6a4cff] focus:shadow-[0_0_0_4px_rgba(106,76,255,.15)] sm:text-[17px]"
+        className="box-border w-full rounded-2xl border-2 border-[#d6ccff] bg-card px-4 py-[15px] text-base font-medium text-[#1d1340] outline-none placeholder:text-[#9a90c6] focus:border-[#6a4cff] focus:shadow-[0_0_0_4px_rgba(106,76,255,.15)] sm:text-[17px]"
       />
     </div>
   );
@@ -115,7 +115,7 @@ export default function ExcuseGenerator() {
           ))}
         </div>
         {lists.map((list, i) => (
-          <div key={i} className="relative h-[66px] overflow-hidden rounded-xl bg-white shadow-[inset_0_0_0_3px_#ffd23f] [perspective:420px]">
+          <div key={i} className="relative h-[66px] overflow-hidden rounded-xl bg-card shadow-[inset_0_0_0_3px_#ffd23f] [perspective:420px]">
             <div className="absolute left-2 top-1 z-[2] text-[10px] font-bold tracking-[.1em] text-[#8f84bd]">{tr(LABELS[i])}</div>
             <div
               className="absolute inset-0 [transform-style:preserve-3d]"
@@ -127,7 +127,7 @@ export default function ExcuseGenerator() {
               {list.map((t, j) => (
                 <div
                   key={t}
-                  className="absolute inset-x-0 top-1/2 -mt-[29px] box-border flex h-[58px] items-center justify-center overflow-hidden border-y border-[#ece7ff] bg-white px-2.5 text-center text-[15px] font-bold leading-tight text-[#1d1340] [backface-visibility:hidden] min-[380px]:text-[17px]"
+                  className="absolute inset-x-0 top-1/2 -mt-[29px] box-border flex h-[58px] items-center justify-center overflow-hidden border-y border-[#ece7ff] bg-card px-2.5 text-center text-[15px] font-bold leading-tight text-[#1d1340] [backface-visibility:hidden] min-[380px]:text-[17px]"
                   style={{ transform: `rotateX(${j * 36}deg) translateZ(90px)` }}
                 >
                   {t}
@@ -150,7 +150,7 @@ export default function ExcuseGenerator() {
   const result = (
     <div className="min-h-[120px] lg:col-start-2">
       {has ? (
-        <div className="flex animate-fz-pop flex-col gap-2.5 rounded-[20px] bg-white p-4 shadow-[0_6px_0_#d6ccff]">
+        <div className="flex animate-fz-pop flex-col gap-2.5 rounded-[20px] bg-card p-4 shadow-[0_6px_0_#d6ccff]">
           <div className="text-base font-medium leading-[1.4] text-[#1d1340]">“{excuse}”</div>
           <div className="flex items-center gap-2.5">
             <span className="whitespace-nowrap text-xs font-bold text-[#5b4f86]">{tr("Believability")}</span>

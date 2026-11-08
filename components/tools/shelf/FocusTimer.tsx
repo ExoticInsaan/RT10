@@ -330,7 +330,7 @@ export default function FocusTimer() {
           onClick={openFullscreen}
           aria-label={tr("Full screen")}
           title={tr("Full screen")}
-          className="absolute right-0 top-0 z-10 grid size-9 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy shadow-sm transition hover:bg-blue-soft"
+          className="absolute right-0 top-0 z-10 grid size-9 cursor-pointer place-items-center rounded-full border border-line bg-card text-navy shadow-sm transition hover:bg-blue-soft"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3" />
@@ -427,7 +427,7 @@ export default function FocusTimer() {
                 <button
                   type="button"
                   onClick={() => setTimeEdit(null)}
-                  className="min-h-10 cursor-pointer rounded-full border border-line bg-white px-4 text-sm font-bold text-navy"
+                  className="min-h-10 cursor-pointer rounded-full border border-line bg-card px-4 text-sm font-bold text-navy"
                 >
                   {tr("Cancel")}
                 </button>
@@ -506,7 +506,7 @@ export default function FocusTimer() {
                 onClick={closeFullscreen}
                 aria-label={tr("Minimize")}
                 title={tr("Minimize")}
-                className="grid size-11 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy shadow-sm transition hover:bg-blue-soft"
+                className="grid size-11 cursor-pointer place-items-center rounded-full border border-line bg-card text-navy shadow-sm transition hover:bg-blue-soft"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M3 8h3a2 2 0 0 0 2-2V3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M21 16h-3a2 2 0 0 0-2 2v3" />

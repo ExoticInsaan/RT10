@@ -63,13 +63,13 @@ export function Sticker({
     <a
       href={"#/tool/" + tool.id}
       style={{ rotate: `${tilt}deg` }}
-      className={`flex flex-col bg-white shadow-[0_22px_44px_-18px_rgb(60_8_40/55%)] ${lg ? "rounded-[26px] p-[9px]" : "rounded-3xl p-2"} ${className}`}
+      className={`flex flex-col bg-card shadow-[0_22px_44px_-18px_rgb(60_8_40/55%)] ${lg ? "rounded-[26px] p-[9px]" : "rounded-3xl p-2"} ${className}`}
     >
       <div className={`aspect-square overflow-hidden ${lg ? "rounded-[19px]" : "rounded-[17px]"}`} style={{ background: tool.imageBg }}>
         {tool.image && <img src={asset(tool.image)} alt="" className="block size-full scale-[1.04] object-cover" />}
       </div>
       <div className={`font-extrabold leading-tight text-navy ${lg ? "px-1 pt-[11px] pb-[3px] text-[15px] tracking-[-0.01em]" : "px-[3px] pt-[9px] pb-1 text-sm"}`}>{text(tool).name}</div>
-      {play && <div className="mt-2.5 mb-0.5 ml-1 flex min-h-9 items-center self-start rounded-full bg-navy px-4 text-sm font-bold text-white">{t("fun.play")}</div>}
+      {play && <div className="mt-2.5 mb-0.5 ml-1 flex min-h-9 items-center self-start rounded-full bg-deep px-4 text-sm font-bold text-white">{t("fun.play")}</div>}
     </a>
   );
 }
@@ -81,12 +81,12 @@ export function ToolRow({ tool }: { tool: Tool }) {
   const text = useToolText()(tool);
   const on = favs.includes(tool.id);
   return (
-    <div className="flex items-center gap-3.5 rounded-3xl border border-[#e8e4dd] bg-white py-2.5 pr-1.5 pl-2.5">
+    <div className="flex items-center gap-3.5 rounded-3xl border border-edge bg-card py-2.5 pr-1.5 pl-2.5">
       <a href={"#/tool/" + tool.id} className="flex min-w-0 flex-1 items-center gap-3.5">
         <Thumb tool={tool} pad={8} className="size-[76px] shrink-0 rounded-[18px]" />
         <div className="min-w-0 flex-1">
           <div className="text-base leading-tight font-bold">{text.name}</div>
-          <div className="mt-[3px] text-[13px] leading-[1.4] text-[#5b6675]">{text.description}</div>
+          <div className="mt-[3px] text-[13px] leading-[1.4] text-sub">{text.description}</div>
         </div>
       </a>
       <button
@@ -94,7 +94,7 @@ export function ToolRow({ tool }: { tool: Tool }) {
         aria-label={t(on ? "tiles.favRemove" : "tiles.favAdd", { name: text.name })}
         aria-pressed={on}
         onClick={() => setFavs((cur) => (cur.includes(tool.id) ? cur.filter((x) => x !== tool.id) : [tool.id, ...cur]))}
-        className={`flex size-11 shrink-0 items-center justify-center rounded-full border-0 bg-transparent ${on ? "text-rose-500" : "text-[#5b6675]"}`}
+        className={`flex size-11 shrink-0 items-center justify-center rounded-full border-0 bg-transparent ${on ? "text-rose-500" : "text-sub"}`}
       >
         <HeartIcon size={22} filled={on} />
       </button>
@@ -104,7 +104,7 @@ export function ToolRow({ tool }: { tool: Tool }) {
 
 export function Chip({ children, href }: { children: ReactNode; href: string }) {
   return (
-    <a href={href} className="flex min-h-11 items-center rounded-full border border-line bg-white px-4 text-sm font-bold whitespace-nowrap">
+    <a href={href} className="flex min-h-11 items-center rounded-full border border-line bg-card px-4 text-sm font-bold whitespace-nowrap">
       {children}
     </a>
   );

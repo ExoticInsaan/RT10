@@ -25,15 +25,15 @@ export default function Home() {
         <div className="flex items-center gap-[9px]">
           <img src="./logo-mark.png" alt="" className="size-9" />
           <div className="text-[20px] font-extrabold tracking-[-0.02em]">
-            Topper<span className="text-[#2563eb]">Shelf</span>
+            Topper<span className="text-link2">Shelf</span>
           </div>
         </div>
-        <a href="#/settings" aria-label={tr("home.settingsAria")} className="flex size-11 items-center justify-center rounded-full bg-[#e9f4fc] text-[#1d4ed8]">
+        <a href="#/settings" aria-label={tr("home.settingsAria")} className="flex size-11 items-center justify-center rounded-full bg-blue-soft text-link">
           <UserIcon />
         </a>
       </div>
 
-      <div className="dots-light mx-5 mt-3.5 box-border overflow-hidden rounded-[28px] bg-navy pt-[22px] pr-4 pb-4 pl-5">
+      <div className="dots-light mx-5 mt-3.5 box-border overflow-hidden rounded-[28px] bg-deep pt-[22px] pr-4 pb-4 pl-5">
         <div className="flex items-end justify-between gap-1.5">
           <h1 className="m-0 mb-3.5 font-display text-[26px] leading-[1.1] font-normal text-white">
             {tr("home.hero1")}<br />{tr("home.hero2")}<br />{tr("home.hero3")}
@@ -42,26 +42,26 @@ export default function Home() {
         </div>
         <div className="relative">
           <label htmlFor="q" className="sr-only">{tr("home.searchLabel")}</label>
-          <SearchIcon className="absolute top-4 left-4 text-[#5b6675]" />
+          <SearchIcon className="absolute top-4 left-4 text-sub" />
           <input
             id="q"
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={tr("home.search")}
-            className="box-border h-[52px] w-full rounded-2xl border-0 bg-white pr-4 pl-[46px] text-base text-navy outline-none"
+            className="box-border h-[52px] w-full rounded-2xl border-0 bg-card pr-4 pl-[46px] text-base text-navy outline-none"
           />
         </div>
       </div>
 
       {q.trim() ? (
         <div className="flex flex-col gap-3 px-5 pt-4">
-          {results.length ? results.map((t) => <ToolRow key={t.id} tool={t} />) : <p className="m-0 py-6 text-center text-[15px] text-[#5b6675]">{tr("common.noMatch", { q: q.trim() })}</p>}
+          {results.length ? results.map((t) => <ToolRow key={t.id} tool={t} />) : <p className="m-0 py-6 text-center text-[15px] text-sub">{tr("common.noMatch", { q: q.trim() })}</p>}
         </div>
       ) : (
         <>
           <div className="hide-scrollbar flex items-center gap-2 overflow-x-auto px-5 pt-3.5">
-            <span className="mr-0.5 text-sm text-[#5b6675]">{tr("home.popular")}</span>
+            <span className="mr-0.5 text-sm text-sub">{tr("home.popular")}</span>
             <Chip href="#/tool/cgpa-calculator">{tr("home.chipCgpa")}</Chip>
             <Chip href="#/tool/image-compressor">{tr("home.chipImage")}</Chip>
             <Chip href="#/tool/attendance-calculator">{tr("home.chipAttendance")}</Chip>
@@ -69,7 +69,7 @@ export default function Home() {
 
           <div className="flex items-end justify-between px-5 pt-[26px]">
             <h2 className="m-0 font-display text-[30px] leading-none font-normal">{tr("home.shelfTitle")}</h2>
-            <a href="#/shelf" className="flex min-h-11 items-center text-sm font-extrabold text-[#1d4ed8]">{tr("home.seeAllN", { n: shelf.length })}</a>
+            <a href="#/shelf" className="flex min-h-11 items-center text-sm font-extrabold text-link">{tr("home.seeAllN", { n: shelf.length })}</a>
           </div>
           <div className="hide-scrollbar flex gap-3.5 overflow-x-auto px-5 pt-1.5 pb-2">
             {shelf.slice(0, 5).map((t) => (
@@ -77,7 +77,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="bg-fun-gradient mx-5 mt-[22px] rounded-[28px] py-[22px]">
+          <div className="light-island bg-fun-gradient mx-5 mt-[22px] rounded-[28px] py-[22px]">
             <div className="px-5">
               <h2 className="m-0 font-display text-4xl leading-none font-normal">{tr("home.funTitle")}</h2>
               <p className="mt-2 mb-0 text-[15px] leading-[1.45] text-slate-700">{tr("home.funBlurb")}</p>
@@ -88,7 +88,7 @@ export default function Home() {
               ))}
             </div>
             <div className="px-5 pt-2">
-              <a href="#/fun" className="flex min-h-[52px] items-center justify-center gap-2 rounded-[26px] bg-navy text-base font-extrabold text-white">
+              <a href="#/fun" className="flex min-h-[52px] items-center justify-center gap-2 rounded-[26px] bg-deep text-base font-extrabold text-white">
                 {tr("home.funOpen")} <ArrowIcon />
               </a>
             </div>

@@ -49,7 +49,7 @@ export default function AuthPanel({
           type="button"
           onClick={withGoogle}
           disabled={busy}
-          className="flex w-full items-center justify-center gap-3 rounded-full border border-slate-300 bg-white px-4 py-3 font-medium text-slate-800 hover:bg-slate-50 disabled:opacity-60"
+          className="flex w-full items-center justify-center gap-3 rounded-full border border-slate-300 bg-card px-4 py-3 font-medium text-slate-800 hover:bg-slate-50 disabled:opacity-60"
         >
           <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
             <path

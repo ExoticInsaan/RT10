@@ -100,7 +100,7 @@ export default function PdfModeCards({ cards, onPick }: { cards: Card[]; onPick:
             key={card.value}
             type="button"
             onClick={() => onPick(card.value)}
-            className="flex min-h-[148px] cursor-pointer flex-col items-start gap-2 rounded-3xl border border-[#e8e4dd] bg-white p-4 text-left shadow-[0_10px_24px_-18px_rgba(16,42,76,.45)] transition active:translate-y-px active:bg-blue-soft"
+            className="flex min-h-[148px] cursor-pointer flex-col items-start gap-2 rounded-3xl border border-[#e8e4dd] bg-card p-4 text-left shadow-[0_10px_24px_-18px_rgba(16,42,76,.45)] transition active:translate-y-px active:bg-blue-soft"
           >
             <span className={`grid size-12 place-items-center rounded-2xl ${art[card.value]?.tone ?? "bg-blue-soft text-blue-hover"}`}>
               <ModeIcon id={card.value} />

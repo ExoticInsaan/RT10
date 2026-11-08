@@ -46,7 +46,7 @@ export default function ShelfItem({ tool, priority = false }: { tool: Tool; prio
           <p className="m-0 mt-1 text-[0.8rem] leading-5 text-muted sm:text-sm sm:leading-6">{tool.description}</p>
         </div>
       </Link>
-      <FavoriteButton id={tool.id} className="absolute right-3 top-1 scale-90 bg-white/95 shadow-sm sm:right-4 sm:top-2 sm:scale-100" />
+      <FavoriteButton id={tool.id} className="absolute right-3 top-1 scale-90 bg-card/95 shadow-sm sm:right-4 sm:top-2 sm:scale-100" />
     </article>
   );
 }

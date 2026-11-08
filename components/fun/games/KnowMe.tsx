@@ -32,10 +32,10 @@ const BADGES = ["#0f9f8f", "#3b82f6", "#8b5cf6", "#f59e0b"];
 const fzBtn =
   "min-h-14 w-full cursor-pointer rounded-[18px] border-0 bg-[#0f9f8f] px-[18px] py-3.5 text-[17px] font-black text-white shadow-[0_6px_0_#0b6f64,0_14px_24px_rgba(11,111,100,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#0b6f64] disabled:cursor-default disabled:opacity-50";
 const ghost =
-  "min-h-[50px] cursor-pointer rounded-2xl border-2 border-[#b8e6f0] bg-white px-3 py-2.5 text-sm font-extrabold text-[#102a4c] shadow-[0_5px_0_#b8e6f0] active:translate-y-[3px] active:shadow-[0_2px_0_#b8e6f0]";
+  "min-h-[50px] cursor-pointer rounded-2xl border-2 border-[#b8e6f0] bg-card px-3 py-2.5 text-sm font-extrabold text-[#102a4c] shadow-[0_5px_0_#b8e6f0] active:translate-y-[3px] active:shadow-[0_2px_0_#b8e6f0]";
 const input =
-  "box-border w-full rounded-2xl border-2 border-[#b8e6f0] bg-white px-4 py-[15px] text-base font-medium text-[#102a4c] outline-none placeholder:text-[#8ab0be] focus:border-[#0f9f8f] focus:shadow-[0_0_0_4px_rgba(15,159,143,.15)] sm:text-[17px]";
-const card = "flex animate-fz-pop flex-col items-center gap-3 rounded-[26px] bg-white p-[22px] text-center shadow-[0_8px_0_#b8e6f0]";
+  "box-border w-full rounded-2xl border-2 border-[#b8e6f0] bg-card px-4 py-[15px] text-base font-medium text-[#102a4c] outline-none placeholder:text-[#8ab0be] focus:border-[#0f9f8f] focus:shadow-[0_0_0_4px_rgba(15,159,143,.15)] sm:text-[17px]";
+const card = "flex animate-fz-pop flex-col items-center gap-3 rounded-[26px] bg-card p-[22px] text-center shadow-[0_8px_0_#b8e6f0]";
 
 /**
  * Owner (signed in): answers 10 questions about themselves, makes a link and reads the leaderboard of friends who guessed.
@@ -263,10 +263,10 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
           })}
         </div>
         <div className="[perspective:1000px]">
-          <div key={q} className="flex animate-fz-flip flex-col gap-2.5 rounded-[26px] bg-white p-5 shadow-[0_8px_0_#b8e6f0]">
+          <div key={q} className="flex animate-fz-flip flex-col gap-2.5 rounded-[26px] bg-card p-5 shadow-[0_8px_0_#b8e6f0]">
             <div className="min-h-[60px] break-words font-display text-[26px] leading-[1.15]">{qText}</div>
             {cur[1].map((t, i) => {
-              let cls = "border-[#d5eef3] bg-white shadow-[0_4px_0_#d5eef3]";
+              let cls = "border-[#d5eef3] bg-card shadow-[0_4px_0_#d5eef3]";
               let tag = "";
               let tagC = "#16a34a";
               if (sel >= 0) {
@@ -344,7 +344,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
   if (phase === "friendName") {
     return shell(
       <>
-        <div className="flex animate-fz-pop flex-col gap-3 rounded-[26px] bg-white p-[22px] shadow-[0_8px_0_#b8e6f0]">
+        <div className="flex animate-fz-pop flex-col gap-3 rounded-[26px] bg-card p-[22px] shadow-[0_8px_0_#b8e6f0]">
           <div className="text-xs font-black tracking-[.12em] text-[#0f9f8f]">A QUIZ FROM</div>
           <div className="break-words font-display text-[40px] leading-none">{meName}</div>
           <div className="text-[15px] leading-[1.4] text-[#3d5a80]">How well do you know {meName}? Guess 10 answers and climb the leaderboard.</div>
@@ -370,7 +370,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
     const line = ls >= 8 ? `You are basically ${meName}’s twin.` : ls >= 5 ? `You know ${meName} pretty well.` : `You need more time with ${meName}.`;
     return shell(
       <>
-        <div className="flex animate-fz-pop flex-col items-center gap-1 rounded-[26px] bg-white p-[22px] text-center shadow-[0_8px_0_#b8e6f0]">
+        <div className="flex animate-fz-pop flex-col items-center gap-1 rounded-[26px] bg-card p-[22px] text-center shadow-[0_8px_0_#b8e6f0]">
           <div className="break-words text-[13px] font-extrabold text-[#3d5a80]">{friendName || "You"} guessed {meName}</div>
           <div className="font-display text-[72px] leading-none">{ls}<span className="text-[32px] text-[#3d5a80]">/10</span></div>
           <div className="text-[15px] font-bold text-[#102a4c]">{line}</div>
@@ -413,7 +413,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
       )}
       <div className="flex max-h-[170px] flex-col gap-1.5 overflow-auto">
         {sorted.slice(3).map((r, i) => (
-          <div key={r.name} className="flex items-center gap-2.5 rounded-[14px] bg-white px-3 py-2">
+          <div key={r.name} className="flex items-center gap-2.5 rounded-[14px] bg-card px-3 py-2">
             <span className="w-5 font-black">{i + 4}</span>
             <span className="min-w-0 flex-1 truncate font-bold">{r.name}</span>
             <span className="font-black">{r.score}/10</span>

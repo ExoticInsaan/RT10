@@ -42,7 +42,7 @@ export default function RequestToolForm() {
   }
 
   return (
-    <section id="request-a-tool" aria-labelledby="request-title" className="mt-8 rounded-2xl border border-line bg-white p-6 shadow-card">
+    <section id="request-a-tool" aria-labelledby="request-title" className="mt-8 rounded-2xl border border-line bg-card p-6 shadow-card">
       <h2 id="request-title" className="m-0 text-xl font-extrabold text-navy">
         {tr("Request a tool")}
       </h2>

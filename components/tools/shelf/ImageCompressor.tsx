@@ -155,7 +155,7 @@ export default function ImageCompressor() {
     <div className="mx-auto grid grid-cols-1 max-w-3xl gap-6">
       <div className="flex items-center gap-4 rounded-2xl bg-surface p-3">
         {/* eslint-disable-next-line @next/next/no-img-element -- a local preview of the visitor's own file */}
-        <img src={img.src} alt="" className="size-16 rounded-xl bg-white object-contain" />
+        <img src={img.src} alt="" className="size-16 rounded-xl bg-card object-contain" />
         <div className="min-w-0 flex-1">
           <p className="m-0 truncate text-sm font-bold text-navy">{file.name}</p>
           <p className="m-0 text-sm text-muted">
@@ -200,7 +200,7 @@ export default function ImageCompressor() {
       {result && (
         <div className="grid grid-cols-1 gap-4 rounded-2xl bg-blue-soft p-5 sm:grid-cols-[10rem_1fr] sm:items-center" aria-live="polite">
           {/* eslint-disable-next-line @next/next/no-img-element -- the compressed result, generated in the browser */}
-          <img src={result.url} alt={tr("Compressed result")} className="mx-auto max-h-40 rounded-xl bg-white object-contain" />
+          <img src={result.url} alt={tr("Compressed result")} className="mx-auto max-h-40 rounded-xl bg-card object-contain" />
           <div>
             <p className="m-0 text-sm font-semibold text-muted">
               {result.hitTarget ? tr("Under {n} KB", { n: targetKb }) : tr("Smallest possible at this size")}

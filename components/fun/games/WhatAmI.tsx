@@ -30,9 +30,9 @@ const NOTE_ROT = [-3, 2, -1.5, 3];
 const fzBtn =
   "min-h-14 w-full cursor-pointer rounded-[18px] border-0 bg-[#8b5cf6] px-[18px] py-3.5 text-[17px] font-black text-white shadow-[0_6px_0_#6d28d9,0_14px_24px_rgba(109,40,217,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#6d28d9] disabled:cursor-default disabled:opacity-50";
 const ghost =
-  "min-h-[50px] cursor-pointer rounded-2xl border-2 border-[#ddd0fe] bg-white px-3 py-2.5 text-sm font-extrabold text-[#3b0764] shadow-[0_5px_0_#ddd0fe] active:translate-y-[3px] active:shadow-[0_2px_0_#ddd0fe] disabled:cursor-default";
+  "min-h-[50px] cursor-pointer rounded-2xl border-2 border-[#ddd0fe] bg-card px-3 py-2.5 text-sm font-extrabold text-[#3b0764] shadow-[0_5px_0_#ddd0fe] active:translate-y-[3px] active:shadow-[0_2px_0_#ddd0fe] disabled:cursor-default";
 const input =
-  "box-border w-full rounded-2xl border-2 border-[#ddd0fe] bg-white px-4 py-3.5 text-base font-medium text-[#3b0764] outline-none placeholder:text-[#a592cf] focus:border-[#8b5cf6] focus:shadow-[0_0_0_4px_rgba(139,92,246,.15)]";
+  "box-border w-full rounded-2xl border-2 border-[#ddd0fe] bg-card px-4 py-3.5 text-base font-medium text-[#3b0764] outline-none placeholder:text-[#a592cf] focus:border-[#8b5cf6] focus:shadow-[0_0_0_4px_rgba(139,92,246,.15)]";
 
 function Icon({ d, size, stroke = "#fff", sw = 2.2 }: { d: string; size: number; stroke?: string; sw?: number }) {
   return (
@@ -157,7 +157,7 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
     return shell({
       body: single(
         <>
-          <div className="flex flex-col items-center gap-3 rounded-[26px] bg-white p-[22px] text-center shadow-[0_6px_0_#ddd0fe]">
+          <div className="flex flex-col items-center gap-3 rounded-[26px] bg-card p-[22px] text-center shadow-[0_6px_0_#ddd0fe]">
             <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
             <div className="font-display text-[28px] leading-[1.1]">{error || "This link does not exist"}</div>
             <div className="text-[15px] leading-[1.4] text-[#5b3a86]">It may have been typed wrong. Ask your friend to send it again, or make your own.</div>
@@ -185,7 +185,7 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
       ),
       controls: (
         <>
-          <div className="flex flex-col gap-2.5 rounded-[22px] bg-white p-[18px] shadow-[0_6px_0_#ddd0fe]">
+          <div className="flex flex-col gap-2.5 rounded-[22px] bg-card p-[18px] shadow-[0_6px_0_#ddd0fe]">
             <div className="text-[15px] leading-[1.45] text-[#5b3a86]">{tr("Share your link. Friends pick one label for you, like best friend, sibling vibe or chaos partner, and can leave a note.")}</div>
             <label htmlFor="wa-me" className="text-sm font-bold text-[#5b3a86]">{tr("Your name")}</label>
             <input
@@ -210,7 +210,7 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
     return shell({
       body: single(
         <>
-          <div className="flex animate-fz-pop flex-col items-center gap-3.5 rounded-[26px] bg-white p-[22px] text-center shadow-[0_6px_0_#ddd0fe]">
+          <div className="flex animate-fz-pop flex-col items-center gap-3.5 rounded-[26px] bg-card p-[22px] text-center shadow-[0_6px_0_#ddd0fe]">
             <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
             <div className="break-words font-display text-[30px] leading-[1.05]">{tr("Your link is ready, {name}!", { name: meName })}</div>
             <div className="text-[15px] leading-[1.4] text-[#5b3a86]">{tr("Send it to friends. Each one picks a label for you and can leave a note. You see them in your inbox.")}</div>
@@ -254,7 +254,7 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
     return shell({
       body: single(
         <>
-          <div className="flex animate-fz-pop flex-col items-center gap-3 rounded-[26px] bg-white p-[22px] text-center shadow-[0_6px_0_#ddd0fe]">
+          <div className="flex animate-fz-pop flex-col items-center gap-3 rounded-[26px] bg-card p-[22px] text-center shadow-[0_6px_0_#ddd0fe]">
             <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
             <div className="break-words font-display text-[30px] leading-[1.05]">Sent to {meName}!</div>
             <div className="text-[15px] leading-[1.4] text-[#5b3a86]">They can see what you picked. Curious what your friends call you?</div>
@@ -316,7 +316,7 @@ export default function WhatAmI({ friendCode }: { friendCode?: string } = {}) {
           </div>
           <div className="whitespace-nowrap text-[13px] font-extrabold text-[#6b21a8]">{tr("{n} answers", { n: answers.length })}</div>
         </div>
-        <div className="rounded-[22px] bg-white px-3 pb-2.5 pt-4 shadow-[0_6px_0_#ddd0fe] [--d:7px] sm:[--d:9px]">
+        <div className="rounded-[22px] bg-card px-3 pb-2.5 pt-4 shadow-[0_6px_0_#ddd0fe] [--d:7px] sm:[--d:9px]">
           <div className="flex h-[168px] items-end justify-between gap-1 border-b-2 border-[#efe7ff]">
             {LABELS.map((l, i) => (
               <div key={l.t} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end">

@@ -50,7 +50,7 @@ export default function ShareToolButton({ toolId, toolName, onDark = false }: { 
         onClick={share}
         aria-expanded={menu}
         className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border px-4 text-sm font-semibold transition active:translate-y-px ${
-          onDark ? "border-white/40 bg-white/10 text-white hover:bg-white/20" : "border-line bg-white text-navy hover:border-blue hover:bg-blue-soft"
+          onDark ? "border-white/40 bg-white/10 text-white hover:bg-white/20" : "border-line bg-card text-navy hover:border-blue hover:bg-blue-soft"
         }`}
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -62,7 +62,7 @@ export default function ShareToolButton({ toolId, toolName, onDark = false }: { 
         {tr("Share")}
       </button>
       {menu && (
-        <div role="menu" className="absolute right-0 top-full z-30 mt-2 w-48 rounded-xl border border-line bg-white p-1.5 shadow-float sm:left-0 sm:right-auto">
+        <div role="menu" className="absolute right-0 top-full z-30 mt-2 w-48 rounded-xl border border-line bg-card p-1.5 shadow-float sm:left-0 sm:right-auto">
           <a role="menuitem" className={item} href={`https://wa.me/?text=${encoded.text}`} target="_blank" rel="noopener noreferrer">
             WhatsApp
           </a>

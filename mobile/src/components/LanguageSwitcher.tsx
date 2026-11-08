@@ -17,7 +17,7 @@ export default function LanguageSwitcher({ compact = false }: { compact?: boolea
             lang={code}
             aria-pressed={on}
             onClick={() => setLang(code)}
-            className={`min-h-10 ${compact ? "min-w-[60px]" : "min-w-[72px]"} cursor-pointer rounded-full border-0 px-3 text-sm font-bold transition-colors ${on ? "bg-navy text-white" : "bg-transparent text-navy"}`}
+            className={`min-h-10 ${compact ? "min-w-[60px]" : "min-w-[72px]"} cursor-pointer rounded-full border-0 px-3 text-sm font-bold transition-colors ${on ? "bg-deep text-white" : "bg-transparent text-navy"}`}
           >
             {t(names[code])}
           </button>

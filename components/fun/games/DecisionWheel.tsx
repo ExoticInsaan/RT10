@@ -96,10 +96,10 @@ export default function DecisionWheel() {
               )}
             </div>
             {PEGS.map((a) => (
-              <div key={a} className="absolute left-1/2 top-1/2 -ml-[5px] -mt-[5px] size-2.5 rounded-full bg-white shadow-[0_2px_0_#94a3b8]" style={{ transform: `rotate(${a}deg) translateY(-142px)` }} />
+              <div key={a} className="absolute left-1/2 top-1/2 -ml-[5px] -mt-[5px] size-2.5 rounded-full bg-card shadow-[0_2px_0_#94a3b8]" style={{ transform: `rotate(${a}deg) translateY(-142px)` }} />
             ))}
           </div>
-          <div className="absolute left-1/2 top-1/2 -ml-8 -mt-8 flex size-16 items-center justify-center rounded-full bg-white shadow-[0_6px_0_#c7dcfb,0_10px_20px_rgba(16,42,76,.3)] [transform:translateZ(14px)]">
+          <div className="absolute left-1/2 top-1/2 -ml-8 -mt-8 flex size-16 items-center justify-center rounded-full bg-card shadow-[0_6px_0_#c7dcfb,0_10px_20px_rgba(16,42,76,.3)] [transform:translateZ(14px)]">
             <Image src="/logo-mark.png" alt="" width={40} height={40} className="size-10" />
           </div>
         </div>
@@ -141,7 +141,7 @@ export default function DecisionWheel() {
             placeholder={tr("Add an option")}
             maxLength={18}
             autoComplete="off"
-            className="box-border min-w-0 flex-1 rounded-[14px] border-2 border-[#c7dcfb] bg-white px-3.5 py-[13px] text-base font-medium text-[#102a4c] outline-none placeholder:text-[#8aa3c4] focus:border-[#2563eb] focus:shadow-[0_0_0_4px_rgba(37,99,235,.15)]"
+            className="box-border min-w-0 flex-1 rounded-[14px] border-2 border-[#c7dcfb] bg-card px-3.5 py-[13px] text-base font-medium text-[#102a4c] outline-none placeholder:text-[#8aa3c4] focus:border-[#2563eb] focus:shadow-[0_0_0_4px_rgba(37,99,235,.15)]"
           />
           <button
             type="button"
@@ -154,7 +154,7 @@ export default function DecisionWheel() {
         </div>
         <div className="flex min-h-[38px] flex-wrap gap-2">
           {opts.map((t, i) => (
-            <span key={i} className="inline-flex max-w-full items-center gap-1 rounded-full bg-white py-1 pl-3 pr-1 text-sm font-bold text-[#102a4c] shadow-[0_3px_0_#c7dcfb]">
+            <span key={i} className="inline-flex max-w-full items-center gap-1 rounded-full bg-card py-1 pl-3 pr-1 text-sm font-bold text-[#102a4c] shadow-[0_3px_0_#c7dcfb]">
               <span className="size-2.5 shrink-0 rounded-full" style={{ background: COLORS[i % 8] }} />
               <span className="min-w-0 truncate">{t}</span>
               <button

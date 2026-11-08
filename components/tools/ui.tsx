@@ -13,9 +13,9 @@ export const RECENT_KEY = "toppershelf-recent";
 
 const buttonStyles = {
   primary:
-    "bg-blue-hover text-white shadow-sm hover:bg-navy min-h-12 px-5 rounded-xl",
+    "bg-blue-hover text-white shadow-sm hover:bg-deep min-h-12 px-5 rounded-xl",
   secondary:
-    "border border-line bg-white text-navy hover:border-blue hover:bg-blue-soft min-h-12 px-5 rounded-xl",
+    "border border-line bg-card text-navy hover:border-blue hover:bg-blue-soft min-h-12 px-5 rounded-xl",
   ghost:
     "text-muted hover:bg-blue-soft hover:text-navy min-h-11 px-3 rounded-xl",
   icon: "size-11 text-navy hover:bg-blue-soft rounded-full",
@@ -160,11 +160,11 @@ export function SaveButton({ id, onDark = false }: { id: string; onDark?: boolea
   const saved = favourites.includes(id);
   const look = onDark
     ? saved
-      ? "bg-white text-purple-700"
+      ? "bg-card text-purple-700"
       : "bg-white/15 text-white ring-1 ring-white/50 hover:bg-white/25"
     : saved
       ? "bg-red-50 text-red-600 ring-1 ring-red-200"
-      : "bg-white text-navy ring-1 ring-line hover:ring-blue";
+      : "bg-card text-navy ring-1 ring-line hover:ring-blue";
   return (
     <button
       type="button"
@@ -181,7 +181,7 @@ export function SaveButton({ id, onDark = false }: { id: string; onDark?: boolea
 export function ToolCard({ tool, compact = false }: { tool: Tool; compact?: boolean }) {
   return (
     <article
-      className={`group relative rounded-2xl border border-line bg-white transition hover:-translate-y-1 hover:border-blue/60 hover:shadow-card ${
+      className={`group relative rounded-2xl border border-line bg-card transition hover:-translate-y-1 hover:border-blue/60 hover:shadow-card ${
         compact ? "p-4" : "p-5"
       }`}
     >
@@ -216,7 +216,7 @@ export function SearchBox({
   return (
     <form
       role="search"
-      className={`flex items-center gap-3 border border-line bg-white shadow-search transition focus-within:border-blue ${
+      className={`flex items-center gap-3 border border-line bg-card shadow-search transition focus-within:border-blue ${
         compact ? "h-12 rounded-xl px-4" : "h-16 rounded-2xl px-5"
       }`}
       onSubmit={(event) => {

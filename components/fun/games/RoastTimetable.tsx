@@ -65,7 +65,7 @@ export function roastFor(day: string, hi = false) {
 const btn =
   "min-h-14 w-full cursor-pointer rounded-[18px] border-0 bg-[#ffb020] px-[18px] py-3.5 text-lg font-extrabold text-[#2a1600] shadow-[0_6px_0_#c77d00,0_14px_24px_rgba(199,125,0,.28)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#c77d00] disabled:cursor-default disabled:opacity-50";
 const ghost =
-  "min-h-[52px] cursor-pointer rounded-[18px] border-2 border-[#f3d9a6] bg-white px-3.5 py-3 text-base font-extrabold text-[#6b3b00] shadow-[0_5px_0_#f3d9a6] active:translate-y-[3px] active:shadow-[0_2px_0_#f3d9a6]";
+  "min-h-[52px] cursor-pointer rounded-[18px] border-2 border-[#f3d9a6] bg-card px-3.5 py-3 text-base font-extrabold text-[#6b3b00] shadow-[0_5px_0_#f3d9a6] active:translate-y-[3px] active:shadow-[0_2px_0_#f3d9a6]";
 
 export default function RoastTimetable() {
   const tr = useTr();
@@ -106,7 +106,7 @@ export default function RoastTimetable() {
         placeholder={tr("6 classes, no breaks, sleep at 2am")}
         maxLength={90}
         autoComplete="off"
-        className="box-border w-full rounded-2xl border-2 border-[#f3d9a6] bg-white px-4 py-[15px] text-base font-medium text-[#2a1600] outline-none placeholder:text-[#b39a6c] focus:border-[#ffb020] focus:shadow-[0_0_0_4px_rgba(255,176,32,.2)]"
+        className="box-border w-full rounded-2xl border-2 border-[#f3d9a6] bg-card px-4 py-[15px] text-base font-medium text-[#2a1600] outline-none placeholder:text-[#b39a6c] focus:border-[#ffb020] focus:shadow-[0_0_0_4px_rgba(255,176,32,.2)]"
       />
     </div>
   );
@@ -175,7 +175,7 @@ export default function RoastTimetable() {
 
   const result = isResult && (
     <div className="flex flex-col gap-3 lg:col-start-2 lg:row-start-3">
-      <div className="flex items-center justify-between gap-2 rounded-[18px] bg-white px-3.5 py-3 shadow-[0_5px_0_#f3d9a6]">
+      <div className="flex items-center justify-between gap-2 rounded-[18px] bg-card px-3.5 py-3 shadow-[0_5px_0_#f3d9a6]">
         <span className="text-sm font-bold text-[#7a5a2e]">{tr("Roast level")}</span>
         <div className="flex gap-[3px]" role="img" aria-label={tr("Roast level {n} out of 10", { n: r.score })}>
           {Array.from({ length: 10 }, (_, i) => (

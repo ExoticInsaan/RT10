@@ -106,7 +106,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
           aria-modal="true"
         >
           <div
-            className="relative w-full max-w-md rounded-t-3xl bg-white p-6 pb-8 text-slate-900 shadow-xl sm:rounded-3xl"
+            className="relative w-full max-w-md rounded-t-3xl bg-card p-6 pb-8 text-slate-900 shadow-xl sm:rounded-3xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button

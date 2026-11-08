@@ -42,7 +42,7 @@ export default function ImageToolkit() {
               type="button"
               onClick={() => setPicked(false)}
               aria-label={tr("Back to all image tools")}
-              className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy"
+              className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-line bg-card text-navy"
             >
               <span className="rotate-180">
                 <ToolIcon name="arrow" size={18} />

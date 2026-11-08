@@ -40,6 +40,17 @@
   --color-ink: #1f2937;
   --color-muted: #687483;
   --color-line: #dedbd5;
+  --color-card: #ffffff;
+  --color-deep: #102a4c;
+  /* Colours the screens used as fixed values. Named here so dark mode can change them. Light values are unchanged. */
+  --color-sub: #5b6675;
+  --color-link: #1d4ed8;
+  --color-link2: #2563eb;
+  --color-steel: #3d5a80;
+  --color-edge: #e8e4dd;
+  --color-danger: #b91c1c;
+  --color-track: #cbd5e1;
+  --color-tip: #e8f1ff;
   --color-violet: #7c3aed;
   --color-teal: #0f9f8f;
   --color-coral: #f97355;
@@ -57,14 +68,14 @@ body,
   overflow-x: hidden;
 }
 html {
-  background: #fffbf7;
-  color: #1f2937;
+  background: var(--color-ivory);
+  color: var(--color-ink);
   overscroll-behavior: none;
 }
 body {
   margin: 0;
-  background: #fffbf7;
-  color: #1f2937;
+  background: var(--color-ivory);
+  color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   user-select: none;
@@ -113,7 +124,7 @@ select:focus-visible {
   background:
     radial-gradient(circle at 8% 18%, rgba(251, 146, 60, 0.2), transparent 24%),
     radial-gradient(circle at 92% 12%, rgba(139, 92, 246, 0.22), transparent 27%),
-    linear-gradient(135deg, #fff1e9, #e8f5ff 48%, #f3e8ff);
+    linear-gradient(135deg, var(--fun-a), var(--fun-b) 48%, var(--fun-c));
 }
 @utility bg-fun-field {
   background:
@@ -126,8 +137,8 @@ select:focus-visible {
     linear-gradient(150deg, #6d28d9 0%, #a21caf 45%, #e11d48 100%);
 }
 @utility bg-onboard-dots {
-  background-color: #fffbf7;
-  background-image: radial-gradient(#cfe1ed 1px, transparent 1px);
+  background-color: var(--color-ivory);
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 @utility safe-top {
@@ -148,4 +159,106 @@ html[lang="hi"] * {
 }
 html[lang="hi"] .italic {
   font-style: normal;
+}
+
+/* ------------------------------------------------------------------------------------------------
+   Light and dark colours.
+   The app follows data-theme on <html> ("light" or "dark"). It is set before the first paint by the small script in
+   index.html and changed from Settings > Appearance (src/theme.ts). Everything that uses the colour names above
+   (text-navy, bg-ivory, border-line, bg-card, text-sub ...) switches by itself.
+   Add class "light-island" to a block that must keep its light colours in dark mode (the colourful Fun Zone
+   cards, onboarding and the share card). Inside it every colour below is put back to its light value.
+   ------------------------------------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+  --fun-a: #fff1e9;
+  --fun-b: #e8f5ff;
+  --fun-c: #f3e8ff;
+  --dot: #cfe1ed;
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --color-ivory: #0f1623;
+  --color-surface: #172033;
+  --color-card: #1a2335;
+  --color-blue-soft: #1b2b44;
+  --color-line: #2a3650;
+  --color-navy: #e8eefb;
+  --color-ink: #d5dce8;
+  --color-muted: #98a4b8;
+  --color-sub: #9aa7b8;
+  --color-link: #93c5fd;
+  --color-link2: #60a5fa;
+  --color-steel: #9db4d3;
+  --color-edge: #2a3650;
+  --color-danger: #f87171;
+  --color-track: #3a4863;
+  --color-tip: #1b2b44;
+  --shadow-search: 0 12px 36px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 16px 40px rgba(0, 0, 0, 0.35);
+  --shadow-float: 0 24px 70px rgba(0, 0, 0, 0.5);
+  --color-slate-50: #1c2639;
+  --color-slate-100: #223049;
+  --color-slate-300: #3a4863;
+  --color-slate-500: #94a3b8;
+  --color-slate-600: #b0bccc;
+  --color-slate-700: #c7d0de;
+  --color-slate-800: #e2e8f0;
+  --color-slate-900: #f1f5f9;
+  --color-red-50: #2a1518;
+  --color-red-200: #5b2227;
+  --color-red-500: #f87171;
+  --color-red-600: #f87171;
+  --color-red-700: #fca5a5;
+  --fun-a: #2b1a2a;
+  --fun-b: #132338;
+  --fun-c: #231a3d;
+  --dot: #26354d;
+}
+/* A block that keeps its light colours when the rest of the app is dark. */
+.light-island {
+  color-scheme: light;
+  --color-ivory: #fffbf7;
+  --color-surface: #f7f0e6;
+  --color-card: #ffffff;
+  --color-blue-soft: #e9f4fc;
+  --color-line: #dedbd5;
+  --color-navy: #102a4c;
+  --color-ink: #1f2937;
+  --color-muted: #687483;
+  --color-sub: #5b6675;
+  --color-link: #1d4ed8;
+  --color-link2: #2563eb;
+  --color-steel: #3d5a80;
+  --color-edge: #e8e4dd;
+  --color-danger: #b91c1c;
+  --color-track: #cbd5e1;
+  --color-tip: #e8f1ff;
+  --shadow-search: 0 12px 36px rgba(16, 42, 76, 0.08);
+  --shadow-card: 0 16px 40px rgba(16, 42, 76, 0.09);
+  --shadow-float: 0 24px 70px rgba(16, 42, 76, 0.2);
+  --color-slate-50: oklch(98.4% 0.003 247.858);
+  --color-slate-100: oklch(96.8% 0.007 247.896);
+  --color-slate-300: oklch(86.9% 0.022 252.894);
+  --color-slate-500: oklch(55.4% 0.046 257.417);
+  --color-slate-600: oklch(44.6% 0.043 257.281);
+  --color-slate-700: oklch(37.2% 0.044 257.287);
+  --color-slate-800: oklch(27.9% 0.041 260.031);
+  --color-slate-900: oklch(20.8% 0.042 265.755);
+  --color-red-50: oklch(97.1% 0.013 17.38);
+  --color-red-200: oklch(88.5% 0.062 18.334);
+  --color-red-500: oklch(63.7% 0.237 25.331);
+  --color-red-600: oklch(57.7% 0.245 27.325);
+  --color-red-700: oklch(50.5% 0.213 27.518);
+  --fun-a: #fff1e9;
+  --fun-b: #e8f5ff;
+  --fun-c: #f3e8ff;
+  --dot: #cfe1ed;
+}
+/* Only in dark mode (in light mode the block keeps the text colour it always had). In the base layer so a text
+   colour class on the same element (text-white ...) still wins. */
+@layer base {
+  html[data-theme="dark"] .light-island {
+    color: var(--color-navy);
+  }
 }

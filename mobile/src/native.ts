@@ -102,10 +102,12 @@ const bars: [RegExp, string, string, Style][] = [
 ];
 
 /** Colour the strips behind the phone's own status bar and navigation bar to match the screen between them. */
-export function setStatusBar(path: string) {
+export function setStatusBar(path: string, theme: "light" | "dark" = "light") {
   if (!isNative) return;
   const hit = bars.find(([re]) => re.test(path));
-  const [top, bottom, style] = hit ? [hit[1], hit[2], hit[3]] : ["#fffbf7", "#fffbf7", Style.Light];
+  // Dark mode: dark strips with light icons. (Style.Dark means light icons for a dark background.)
+  const plain: [string, string, Style] = theme === "dark" ? ["#0f1623", "#0f1623", Style.Dark] : ["#fffbf7", "#fffbf7", Style.Light];
+  const [top, bottom, style] = hit ? [hit[1], hit[2], hit[3]] : plain;
   void SystemUi.setBars({ top, bottom }).catch(() => {});
   void StatusBar.setBackgroundColor({ color: top }).catch(() => {});
   void StatusBar.setStyle({ style }).catch(() => {});

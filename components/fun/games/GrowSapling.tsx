@@ -156,15 +156,15 @@ function tree(si: number, d: number, x: number, y: number, s: number, wilt: bool
 /* ---------- styles ---------- */
 
 const mini =
-  "min-h-11 flex-1 cursor-pointer rounded-xl border-2 border-[#bbf7d0] bg-white px-2 text-xs font-extrabold text-[#065f46] shadow-[0_3px_0_#bbf7d0] active:translate-y-0.5 active:shadow-[0_1px_0_#bbf7d0]";
+  "min-h-11 flex-1 cursor-pointer rounded-xl border-2 border-[#bbf7d0] bg-card px-2 text-xs font-extrabold text-[#065f46] shadow-[0_3px_0_#bbf7d0] active:translate-y-0.5 active:shadow-[0_1px_0_#bbf7d0]";
 const buddyBtn =
   "min-h-11 cursor-pointer whitespace-nowrap rounded-xl border-0 bg-[#047857] px-3 text-[13px] font-extrabold text-white shadow-[0_3px_0_#065f46] active:translate-y-0.5 active:shadow-[0_1px_0_#065f46]";
-const buddyGhost = "!border-2 !border-[#bbf7d0] !bg-white !text-[#065f46] !shadow-[0_3px_0_#bbf7d0]";
+const buddyGhost = "!border-2 !border-[#bbf7d0] !bg-card !text-[#065f46] !shadow-[0_3px_0_#bbf7d0]";
 const bigBtn =
   "flex min-h-[54px] w-full cursor-pointer items-center justify-center gap-2.5 rounded-[18px] border-0 bg-[#0ea5e9] px-[18px] py-3 text-[17px] font-black text-white shadow-[0_6px_0_#0369a1,0_14px_24px_rgba(3,105,161,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#0369a1] disabled:cursor-default disabled:opacity-50";
 const avatar = "box-border flex size-[34px] shrink-0 items-center justify-center rounded-full border-[3px] border-white text-sm font-black text-white";
 const sheetInput =
-  "box-border w-full rounded-[14px] border-2 border-[#bbf7d0] bg-white px-3.5 py-[13px] text-base font-medium text-[#064e3b] outline-none placeholder:text-[#7fb59a] focus:border-[#059669] focus:shadow-[0_0_0_4px_rgba(5,150,105,.15)]";
+  "box-border w-full rounded-[14px] border-2 border-[#bbf7d0] bg-card px-3.5 py-[13px] text-base font-medium text-[#064e3b] outline-none placeholder:text-[#7fb59a] focus:border-[#059669] focus:shadow-[0_0_0_4px_rgba(5,150,105,.15)]";
 
 function loadGarden(): Garden {
   const s = loadJSON<Partial<Garden>>(KEY);
@@ -335,8 +335,8 @@ function GardenGame() {
           className="absolute right-7 top-5 size-[46px] rounded-full transition-all duration-1000"
           style={{ background: wilting ? "#e2e8f0" : "#fde047", boxShadow: `0 0 0 10px ${wilting ? "rgba(255,255,255,.3)" : "rgba(253,224,71,.35)"}` }}
         />
-        <div className="absolute top-7 h-6 w-20 animate-fz-cloud rounded-full bg-white/90" style={{ animationDuration: "26s" }} />
-        <div className="absolute top-[70px] h-6 w-14 animate-fz-cloud rounded-full bg-white/90" style={{ animationDuration: "34s", animationDelay: "-14s" }} />
+        <div className="absolute top-7 h-6 w-20 animate-fz-cloud rounded-full bg-card/90" style={{ animationDuration: "26s" }} />
+        <div className="absolute top-[70px] h-6 w-14 animate-fz-cloud rounded-full bg-card/90" style={{ animationDuration: "34s", animationDelay: "-14s" }} />
         <svg width="358" height="288" viewBox="0 0 390 340" preserveAspectRatio="xMidYMid slice" className="absolute inset-0" role="img" aria-label={sceneLabel}>
           <ellipse cx="80" cy="236" rx="160" ry="56" fill={wilting ? "#9ca38a" : "#86efac"} />
           <ellipse cx="320" cy="240" rx="170" ry="60" fill={wilting ? "#a8ad95" : "#6ee7b7"} />
@@ -367,11 +367,11 @@ function GardenGame() {
           {TUFTS.map((x) => <path key={x} d={`M${x} 246 l -3 -7 M${x} 246 l 0 -9 M${x} 246 l 3 -7`} stroke={wilting ? "#a3a35a" : "#4ade80"} strokeWidth="2.4" fill="none" strokeLinecap="round" />)}
         </svg>
 
-        <div className="absolute left-3 top-3 z-[3] max-w-[200px] rounded-[14px] bg-white/95 px-[11px] py-[7px]">
+        <div className="absolute left-3 top-3 z-[3] max-w-[200px] rounded-[14px] bg-card/95 px-[11px] py-[7px]">
           <div className="text-[11px] font-black tracking-[.1em] text-[#047857]">{wilting ? tr("WILTING, WATER ME") : tr(stageOf(d))}</div>
           <div className="text-[13px] font-extrabold text-[#064e3b]">{tr("{species} · Day {d}/365", { species: tr(S.name), d })}</div>
         </div>
-        <div className="absolute right-3 top-[78px] z-[3] flex items-center gap-[5px] rounded-full bg-white/95 py-1.5 pl-2 pr-[11px]">
+        <div className="absolute right-3 top-[78px] z-[3] flex items-center gap-[5px] rounded-full bg-card/95 py-1.5 pl-2 pr-[11px]">
           <svg className="origin-[50%_90%] animate-fz-flame" width="18" height="20" viewBox="0 0 18 20" aria-hidden="true">
             <path d="M9 1c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-4 2-7 2 1 3 3 3 5 1-2 1-6 1-9z" fill={streakNow > 0 ? "#f97316" : "#cbd5e1"} />
           </svg>
@@ -408,13 +408,13 @@ function GardenGame() {
 
   const controls = (
     <>
-      <div className="flex items-center gap-2.5 rounded-2xl bg-white px-2.5 py-2 shadow-[0_4px_0_#bbf7d0]">
+      <div className="flex items-center gap-2.5 rounded-2xl bg-card px-2.5 py-2 shadow-[0_4px_0_#bbf7d0]">
         <div className="flex items-center">
           <div className={avatar} style={{ background: "#f59e0b" }}>{initial("a", tr("You")[0])}</div>
           {paired ? (
             <div className={`${avatar} -ml-2.5`} style={{ background: "#8b5cf6" }}>{initial("b", tr("Buddy")[0])}</div>
           ) : (
-            <div className={`${avatar} -ml-2 !border-2 !border-dashed !border-[#34d399] !bg-white !text-[#059669]`}>+</div>
+            <div className={`${avatar} -ml-2 !border-2 !border-dashed !border-[#34d399] !bg-card !text-[#059669]`}>+</div>
           )}
         </div>
         <div className="min-w-0 flex-1">
@@ -434,7 +434,7 @@ function GardenGame() {
         )}
       </div>
 
-      <div className="flex flex-col gap-[7px] rounded-2xl bg-white px-3 py-2.5 shadow-[0_4px_0_#bbf7d0]">
+      <div className="flex flex-col gap-[7px] rounded-2xl bg-card px-3 py-2.5 shadow-[0_4px_0_#bbf7d0]">
         <div className="flex items-center justify-between gap-2 text-xs font-extrabold">
           <span className="text-[#047857]">{tr("Tree {n} progress", { n: comp + 1 })}</span>
           <span className="text-right">{tr(totalTrees === 1 ? "Garden: {n} tree · Best streak: {best}" : "Garden: {n} trees · Best streak: {best}", { n: totalTrees, best: g.best })}</span>
@@ -487,7 +487,7 @@ function GardenGame() {
 
   const handle = <div className="h-[5px] w-11 self-center rounded-sm bg-[#d1fae5]" />;
   const sheetCls =
-    "fixed inset-x-0 bottom-0 z-[51] mx-auto box-border flex max-h-[92dvh] w-full max-w-[28rem] animate-fz-sheet flex-col gap-3 overflow-y-auto rounded-t-[28px] bg-white px-5 pb-6 pt-3.5 text-[#064e3b]";
+    "fixed inset-x-0 bottom-0 z-[51] mx-auto box-border flex max-h-[92dvh] w-full max-w-[28rem] animate-fz-sheet flex-col gap-3 overflow-y-auto rounded-t-[28px] bg-card px-5 pb-6 pt-3.5 text-[#064e3b]";
 
   const nameForInvite = (draftA || g.names.a).trim();
   async function createInvite() {
@@ -513,7 +513,7 @@ function GardenGame() {
           <div className="flex items-center gap-3">
             <div className="flex">
               <div className={`${avatar} !size-[46px] !text-lg`} style={{ background: "#f59e0b" }}>{initial("a", tr("You")[0])}</div>
-              <div className={`${avatar} -ml-3 !size-[46px] !border-2 !border-dashed !border-[#34d399] !bg-white !text-xl !text-[#059669]`}>+</div>
+              <div className={`${avatar} -ml-3 !size-[46px] !border-2 !border-dashed !border-[#34d399] !bg-card !text-xl !text-[#059669]`}>+</div>
             </div>
             <div>
               <div className="font-display text-[28px] leading-none">{tr("Grow together")}</div>

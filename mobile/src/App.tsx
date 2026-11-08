@@ -8,6 +8,7 @@ import CountdownWidgetSync from "./components/CountdownWidgetSync";
 import ReminderScheduler from "./components/ReminderScheduler";
 import SavedToast from "./components/SavedToast";
 import { setStatusBar } from "./native";
+import { useTheme } from "./theme";
 import { usePath } from "./shims/router";
 import FunZone from "./screens/FunZone";
 import Home from "./screens/Home";
@@ -50,7 +51,8 @@ function Screen({ path }: { path: string }) {
 
 export default function App() {
   const path = usePath();
-  useEffect(() => setStatusBar(path), [path]);
+  const theme = useTheme();
+  useEffect(() => setStatusBar(path, theme), [path, theme]);
   return (
     <AuthProvider>
       <AccountListsSync />

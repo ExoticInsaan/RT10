@@ -177,7 +177,7 @@ export default function PdfEditor() {
         </ol>
       )}
 
-      <div className="sticky bottom-24 z-10 flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-white/95 p-3 shadow-card backdrop-blur md:bottom-4">
+      <div className="sticky bottom-24 z-10 flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-card/95 p-3 shadow-card backdrop-blur md:bottom-4">
         <Button onClick={save} disabled={Boolean(busy) || items.length === 0}>
           {busy ?? tr("Save edited PDF")}
         </Button>
@@ -249,7 +249,7 @@ function AddPanel({
           <>
             <label
               htmlFor={inputId}
-              className={`inline-flex min-h-12 cursor-pointer items-center justify-center rounded-xl bg-blue-hover px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-navy ${
+              className={`inline-flex min-h-12 cursor-pointer items-center justify-center rounded-xl bg-blue-hover px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-deep ${
                 busy ? "pointer-events-none opacity-60" : ""
               }`}
             >
@@ -304,7 +304,7 @@ function PageCard({
   const turned = item.page.rotate % 180 !== 0;
   const label = item.page.kind === "blank" ? tr("Blank page") : item.page.kind === "image" ? tr("Photo page") : tr("Page {n}", { n: number });
   return (
-    <li className="grid grid-cols-1 gap-2 rounded-2xl border border-line bg-white p-2.5">
+    <li className="grid grid-cols-1 gap-2 rounded-2xl border border-line bg-card p-2.5">
       <div className="relative grid aspect-[3/4] place-items-center overflow-hidden rounded-xl bg-surface">
         {item.thumb ? (
           // eslint-disable-next-line @next/next/no-img-element -- a preview drawn in the browser from the visitor's own PDF
@@ -316,13 +316,13 @@ function PageCard({
           />
         ) : (
           <span
-            className="grid aspect-[1/1.414] w-3/4 place-items-center bg-white text-xs text-muted shadow-sm transition-transform"
+            className="grid aspect-[1/1.414] w-3/4 place-items-center bg-card text-xs text-muted shadow-sm transition-transform"
             style={{ transform: `rotate(${item.page.rotate}deg) scale(${turned ? 0.74 : 1})` }}
           >
             {tr("Blank")}
           </span>
         )}
-        <span className="absolute left-2 top-2 rounded-full bg-navy px-2 py-0.5 text-xs font-bold text-white">{number}</span>
+        <span className="absolute left-2 top-2 rounded-full bg-deep px-2 py-0.5 text-xs font-bold text-white">{number}</span>
         {(item.page.kind !== "pdf" || item.page.source > 0) && (
           <span className="absolute right-2 top-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[0.65rem] font-bold text-white">{tr("New")}</span>
         )}

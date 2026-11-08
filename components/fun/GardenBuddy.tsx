@@ -17,7 +17,7 @@ const WATERED_KEY = "fz-buddy-watered"; // { [code]: day number last watered on 
 const bigBtn =
   "flex min-h-[54px] w-full cursor-pointer items-center justify-center gap-2.5 rounded-[18px] border-0 bg-[#0ea5e9] px-[18px] py-3 text-[17px] font-black text-white shadow-[0_6px_0_#0369a1,0_14px_24px_rgba(3,105,161,.3)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#0369a1] disabled:cursor-default disabled:opacity-60";
 const sheetInput =
-  "box-border w-full rounded-[14px] border-2 border-[#bbf7d0] bg-white px-3.5 py-[13px] text-base font-medium text-[#064e3b] outline-none placeholder:text-[#7fb59a] focus:border-[#059669] focus:shadow-[0_0_0_4px_rgba(5,150,105,.15)]";
+  "box-border w-full rounded-[14px] border-2 border-[#bbf7d0] bg-card px-3.5 py-[13px] text-base font-medium text-[#064e3b] outline-none placeholder:text-[#7fb59a] focus:border-[#059669] focus:shadow-[0_0_0_4px_rgba(5,150,105,.15)]";
 
 type Phase = "loading" | "missing" | "ready";
 
@@ -83,7 +83,7 @@ export default function GardenBuddy({ code }: { code: string }) {
   if (phase === "missing") {
     return shell(
       <>
-        <div className="flex flex-col items-center gap-3 rounded-[26px] bg-white p-[22px] text-center shadow-[0_8px_0_#bbf7d0]">
+        <div className="flex flex-col items-center gap-3 rounded-[26px] bg-card p-[22px] text-center shadow-[0_8px_0_#bbf7d0]">
           <Image src="/mascot/owl-peek.webp" alt="" width={150} height={118} className="h-auto w-[150px]" />
           <div className="font-display text-[28px] leading-[1.1]">{error || "This garden does not exist"}</div>
           <div className="text-[15px] leading-[1.4] text-[#3f6b55]">The invite may have been removed, or typed wrong. Ask your friend to send it again, or grow your own.</div>
@@ -95,7 +95,7 @@ export default function GardenBuddy({ code }: { code: string }) {
 
   return shell(
     <>
-      <div className="flex animate-fz-pop flex-col items-center gap-3 rounded-[26px] bg-white p-[22px] text-center shadow-[0_8px_0_#bbf7d0]">
+      <div className="flex animate-fz-pop flex-col items-center gap-3 rounded-[26px] bg-card p-[22px] text-center shadow-[0_8px_0_#bbf7d0]">
         <Image src="/mascot/owl-peek.webp" alt="" width={110} height={86} className="h-auto w-[110px]" />
         <div className="break-words font-display text-[28px] leading-[1.1]">{owner} invited you to grow a garden together</div>
         <div className="flex flex-wrap justify-center gap-2">
@@ -108,7 +108,7 @@ export default function GardenBuddy({ code }: { code: string }) {
       </div>
 
       {alreadyToday ? (
-        <div className="rounded-2xl bg-white p-4 text-center shadow-[0_4px_0_#bbf7d0]" role="status">
+        <div className="rounded-2xl bg-card p-4 text-center shadow-[0_4px_0_#bbf7d0]" role="status">
           <div className="font-display text-[24px] leading-none">The tree is watered today</div>
           <div className="mt-1.5 text-sm text-[#3f6b55]">Thanks{name.trim() ? `, ${name.trim()}` : ""}! {owner} will see it counted on their streak. Come back tomorrow.</div>
         </div>

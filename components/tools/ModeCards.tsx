@@ -27,7 +27,7 @@ export function ModeCards({ title, cards, onPick }: { title: string; cards: Mode
             key={card.value}
             type="button"
             onClick={() => onPick(card.value)}
-            className="flex min-h-[148px] cursor-pointer flex-col items-start gap-2 rounded-3xl border border-[#e8e4dd] bg-white p-4 text-left shadow-[0_10px_24px_-18px_rgba(16,42,76,.45)] transition active:translate-y-px active:bg-blue-soft"
+            className="flex min-h-[148px] cursor-pointer flex-col items-start gap-2 rounded-3xl border border-[#e8e4dd] bg-card p-4 text-left shadow-[0_10px_24px_-18px_rgba(16,42,76,.45)] transition active:translate-y-px active:bg-blue-soft"
           >
             <span className={`grid size-12 place-items-center rounded-2xl ${card.tone}`}>
               <ModeIcon>{card.icon}</ModeIcon>
@@ -45,7 +45,7 @@ export function ModeCards({ title, cards, onPick }: { title: string; cards: Mode
 export function ModeHeader({ card, onBack, backLabel }: { card: ModeCard; onBack: () => void; backLabel: string }) {
   return (
     <div className="flex items-center gap-3 lg:hidden">
-      <button type="button" onClick={onBack} aria-label={backLabel} className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-line bg-white text-navy">
+      <button type="button" onClick={onBack} aria-label={backLabel} className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-line bg-card text-navy">
         <span className="rotate-180">
           <ToolIcon name="arrow" size={18} />
         </span>

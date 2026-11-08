@@ -329,7 +329,7 @@ function DeckEditor({
       {deck.cards.length > 0 && (
         <ol className="m-0 grid grid-cols-1 list-none gap-2 p-0">
           {deck.cards.map((card) => (
-            <li key={card.id} className="fc-row flex items-start gap-3 rounded-2xl border border-line bg-white px-4 py-3">
+            <li key={card.id} className="fc-row flex items-start gap-3 rounded-2xl border border-line bg-card px-4 py-3">
               <span className="grid min-w-0 flex-1 gap-1 sm:grid-cols-2 sm:gap-4">
                 <span className="text-sm font-bold text-navy">{card.front}</span>
                 <span className="text-sm text-slate-700">{card.back}</span>

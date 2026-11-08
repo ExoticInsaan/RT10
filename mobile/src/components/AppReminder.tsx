@@ -118,7 +118,7 @@ function List({ title, items, now, past = false, onRemove }: { title: string; it
       <h3 className="mb-3 mt-0 text-base font-bold text-navy">{title}</h3>
       <ul className="m-0 grid list-none grid-cols-1 gap-2 p-0">
         {items.map((i) => (
-          <li key={i.id} className={`rounded-2xl border border-line bg-white px-5 py-4 ${past ? "opacity-70" : ""}`}>
+          <li key={i.id} className={`rounded-2xl border border-line bg-card px-5 py-4 ${past ? "opacity-70" : ""}`}>
             <div className="flex items-start gap-3">
               <span className="min-w-0 flex-1">
                 <span className="block font-bold text-navy">{i.title}</span>

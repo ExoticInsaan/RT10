@@ -18,6 +18,9 @@
   --color-ink: #1f2937;
   --color-muted: #687483;
   --color-line: #dedbd5;
+  /* Two surface colours shared with the Android app (card = white panels, deep = navy blocks). Same values as before. */
+  --color-card: #ffffff;
+  --color-deep: #102a4c;
   /* Tools experience: accent colours and shadows from the new design. */
   --color-violet: #7c3aed;
   --color-teal: #0f9f8f;

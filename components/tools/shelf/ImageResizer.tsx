@@ -217,7 +217,7 @@ function Step({ n, title, aside, children }: { n: number; title: string; aside?:
   return (
     <section className="grid grid-cols-1 gap-3">
       <div className="flex items-center gap-2.5">
-        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-navy text-xs font-extrabold text-white">{n}</span>
+        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-deep text-xs font-extrabold text-white">{n}</span>
         <h3 className="m-0 text-base font-extrabold text-navy">{title}</h3>
         {aside && <span className="ml-auto text-sm font-bold text-teal tabular-nums">{aside}</span>}
       </div>
@@ -391,7 +391,7 @@ export default function ImageResizer() {
   return (
     <div className="mx-auto grid max-w-3xl grid-cols-1 items-start gap-6 md:grid-cols-[1fr_17rem]">
       <div className="grid grid-cols-1 gap-7">
-        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white p-2.5 pr-3">
+        <div className="flex items-center gap-3 rounded-2xl border border-line bg-card p-2.5 pr-3">
           {/* eslint-disable-next-line @next/next/no-img-element -- a local preview of the visitor's own file */}
           <img src={img.src} alt="" className="size-12 rounded-xl bg-surface object-contain" />
           <div className="min-w-0 flex-1">
@@ -446,7 +446,7 @@ export default function ImageResizer() {
                 aria-checked={ext === f.value}
                 onClick={() => setExt(f.value)}
                 className={`min-h-11 cursor-pointer rounded-xl border-0 text-sm font-bold transition ${
-                  ext === f.value ? "bg-white text-navy shadow-sm" : "bg-transparent text-muted hover:text-navy"
+                  ext === f.value ? "bg-card text-navy shadow-sm" : "bg-transparent text-muted hover:text-navy"
                 }`}
               >
                 {f.label}
@@ -479,7 +479,7 @@ export default function ImageResizer() {
 
       {/* The result stays in view next to the settings on wider screens, and sits right under them on phones. */}
       <aside
-        className="grid grid-cols-1 gap-4 rounded-3xl border border-line bg-white p-4 shadow-card md:sticky md:top-24"
+        className="grid grid-cols-1 gap-4 rounded-3xl border border-line bg-card p-4 shadow-card md:sticky md:top-24"
         aria-live="polite"
       >
         <div className="flex items-center justify-between gap-3">
@@ -493,7 +493,7 @@ export default function ImageResizer() {
         >
           {shown ? (
             // eslint-disable-next-line @next/next/no-img-element -- the resized result, generated in the browser
-            <img key={shown.url} src={shown.url} alt={tr("Resized result")} className="max-h-48 max-w-full animate-[fc-pop_.35s_ease_both] rounded-lg bg-white object-contain shadow-sm" />
+            <img key={shown.url} src={shown.url} alt={tr("Resized result")} className="max-h-48 max-w-full animate-[fc-pop_.35s_ease_both] rounded-lg bg-card object-contain shadow-sm" />
           ) : (
             <span className="size-10 animate-spin rounded-full border-4 border-line border-t-teal" aria-hidden="true" />
           )}

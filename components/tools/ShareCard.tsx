@@ -24,7 +24,7 @@ export default function ShareCard({
       </div>
       <div className={`absolute inset-x-4 ${miniature ? "top-[15%]" : "top-[20%]"}`}>
         <span
-          className={`mx-auto grid place-items-center rounded-2xl bg-white/60 text-coral shadow-sm ${miniature ? "size-11" : "size-16"}`}
+          className={`mx-auto grid place-items-center rounded-2xl bg-card/60 text-coral shadow-sm ${miniature ? "size-11" : "size-16"}`}
         >
           <ToolIcon name={icon} size={miniature ? 22 : 30} />
         </span>

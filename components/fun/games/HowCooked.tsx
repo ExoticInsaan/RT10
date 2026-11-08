@@ -59,7 +59,7 @@ function lighten(hex: string, k: number) {
 const btn =
   "min-h-14 cursor-pointer rounded-[18px] border-0 bg-[#e8501f] px-5 py-4 text-lg font-extrabold text-white shadow-[0_6px_0_#a83210,0_14px_24px_rgba(168,50,16,.28)] transition-[transform,box-shadow] duration-75 active:translate-y-1 active:shadow-[0_2px_0_#a83210,0_6px_12px_rgba(168,50,16,.25)] disabled:cursor-default disabled:opacity-50";
 const ghost =
-  "min-h-12 cursor-pointer rounded-2xl border-2 border-[#f0c9b4] bg-white px-4 py-3 text-[15px] font-bold text-[#7a2e0e] shadow-[0_4px_0_#f0c9b4] active:translate-y-[3px] active:shadow-[0_1px_0_#f0c9b4]";
+  "min-h-12 cursor-pointer rounded-2xl border-2 border-[#f0c9b4] bg-card px-4 py-3 text-[15px] font-bold text-[#7a2e0e] shadow-[0_4px_0_#f0c9b4] active:translate-y-[3px] active:shadow-[0_1px_0_#f0c9b4]";
 
 export default function HowCooked() {
   const tr = useTr();
@@ -116,7 +116,7 @@ export default function HowCooked() {
         {Array.from({ length: steamCount }, (_, i) => (
           <div
             key={i}
-            className="absolute bottom-[200px] size-[46px] animate-fz-steam rounded-full bg-white/90 blur-[8px]"
+            className="absolute bottom-[200px] size-[46px] animate-fz-steam rounded-full bg-card/90 blur-[8px]"
             style={{ left: 95 + ((i * 53) % 150), animationDelay: `${(i * 0.42).toFixed(2)}s` }}
           />
         ))}
@@ -253,7 +253,7 @@ export default function HowCooked() {
           <label htmlFor="cooked-name" className="text-sm font-bold text-[#7a4a35]">{tr("Your name")}</label>
           <input
             id="cooked-name"
-            className="w-full rounded-2xl border-2 border-[#f0c9b4] bg-white px-[18px] py-4 text-lg font-medium text-[#3a1406] outline-none focus:border-[#e8501f] focus:shadow-[0_0_0_4px_rgba(232,80,31,.15)]"
+            className="w-full rounded-2xl border-2 border-[#f0c9b4] bg-card px-[18px] py-4 text-lg font-medium text-[#3a1406] outline-none focus:border-[#e8501f] focus:shadow-[0_0_0_4px_rgba(232,80,31,.15)]"
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && reveal()}
@@ -263,7 +263,7 @@ export default function HowCooked() {
           />
           <button className={btn} onClick={reveal} disabled={!name.trim()}>{tr("Reveal my result")}</button>
           <div className="pointer-events-none flex items-end justify-center gap-1 overflow-hidden pt-2">
-            <div className="mb-[58px] animate-fz-peek rounded-[16px_16px_4px_16px] bg-white px-3 py-2.5 text-[13px] font-bold text-navy shadow-[0_6px_16px_rgba(16,42,76,.12)]">
+            <div className="mb-[58px] animate-fz-peek rounded-[16px_16px_4px_16px] bg-card px-3 py-2.5 text-[13px] font-bold text-navy shadow-[0_6px_16px_rgba(16,42,76,.12)]">
               {tr("Same name, same result.")}<br />{tr("Every time. Hoot!")}
             </div>
             <OwlPeek className="w-[132px]" />
