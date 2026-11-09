@@ -1,0 +1,561 @@
+/* Diwali curtain opening (components/festive/DiwaliCurtain.tsx). Website only.
+   Smoothness rules used here: only transform and opacity are animated (so the browser's GPU does the work, with no
+   repainting per frame), nothing animates a filter, clip-path or box-shadow, and only the few moving layers use will-change. */
+
+.dwc-scene {
+  --dwc-curtain-w: 53%;
+  --dwc-gather: 0.17; /* how narrow each curtain is once it is pulled aside (17% of its width) */
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  pointer-events: none;
+  isolation: isolate;
+  contain: layout paint;
+  animation: dwc-fade-scene 0.85s 8.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+html.dwc-off .dwc-scene {
+  display: none;
+}
+
+/* ---- Curtains: gathered to the sides by scaling (compositor only) ---- */
+.dwc-curtain {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  bottom: 0;
+  width: var(--dwc-curtain-w);
+  backface-visibility: hidden;
+  will-change: transform;
+  animation: dwc-gather 5.35s 0.7s cubic-bezier(0.55, 0, 0.18, 1) forwards;
+}
+
+.dwc-curtain--left {
+  left: 0;
+  transform-origin: 0 50%;
+}
+
+.dwc-curtain--right {
+  right: 0;
+  transform-origin: 100% 50%;
+}
+
+.dwc-fabric {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0 4%,
+      rgba(255, 104, 82, 0.12) 8%,
+      transparent 14% 20%,
+      rgba(255, 132, 100, 0.17) 25%,
+      transparent 31% 39%,
+      rgba(255, 122, 91, 0.15) 45%,
+      transparent 53% 61%,
+      rgba(255, 130, 95, 0.13) 67%,
+      transparent 75% 83%,
+      rgba(255, 101, 77, 0.14) 89%,
+      transparent 96%
+    ),
+    linear-gradient(180deg, rgba(255, 166, 110, 0.18), transparent 19%),
+    repeating-linear-gradient(90deg, #300206 0%, #681014 6%, #a42625 12%, #4b070c 19%, #8e1d20 26%, #260105 34%);
+  box-shadow:
+    inset 0 0 90px rgba(20, 0, 0, 0.7),
+    inset 0 -90px 80px rgba(27, 0, 0, 0.5);
+}
+
+/* Soft glow on the bottom hem. */
+.dwc-fabric::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 25%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(255, 87, 44, 0.22), transparent 63%);
+  content: "";
+}
+
+/* ---- Tie-backs, placed over the gathered curtains (not inside them, so they are not squashed) ---- */
+.dwc-tieback {
+  position: absolute;
+  z-index: 7;
+  top: 56%;
+  width: 80px;
+  height: 135px;
+  opacity: 0;
+  animation: dwc-fade-in 1s 4.7s ease-out forwards;
+}
+
+.dwc-tieback--left {
+  left: calc(var(--dwc-curtain-w) * var(--dwc-gather) / 2 - 36px);
+}
+
+.dwc-tieback--right {
+  right: calc(var(--dwc-curtain-w) * var(--dwc-gather) / 2 - 36px);
+  transform: scaleX(-1);
+}
+
+.dwc-tieback-rope {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 65px;
+  height: 20px;
+  border: 5px double #d49a3a;
+  border-radius: 50%;
+  transform: rotate(-13deg);
+  box-shadow: 0 2px 6px #4a1406;
+}
+
+.dwc-tassel {
+  position: absolute;
+  top: 24px;
+  width: 14px;
+  height: 72px;
+  border-radius: 8px 8px 60% 60%;
+  background: repeating-linear-gradient(90deg, #7e3b12 0 2px, #ffd16a 3px 5px, #bd7420 6px 8px);
+  box-shadow: 0 3px 7px #351004;
+  transform-origin: top;
+}
+
+.dwc-tassel::before {
+  position: absolute;
+  top: -8px;
+  left: -3px;
+  width: 20px;
+  height: 15px;
+  border-radius: 50%;
+  background: linear-gradient(#ffe28b, #8e4816);
+  content: "";
+}
+
+.dwc-tassel--one {
+  left: 29px;
+  transform: rotate(-9deg);
+}
+
+.dwc-tassel--two {
+  left: 47px;
+  height: 62px;
+  transform: rotate(10deg);
+}
+
+/* ---- Warm light behind the curtains (plain alpha, no blend modes or blur filters) ---- */
+.dwc-haze {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 70%, rgba(255, 173, 47, 0.3), transparent 46%);
+  animation:
+    dwc-fade-in 4s 1.7s ease-in-out forwards,
+    dwc-fade-out 2s 5.8s ease-in-out forwards;
+}
+
+.dwc-beam {
+  position: absolute;
+  z-index: 3;
+  top: -12%;
+  width: 24%;
+  height: 125%;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 192, 83, 0.07) 25%,
+    rgba(255, 192, 83, 0.22) 50%,
+    rgba(255, 192, 83, 0.07) 75%,
+    transparent
+  );
+  transform-origin: top;
+  animation:
+    dwc-fade-in 2.5s 1.65s ease-in-out forwards,
+    dwc-fade-out 2s 5.9s ease-in-out forwards;
+}
+
+.dwc-beam--left {
+  left: 27%;
+  transform: rotate(-10deg);
+}
+
+.dwc-beam--right {
+  right: 27%;
+  transform: rotate(10deg);
+}
+
+/* ---- Lanterns ---- */
+.dwc-lantern {
+  position: absolute;
+  z-index: 9;
+  top: -15px;
+  width: clamp(70px, 7vw, 104px);
+  opacity: 0;
+  transform-origin: 50% 0;
+  will-change: transform, opacity;
+  animation:
+    dwc-lantern-drop 1.5s 3.7s cubic-bezier(0.2, 0.9, 0.3, 1.05) forwards,
+    dwc-lantern-sway 4s 5.2s ease-in-out infinite;
+}
+
+.dwc-lantern--left {
+  left: 7%;
+}
+
+.dwc-lantern--right {
+  right: 7%;
+}
+
+.dwc-lantern-cord {
+  display: block;
+  width: 1px;
+  height: 48px;
+  margin: 0 auto -6px;
+  background: linear-gradient(#6c310f, #e1a941);
+}
+
+.dwc-lantern svg {
+  display: block;
+  width: 100%;
+}
+
+/* ---- Sparkles ---- */
+.dwc-sparkles {
+  position: absolute;
+  z-index: 8;
+  inset: 0;
+  opacity: 0;
+  animation:
+    dwc-fade-in 1.1s 2.2s ease-out forwards,
+    dwc-fade-out 1.4s 7.75s ease-in-out forwards;
+}
+
+.dwc-sparkle {
+  position: absolute;
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ffce62;
+  box-shadow:
+    0 0 6px #fff3b5,
+    0 0 14px #ff9d1f;
+  animation: dwc-float 2.8s var(--d, 0s) ease-in-out infinite;
+}
+
+.dwc-sparkle--star {
+  width: 8px;
+  height: 8px;
+  border-radius: 0;
+}
+
+/* ---- "Happy Diwali from TopperShelf" ---- */
+.dwc-title {
+  position: absolute;
+  z-index: 9;
+  top: 43%;
+  left: 50%;
+  width: min(560px, 72vw);
+  color: #f7c75e;
+  text-align: center;
+  opacity: 0;
+  filter: drop-shadow(0 2px 2px rgba(75, 21, 2, 0.8)) drop-shadow(0 0 16px rgba(255, 167, 45, 0.5));
+  transform: translate(-50%, -42%);
+  will-change: transform, opacity;
+  animation:
+    dwc-title-in 1.4s 3.7s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    dwc-title-out 1.15s 7.65s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.dwc-happy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: -13px;
+  font-family: var(--font-dm-serif), Georgia, serif;
+  font-size: clamp(22px, 2.4vw, 34px);
+  letter-spacing: 0.02em;
+}
+
+.dwc-happy strong,
+.dwc-title p strong {
+  font-weight: 400;
+}
+
+.dwc-happy span {
+  position: relative;
+  width: clamp(46px, 7vw, 92px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #f2bd51);
+}
+
+.dwc-happy span:last-child {
+  background: linear-gradient(90deg, #f2bd51, transparent);
+}
+
+.dwc-happy span:first-child::after,
+.dwc-happy span:last-child::before {
+  position: absolute;
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  background: #f6cd6d;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.dwc-happy span:first-child::after {
+  right: 0;
+}
+
+.dwc-happy span:last-child::before {
+  left: 0;
+}
+
+.dwc-diwali {
+  margin-left: -0.08em;
+  padding: 0 0.12em; /* room for the swashes of the script font, which background-clip would otherwise cut off */
+  font-family: var(--font-great-vibes), var(--font-dm-serif), cursive;
+  font-size: clamp(96px, 12vw, 178px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  background: linear-gradient(180deg, #fff2a4 5%, #f3c35d 42%, #c47a20 92%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dwc-ornament {
+  display: flex;
+  width: min(270px, 62%);
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  margin: -4px auto 12px;
+}
+
+.dwc-ornament span {
+  width: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #eab44a);
+}
+
+.dwc-ornament span:last-child {
+  background: linear-gradient(90deg, #eab44a, transparent);
+}
+
+.dwc-ornament i {
+  width: 11px;
+  height: 11px;
+  flex: 0 0 auto;
+  border: 1px solid #ffdc7d;
+  background: #bd7723;
+  box-shadow: 0 0 10px rgba(255, 194, 71, 0.65);
+  transform: rotate(45deg);
+}
+
+.dwc-title p {
+  margin: 0;
+  color: #f2cd75;
+  font-family: var(--font-dm-serif), Georgia, serif;
+  font-size: clamp(18px, 2vw, 27px);
+  letter-spacing: 0.06em;
+}
+
+/* ---- Row of diyas ---- */
+.dwc-diyas {
+  position: absolute;
+  z-index: 10;
+  top: min(70%, calc(50% + 200px));
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation:
+    dwc-rise-in 1.2s 4.15s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    dwc-rise-out 1.1s 7.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.dwc-diyas img {
+  display: block;
+  width: clamp(285px, 31vw, 390px);
+  height: auto;
+}
+
+/* ---- Keyframes (transform and opacity only) ---- */
+@keyframes dwc-gather {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(var(--dwc-gather));
+  }
+}
+
+@keyframes dwc-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dwc-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes dwc-fade-scene {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes dwc-lantern-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-120px);
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Starts and ends at 0deg so it takes over from the drop without a jump. */
+@keyframes dwc-lantern-sway {
+  0%,
+  100% {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+    transform: rotate(2.2deg);
+  }
+  75% {
+    opacity: 1;
+    transform: rotate(-2.2deg);
+  }
+}
+
+@keyframes dwc-float {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(8px) scale(0.65) rotate(45deg);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(-17px) scale(1.15) rotate(45deg);
+  }
+}
+
+@keyframes dwc-title-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -35%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -42%) scale(1);
+  }
+}
+
+@keyframes dwc-title-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -42%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -47%) scale(1.015);
+  }
+}
+
+@keyframes dwc-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dwc-rise-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+
+@media (max-width: 760px) {
+  .dwc-scene {
+    --dwc-curtain-w: 57%;
+  }
+
+  .dwc-tieback {
+    transform: scale(0.6);
+    transform-origin: 0 0;
+  }
+
+  .dwc-tieback--right {
+    transform: scaleX(-1) scale(0.6);
+    transform-origin: 100% 0;
+  }
+
+  .dwc-tieback--left {
+    left: 6px;
+  }
+
+  .dwc-tieback--right {
+    right: 6px;
+  }
+
+  .dwc-lantern--left {
+    left: 2%;
+  }
+
+  .dwc-lantern--right {
+    right: 2%;
+  }
+
+  .dwc-diyas {
+    top: 69%;
+  }
+
+  .dwc-diyas img {
+    width: clamp(250px, 78vw, 320px);
+  }
+
+  .dwc-title {
+    top: 45%;
+    width: 86vw;
+  }
+
+  .dwc-happy {
+    margin-bottom: -5px;
+  }
+
+  .dwc-ornament {
+    margin-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dwc-scene {
+    display: none;
+  }
+}

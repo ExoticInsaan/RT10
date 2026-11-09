@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { useSyncExternalStore } from "react";
+import { DIWALI_SEASON_ENDS } from "@/components/festive/season";
 
 // Diwali decoration for the WEBSITE only (the Android app never imports this file).
 // It switches itself off after the date below, so there is nothing to remove later.
@@ -9,7 +10,7 @@ import { useSyncExternalStore } from "react";
 // embers are the only drawn parts.
 // To remove it for good: delete this folder, public/diwali and app/diwali.css, then remove the @import in
 // app/globals.css and the three Diwali lines in app/layout.tsx.
-const SEASON_ENDS = new Date("2026-11-16T00:00:00+05:30").getTime();
+const SEASON_ENDS = DIWALI_SEASON_ENDS;
 
 const inSeason = () => Date.now() < SEASON_ENDS;
 
