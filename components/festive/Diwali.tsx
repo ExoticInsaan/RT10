@@ -5,7 +5,10 @@ import { useSyncExternalStore } from "react";
 
 // Diwali decoration for the WEBSITE only (the Android app never imports this file).
 // It switches itself off after the date below, so there is nothing to remove later.
-// To remove it for good: delete this folder, app/diwali.css, and the two lines in app/layout.tsx.
+// The string lights and the row of diyas are photographs (public/diwali). The banner, the corner diya and the
+// embers are the only drawn parts.
+// To remove it for good: delete this folder, public/diwali and app/diwali.css, then remove the @import in
+// app/globals.css and the three Diwali lines in app/layout.tsx.
 const SEASON_ENDS = new Date("2026-11-16T00:00:00+05:30").getTime();
 const CLOSED_KEY = "toppershelf-diwali-banner-closed";
 const EVENT = "toppershelf:diwali";
@@ -31,29 +34,6 @@ function bannerOpen() {
 
 // The server and first paint see "off", then the decoration fades in, so there is no hydration mismatch.
 const useSeason = () => useSyncExternalStore(() => () => {}, inSeason, () => false);
-
-const bulbColors = ["#f59e0b", "#f97355", "#fb7185", "#fbbf24", "#34d399", "#60a5fa", "#a78bfa"];
-
-function Lantern({ id, className }: { id: string; className: string }) {
-  return (
-    <svg className={`dw-lantern ${className}`} viewBox="0 0 50 90" width="46" height="83" aria-hidden="true">
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fb923c" />
-          <stop offset="1" stopColor="#dc2626" />
-        </linearGradient>
-      </defs>
-      <path d="M25 0v14" stroke="#b45309" strokeWidth="2" />
-      <path d="M17 14h16l3 6H14z" fill="#b45309" />
-      <path d="M14 20h22c4 8 4 28 0 36H14c-4-8-4-28 0-36z" fill={`url(#${id})`} />
-      <ellipse className="dw-glow" cx="25" cy="38" rx="7" ry="12" fill="#fde68a" />
-      <path d="M25 20v36M19 20c-3 12-3 24 0 36M31 20c3 12 3 24 0 36" stroke="#92400e" strokeOpacity=".45" fill="none" />
-      <path d="M16 56h18l-2 5H18z" fill="#b45309" />
-      <path d="M25 61v12" stroke="#f59e0b" strokeWidth="2" />
-      <path d="M21 73h8l-1 12h-6z" fill="#f59e0b" />
-    </svg>
-  );
-}
 
 function Diya() {
   return (
@@ -112,24 +92,18 @@ export function DiwaliBanner() {
   );
 }
 
-/** Twinkling lights hanging under the header, swinging lanterns, a flickering diya and floating embers. */
+/** Real string lights under the header (warm flicker, gentle sway), floating embers and a flickering diya. */
 export function DiwaliLights() {
   const on = useSeason();
   if (!on) return null;
   return (
     <>
       <div className="dw-lights" aria-hidden="true">
-        <div className="dw-string">
-          {Array.from({ length: 26 }, (_, i) => (
-            <svg key={i} className="dw-unit" viewBox="0 0 110 44" aria-hidden="true" style={{ color: bulbColors[i % bulbColors.length], "--d": `${((i * 37) % 240) / 100}s` } as CSSProperties}>
-              <path d="M0 2Q55 30 110 2" fill="none" stroke="#3b2a1a" strokeOpacity=".5" strokeWidth="1.5" />
-              <path d="M55 16v5" stroke="#3b2a1a" strokeOpacity=".6" strokeWidth="1.5" />
-              <ellipse className="dw-bulb" cx="55" cy="28" rx="5" ry="7" fill="currentColor" />
-            </svg>
-          ))}
+        <div className="dw-strand">
+          {/* The same photograph, brightened and masked to different stripes, so the bulbs flicker one group at a time. */}
+          <div className="dw-shine dw-shine-a" />
+          <div className="dw-shine dw-shine-b" />
         </div>
-        <Lantern id="dw-l1" className="dw-left" />
-        <Lantern id="dw-l2" className="dw-right" />
       </div>
       <div className="dw-embers" aria-hidden="true">
         {Array.from({ length: 14 }, (_, i) => (
@@ -149,5 +123,22 @@ export function DiwaliLights() {
         <Diya />
       </div>
     </>
+  );
+}
+
+/** "Shubh Deepavali" above a row of real lit diyas, just above the footer. */
+export function DiwaliBand() {
+  const on = useSeason();
+  if (!on) return null;
+  return (
+    <section className="dw-band" aria-label="Shubh Deepavali">
+      <p className="dw-band-title">Shubh Deepavali</p>
+      <div className="dw-row" aria-hidden="true">
+        <div className="dw-row-photo" />
+        {/* The flames of the same photograph, brightened and breathing, give them a natural flicker. */}
+        <div className="dw-row-photo dw-row-flame dw-row-flame-a" />
+        <div className="dw-row-photo dw-row-flame dw-row-flame-b" />
+      </div>
+    </section>
   );
 }
