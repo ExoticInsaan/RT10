@@ -1,10 +1,8 @@
 /* Diwali decoration (website only). Everything is decoration: it never blocks clicks and stops for reduced motion. */
-.dw-banner{position:relative;display:flex;align-items:center;justify-content:center;min-height:2.25rem;padding:.35rem 2.6rem;color:#fff;font-size:.8rem;font-weight:700;text-align:center;overflow:hidden;background:linear-gradient(90deg,#102a4c,#7c3aed 50%,#f97355);animation:dw-fade .6s ease both}
+.dw-banner{position:relative;display:flex;align-items:center;justify-content:center;min-height:2.25rem;padding:.35rem 1rem;color:#fff;font-size:.8rem;font-weight:700;text-align:center;overflow:hidden;background:linear-gradient(90deg,#102a4c,#7c3aed 50%,#f97355);animation:dw-fade .6s ease both}
 .dw-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%);transform:translateX(-100%);animation:dw-shine 5s ease-in-out infinite;pointer-events:none}
 .dw-banner-text{position:relative;z-index:1;display:inline-flex;align-items:center;gap:.5rem;text-shadow:0 1px 2px rgba(0,0,0,.25)}
 .dw-bounce{display:inline-block;animation:dw-bob 1.6s ease-in-out infinite}.dw-late{animation-delay:.5s}
-.dw-close{position:absolute;right:.6rem;top:50%;z-index:2;display:grid;width:1.8rem;height:1.8rem;margin-top:-.9rem;place-items:center;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:1.15rem;line-height:1;cursor:pointer;transition:background .2s}
-.dw-close:hover{background:rgba(255,255,255,.34)}
 
 /* Real string lights under the header. Not sticky: they belong to the top of the page and scroll away, so text never
    slides underneath them. The lowest bulb hangs about 35px, and every page leaves at least 32px under the header. */

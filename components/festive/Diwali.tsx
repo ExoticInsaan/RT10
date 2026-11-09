@@ -10,27 +10,8 @@ import { useSyncExternalStore } from "react";
 // To remove it for good: delete this folder, public/diwali and app/diwali.css, then remove the @import in
 // app/globals.css and the three Diwali lines in app/layout.tsx.
 const SEASON_ENDS = new Date("2026-11-16T00:00:00+05:30").getTime();
-const CLOSED_KEY = "toppershelf-diwali-banner-closed";
-const EVENT = "toppershelf:diwali";
 
 const inSeason = () => Date.now() < SEASON_ENDS;
-
-function subscribe(callback: () => void) {
-  window.addEventListener(EVENT, callback);
-  window.addEventListener("storage", callback);
-  return () => {
-    window.removeEventListener(EVENT, callback);
-    window.removeEventListener("storage", callback);
-  };
-}
-
-function bannerOpen() {
-  try {
-    return inSeason() && localStorage.getItem(CLOSED_KEY) !== "1";
-  } catch {
-    return inSeason();
-  }
-}
 
 // The server and first paint see "off", then the decoration fades in, so there is no hydration mismatch.
 const useSeason = () => useSyncExternalStore(() => () => {}, inSeason, () => false);
@@ -60,10 +41,10 @@ function Diya() {
   );
 }
 
-/** A slim greeting above the header. Can be closed, and stays closed. */
+/** A slim greeting above the header. No close button: it shows for the whole season, through 15 Nov (IST). */
 export function DiwaliBanner() {
-  const open = useSyncExternalStore(subscribe, bannerOpen, () => false);
-  if (!open) return null;
+  const on = useSeason();
+  if (!on) return null;
   return (
     <div className="dw-banner" role="region" aria-label="Diwali greeting">
       <span className="dw-banner-text">
@@ -73,21 +54,6 @@ export function DiwaliBanner() {
         </span>
         <span className="dw-bounce dw-late" aria-hidden="true">✨</span>
       </span>
-      <button
-        type="button"
-        aria-label="Close the Diwali message"
-        className="dw-close"
-        onClick={() => {
-          try {
-            localStorage.setItem(CLOSED_KEY, "1");
-          } catch {
-            /* storage blocked: it will show again next visit */
-          }
-          window.dispatchEvent(new Event(EVENT));
-        }}
-      >
-        ×
-      </button>
     </div>
   );
 }
