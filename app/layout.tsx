@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
-import { DM_Serif_Display, Great_Vibes, Inter } from "next/font/google";
+import { DM_Serif_Display, Inter } from "next/font/google";
 import "./globals.css";
 import SiteHeader from "@/components/shell/SiteHeader";
 import SiteFooter from "@/components/shell/SiteFooter";
@@ -22,13 +22,9 @@ const dmSerif = DM_Serif_Display({
   display: "swap",
 });
 
-// Script font for the Diwali curtain title. Only loaded as a font file; it costs nothing once the season is over and
-// the curtain lines are removed.
-const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400", variable: "--font-great-vibes", display: "swap" });
-
-// Runs before the first paint: when the Diwali season is over, or this tab already saw the curtain, it adds "dwc-off"
-// to <html> so the curtain is never drawn (no flash). Everyone else sees it from the very first frame.
-const curtainScript = `try{if(Date.now()>=${DIWALI_SEASON_ENDS}||sessionStorage.getItem("toppershelf-diwali-curtain"))document.documentElement.classList.add("dwc-off")}catch(e){}`;
+// Runs before the first paint: once the Diwali season is over it adds "dwc-off" to <html>, so the curtain is never drawn.
+// During the season the curtain plays on every open and reload of the site.
+const curtainScript = `try{if(Date.now()>=${DIWALI_SEASON_ENDS})document.documentElement.classList.add("dwc-off")}catch(e){}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -70,7 +66,7 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, them
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`h-full ${inter.variable} ${dmSerif.variable} ${greatVibes.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`h-full ${inter.variable} ${dmSerif.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: curtainScript }} />
       </head>

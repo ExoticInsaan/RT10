@@ -1,17 +1,15 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 
-// Diwali curtain opening, WEBSITE only. It plays once per visit (per browser tab session), then removes itself.
+// Diwali curtain opening, WEBSITE only. It plays every time the site is opened or reloaded, then removes itself.
 // - The tiny script in app/layout.tsx adds class "dwc-off" to <html> before the first paint when the season is
-//   over or the curtain was already seen, so those visitors never see a flash of it.
+//   over, so nobody sees a flash of it afterwards.
 // - Everything animates with transform and opacity only, so it runs on the GPU and stays smooth.
 // - People who prefer reduced motion never see it (see app/diwali-curtain.css).
 // To remove it for good: delete this file, the @import of diwali-curtain.css in app/globals.css,
-// public/diwali/curtain-diyas.webp, and the curtain lines in app/layout.tsx.
-
-const SEEN_KEY = "toppershelf-diwali-curtain";
+// and the curtain lines in app/layout.tsx.
 
 // [left %, top %, delay s]
 const sparkles: [number, number, number][] = [
@@ -66,28 +64,9 @@ function Curtain({ side }: { side: "left" | "right" }) {
   );
 }
 
-function Tieback({ side }: { side: "left" | "right" }) {
-  return (
-    <div className={`dwc-tieback dwc-tieback--${side}`}>
-      <span className="dwc-tieback-rope" />
-      <span className="dwc-tassel dwc-tassel--one" />
-      <span className="dwc-tassel dwc-tassel--two" />
-    </div>
-  );
-}
-
 export default function DiwaliCurtain() {
   const off = useSyncExternalStore(noop, isOff, () => false);
   const [done, setDone] = useState(false);
-
-  // Remember that this visit has seen it, so moving around the site (or reloading) does not replay it.
-  useEffect(() => {
-    try {
-      sessionStorage.setItem(SEEN_KEY, "1");
-    } catch {
-      /* storage blocked: it may play again on the next full page load, which is harmless */
-    }
-  }, []);
 
   if (off || done) return null;
 
@@ -106,8 +85,6 @@ export default function DiwaliCurtain() {
 
       <Curtain side="left" />
       <Curtain side="right" />
-      <Tieback side="left" />
-      <Tieback side="right" />
 
       <Lantern side="left" />
       <Lantern side="right" />
@@ -122,28 +99,6 @@ export default function DiwaliCurtain() {
         ))}
       </div>
 
-      <div className="dwc-title">
-        <div className="dwc-happy">
-          <span />
-          <strong>Happy</strong>
-          <span />
-        </div>
-        <div className="dwc-diwali">Diwali</div>
-        <div className="dwc-ornament">
-          <span />
-          <i />
-          <span />
-        </div>
-        <p>
-          from <strong>TopperShelf</strong>
-        </p>
-      </div>
-
-      <div className="dwc-diyas">
-        {/* A plain img on purpose: it is a tiny fixed-size picture that must be ready before the curtains open. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/diwali/curtain-diyas.webp" alt="" width={377} height={280} decoding="async" />
-      </div>
     </div>
   );
 }
