@@ -20,7 +20,7 @@ export default function ShelfItem({ tool, priority = false }: { tool: Tool; prio
         <div
           className={`shelf-object relative mx-2 aspect-[4/3] overflow-hidden rounded-t-2xl rounded-b-md ${
             tool.image ? "" : toneClasses[tool.tone] ?? toneClasses.blue
-          } ${tool.imageBg === "#ffffff" || tool.imageBg === "#f8f8f8" ? "ring-1 ring-inset ring-line/70" : ""}`}
+          } ${tool.imageBg === "#ffffff" || tool.imageBg === "#f8f8f8" ? "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:ring-1 after:ring-inset after:ring-line/70" : ""}`}
           style={tool.image ? { backgroundColor: tool.imageBg } : undefined}
         >
           {tool.image ? (

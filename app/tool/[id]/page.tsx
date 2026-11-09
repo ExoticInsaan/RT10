@@ -101,7 +101,7 @@ export default async function ToolPage({ params }: PageProps<"/tool/[id]">) {
       <div className="w-36 sm:w-64 [--shelf-gap:1rem] sm:[--shelf-gap:1.5rem]">
         <div
           className={`relative mx-2 aspect-[4/3] overflow-hidden rounded-t-2xl rounded-b-md ${
-            tool.imageBg === "#ffffff" || tool.imageBg === "#f8f8f8" ? "ring-1 ring-inset ring-line/70" : ""
+            tool.imageBg === "#ffffff" || tool.imageBg === "#f8f8f8" ? "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:ring-1 after:ring-inset after:ring-line/70" : ""
           }`}
           style={{ backgroundColor: tool.imageBg }}
         >
