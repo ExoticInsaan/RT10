@@ -6,9 +6,6 @@ import SiteHeader from "@/components/shell/SiteHeader";
 import SiteFooter from "@/components/shell/SiteFooter";
 import MobileNav from "@/components/shell/MobileNav";
 import AccountListsSync from "@/components/AccountListsSync";
-import { DiwaliBand, DiwaliBanner, DiwaliLights } from "@/components/festive/Diwali";
-import DiwaliCurtain from "@/components/festive/DiwaliCurtain";
-import { DIWALI_SEASON_ENDS } from "@/components/festive/season";
 import AuthProvider from "@/components/AuthProvider";
 import Analytics from "@/components/Analytics";
 import { SITE_URL } from "@/lib/site";
@@ -21,10 +18,6 @@ const dmSerif = DM_Serif_Display({
   variable: "--font-dm-serif",
   display: "swap",
 });
-
-// Runs before the first paint: once the Diwali season is over it adds "dwc-off" to <html>, so the curtain is never drawn.
-// During the season the curtain plays on every open and reload of the site.
-const curtainScript = `try{if(Date.now()>=${DIWALI_SEASON_ENDS})document.documentElement.classList.add("dwc-off")}catch(e){}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -67,23 +60,16 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, them
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`h-full ${inter.variable} ${dmSerif.variable}`} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: curtainScript }} />
-      </head>
       <body className="flex min-h-full flex-col bg-ivory font-sans text-ink antialiased">
         <AuthProvider>
           <AccountListsSync />
-          <DiwaliBanner />
           <SiteHeader />
-          <DiwaliLights />
           <main className="flex-1">{children}</main>
-          <DiwaliBand />
           <SiteFooter />
           <Suspense fallback={null}>
             <MobileNav />
           </Suspense>
           <Analytics />
-          <DiwaliCurtain />
         </AuthProvider>
       </body>
     </html>
