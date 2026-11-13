@@ -17,5 +17,6 @@ export const shelfTools: Record<string, ComponentType> = {
   "pdf-toolkit": dynamic(() => import("./PdfToolkit"), { loading, ssr: false }),
   "focus-timer": dynamic(() => import("./FocusTimer"), { loading, ssr: false }),
   "flashcard-maker": dynamic(() => import("./FlashcardMaker"), { loading, ssr: false }),
+  "notes-to-audio": dynamic(() => import("./NotesToAudio"), { loading, ssr: false }),
   reminder: dynamic(() => import("./Reminder"), { loading, ssr: false }),
 };

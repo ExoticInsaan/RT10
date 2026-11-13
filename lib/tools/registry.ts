@@ -102,6 +102,18 @@ export const tools: Tool[] = [
     popular: true,
   },
   {
+    id: "notes-to-audio",
+    name: "Notes to Audio",
+    description: "Paste text, or upload a PDF or photos of your notes, and listen to them read aloud.",
+    category: "The Shelf",
+    icon: "sparkles",
+    tone: "violet",
+    image: "/shelf/notes-to-audio.webp",
+    imageBg: "#ffffff",
+    imageFit: "contain",
+    popular: true,
+  },
+  {
     id: "reminder",
     name: "Reminder",
     description: "Set reminders for assignments, fees and deadlines so nothing slips.",

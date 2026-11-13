@@ -179,6 +179,24 @@ const shelfContent: Record<string, ToolContent> = {
     ],
     privacyNote: typedNote,
   },
+  "notes-to-audio": {
+    howTo: [
+      "Sign in with Google (one tap, free).",
+      "Paste your text, or upload a PDF or photos of your notes.",
+      "Check the text and fix any mistakes from a scan.",
+      "Press “Listen to my notes”. Change the speed or voice, or set a sleep timer.",
+    ],
+    faq: [
+      { q: "Is there a limit on how much I can listen to?", a: "No. The reading happens on your own phone or computer, so there is no daily limit and no waiting in a queue." },
+      { q: "Can it read scanned PDFs and photos of notes?", a: "Yes. It reads the text in the pictures first. Printed text works well. Handwriting is often unclear, so check the text before you listen." },
+      { q: "Does it read Hindi?", a: "Yes, if your device has a Hindi voice. Choose “Hindi + English” when you upload a PDF or photos with Hindi in them. If no Hindi voice is found, add one in your phone’s text-to-speech settings." },
+      { q: "Why does the voice sound different on my friend’s phone?", a: "The voices come from your own device and browser, so they differ between phones. Chrome and Edge usually have the best ones." },
+      { q: "Can I download the audio?", a: "Not yet. The voice plays through your device, so there is no audio file to save. You can save the text instead." },
+    ],
+    privacyNote: "Your notes are read on your device. They are not uploaded, saved or sent anywhere.",
+    seoTitle: "Free Notes to Audio: Listen to PDFs and Notes",
+    seoDescription: "Paste text or upload a PDF or photos of your notes and listen to them read aloud. Free, with no limits. Works in English and Hindi, right in your browser.",
+  },
   reminder: {
     howTo: [
       "Sign in with Google (one tap, free).",
