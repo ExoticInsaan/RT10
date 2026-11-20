@@ -29,20 +29,21 @@ export default function SignIn() {
   }
 
   return (
-    <div className="flex size-full flex-col overflow-y-auto overflow-x-hidden bg-ivory text-navy">
-      <div className="dots-light relative h-[330px] shrink-0 overflow-hidden rounded-b-[36px] bg-deep">
-        <div className="flex items-center gap-2.5 px-6 pt-6">
+    <div className="flex size-full flex-col overflow-y-auto overflow-x-hidden bg-ivory pt-[env(safe-area-inset-top)] text-navy">
+      <div className="dots-light relative h-[330px] shrink-0 overflow-hidden rounded-b-[36px] bg-deep tab:h-[300px] roomy:h-[380px]">
+        <div className="mx-auto flex w-full max-w-[1100px] items-center gap-2.5 px-6 pt-6">
           <img src="./logo-mark-light.png" alt="" className="size-10" />
           <div className="text-[22px] font-extrabold tracking-[-0.02em] text-white">
             Topper<span className="text-[#93c5fd]">Shelf</span>
           </div>
         </div>
-        <img src="./mascot/owl-peek.webp" alt="" aria-hidden="true" className="absolute bottom-0 left-1/2 block w-[220px] -translate-x-1/2" />
+        <img src="./mascot/owl-peek.webp" alt="" aria-hidden="true" className="absolute bottom-0 left-1/2 block w-[220px] -translate-x-1/2 roomy:w-[280px]" />
       </div>
 
+      <div className="mx-auto flex w-full max-w-[560px] flex-1 flex-col">
       <div className="flex flex-col gap-2.5 px-6 pt-8 text-center">
-        <h1 className="m-0 font-display text-[32px] leading-[1.08] font-normal">{t("signin.title")}</h1>
-        <p className="m-0 text-base leading-normal text-sub">{t("signin.body")}</p>
+        <h1 className="m-0 font-display text-[32px] leading-[1.08] font-normal tab:text-[42px]">{t("signin.title")}</h1>
+        <p className="m-0 text-base leading-normal text-sub tab:text-lg">{t("signin.body")}</p>
       </div>
 
       <div className="flex flex-col gap-1.5 px-6 pt-7">
@@ -71,6 +72,7 @@ export default function SignIn() {
         {t("signin.agree")}{" "}
         <button type="button" onClick={() => openExternal("https://www.toppershelf.online/terms")} className="border-0 bg-transparent p-0 font-semibold text-link2">{t("signin.terms")}</button> {t("signin.and")}{" "}
         <button type="button" onClick={() => openExternal("https://www.toppershelf.online/privacy")} className="border-0 bg-transparent p-0 font-semibold text-link2">{t("signin.privacy")}</button>.
+      </div>
       </div>
     </div>
   );

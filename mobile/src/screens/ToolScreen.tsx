@@ -64,7 +64,7 @@ export default function ToolScreen({ id }: { id: string }) {
   }
   return (
     <Frame fun={false} backLabel={tr("The Shelf")} title={name} toolId={tool.id}>
-      {signedIn ? <div className="rounded-3xl border border-edge bg-card p-4 shadow-card">{Shelf && <Shelf />}</div> : gate}
+      {signedIn ? <div className="rounded-3xl border border-edge bg-card p-4 shadow-card tab:p-7">{Shelf && <Shelf />}</div> : gate}
       {signedIn && id === "days-countdown" && <WidgetTip />}
     </Frame>
   );
@@ -73,6 +73,7 @@ export default function ToolScreen({ id }: { id: string }) {
 function Frame({ fun, backLabel, title, toolId, children }: { fun: boolean; backLabel: string; title: string; toolId?: string; children: React.ReactNode }) {
   return (
     <div className={`hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-[max(28px,env(safe-area-inset-bottom))] ${fun ? "light-island bg-fun-field" : "bg-ivory"}`}>
+      <div className={`mx-auto w-full ${fun ? "max-w-[900px]" : "max-w-[960px]"} tab:px-4`}>
       <div className="flex items-center justify-between pr-3">
         <button
           type="button"
@@ -84,8 +85,9 @@ function Frame({ fun, backLabel, title, toolId, children }: { fun: boolean; back
         </button>
         {toolId && <ShareToolButton toolId={toolId} toolName={title} onDark={fun} />}
       </div>
-      {!fun && <h1 className="m-0 px-5 pb-3 font-display text-[34px] leading-[1.05] font-normal text-navy">{title}</h1>}
+      {!fun && <h1 className="m-0 px-5 pb-3 font-display text-[34px] leading-[1.05] font-normal text-navy tab:pb-5 tab:text-[48px]">{title}</h1>}
       <div className={fun ? "px-3" : "px-4"}>{children}</div>
+      </div>
     </div>
   );
 }

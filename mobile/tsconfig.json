@@ -28,6 +28,7 @@
       "pdf-lib": ["node_modules/pdf-lib"],
       "html-to-image": ["node_modules/html-to-image"],
       "pdfjs-dist": ["node_modules/pdfjs-dist"],
+      "tesseract.js": ["node_modules/tesseract.js"],
       "@supabase/supabase-js": ["node_modules/@supabase/supabase-js"]
     }
   },

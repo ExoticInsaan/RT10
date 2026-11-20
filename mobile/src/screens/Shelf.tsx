@@ -18,12 +18,13 @@ export default function Shelf() {
   }, [q, tr]);
 
   return (
-    <div className="hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-[100px]">
-      <div className="px-5 pt-5">
-        <h1 className="m-0 font-display text-[40px] leading-none font-normal">{tr("shelf.title")}</h1>
-        <p className="mt-2 mb-0 text-[15px] leading-[1.45] text-sub">{tr("shelf.subtitle")}</p>
+    <div className="hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-[100px] tab:pb-10">
+      <div className="mx-auto w-full max-w-[1200px] tab:px-3 lg:px-6">
+      <div className="px-5 pt-5 tab:pt-9">
+        <h1 className="m-0 font-display text-[40px] leading-none font-normal tab:text-[56px]">{tr("shelf.title")}</h1>
+        <p className="mt-2 mb-0 text-[15px] leading-[1.45] text-sub tab:text-lg">{tr("shelf.subtitle")}</p>
       </div>
-      <div className="relative mx-5 mt-4">
+      <div className="relative mx-5 mt-4 tab:mt-6 tab:max-w-[620px]">
         <label htmlFor="q" className="sr-only">{tr("shelf.searchLabel")}</label>
         <SearchIcon className="absolute top-4 left-4 text-sub" />
         <input
@@ -32,14 +33,15 @@ export default function Shelf() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder={tr("shelf.placeholder")}
-          className="box-border h-[52px] w-full rounded-2xl border-[1.5px] border-line bg-card pr-4 pl-[46px] text-base text-navy outline-none"
+          className="box-border h-[52px] w-full rounded-2xl border-[1.5px] border-line bg-card pr-4 pl-[46px] text-base text-navy outline-none tab:h-14 tab:text-lg"
         />
       </div>
-      <div className="flex flex-col gap-3 px-5 pt-[18px]">
+      <div className="flex flex-col gap-3 px-5 pt-[18px] tab:grid tab:grid-cols-2 tab:gap-4 tab:pt-8 lg:grid-cols-3">
         {list.map((t) => (
           <ToolRow key={t.id} tool={t} />
         ))}
-        {!list.length && <p className="m-0 py-6 text-center text-[15px] text-sub">{tr("common.noMatch", { q: q.trim() })}</p>}
+        {!list.length && <p className="m-0 py-6 tab:col-span-full text-center text-[15px] text-sub">{tr("common.noMatch", { q: q.trim() })}</p>}
+      </div>
       </div>
     </div>
   );

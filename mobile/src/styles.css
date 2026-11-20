@@ -30,6 +30,15 @@
   --font-display: "DM Serif Display", "Noto Serif Devanagari", Georgia, serif;
   --font-hand: "Caveat", "Kalam", cursive;
 }
+/* Screen-size steps for the app. Named on their own (not md/lg) so the website components shared with the app keep their own
+   breakpoints. tab = 600px and up (small tablets, foldables, phones turned sideways), the point where the side rail replaces the
+   bottom bar. Use lg: (1024px) and xl: (1280px) for bigger tablets. */
+@custom-variant roomy (@media (min-width: 600px) and (min-height: 700px) and (orientation: portrait));
+/* land = a tablet (or big foldable) held sideways: wide enough and tall enough for a two-column page. */
+@custom-variant land (@media (min-width: 700px) and (min-height: 480px) and (orientation: landscape));
+@theme {
+  --breakpoint-tab: 37.5rem;
+}
 @theme {
   --color-ivory: #fffbf7;
   --color-surface: #f7f0e6;

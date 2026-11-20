@@ -16,8 +16,9 @@ export function Onboard1() {
   const text = useToolText();
   const picks = ["pdf-toolkit", "image-compressor", "cgpa-calculator", "attendance-calculator"].map(byId);
   return (
-    <div className="light-island flex size-full flex-col overflow-hidden bg-ivory text-navy">
-      <div className="flex h-14 items-center justify-between gap-2 px-5 pt-3.5">
+    <div className="light-island size-full overflow-y-auto overflow-x-hidden bg-ivory pt-[env(safe-area-inset-top)] text-navy">
+    <div className="mx-auto flex min-h-full w-full max-w-[min(640px,calc(100dvh*0.62))] flex-col land:grid land:max-w-[1100px] land:grid-cols-2 land:grid-rows-[auto_1fr_auto] land:gap-x-14 land:px-10">
+      <div className="flex h-14 items-center justify-between gap-2 px-5 pt-3.5 land:col-span-2 land:px-0">
         <img src="./logo-mark.png" alt="TopperShelf" className="size-9" />
         <div className="flex items-center gap-1">
           <LanguageSwitcher compact />
@@ -25,7 +26,7 @@ export function Onboard1() {
         </div>
       </div>
 
-      <div className="mx-5 mt-3.5 grid grid-cols-2 gap-3 rounded-[32px] bg-blue-soft p-4">
+      <div className="mx-5 mt-3.5 grid grid-cols-2 gap-3 rounded-[32px] bg-blue-soft p-4 land:col-start-1 land:row-span-2 land:row-start-2 land:mx-0 land:mt-0 land:w-[min(100%,460px,calc(100dvh-140px))] land:place-self-center land:gap-4 land:p-5">
         {picks.map((tool) => (
           <div key={tool.id} className="flex flex-col gap-2">
             <Thumb tool={tool} className="aspect-square rounded-[22px] shadow-[0_10px_24px_-12px_rgba(16,42,76,.35)]" />
@@ -34,12 +35,12 @@ export function Onboard1() {
         ))}
       </div>
 
-      <div className="flex flex-col gap-3 px-6 pt-7">
-        <h1 className="m-0 font-display text-[34px] leading-[1.08] font-normal tracking-[-0.01em]">{t("onboard.o1Title")}</h1>
-        <p className="m-0 text-base leading-normal text-sub">{t("onboard.o1Body")}</p>
+      <div className="flex flex-col gap-3 px-6 pt-7 land:col-start-2 land:row-start-2 land:justify-end land:px-0 land:pt-0">
+        <h1 className="m-0 font-display text-[34px] leading-[1.08] font-normal tracking-[-0.01em] land:text-[48px]">{t("onboard.o1Title")}</h1>
+        <p className="m-0 text-base leading-normal text-sub land:text-xl">{t("onboard.o1Body")}</p>
       </div>
 
-      <div className="mt-auto flex items-center justify-between px-6 pb-8">
+      <div className="mt-auto flex items-center justify-between px-6 pb-8 land:col-start-2 land:row-start-3 land:mt-0 land:px-0 land:pt-8">
         <div className="flex gap-2" aria-hidden="true">
           <span className="h-2 w-[26px] rounded bg-[#2563eb]" />
           <span className="size-2 rounded bg-[#c7dcfb]" />
@@ -47,6 +48,7 @@ export function Onboard1() {
         </div>
         <a href="#/onboard/2" className="flex min-h-14 items-center justify-center rounded-[28px] bg-[#2563eb] px-8 text-[17px] font-extrabold text-white shadow-[0_5px_0_#1e40af]">{t("common.next")}</a>
       </div>
+    </div>
     </div>
   );
 }
@@ -62,12 +64,13 @@ export function Onboard2() {
   ].map((p) => ({ ...p, tool: byId(p.id) }));
   return (
     <div className="light-island bg-onboard-fun relative size-full overflow-hidden text-navy">
-      <div className="flex h-14 items-center justify-between px-5 pt-3.5">
+    <div className="relative mx-auto size-full max-w-[min(640px,calc(100dvh*0.56))] pt-[env(safe-area-inset-top)] land:flex land:max-w-[1100px] land:items-center land:gap-14 land:px-10">
+      <div className="flex h-14 items-center justify-between px-5 pt-3.5 land:absolute land:inset-x-10 land:top-[env(safe-area-inset-top)] land:px-0">
         <img src="./logo-mark-light.png" alt="TopperShelf" className="size-9" />
         <a href="#/signin" className="flex min-h-11 min-w-11 items-center justify-end px-2 text-[15px] font-bold text-white">{t("common.skip")}</a>
       </div>
 
-      <div className="mx-7 mt-[18px] grid grid-cols-2 gap-[18px]">
+      <div className="mx-7 mt-[18px] grid grid-cols-2 gap-[18px] land:mx-0 land:mt-0 land:w-[min(46%,440px,calc(100dvh-200px))] land:shrink-0">
         {picks.map(({ tool, tilt, drop }) => (
           <div
             key={tool.id}
@@ -82,10 +85,10 @@ export function Onboard2() {
         ))}
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 box-border flex h-[39%] min-h-[300px] flex-col rounded-t-[32px] bg-ivory px-6 pt-7 pb-8 shadow-[0_-10px_30px_-12px_rgba(60,8,40,.35)]">
-        <h1 className="m-0 font-display text-[34px] leading-[1.08] font-normal tracking-[-0.01em]">{t("onboard.o2Title")}</h1>
-        <p className="mt-3 mb-0 text-base leading-normal text-sub">{t("onboard.o2Body")}</p>
-        <div className="mt-auto flex items-center justify-between">
+      <div className="absolute inset-x-0 bottom-0 box-border flex h-[39%] min-h-[300px] flex-col rounded-t-[32px] bg-ivory px-6 pt-7 pb-8 shadow-[0_-10px_30px_-12px_rgba(60,8,40,.35)] land:static land:h-auto land:min-h-0 land:flex-1 land:rounded-[32px] land:px-10 land:py-10">
+        <h1 className="m-0 font-display text-[34px] leading-[1.08] font-normal tracking-[-0.01em] land:text-[48px]">{t("onboard.o2Title")}</h1>
+        <p className="mt-3 mb-0 text-base leading-normal text-sub land:text-xl">{t("onboard.o2Body")}</p>
+        <div className="mt-auto flex items-center justify-between land:mt-10">
           <div className="flex gap-2" aria-hidden="true">
             <span className="size-2 rounded bg-[#d9c7f5]" />
             <span className="h-2 w-[26px] rounded bg-[#7c3aed]" />
@@ -94,6 +97,7 @@ export function Onboard2() {
           <a href="#/onboard/3" className="flex min-h-14 items-center justify-center rounded-[28px] bg-deep px-8 text-[17px] font-extrabold text-white shadow-[0_5px_0_#050f1f]">{t("common.next")}</a>
         </div>
       </div>
+    </div>
     </div>
   );
 }
@@ -119,7 +123,8 @@ export function Onboard3() {
   const next = () => navigate("/signin");
 
   return (
-    <div className="light-island flex size-full flex-col overflow-y-auto overflow-x-hidden bg-ivory text-navy">
+    <div className="light-island size-full overflow-y-auto overflow-x-hidden bg-ivory pt-[env(safe-area-inset-top)] text-navy">
+    <div className="mx-auto flex min-h-full w-full max-w-[640px] flex-col">
       <div className="flex h-14 shrink-0 items-center justify-between px-5 pt-3.5">
         <img src="./logo-mark.png" alt="TopperShelf" className="size-9" />
         <a href="#/signin" className="flex min-h-11 min-w-11 items-center justify-end px-2 text-[15px] font-bold text-steel">{t("common.skip")}</a>
@@ -172,6 +177,7 @@ export function Onboard3() {
           </button>
         )}
       </div>
+    </div>
     </div>
   );
 }

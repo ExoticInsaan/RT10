@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import AccountListsSync from "@/components/AccountListsSync";
 import AuthProvider from "@/components/AuthProvider";
 import ErrorBoundary from "./components/ErrorBoundary";
-import BottomNav, { TAB_PATHS } from "./components/BottomNav";
+import BottomNav, { NavRail, TAB_PATHS } from "./components/BottomNav";
 import OfflineBanner from "./components/OfflineBanner";
 import CountdownWidgetSync from "./components/CountdownWidgetSync";
 import ReminderScheduler from "./components/ReminderScheduler";
@@ -58,13 +58,17 @@ export default function App() {
       <AccountListsSync />
       <ReminderScheduler />
       <CountdownWidgetSync />
-      <div className="relative mx-auto h-dvh w-full max-w-[480px] overflow-hidden bg-ivory text-navy">
-        <ErrorBoundary key={path}>
-          <Screen path={path} />
-        </ErrorBoundary>
-        {TAB_PATHS.includes(path) && <BottomNav path={path} />}
-        <SavedToast />
-        <OfflineBanner />
+      {/* Full width on every screen. Phones: one column with a bottom bar. Tablets (600px+): a side rail and a wider, grid-based page. */}
+      <div className="relative flex h-dvh w-full overflow-hidden bg-ivory text-navy">
+        {TAB_PATHS.includes(path) && <NavRail path={path} />}
+        <div className="relative h-full min-w-0 flex-1">
+          <ErrorBoundary key={path}>
+            <Screen path={path} />
+          </ErrorBoundary>
+          {TAB_PATHS.includes(path) && <BottomNav path={path} />}
+          <SavedToast />
+          <OfflineBanner />
+        </div>
       </div>
     </AuthProvider>
   );

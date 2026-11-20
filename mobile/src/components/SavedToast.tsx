@@ -42,7 +42,7 @@ export default function SavedToast() {
     <div
       role="status"
       aria-live="polite"
-      className="absolute inset-x-3 z-50 flex animate-fz-pop items-center gap-3 rounded-2xl bg-deep p-3.5 text-white shadow-float"
+      className="absolute inset-x-3 z-50 mx-auto flex max-w-[520px] animate-fz-pop items-center gap-3 rounded-2xl bg-deep p-3.5 text-white shadow-float"
       style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)" }}
     >
       <div className="min-w-0 flex-1">

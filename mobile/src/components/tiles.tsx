@@ -35,9 +35,9 @@ export function ShelfTile({ tool }: { tool: Tool }) {
   const text = useToolText();
   const contain = tool.imageFit === "contain";
   return (
-    <a href={"#/tool/" + tool.id} className="flex w-[156px] shrink-0 flex-col gap-2.5">
-      <Thumb tool={tool} className={`size-[156px] rounded-[22px] ${contain ? "shadow-[0_0_0_1px_#e8e4dd,0_10px_24px_-14px_rgba(16,42,76,.4)]" : "shadow-[0_10px_24px_-14px_rgba(16,42,76,.4)]"}`} />
-      <div className="px-0.5 text-[15px] font-bold">{tool.id === "cgpa-calculator" ? t("tiles.cgpaShort") : text(tool).name}</div>
+    <a href={"#/tool/" + tool.id} className="flex w-[156px] shrink-0 flex-col gap-2.5 tab:w-full">
+      <Thumb tool={tool} className={`size-[156px] rounded-[22px] tab:aspect-square tab:size-auto tab:w-full ${contain ? "shadow-[0_0_0_1px_#e8e4dd,0_10px_24px_-14px_rgba(16,42,76,.4)]" : "shadow-[0_10px_24px_-14px_rgba(16,42,76,.4)]"}`} />
+      <div className="px-0.5 text-[15px] font-bold tab:text-base">{tool.id === "cgpa-calculator" ? t("tiles.cgpaShort") : text(tool).name}</div>
     </a>
   );
 }
@@ -81,9 +81,9 @@ export function ToolRow({ tool }: { tool: Tool }) {
   const text = useToolText()(tool);
   const on = favs.includes(tool.id);
   return (
-    <div className="flex items-center gap-3.5 rounded-3xl border border-edge bg-card py-2.5 pr-1.5 pl-2.5">
+    <div className="flex items-center gap-3.5 rounded-3xl border border-edge bg-card py-2.5 pr-1.5 pl-2.5 tab:py-3 tab:pl-3">
       <a href={"#/tool/" + tool.id} className="flex min-w-0 flex-1 items-center gap-3.5">
-        <Thumb tool={tool} pad={8} className="size-[76px] shrink-0 rounded-[18px]" />
+        <Thumb tool={tool} pad={8} className="size-[76px] shrink-0 rounded-[18px] tab:size-[88px]" />
         <div className="min-w-0 flex-1">
           <div className="text-base leading-tight font-bold">{text.name}</div>
           <div className="mt-[3px] text-[13px] leading-[1.4] text-sub">{text.description}</div>

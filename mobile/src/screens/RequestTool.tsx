@@ -8,6 +8,7 @@ export default function RequestTool() {
   const { t } = useLanguage();
   return (
     <div className="hide-scrollbar absolute inset-0 overflow-y-auto overflow-x-hidden pb-10">
+      <div className="mx-auto w-full max-w-[720px] tab:px-3">
       <header className="sticky top-0 z-10 flex items-center gap-2 bg-ivory/95 px-3 pt-4 pb-2 backdrop-blur">
         <button type="button" onClick={back} aria-label={t("common.back")} className="grid size-11 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-navy">
           <BackIcon />
@@ -16,6 +17,7 @@ export default function RequestTool() {
       </header>
       <div className="px-5">
         <RequestToolForm />
+      </div>
       </div>
     </div>
   );
