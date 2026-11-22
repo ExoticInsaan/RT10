@@ -459,6 +459,7 @@ export const toolStringsHi: Record<string, string> = {
   "Balanced Brain": "संतुलित दिमाग़",
   "Half sensible, half chaos. The perfect group project partner.": "आधे समझदार, आधे अराजक। ग्रुप प्रोजेक्ट के लिए एकदम सही पार्टनर।",
   "Certified Rebel": "पक्के बाग़ी",
+  "Streak broke. Your tree starts over!": "स्ट्रीक टूटी। पेड़ नए सिरे से शुरू!",
   "You see a popular opinion and run the other way. Iconic.": "आप सबकी राय देखकर उल्टी तरफ़ भागते हैं। कमाल हैं।",
   "YOU ARE A": "आप हैं",
   "with the crowd": "भीड़ के साथ",

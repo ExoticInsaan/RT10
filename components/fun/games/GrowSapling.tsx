@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { useAuth } from "@/components/AuthProvider";
 import CardSapling from "@/components/fun/cards/CardSapling";
@@ -24,6 +24,7 @@ type Garden = {
   streak: number;
   best: number;
   lastW: number | null; // day number of the last watering
+  fresh?: number | null; // the lastW whose missed days were already reset (so a break is reset once, and buddy waterings are not counted twice)
   names: { a: string; b: string };
   me: Who;
   log: Record<string, Who>; // day number -> who watered
@@ -171,6 +172,13 @@ function loadGarden(): Garden {
   return { offset: 0, cared: 0, streak: 0, best: 0, lastW: null, names: { a: "", b: "" }, log: {}, code: newCode(), ...(s || {}), me: "a" };
 }
 
+/** A missed day breaks the streak, and the tree that was growing starts over with it. Finished trees stay in the garden. */
+function startFresh(g: Garden): Garden {
+  const comp = g.cared > 0 ? Math.floor((g.cared - 1) / 365) : 0;
+  const growing = g.cared - comp * 365 < 365;
+  return { ...g, cared: growing ? comp * 365 : g.cared, streak: 0, fresh: g.lastW };
+}
+
 /* ---------- component ---------- */
 
 const noop = () => () => {};
@@ -216,6 +224,16 @@ function GardenGame() {
   const later = useTimers();
   useGardenSync(g, setG, KEY);
   const buddy = useGardenBuddy(g, setG, KEY);
+  // With a buddy, bring their waterings in first, so a day they watered is not treated as a missed day.
+  const [pulled, setPulled] = useState(false);
+  useEffect(() => {
+    if (!g.names.b) return;
+    if (!buddy.linked) {
+      const t = window.setTimeout(() => setPulled(true), 4000);
+      return () => window.clearTimeout(t);
+    }
+    void buddy.pull().finally(() => setPulled(true));
+  }, [g.names.b, buddy.linked, buddy.pull]);
   const [confirmReset, setConfirmReset] = useState(false);
   const nudgeTimer = useRef(0);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -238,15 +256,28 @@ function GardenGame() {
   };
 
   const today = epoch() + g.offset;
-  const wilted = g.lastW !== null && g.lastW < today - 1 && g.cared > 0;
-  const wateredToday = g.lastW === today;
-  const streakNow = g.lastW !== null && g.lastW >= today - 1 ? g.streak : 0;
-  const comp = g.cared > 0 ? Math.floor((g.cared - 1) / 365) : 0;
-  const d = g.cared - comp * 365;
+  // Missing a day ends the streak and the growing tree starts over. What the screen shows already has the reset applied.
+  const lost = g.lastW !== null && g.lastW < today - 1 && g.cared > 0 && g.fresh !== g.lastW;
+  const cur = lost ? startFresh(g) : g;
+  const wilted = false; // a missed day now resets the tree instead of wilting it
+  const wateredToday = cur.lastW === today;
+  const streakNow = cur.lastW !== null && cur.lastW >= today - 1 ? cur.streak : 0;
+  const comp = cur.cared > 0 ? Math.floor((cur.cared - 1) / 365) : 0;
+  const d = cur.cared - comp * 365;
   const si = comp % 5;
   const S = SPECIES[si];
+  const settled = !g.names.b || pulled;
+  useEffect(() => {
+    if (!lost || !settled) return;
+    const next = startFresh(g);
+    setG(next);
+    saveJSON(KEY, next);
+    if (next.cared !== g.cared) flash(tr("Streak broke. Your tree starts over!"));
+    // flash and tr are stable enough for a one-off reaction to a missed day.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lost, settled]);
   const paired = !!g.names.b;
-  const waterer = wateredToday ? g.log[today] : null;
+  const waterer = wateredToday ? cur.log[today] : null;
   const totalTrees = comp + (d >= 365 ? 1 : 0);
   const link = linkLabel("grow-a-sapling", g.code);
   const inviteUrl = linkUrl("grow-a-sapling", g.code);
@@ -291,13 +322,13 @@ function GardenGame() {
 
   function water() {
     if (watering) return;
-    if (g.lastW === today) {
+    if (cur.lastW === today) {
       const who = g.log[today];
       say(!who || who === g.me ? tr("You already watered today. Come back tomorrow!") : tr("{name} already watered today. Come back tomorrow!", { name: nm(who) }));
       return;
     }
     setWatering(true);
-    const snap = g;
+    const snap = cur;
     later(() => {
       const cared = snap.cared + 1;
       const streak = snap.lastW === today - 1 ? snap.streak + 1 : 1;
@@ -437,7 +468,7 @@ function GardenGame() {
       <div className="flex flex-col gap-[7px] rounded-2xl bg-card px-3 py-2.5 shadow-[0_4px_0_#bbf7d0]">
         <div className="flex items-center justify-between gap-2 text-xs font-extrabold">
           <span className="text-[#047857]">{tr("Tree {n} progress", { n: comp + 1 })}</span>
-          <span className="text-right">{tr(totalTrees === 1 ? "Garden: {n} tree · Best streak: {best}" : "Garden: {n} trees · Best streak: {best}", { n: totalTrees, best: g.best })}</span>
+          <span className="text-right">{tr(totalTrees === 1 ? "Garden: {n} tree · Best streak: {best}" : "Garden: {n} trees · Best streak: {best}", { n: totalTrees, best: cur.best })}</span>
         </div>
         <div className="relative h-3 rounded-full bg-[#d1fae5]" role="img" aria-label={tr("Day {d} of 365", { d })}>
           <div className="h-full rounded-full bg-[#22c55e] transition-[width] duration-[600ms]" style={{ width: `${((d / 365) * 100).toFixed(1)}%` }} />
@@ -480,7 +511,7 @@ function GardenGame() {
       </div>
       <div className="flex items-center justify-center">
         <button type="button" className={`${mini} !flex-none px-4`} onClick={() => { setConfirmReset(false); setSheet("manage"); }}>{tr("Garden options")}</button>
-        {g.cared > 0 && <button type="button" className={`${mini} !flex-none px-4`} onClick={() => setSheet("share")}>{tr("Share my garden")}</button>}
+        {cur.cared > 0 && <button type="button" className={`${mini} !flex-none px-4`} onClick={() => setSheet("share")}>{tr("Share my garden")}</button>}
       </div>
     </>
   );
@@ -498,7 +529,7 @@ function GardenGame() {
   async function startOver() {
     const ok = !buddy.linked || (await buddy.unlink());
     if (!ok) return;
-    set({ offset: 0, cared: 0, streak: 0, best: 0, lastW: null, log: {}, names: { a: g.names.a, b: "" }, me: "a", code: newCode() });
+    set({ offset: 0, cared: 0, streak: 0, best: 0, lastW: null, fresh: null, log: {}, names: { a: g.names.a, b: "" }, me: "a", code: newCode() });
     setConfirmReset(false);
     setToast("");
     setSheet("");
