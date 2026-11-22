@@ -357,7 +357,7 @@ export default function FriendshipScore({ friendCode }: { friendCode?: string } 
                 value={friend}
                 onChange={(e) => setFriend(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && friend.trim() && startQuiz()}
-                placeholder="e.g. Aryan"
+                placeholder="e.g. Jatin"
                 maxLength={24}
                 autoComplete="off"
               />

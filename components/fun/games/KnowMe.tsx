@@ -355,7 +355,7 @@ export default function KnowMe({ friendCode }: { friendCode?: string } = {}) {
             value={friend}
             onChange={(e) => setFriend(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && friend.trim() && startGuess()}
-            placeholder="e.g. Aryan"
+            placeholder="e.g. Jatin"
             maxLength={24}
             autoComplete="off"
           />

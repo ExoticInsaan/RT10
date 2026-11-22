@@ -9,7 +9,7 @@ export type KnowMeCardData = { owner: string; top: { name: string; score: number
 
 export const knowMeSample: KnowMeCardData = {
   owner: "Jatin",
-  top: [{ name: "Aryan", score: 9 }, { name: "Rohit", score: 8 }, { name: "Dev", score: 6 }],
+  top: [{ name: "Jatin", score: 9 }, { name: "Rohit", score: 8 }, { name: "Dev", score: 6 }],
 };
 
 /** The glow follows how well the best friend did: gold for a near-perfect score, cyan in the middle, violet below. */
