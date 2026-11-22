@@ -107,7 +107,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const openSignIn = useCallback(() => setOpen(true), []);
   const signOut = useCallback(async () => {
     try {
-      await createClient().auth.signOut();
+      // "local": sign out this device only, not the same person's other phones and browsers.
+      await createClient().auth.signOut({ scope: "local" });
     } catch {
       // ignore
     }
