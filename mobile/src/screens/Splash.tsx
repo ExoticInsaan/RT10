@@ -1,20 +1,46 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
 import { navigate } from "../shims/router";
-import { isOnboarded } from "../storage";
+import { isOnboarded, setOnboarded } from "../storage";
 import { useLanguage } from "../i18n/LanguageProvider";
 
 export default function Splash() {
   const { t } = useLanguage();
-  // Returning visitors skip the intro.
+  const { user, ready } = useAuth();
+  const [leaving, setLeaving] = useState(false);
+  const loggedIn = !!user;
+  // Logged-in people (and guests who already saw the intro) go straight into the app.
+  const skipIntro = loggedIn || isOnboarded();
+
   useEffect(() => {
-    if (!isOnboarded()) return;
-    const t = window.setTimeout(() => navigate("/home", true), 1100);
-    return () => window.clearTimeout(t);
-  }, []);
+    if (!ready || !skipIntro) return;
+    if (loggedIn) setOnboarded(); // remember it, so signing out later does not replay the slides
+    const fade = window.setTimeout(() => setLeaving(true), 900);
+    const go = window.setTimeout(() => navigate("/home", true), 1250);
+    return () => {
+      window.clearTimeout(fade);
+      window.clearTimeout(go);
+    };
+  }, [ready, skipIntro, loggedIn]);
+
+  // Checking the saved login, or entering the app: a short logo animation instead of the Get started screen.
+  if (!ready || skipIntro) {
+    return (
+      <div className={`bg-onboard-dots grid size-full place-items-center overflow-hidden ${leaving ? "splash-leave" : ""}`}>
+        <div className="flex flex-col items-center gap-3.5 text-center">
+          <img src="./logo-mark.png" alt={t("splash.logoAlt")} className="splash-pop size-[132px] roomy:size-[176px]" />
+          <div className="splash-rise text-[40px] leading-none font-extrabold tracking-[-0.03em] text-navy roomy:text-[56px]">
+            Topper<span className="text-link2">Shelf</span>
+          </div>
+          <div className="splash-dots mt-2" aria-hidden="true"><i /><i /><i /></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
-      className="bg-onboard-dots relative size-full overflow-hidden roomy:[--btn-gap:76px]"
+      className="splash-fade bg-onboard-dots relative size-full overflow-hidden roomy:[--btn-gap:76px]"
       // Where the tagline starts: 75% down, but never closer than 12px under the button (button = 66% down + 56px tall).
       style={{ "--tagline-top": "max(75vh, calc(66vh + var(--btn-gap, 68px)))" } as React.CSSProperties}
     >
