@@ -104,7 +104,7 @@ export const tools: Tool[] = [
   {
     id: "notes-to-audio",
     name: "Notes to Audio",
-    description: "Paste text, or upload a PDF or photos of your notes, and listen to them read aloud.",
+    description: "Paste your notes and listen to them read aloud.",
     category: "The Shelf",
     icon: "sparkles",
     tone: "violet",

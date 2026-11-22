@@ -2,20 +2,15 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/tools/ui";
-import { DropZone, Field, Hint, Segmented, downloadBlob, inputClass } from "@/components/tools/kit";
-import { ExtractError, extractFromPdf, extractFromPhotos, type OcrLang } from "@/lib/tools/extract-text";
+import { Field, Hint, downloadBlob, inputClass } from "@/components/tools/kit";
 import { MAX_CHARS, cleanText, detectLang, formatClock, partSeconds, splitParts, voicesFor, wordCount } from "@/lib/tools/notes-audio";
 
-type Source = "paste" | "pdf" | "photos";
 const RATES = [1, 1.25, 1.5, 1.75, 0.8];
 const SLEEP = [0, 10, 20, 30];
 const BARS = Array.from({ length: 40 }, (_, i) => ({ h: 12 + Math.abs(Math.sin(i * 0.55)) * 40 + ((i * 7) % 10), d: (i % 9) * 70 }));
 
 export default function NotesToAudio() {
-  const [source, setSource] = useState<Source>("paste");
   const [text, setText] = useState("");
-  const [ocrLang, setOcrLang] = useState<OcrLang>("eng");
-  const [busy, setBusy] = useState<{ label: string; fraction: number } | null>(null);
   const [error, setError] = useState("");
 
   const [parts, setParts] = useState<string[]>([]);
@@ -159,28 +154,10 @@ export default function NotesToAudio() {
     if (el && list.current) list.current.scrollTop = el.offsetTop - list.current.offsetTop - 60;
   }, [idx]);
 
-  const run = async (job: () => Promise<string>) => {
-    setError("");
-    stop();
-    setBusy({ label: "Starting…", fraction: 0 });
-    try {
-      const out = cleanText(await job());
-      if (out.replace(/\s/g, "").length < 10) throw new ExtractError("We could not find any text to read. Try a clearer file, or paste the text instead.");
-      setText((old) => (old.trim() ? `${old.trim()}\n\n${out}` : out).slice(0, MAX_CHARS));
-      setSource("paste"); // the text now sits in the box below, ready to check and fix
-    } catch (e) {
-      setError(e instanceof ExtractError ? e.message : "Something went wrong while reading that file. Try another file, or paste the text instead.");
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  const onProgress = (label: string, fraction: number) => setBusy({ label, fraction });
-
   const listen = () => {
     const clean = cleanText(text);
     const split = splitParts(clean);
-    if (!split.length) return setError("Add some text first: paste it, or upload a PDF or photos.");
+    if (!split.length) return setError("Add some text first: paste it in the box.");
     setError("");
     stop();
     const detected = detectLang(clean);
@@ -200,45 +177,26 @@ export default function NotesToAudio() {
   return (
     <div className="grid items-start gap-5 text-left lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
       <div className="grid gap-4">
-        <Segmented<Source>
-          label="Where is your text?"
-          value={source}
-          onChange={setSource}
-          options={[
-            { value: "paste", label: "Paste text" },
-            { value: "pdf", label: "PDF" },
-            { value: "photos", label: "Photos" },
-          ]}
-        />
-        {source !== "paste" && (
-          <>
-            <Field label="Text in the pages is" hint="Pick “Hindi + English” for notes that contain Hindi. The first read downloads a small text reader.">
-              <Segmented<OcrLang> label="Text language" value={ocrLang} onChange={setOcrLang} options={[{ value: "eng", label: "English" }, { value: "eng+hin", label: "Hindi + English" }]} />
-            </Field>
-            {busy ? (
-              <div className="rounded-2xl border border-line bg-surface/40 p-5" role="status">
-                <p className="m-0 text-sm font-semibold text-navy">{busy.label}</p>
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-line">
-                  <div className="h-full rounded-full bg-blue-hover transition-all" style={{ width: `${Math.round(busy.fraction * 100)}%` }} />
-                </div>
-              </div>
-            ) : source === "pdf" ? (
-              <DropZone accept="application/pdf" title="Drop a PDF here" note="Typed or scanned, up to 40 MB. It never leaves your device." onFiles={(files) => run(() => extractFromPdf(files[0], ocrLang, onProgress))} />
-            ) : (
-              <DropZone accept="image/*" multiple title="Drop photos of your notes" note="Up to 12 photos. Printed text works best; handwriting is often unclear." onFiles={(files) => run(() => extractFromPhotos(files, ocrLang, onProgress))} />
-            )}
-          </>
-        )}
-        <Field label="Text to read" hint={`${words.toLocaleString("en-IN")} words. Fix any mistakes from a scan before you listen.`}>
+        <div className="flex items-start gap-3 rounded-2xl border border-line bg-blue-soft/60 p-4 dark:border-slate-700 dark:bg-slate-800/60">
+          <span className="text-xl leading-none" aria-hidden="true">📷</span>
+          <p className="m-0 text-sm leading-6 text-navy dark:text-slate-200">
+            <b>Notes in a PDF or photo?</b> Scan them with{" "}
+            <a href="https://lens.google.com/" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-hover underline">
+              Google Lens
+            </a>
+            , tap “Copy text”, then paste it here.
+          </p>
+        </div>
+        <Field label="Text to read" hint={`${words.toLocaleString("en-IN")} words. Fix any mistakes before you listen.`}>
           <textarea
             className={`${inputClass} h-52 resize-y py-3`}
             value={text}
             maxLength={MAX_CHARS}
-            placeholder="Paste a chapter, a summary or your class notes here."
+            placeholder="Paste a chapter, a summary or your class notes here. Copied from Google Lens? Paste it here too."
             onChange={(e) => setText(e.target.value)}
           />
         </Field>
-        <Button onClick={listen} disabled={!!busy || !canSpeak} className="!min-h-14 !rounded-2xl !bg-gradient-to-br !from-blue-hover !to-violet !text-base !font-extrabold">
+        <Button onClick={listen} disabled={!canSpeak} className="!min-h-14 !rounded-2xl !bg-gradient-to-br !from-blue-hover !to-violet !text-base !font-extrabold">
           {ready ? "Listen from the start" : "Listen to my notes"}
         </Button>
         {text && (
