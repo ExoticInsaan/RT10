@@ -67,6 +67,7 @@ export default defineConfig({
       { find: /^html-to-image$/, replacement: mod("html-to-image") },
       { find: /^pdfjs-dist$/, replacement: mod("pdfjs-dist") },
       { find: /^tesseract\.js$/, replacement: mod("tesseract.js") },
+      { find: /^kokoro-js$/, replacement: mod("kokoro-js") },
       { find: /^@supabase\/supabase-js$/, replacement: mod("@supabase/supabase-js") },
     ],
   },

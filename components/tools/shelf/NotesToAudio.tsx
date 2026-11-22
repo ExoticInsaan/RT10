@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/tools/ui";
 import { Field, Hint, downloadBlob, inputClass } from "@/components/tools/kit";
+import { FILE_MAX_CHARS, FILE_VOICES, makeAudioFile, voiceModelReady } from "@/lib/tools/notes-audio-file";
 import { MAX_CHARS, cleanText, detectLang, formatClock, partSeconds, splitParts, voicesFor, wordCount } from "@/lib/tools/notes-audio";
 
 const RATES = [1, 1.25, 1.5, 1.75, 0.8];
@@ -21,6 +22,13 @@ export default function NotesToAudio() {
   const [voiceList, setVoiceList] = useState<SpeechSynthesisVoice[]>([]);
   const [voiceName, setVoiceName] = useState("");
   const [sleep, setSleep] = useState(0);
+  // Audio file (made in the browser with the free Kokoro voice; nothing is uploaded or saved).
+  const [fileStep, setFileStep] = useState<"idle" | "confirm" | "making">("idle");
+  const [fileVoice, setFileVoice] = useState<string>(FILE_VOICES[0].id);
+  const [fileDone, setFileDone] = useState({ done: 0, total: 0 });
+  const [modelPercent, setModelPercent] = useState<number | null>(null);
+  const [fileError, setFileError] = useState("");
+  const cancelFile = useRef(false);
   const [canSpeak] = useState(() => typeof window !== "undefined" && "speechSynthesis" in window);
 
   // Live values the speech callbacks read, so they never see a stale part or setting.
@@ -59,6 +67,8 @@ export default function NotesToAudio() {
       void wake.current?.release().catch(() => undefined);
     };
   }, [canSpeak, refreshVoices]);
+
+  useEffect(() => () => { cancelFile.current = true; }, []);
 
   const total = useMemo(() => parts.reduce((sum, p) => sum + partSeconds(p, rate), 0), [parts, rate]);
   const elapsed = useMemo(() => parts.slice(0, idx).reduce((sum, p) => sum + partSeconds(p, rate), 0), [parts, idx, rate]);
@@ -170,6 +180,50 @@ export default function NotesToAudio() {
     void start();
   };
 
+  // Only the first part of very long notes goes into one file, cut at a sentence so it never stops mid-sentence.
+  const fileParts = useMemo(() => {
+    const out: string[] = [];
+    let chars = 0;
+    for (const p of parts) {
+      if (chars + p.length > FILE_MAX_CHARS && out.length) break;
+      out.push(p);
+      chars += p.length;
+    }
+    return out;
+  }, [parts]);
+  const fileCut = fileParts.length < parts.length;
+
+  const askForFile = () => {
+    setFileError("");
+    if (voiceModelReady()) void makeFile();
+    else setFileStep("confirm");
+  };
+
+  const makeFile = async () => {
+    stop(); // free the speaker and the processor while the file is made
+    cancelFile.current = false;
+    setFileError("");
+    setFileDone({ done: 0, total: fileParts.length });
+    setModelPercent(voiceModelReady() ? null : 0);
+    setFileStep("making");
+    try {
+      const wav = await makeAudioFile({
+        parts: fileParts,
+        voice: fileVoice,
+        speed: rate,
+        onProgress: (done, total) => setFileDone({ done, total }),
+        onModelProgress: (percent) => setModelPercent(percent),
+        isCancelled: () => cancelFile.current,
+      });
+      if (wav) downloadBlob(wav, "toppershelf-notes-audio.wav");
+    } catch {
+      setFileError("Could not make the audio file. Check your internet connection (needed once for the voice) and try again.");
+    } finally {
+      setModelPercent(null);
+      setFileStep("idle");
+    }
+  };
+
   const words = wordCount(text);
   const ready = parts.length > 0;
   const noVoice = canSpeak && ready && voiceList.length === 0;
@@ -244,6 +298,39 @@ export default function NotesToAudio() {
                 {SLEEP.map((m) => <option key={m} value={m}>{m ? `Stop in ${m} min` : "No sleep timer"}</option>)}
               </select>
               <button type="button" onClick={() => downloadBlob(new Blob([parts.join("\n")], { type: "text/plain" }), "notes.txt")} className="cursor-pointer rounded-full border border-white/25 bg-transparent px-4 py-2 text-xs font-semibold text-white hover:bg-white/10">Save text</button>
+            </div>
+            <div className="mt-4 rounded-2xl border border-white/15 bg-white/5 p-3 text-center">
+              {lang === "hi-IN" ? (
+                <p className="m-0 text-xs leading-5 text-[#aab9d0]">Audio download works for English text. Hindi plays live only, for now.</p>
+              ) : fileStep === "making" ? (
+                <div role="status" aria-live="polite">
+                  <p className="m-0 text-sm font-semibold">
+                    {modelPercent !== null && modelPercent < 100 ? `Getting the voice (one time): ${modelPercent}%` : `Making your audio: ${fileDone.done} of ${fileDone.total} sentences`}
+                  </p>
+                  <div className="mt-2 h-1.5 rounded-full bg-white/15">
+                    <div className="na-fill" style={{ width: `${modelPercent !== null && modelPercent < 100 ? modelPercent : fileDone.total ? (fileDone.done / fileDone.total) * 100 : 0}%` }} />
+                  </div>
+                  <p className="m-0 mt-2 text-xs text-[#aab9d0]">Keep this page open. Your notes stay on your device.</p>
+                  <button type="button" onClick={() => { cancelFile.current = true; }} className="mt-2 cursor-pointer border-0 bg-transparent text-xs font-semibold text-[#f6c08a] underline">Cancel</button>
+                </div>
+              ) : fileStep === "confirm" ? (
+                <div>
+                  <p className="m-0 text-sm leading-6">First time only: the voice is a one-time download of about 90 MB. After that it is kept on your device. Use Wi-Fi if you can.</p>
+                  <div className="mt-2 flex justify-center gap-2">
+                    <button type="button" onClick={() => void makeFile()} className="cursor-pointer rounded-full border-0 bg-white px-4 py-2 text-xs font-bold text-deep">Continue</button>
+                    <button type="button" onClick={() => setFileStep("idle")} className="cursor-pointer rounded-full border border-white/25 bg-transparent px-4 py-2 text-xs font-semibold text-white">Not now</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <select aria-label="Voice for the audio file" value={fileVoice} onChange={(e) => setFileVoice(e.target.value)}>
+                    {FILE_VOICES.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
+                  </select>
+                  <button type="button" onClick={askForFile} className="cursor-pointer rounded-full border-0 bg-gradient-to-br from-blue-hover to-violet px-5 py-2.5 text-sm font-extrabold text-white">⬇ Download audio</button>
+                  <p className="m-0 w-full text-xs leading-5 text-[#aab9d0]">Saves a WAV file you can play anywhere.{fileCut ? ` Very long notes: this file covers the first ${fileParts.length.toLocaleString("en-IN")} of ${parts.length.toLocaleString("en-IN")} sentences. Paste the rest separately to get another file.` : ""}</p>
+                </div>
+              )}
+              {fileError && <p className="m-0 mt-2 text-xs leading-5 text-[#f6c08a]">{fileError}</p>}
             </div>
             {noVoice && <p className="m-0 mt-3 text-center text-xs leading-5 text-[#f6c08a]">No {lang === "hi-IN" ? "Hindi" : "English"} voice was found on this device. Add one in your phone’s text-to-speech settings, or try Chrome.</p>}
             <div ref={list} className="relative mt-4 max-h-44 overflow-auto border-t border-white/10 pt-3 text-sm leading-7">
