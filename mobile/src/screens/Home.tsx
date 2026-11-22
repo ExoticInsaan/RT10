@@ -4,15 +4,20 @@ import { ArrowIcon, SearchIcon, UserIcon } from "../components/icons";
 import { Chip, ShelfTile, Sticker, ToolRow } from "../components/tiles";
 import { useLanguage } from "../i18n/LanguageProvider";
 import { matchesTool, useToolText } from "../i18n/toolText";
+import type { TranslationKey } from "../i18n";
+import { usePopularTools } from "../popular";
 
 const shelf = tools.filter((t) => t.category === "The Shelf");
 const funPicks = ["how-cooked", "excuse-generator", "roast-my-timetable", "decision-wheel"].map((id) => tools.find((t) => t.id === id)!);
 const tilts = [-2, 1.5, -1, 2];
+// Short chip wording for the long-standing picks; any other tool shows its own name.
+const chipLabel: Record<string, TranslationKey> = { "cgpa-calculator": "home.chipCgpa", "image-compressor": "home.chipImage", "attendance-calculator": "home.chipAttendance" };
 
 export default function Home() {
   const [q, setQ] = useState("");
   const { t: tr } = useLanguage();
   const text = useToolText();
+  const popular = usePopularTools();
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();
     return s ? tools.filter((t) => matchesTool(t, text(t), s)) : [];
@@ -63,9 +68,11 @@ export default function Home() {
         <>
           <div className="hide-scrollbar flex items-center gap-2 overflow-x-auto px-5 pt-3.5 tab:flex-wrap tab:overflow-visible tab:pt-5">
             <span className="mr-0.5 text-sm text-sub">{tr("home.popular")}</span>
-            <Chip href="#/tool/cgpa-calculator">{tr("home.chipCgpa")}</Chip>
-            <Chip href="#/tool/image-compressor">{tr("home.chipImage")}</Chip>
-            <Chip href="#/tool/attendance-calculator">{tr("home.chipAttendance")}</Chip>
+            {popular.map((tool) => (
+              <Chip key={tool.id} href={`#/tool/${tool.id}`}>
+                {chipLabel[tool.id] ? tr(chipLabel[tool.id]) : text(tool).name}
+              </Chip>
+            ))}
           </div>
 
           <div className="flex items-end justify-between px-5 pt-[26px] tab:pt-10">
