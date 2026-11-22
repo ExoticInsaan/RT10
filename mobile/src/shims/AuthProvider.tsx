@@ -1,5 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { isAuthRetryableFetchError, type User } from "@supabase/supabase-js";
+import { Capacitor } from "@capacitor/core";
+import { App } from "@capacitor/app";
+import { isAuthRetryableFetchError, type SupabaseClient, type User } from "@supabase/supabase-js";
 import { createClient } from "./supabase-client";
 import { navigate } from "./router";
 import { listenForOAuthReturn } from "../auth";
@@ -38,6 +40,19 @@ function rememberedUser(): User | null {
   }
 }
 
+/**
+ * The saved login can be rejected for harmless reasons (a phone clock that is behind, a short network drop), so one
+ * "not allowed" answer must not sign anyone out. Renew the login first and give up only if that is refused for good
+ * (deleted or blocked account, login revoked).
+ */
+async function signOutIfAccountGone(supabase: SupabaseClient) {
+  const { error } = await supabase.auth.getUser();
+  if (!error || isAuthRetryableFetchError(error) || (error.status !== 401 && error.status !== 403)) return;
+  const { data, error: refreshError } = await supabase.auth.refreshSession();
+  if (data.session || !refreshError || isAuthRetryableFetchError(refreshError)) return;
+  await supabase.auth.signOut({ scope: "local" });
+}
+
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(MOCK ? mockUser : null);
   const [ready, setReady] = useState(MOCK);
@@ -45,6 +60,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (MOCK) return;
     let unsubscribe = () => {};
+    let removeState = () => {};
+    let stopped = false;
     try {
       const supabase = createClient();
       supabase.auth.getSession().then(({ data, error }) => {
@@ -53,13 +70,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           setUser(session.user);
           rememberUser(session.user);
           // Online: make sure the account still exists (deleted or blocked accounts are signed out).
-          if (navigator.onLine) {
-            void supabase.auth.getUser().then(({ error: userError }) => {
-              if (userError && !isAuthRetryableFetchError(userError) && (userError.status === 401 || userError.status === 403)) {
-                void supabase.auth.signOut({ scope: "local" });
-              }
-            });
-          }
+          if (navigator.onLine) void signOutIfAccountGone(supabase);
         } else if ((error && isAuthRetryableFetchError(error)) || !navigator.onLine) {
           setUser(rememberedUser()); // offline and the saved login could not be renewed yet
         } else {
@@ -79,13 +90,26 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         }
       });
       unsubscribe = () => data.subscription.unsubscribe();
+      // Android pauses the page's timers while the app is in the background, so the login would not be renewed on time.
+      // Stop renewing when the app is hidden and renew straight away when it comes back.
+      if (Capacitor.isNativePlatform()) {
+        void App.addListener("appStateChange", ({ isActive }) => {
+          if (isActive) void supabase.auth.startAutoRefresh();
+          else void supabase.auth.stopAutoRefresh();
+        }).then((h) => {
+          if (stopped) void h.remove();
+          else removeState = () => void h.remove();
+        });
+      }
     } catch {
       // Supabase keys not set yet: the app still opens, signing in just shows a notice.
       Promise.resolve().then(() => setReady(true));
     }
     const stopLink = listenForOAuthReturn(() => navigate("/home", true));
     return () => {
+      stopped = true;
       unsubscribe();
+      removeState();
       stopLink();
     };
   }, []);

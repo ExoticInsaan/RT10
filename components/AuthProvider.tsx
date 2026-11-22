@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import type { User } from "@supabase/supabase-js";
+import { isAuthRetryableFetchError, type SupabaseClient, type User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import AuthPanel from "@/components/AuthPanel";
 
@@ -43,6 +43,18 @@ function clearAccountDeviceData() {
   }
 }
 
+/**
+ * The saved login can be rejected for harmless reasons (a phone clock that is behind, a short network drop), so a single
+ * "not allowed" answer must not sign anyone out. Renew the login first and give up only if that is refused for good.
+ */
+async function signOutIfAccountGone(supabase: SupabaseClient) {
+  const { error } = await supabase.auth.getUser();
+  if (!error || isAuthRetryableFetchError(error) || (error.status !== 401 && error.status !== 403)) return;
+  const { data, error: refreshError } = await supabase.auth.refreshSession();
+  if (data.session || !refreshError || isAuthRetryableFetchError(refreshError)) return;
+  await supabase.auth.signOut({ scope: "local" });
+}
+
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
@@ -50,12 +62,21 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     let unsubscribe = () => {};
+    let removeOnline = () => {};
     try {
       const supabase = createClient();
-      supabase.auth.getUser().then(({ data }) => {
-        setUser(data.user ?? null);
-        setReady(true);
-      });
+      // Read the saved login from this device first (instant, no network), so a slow or dropped connection never looks like "signed out".
+      const load = () =>
+        supabase.auth.getSession().then(({ data }) => {
+          setUser(data.session?.user ?? null);
+          setReady(true);
+          if (data.session && navigator.onLine) void signOutIfAccountGone(supabase);
+        });
+      void load();
+      // If the page opened with no connection, check again as soon as it comes back.
+      const retry = () => void load();
+      window.addEventListener("online", retry);
+      removeOnline = () => window.removeEventListener("online", retry);
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
         if (event === "SIGNED_OUT") {
           // Also fires when the session ends in another tab. Reload so open pages drop the in-memory copy too.
@@ -70,7 +91,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       // Supabase keys not set yet: the site still works, sign-in just shows a notice.
       Promise.resolve().then(() => setReady(true));
     }
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      removeOnline();
+    };
   }, []);
 
   useEffect(() => {
