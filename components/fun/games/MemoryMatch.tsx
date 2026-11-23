@@ -107,7 +107,7 @@ export default function MemoryMatch() {
   const shell = {
     gradient: "linear-gradient(150deg,#22d3ee 0%,#6366f1 48%,#a855f7 100%)",
     icon: "/fun-zone/memory-match.webp",
-    iconBg: "#dcd7ff",
+    iconBg: "#a95afb",
     title: "Memory Match",
     subtitle: "Match pairs with friends in a private room. Nothing is saved.",
     status: "LIVE" as const,

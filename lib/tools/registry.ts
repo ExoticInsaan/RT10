@@ -244,7 +244,7 @@ export const tools: Tool[] = [
     icon: "grid",
     tone: "purple",
     image: "/fun-zone/memory-match.webp",
-    imageBg: "#dcd7ff",
+    imageBg: "#a95afb",
     imageFit: "cover",
     popular: true,
   },
