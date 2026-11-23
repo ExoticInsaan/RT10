@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { FitBox, GameShell, useTimers } from "@/components/fun/kit";
+import { useWheelSound } from "@/components/fun/useWheelSound";
 import { useTr } from "@/lib/tools/useTr";
 
 const COLORS = ["#f43f5e", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"];
@@ -27,6 +28,7 @@ export default function DecisionWheel() {
   const [dur, setDur] = useState(0);
   const [tilt, setTilt] = useState(24);
   const later = useTimers();
+  const { playSpin } = useWheelSound();
 
   const n = opts.length;
   const seg = 360 / Math.max(n, 1);
@@ -47,7 +49,9 @@ export default function DecisionWheel() {
     const center = (target + 0.5) * seg + (Math.random() - 0.5) * seg * 0.6;
     const cur = ((rot % 360) + 360) % 360;
     const delta = ((((360 - center) - cur) % 360) + 360) % 360;
-    setRot(rot + 360 * 6 + delta);
+    const total = 360 * 6 + delta;
+    playSpin(rot, total, seg, 4.2);
+    setRot(rot + total);
     setSpinning(true);
     setWinner(-1);
     setDur(4.2);
