@@ -136,16 +136,8 @@ export default function MemoryMatch() {
               <label htmlFor="mm-name" className="text-sm font-bold text-[#6b66a8]">{tr("Your name")}</label>
               <input id="mm-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={16} autoComplete="nickname" placeholder={tr("Type your name")} className={field} />
             </div>
-            <button type="button" className={btn} disabled={!cleaned || busy} onClick={() => make()}>
-              {busy && isHost ? tr("Making your room…") : tr("Create a room")}
-            </button>
-            <div className="flex items-center gap-3 text-xs font-extrabold tracking-[.14em] text-[#9b97c9]" aria-hidden="true">
-              <span className="h-px flex-1 bg-[#d9d4ff]" />
-              {tr("OR JOIN A FRIEND")}
-              <span className="h-px flex-1 bg-[#d9d4ff]" />
-            </div>
             <div className="flex flex-col gap-2">
-              <label htmlFor="mm-code" className="text-sm font-bold text-[#6b66a8]">{tr("Room code")}</label>
+              <label htmlFor="mm-code" className="text-sm font-bold text-[#6b66a8]">{tr("Friend's room code")}</label>
               <input
                 id="mm-code"
                 value={joinCode}
@@ -159,9 +151,15 @@ export default function MemoryMatch() {
                 className={`${field} text-center font-display text-3xl tracking-[.3em]`}
               />
             </div>
-            <button type="button" className={ghost} disabled={!cleaned || joinCode.length !== CODE_LENGTH || busy} onClick={enter}>
-              {busy && !isHost ? tr("Looking for the room…") : tr("Join room")}
-            </button>
+            <div className="grid grid-cols-2 gap-3">
+              <button type="button" className={`${btn} text-base!`} disabled={!cleaned || busy} onClick={() => make()}>
+                {busy && isHost ? tr("Creating…") : tr("Create a room")}
+              </button>
+              <button type="button" className={`${btn} text-base!`} disabled={!cleaned || joinCode.length !== CODE_LENGTH || busy} onClick={enter}>
+                {busy && !isHost ? tr("Joining…") : tr("Join a friend")}
+              </button>
+            </div>
+            <p className="m-0 -mt-1 text-center text-xs leading-5 text-[#6b66a8]">{tr("Create a room and share its code, or type a friend's code to join theirs.")}</p>
             {problem && <p role="alert" className="m-0 text-center text-sm font-bold text-[#be123c]">{problem}</p>}
             <p className="m-0 text-center text-xs leading-5 text-[#6b66a8]">{tr("2 to 4 players. Everyone needs the room code. Rooms disappear when the host leaves.")}</p>
           </div>
@@ -206,7 +204,7 @@ export default function MemoryMatch() {
               <button type="button" onClick={copy} className="mt-2 cursor-pointer rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-bold text-white">
                 {copied ? tr("Copied!") : tr("Copy code")}
               </button>
-              <p className="m-0 mt-3 text-xs leading-5 text-[#c7d2fe]">{tr("Friends open Memory Match, choose “Join room” and type this code.")}</p>
+              <p className="m-0 mt-3 text-xs leading-5 text-[#c7d2fe]">{tr("Friends open Memory Match, type this code and press “Join a friend”.")}</p>
             </div>
             <Scoreboard s={s} me={me} />
           </>

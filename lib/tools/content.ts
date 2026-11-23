@@ -53,7 +53,7 @@ export const toolContent: Record<string, ToolContent> = {
   "memory-match": {
     howTo: [
       "Sign in with Google (one tap, free).",
-      "Press “Create a room” and share the 5-letter room code with 1 to 3 friends. Friends press “Join room” and type the code.",
+      "Press “Create a room” and share the 5-letter room code with 1 to 3 friends. Friends type the code and press “Join a friend”.",
       "Take turns flipping two cards. A match earns a point and you go again. No match, and the turn passes on.",
       "When every pair is found, the highest score wins. Press “Rematch” to play again.",
     ],
