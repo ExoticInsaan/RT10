@@ -9,7 +9,7 @@ const out = path.resolve(here, "../public");
 
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
-for (const dir of ["shelf", "fun-zone", "mascot"]) cpSync(path.join(site, dir), path.join(out, dir), { recursive: true });
+for (const dir of ["shelf", "fun-zone", "mascot", "ludo"]) cpSync(path.join(site, dir), path.join(out, dir), { recursive: true });
 for (const file of ["logo-mark.png", "logo-mark-light.png"]) cpSync(path.join(site, file), path.join(out, file));
 
 const worker = path.resolve(here, "../node_modules/pdfjs-dist/build/pdf.worker.min.mjs");
