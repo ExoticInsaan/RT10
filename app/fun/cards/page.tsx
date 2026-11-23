@@ -3,7 +3,6 @@ import CardCooked from "@/components/fun/cards/CardCooked";
 import CardExcuse from "@/components/fun/cards/CardExcuse";
 import CardFriend from "@/components/fun/cards/CardFriend";
 import CardKnowMe from "@/components/fun/cards/CardKnowMe";
-import CardRoast from "@/components/fun/cards/CardRoast";
 import CardSapling from "@/components/fun/cards/CardSapling";
 import CardVibe from "@/components/fun/cards/CardVibe";
 import CardWhatAmI from "@/components/fun/cards/CardWhatAmI";
@@ -20,7 +19,6 @@ const cards = [
   ["Instant Vibe Check", CardVibe],
   ["Friendship Score", CardFriend],
   ["How Well Do You Know Me?", CardKnowMe],
-  ["Roast My Timetable", CardRoast],
   ["What Am I to You?", CardWhatAmI],
   ["Grow a Sapling", CardSapling],
   ["Excuse Generator", CardExcuse],

@@ -8,7 +8,7 @@ import type { TranslationKey } from "../i18n";
 import { usePopularTools } from "../popular";
 
 const shelf = tools.filter((t) => t.category === "The Shelf");
-const funPicks = ["how-cooked", "excuse-generator", "roast-my-timetable", "decision-wheel"].map((id) => tools.find((t) => t.id === id)!);
+const funPicks = ["how-cooked", "excuse-generator", "memory-match", "decision-wheel"].map((id) => tools.find((t) => t.id === id)!);
 const tilts = [-2, 1.5, -1, 2];
 // Short chip wording for the long-standing picks; any other tool shows its own name.
 const chipLabel: Record<string, TranslationKey> = { "cgpa-calculator": "home.chipCgpa", "image-compressor": "home.chipImage", "attendance-calculator": "home.chipAttendance" };

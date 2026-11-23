@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
       { source: "/the-shelf/fun", destination: "/fun", permanent: true },
       { source: "/the-shelf/:category", destination: "/the-shelf", permanent: true },
       { source: "/my-tools", destination: "/my-shelf", permanent: true },
+      // Roast My Timetable was replaced by Memory Match: old links and shared results go to the new game or the Fun Zone.
+      { source: "/tool/roast-my-timetable", destination: "/tool/memory-match", permanent: true },
+      { source: "/fun/roast", destination: "/fun", permanent: true },
     ];
   },
   async headers() {

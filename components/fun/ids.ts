@@ -2,7 +2,7 @@
 export const funGameIds = [
   "how-cooked",
   "excuse-generator",
-  "roast-my-timetable",
+  "memory-match",
   "vibe-check",
   "decision-wheel",
   "would-you-rather",

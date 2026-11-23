@@ -5,12 +5,10 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import CardCooked from "@/components/fun/cards/CardCooked";
 import CardExcuse from "@/components/fun/cards/CardExcuse";
-import CardRoast from "@/components/fun/cards/CardRoast";
 import CardVibe from "@/components/fun/cards/CardVibe";
 import CardActions from "@/components/fun/CardActions";
 import { cookedResult } from "@/components/fun/games/HowCooked";
 import { excuseParts } from "@/components/fun/games/ExcuseGenerator";
-import { roastFor } from "@/components/fun/games/RoastTimetable";
 import { dayKey, vibeFor } from "@/components/fun/games/VibeCheck";
 import { resultLink, type ResultKind } from "@/lib/fun/results";
 
@@ -23,7 +21,6 @@ const TOOL: Record<ResultKind, { id: string; cta: string }> = {
   cooked: { id: "how-cooked", cta: "Find out how cooked you are" },
   vibe: { id: "vibe-check", cta: "Check your own vibe" },
   excuse: { id: "excuse-generator", cta: "Make your own excuse" },
-  roast: { id: "roast-my-timetable", cta: "Roast your own timetable" },
 };
 
 type Built = { node: (ref: Ref<HTMLDivElement>) => ReactNode; fileName: string; shareText: string; shareUrl: string };
@@ -73,15 +70,7 @@ function build(kind: ResultKind, q: URLSearchParams): Built | null {
       shareUrl: resultLink("excuse", { s, r: roll }),
     };
   }
-  const d = clip("d", 90);
-  if (!d) return null;
-  const r = roastFor(d);
-  return {
-    node: (cardRef) => <CardRoast cardRef={cardRef} data={{ day: d, lines: r.lines, level: r.level, score: r.score }} />,
-    fileName: "roast-toppershelf.png",
-    shareText: `My timetable got roasted: ${r.score}/10. Roast yours!`,
-    shareUrl: resultLink("roast", { d }),
-  };
+  return null;
 }
 
 export default function SharedResult({ kind }: { kind: ResultKind }) {

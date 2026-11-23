@@ -1,5 +1,4 @@
-import { hash } from "@/components/fun/kit";
-import type { AppContent, RoastResult } from "@/lib/tools/appContent";
+import type { AppContent } from "@/lib/tools/appContent";
 
 // Hindi wording for the Fun Zone games. Only the Android app loads this file; the website never does.
 
@@ -32,57 +31,6 @@ const VIBES = [
 ];
 const VIBE_METERS: Record<string, string> = { ENERGY: "एनर्जी", AURA: "ऑरा", CHAOS: "अफ़रा-तफ़री" };
 
-const ROAST_GENERIC = [
-  "यह टाइमटेबल किसी ऐसे ने बनाया है जो आपसे नफ़रत करता है, और वो कोई और नहीं, आप ख़ुद हैं।",
-  "Google Calendar ने भी इसे देखा और लॉग आउट कर दिया।",
-  "फ़्री टाइम? ये नाम तो पहली बार सुना।",
-  "इसमें अगर कुछ लगातार है तो वो है अफ़रा-तफ़री।",
-  "कहीं किसी स्लीप डॉक्टर को अभी-अभी सिहरन हुई है।",
-  "यह टाइम मैनेजमेंट नहीं, एक्स्ट्रा स्टेप्स वाली पूरी अफ़रा-तफ़री है।",
-];
-const ROAST_LEVELS = ["हल्का", "हल्का", "हल्का", "गुनगुना", "गुनगुना", "तीखा", "तीखा", "गरम", "बहुत गरम", "ज्वालामुखी", "ज्वालामुखी"];
-const ROAST_TIMES = ["7:00", "9:30", "1:00", "6:00", "11:45"];
-
-/** Works on English, Hindi or mixed (Hinglish) text. The same line about your day always gives the same roast. */
-function roastForHindi(day: string): RoastResult {
-  const raw = day.trim();
-  const d = raw.toLowerCase();
-  const h = hash("roast:" + d);
-  const out: string[] = [];
-  let hits = 0;
-  const m1 = d.match(/(\d+)\s*(classes|class|lectures|periods|subjects|क्लास|क्लासेस|लेक्चर|पीरियड|विषय)/);
-  if (m1) {
-    const n = +m1[1];
-    hits += n >= 5 ? 3 : 1;
-    out.push(n >= 5 ? `${n} क्लास? ये टाइमटेबल नहीं है भाई, ये तो बंधक बनाने वाली हालत है।` : `${n} क्लास में ही थक गए? बेंच भी आपसे थक चुकी है।`);
-  }
-  if (/no\s*break|बिना\s*ब्रेक|ब्रेक\s*नहीं/.test(d)) { hits += 2; out.push("कोई ब्रेक नहीं? आपके ब्लैडर ने शिकायत दर्ज कर दी है, सच में।"); }
-  // "sleep at 2am", or the Hindi order "रात 2 बजे सोना" (number first)
-  const m2 =
-    d.match(/(sleep|bed|sleeping|सोना|सोता|सोती|नींद)\D{0,10}(\d{1,2})\s*(am|बजे)/) ??
-    ((x) => (x ? ([x[0], x[2], x[1]] as unknown as RegExpMatchArray) : null))(d.match(/(\d{1,2})\s*बजे\s*(?:को\s*)?(सोना|सोता|सोती|नींद)/));
-  if (m2) {
-    const hr = +m2[2];
-    hits += hr <= 5 ? 3 : 1;
-    out.push(`${hr} बजे सोना शेड्यूल नहीं है, ये तो आपके वाईफ़ाई का स्पॉन्सर किया हुआ लाइफ़स्टाइल है।`);
-  }
-  if (/gym|workout|जिम|वर्कआउट/.test(d)) { hits += 1; out.push("आपने टाइमटेबल में “जिम” लिखा है। जिम को पता ही नहीं कि आप कौन हैं।"); }
-  if (/netflix|reels|insta|youtube|scroll|phone|रील|इंस्टा|यूट्यूब|फ़ोन|फोन|स्क्रॉल/.test(d)) { hits += 2; out.push("वो “थोड़ा-सा स्क्रॉल” पिछले 3 दिन से लगातार चल रहा है।"); }
-  if (/coaching|tuition|कोचिंग|ट्यूशन/.test(d)) { hits += 2; out.push("स्कूल, फिर कोचिंग, फिर ट्यूशन। आपकी परछाईं भी ब्रेक माँग रही है।"); }
-  if ((/\b(6|7|8)\s*am\b/.test(d) || /सुबह\s*(6|7|8)\s*बजे/.test(d)) && !m2) { hits += 1; out.push("सुबह की क्लास? आपके अलार्म को अब आप पर भरोसा नहीं रहा।"); }
-  if (/self.?study|revision|study|सेल्फ़?\s*स्टडी|पढ़ाई|रिवीज़न/.test(d)) { hits += 1; out.push("“सेल्फ़ स्टडी” एक मिथक है, यूनिकॉर्न और फ़्री पीरियड की तरह।"); }
-  if (/chai|coffee|tea|maggi|चाय|कॉफ़ी|कॉफी|मैगी/.test(d)) { hits += 1; out.push("चाय और मैगी अब आधिकारिक विषय हैं। सम्मान।"); }
-  const generic = ROAST_GENERIC;
-  const finisher = generic[h % generic.length];
-  const lines = out.slice(0, 2);
-  if (lines.length < 2) lines.push(generic[(h >>> 5) % generic.length] === finisher ? generic[(h + 1) % generic.length] : generic[(h >>> 5) % generic.length]);
-  lines.push(finisher);
-  const score = Math.max(2, Math.min(10, 3 + (h % 3) + hits));
-  const parts = raw.split(/,|\band\b|;|\sऔर\s/).map((s) => s.trim()).filter(Boolean).slice(0, 5);
-  const rows = (parts.length ? parts : ["यहाँ आपका दिन आएगा"]).map((text, i) => ({ time: ROAST_TIMES[i], text }));
-  return { lines, score, rows, level: ROAST_LEVELS[score] };
-}
-
 export const hindiContent: AppContent = {
   date: {
     days: ["रवि", "सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि"],
@@ -96,5 +44,4 @@ export const hindiContent: AppContent = {
   },
   cooked: { tiers: COOKED_TIERS },
   vibe: { vibes: VIBES, meters: VIBE_METERS },
-  roast: { roastFor: roastForHindi },
 };

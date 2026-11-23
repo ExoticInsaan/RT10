@@ -20,7 +20,7 @@ const hi: Record<string, { name: string; description: string }> = {
   "how-well-do-you-know-me": { name: "तुम मुझे कितना जानते हो?", description: "अपने बारे में क्विज़ बनाएँ और देखें किस दोस्त का स्कोर सबसे ज़्यादा है।" },
   "how-cooked": { name: "आप कितने कुक्ड हैं?", description: "अपना बेहद वैज्ञानिक कैओस स्कोर पाएँ।" },
   "excuse-generator": { name: "बहाना जनरेटर", description: "अजीब-से-अजीब हालात के लिए ताज़ा बहाने।" },
-  "roast-my-timetable": { name: "मेरे टाइमटेबल को रोस्ट करो", description: "क्योंकि आपका शेड्यूल ईमानदार फ़ीडबैक का हक़दार है।" },
+  "memory-match": { name: "मेमोरी मैच", description: "कार्ड पलटें, जोड़े ढूँढें और प्राइवेट रूम में दोस्तों से आगे निकलें।" },
   "vibe-check": { name: "इंस्टेंट वाइब चेक", description: "आज की एनर्जी की पूरी तरह निष्पक्ष रीडिंग।" },
 };
 

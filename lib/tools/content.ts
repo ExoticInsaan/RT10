@@ -50,20 +50,23 @@ export const toolContent: Record<string, ToolContent> = {
     ],
     privacyNote: funNote,
   },
-  "roast-my-timetable": {
+  "memory-match": {
     howTo: [
       "Sign in with Google (one tap, free).",
-      "Describe your day in a line or two, for example “6 classes, no breaks, sleep at 2am”.",
-      "Press “Roast it” and read the verdict.",
-      "Roll again for a new roast, or download the card to share.",
+      "Press “Create a room” and share the 5-letter room code with 1 to 3 friends. Friends press “Join room” and type the code.",
+      "Take turns flipping two cards. A match earns a point and you go again. No match, and the turn passes on.",
+      "When every pair is found, the highest score wins. Press “Rematch” to play again.",
     ],
     faq: [
-      { q: "Is the roast serious?", a: "No. It is a friendly joke and the score is made up." },
-      { q: "Does it read my real timetable file?", a: "No. You describe your day in words and it picks a roast to match. Nothing is uploaded." },
-      { q: "Can I share it?", a: "Yes. Download the story-sized card or copy the link." },
-      { q: "Do you save what I type?", a: "No. What you type only appears in the result link that you choose to share." },
+      { q: "How many people can play?", a: "Two to four players in one private room. Everyone needs the room code, so only the people you share it with can join." },
+      { q: "Does everyone have to sign in?", a: "Yes. Every player signs in once with Google, like the other Fun Zone games, then types the room code." },
+      { q: "What happens if the host leaves?", a: "The room closes, because the host keeps the game running. If a friend leaves during the game, their turns are skipped and the rest carry on." },
+      { q: "Can I change the number of cards?", a: "Yes. The host picks a small (12), medium (16) or large (24 cards) board before starting." },
+      { q: "Do you save my game?", a: "No. Nothing is stored. The game only exists while you and your friends are in the room." },
     ],
-    privacyNote: funNote,
+    privacyNote: "Games are not saved. Only your display name is shared with the other players in the room, and only while you are in it.",
+    seoTitle: "Memory Match: Free Multiplayer Card Matching Game",
+    seoDescription: "Play Memory Match online with friends. Make a private room, share the code, flip cards and find pairs. Free, 2 to 4 players, live.",
   },
   "vibe-check": {
     howTo: [
@@ -376,7 +379,7 @@ Object.assign(toolContent, {
 });
 
 // Search titles and descriptions for the Fun Zone tools people are most likely to search for.
-// Roast My Timetable, Grow a Sapling, Instant Vibe Check and How Cooked Are You? are left as they are, because few people search for them by name.
+// Grow a Sapling, Instant Vibe Check and How Cooked Are You? are left as they are, because few people search for them by name.
 const funSeo: Record<string, Pick<ToolContent, "seoTitle" | "seoDescription">> = {
   "excuse-generator": {
     seoTitle: "Funny Excuse Generator for Any Situation",

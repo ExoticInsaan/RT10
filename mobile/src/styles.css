@@ -11,6 +11,7 @@
 @import "../../app/fun-zone.css";
 @import "../../app/flashcard-maker.css";
 @import "../../app/notes-audio.css";
+@import "../../app/memory-match.css";
 
 /* Hindi fonts. Only the WOFF2 files are bundled (every Android WebView reads them), to keep the app small. */
 @font-face { font-family: "Noto Sans Devanagari"; font-style: normal; font-weight: 400; font-display: swap; src: url("../node_modules/@fontsource/noto-sans-devanagari/files/noto-sans-devanagari-devanagari-400-normal.woff2") format("woff2"); }

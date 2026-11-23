@@ -97,7 +97,7 @@ const SystemUi = registerPlugin<{ setBars(o: { top: string; bottom: string }): P
 
 // [screens, colour behind the status bar, colour behind the navigation bar, status bar icon style]
 const bars: [RegExp, string, string, Style][] = [
-  [/^\/(fun|onboard\/2)$|^\/tool\/(decision-wheel|would-you-rather|grow-a-sapling|friendship-score|what-am-i-to-you|how-well-do-you-know-me|how-cooked|excuse-generator|roast-my-timetable|vibe-check)$/, "#6d28d9", "#f97316", Style.Dark],
+  [/^\/(fun|onboard\/2)$|^\/tool\/(decision-wheel|would-you-rather|grow-a-sapling|friendship-score|what-am-i-to-you|how-well-do-you-know-me|how-cooked|excuse-generator|memory-match|vibe-check)$/, "#6d28d9", "#f97316", Style.Dark],
   [/^\/signin$/, "#102a4c", "#102a4c", Style.Dark],
 ];
 

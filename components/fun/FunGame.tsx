@@ -2,7 +2,7 @@
 
 import type { ComponentType } from "react";
 import ExcuseGenerator from "@/components/fun/games/ExcuseGenerator";
-import RoastTimetable from "@/components/fun/games/RoastTimetable";
+import MemoryMatch from "@/components/fun/games/MemoryMatch";
 import VibeCheck from "@/components/fun/games/VibeCheck";
 import DecisionWheel from "@/components/fun/games/DecisionWheel";
 import WouldYouRather from "@/components/fun/games/WouldYouRather";
@@ -16,7 +16,7 @@ import HowCooked from "@/components/fun/games/HowCooked";
 export const funGames: Record<string, ComponentType> = {
   "how-cooked": HowCooked,
   "excuse-generator": ExcuseGenerator,
-  "roast-my-timetable": RoastTimetable,
+  "memory-match": MemoryMatch,
   "vibe-check": VibeCheck,
   "decision-wheel": DecisionWheel,
   "would-you-rather": WouldYouRather,

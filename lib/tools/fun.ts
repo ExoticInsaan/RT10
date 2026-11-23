@@ -41,16 +41,6 @@ export const funConfig: Record<string, FunConfig> = {
     maxLength: 80,
     reroll: true,
   },
-  "roast-my-timetable": {
-    heading: "Show us the timetable.",
-    intro: "Describe your day in a line or two. The roast is friendly, mostly.",
-    label: "Your timetable",
-    placeholder: "e.g. 6 classes, no breaks, sleep at 2am",
-    cta: "Roast it",
-    multiline: true,
-    maxLength: 200,
-    reroll: true,
-  },
   "vibe-check": {
     heading: "Check today's vibe.",
     intro: "Enter a name for a completely unbiased reading of today's energy.",
@@ -127,22 +117,6 @@ const excuseClosers = [
   "Please consider this a rare act of fate.",
 ];
 
-const roastGeneral = [
-  "This is not a timetable. It is a cry for help with a colour code.",
-  "You scheduled everything except rest. Bold strategy.",
-  "Your day has more gaps than a Wi-Fi signal in a lift, and none of them are free time.",
-  "A timetable this packed deserves its own therapist.",
-  "Impressive effort. The plan assumes you are a robot with unlimited battery.",
-  "Somewhere, a calendar app is quietly crying for you.",
-];
-const roastKeywords: [RegExp, string][] = [
-  [/no break|non.?stop|back.?to.?back|without break/i, "No breaks? Even your phone gets to charge."],
-  [/(2|3|4)\s?am|midnight|all.?nighter|late/i, "Sleeping at that hour is not a schedule, it is a dare."],
-  [/gym|workout|run/i, "Gym in the plan, but the plan has not seen the snooze button yet."],
-  [/study|revision|exam/i, "Study blocks are great. Your phone is not invited."],
-  [/free|nothing|empty/i, "An empty timetable is just a plan to panic later."],
-];
-
 const vibes: [number, string, string[]][] = [
   [25, "LOW BATTERY MODE.", ["Run on snacks and soft music. Cancel what you can.", "Today asks for gentle, not heroic."]],
   [50, "QUIETLY OK.", ["Not loud, not bad. A solid, slightly beige kind of day.", "Steady as a chai that went lukewarm. Still drinkable."]],
@@ -167,16 +141,6 @@ export function runFunTool(id: string, input: string, salt: number): FunResult |
         title: believability >= 75 ? "BELIEVABLE." : believability >= 55 ? "RISKY." : "BOLD.",
         message,
         subject: capitalise(input),
-      };
-    }
-    case "roast-my-timetable": {
-      const score = 1 + Math.floor(rnd() * 6);
-      const match = roastKeywords.find(([pattern]) => pattern.test(input));
-      return {
-        kicker: "Timetable verdict",
-        big: `${score}/10`,
-        title: "ROASTED.",
-        message: match ? match[1] : pick(roastGeneral, rnd),
       };
     }
     case "vibe-check": {

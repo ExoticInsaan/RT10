@@ -9,7 +9,7 @@ import { tools, type Tool } from "@/lib/tools/registry";
 export const metadata: Metadata = {
   title: "Fun Zone",
   description:
-    "Free silly tools to play and share: How Cooked Are You?, Excuse Generator, Roast My Timetable, Instant Vibe Check, Decision Wheel, Would You Rather and more.",
+    "Free silly tools to play and share: How Cooked Are You?, Excuse Generator, Memory Match, Instant Vibe Check, Decision Wheel, Would You Rather and more.",
   alternates: { canonical: "/fun" },
 };
 
