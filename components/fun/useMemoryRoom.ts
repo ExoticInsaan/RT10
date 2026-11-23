@@ -25,10 +25,14 @@ import {
 
 export type RoomStatus = "idle" | "connecting" | "ready" | "notfound" | "closed" | "error";
 
-type Act = { t: "flip"; id: string; i: number } | { t: "ready"; id: string };
+type Act = { t: "flip"; id: string; i: number } | { t: "ready"; id: string } | { t: "hello"; id: string; name: string } | { t: "bye"; id: string };
 type Meta = { name?: string; host?: boolean };
 
-const FIND_TIMEOUT_MS = 6000;
+const FIND_TIMEOUT_MS = 10_000; // how long a guest keeps knocking before saying "no room found"
+const HELLO_EVERY_MS = 1200; // a guest asks the host to let them in until the host answers
+const HEARTBEAT_MS = 4000; // the host re-sends the table now and then, so a lost message heals itself
+const GRACE_MS = 8000; // someone who just knocked counts as present even if their presence signal is slow
+const HOST_GONE_MS = 3000; // a guest waits this long before deciding the host has really left
 
 function myId() {
   try {
@@ -55,8 +59,11 @@ export function useMemoryRoom() {
   const lastV = useRef(-1);
   const timers = useRef<number[]>([]);
   const gotState = useRef(false);
+  const knocked = useRef<Record<string, number>>({});
+  const presenceNow = useRef<() => Record<string, Meta>>(() => ({}));
   const session = useRef(0); // ignores events from a room that was already left
   const publishRef = useRef<(next: GameState) => void>(() => {});
+  const syncRef = useRef<(here: Record<string, Meta>) => void>(() => {});
   const connectRef = useRef<(roomCode: string, name: string, host: boolean, size: Size, attempt?: number) => void>(() => {});
 
   const later = useCallback((fn: () => void, ms: number) => {
@@ -76,6 +83,7 @@ export function useMemoryRoom() {
     deck.current = [];
     lastV.current = -1;
     gotState.current = false;
+    knocked.current = {};
   }, []);
 
   useEffect(() => teardown, [teardown]);
@@ -84,10 +92,11 @@ export function useMemoryRoom() {
 
   const publish = useCallback(
     (next: GameState) => {
+      const wasBusy = hostState.current?.busy ?? false;
       hostState.current = next;
       setState(next);
       void channel.current?.send({ type: "broadcast", event: "state", payload: next });
-      if (next.busy) {
+      if (next.busy && !wasBusy) {
         const mine = session.current;
         later(() => {
           if (session.current !== mine || !hostState.current?.busy) return;
@@ -112,6 +121,23 @@ export function useMemoryRoom() {
     (act: Act) => {
       const s = hostState.current;
       if (!s) return;
+      if (act.t === "bye") {
+        delete knocked.current[act.id]; // they left on purpose: no grace period
+        syncRef.current(presenceNow.current());
+        return;
+      }
+      if (act.t === "hello") {
+        // A guest knocking. Seat them straight away, so joining never depends on the presence signal arriving first.
+        knocked.current[act.id] = Date.now();
+        const open = s.phase !== "play" && s.players.length < MAX_PLAYERS;
+        if (!s.players.some((p) => p.id === act.id) && open) {
+          const name = (act.name ?? "Player").slice(0, 16) || "Player";
+          publish({ ...s, v: s.v + 1, players: [...s.players, { id: act.id, name, score: 0, online: true, ready: false }] });
+        } else {
+          publish({ ...s, v: s.v + 1, players: s.players.map((p) => (p.id === act.id ? { ...p, online: true } : p)) });
+        }
+        return;
+      }
       if (act.t === "flip") {
         const next = flipCard(s, deck.current, act.id, act.i);
         if (next) publish(next);
@@ -136,8 +162,10 @@ export function useMemoryRoom() {
     (here: Record<string, Meta>) => {
       const s = hostState.current;
       if (!s) return;
-      let players = s.players.map((p) => ({ ...p, online: p.id === s.hostId || p.id in here }));
+      const fresh = (id: string) => Date.now() - (knocked.current[id] ?? 0) < GRACE_MS;
+      let players = s.players.map((p) => ({ ...p, online: p.id === s.hostId || p.id in here || fresh(p.id) }));
       if (s.phase === "lobby") players = players.filter((p) => p.online);
+      for (const id of Object.keys(here)) delete knocked.current[id]; // once presence shows them, it decides
       for (const [id, meta] of Object.entries(here)) {
         if (players.some((p) => p.id === id) || meta.host) continue;
         if (s.phase === "play" || players.length >= MAX_PLAYERS) continue; // they see "game started" or "room full"
@@ -160,6 +188,10 @@ export function useMemoryRoom() {
     },
     [publish],
   );
+
+  useEffect(() => {
+    syncRef.current = hostSync;
+  }, [hostSync]);
 
   /* ---------- connecting ---------- */
 
@@ -185,6 +217,7 @@ export function useMemoryRoom() {
         return out;
       };
 
+      presenceNow.current = here;
       ch.on("broadcast", { event: "state" }, ({ payload }) => {
         if (host || session.current !== mine) return;
         const next = payload as GameState;
@@ -206,8 +239,12 @@ export function useMemoryRoom() {
         if (host) {
           hostSync(people);
         } else if (gotState.current && !Object.values(people).some((m) => m.host)) {
-          teardown();
-          setStatus("closed");
+          // Maybe the host is only reconnecting: look again in a few seconds before giving up.
+          later(() => {
+            if (session.current !== mine || Object.values(here()).some((m) => m.host)) return;
+            teardown();
+            setStatus("closed");
+          }, HOST_GONE_MS);
         }
       });
 
@@ -224,9 +261,22 @@ export function useMemoryRoom() {
               else {
                 setStatus("ready");
                 if (hostState.current) publish(hostState.current);
+                const beat = window.setInterval(() => {
+                  if (session.current !== mine) return window.clearInterval(beat);
+                  hostSync(here());
+                }, HEARTBEAT_MS);
+                timers.current.push(beat);
               }
             }, 700);
           } else {
+            // Knock on the host's door until it answers, then give up after a while.
+            const knock = () => void ch.send({ type: "broadcast", event: "act", payload: { t: "hello", id: me, name } satisfies Act });
+            knock();
+            const again = window.setInterval(() => {
+              if (session.current !== mine || gotState.current) return window.clearInterval(again);
+              knock();
+            }, HELLO_EVERY_MS);
+            timers.current.push(again);
             later(() => {
               if (session.current !== mine || gotState.current) return;
               teardown();
@@ -251,12 +301,13 @@ export function useMemoryRoom() {
   const join = useCallback((roomCode: string, name: string) => connect(roomCode, name, false, 16), [connect]);
 
   const leave = useCallback(() => {
+    if (!isHost) void channel.current?.send({ type: "broadcast", event: "act", payload: { t: "bye", id: me } satisfies Act });
     teardown();
     setState(null);
     setCode("");
     setIsHost(false);
     setStatus("idle");
-  }, [teardown]);
+  }, [isHost, me, teardown]);
 
   const send = useCallback(
     (act: Act) => {
