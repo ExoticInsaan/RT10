@@ -4,18 +4,24 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import type { Color } from "@/lib/fun/ludo";
-import { beginGame, joinRoom, leaveRoom, lobbyState, newRoomCode, seatOf, syncPresence, takeColor, type RoomState } from "@/lib/fun/ludo-room";
+import { actMove, actRoll, autoPending, autoStep, backToLobby, beginGame, joinRoom, leaveRoom, lobbyState, newRoomCode, seatOf, syncPresence, takeColor, type RoomState } from "@/lib/fun/ludo-room";
 
 /*
  * Ludo Rush rooms, built the same way as Memory Match rooms. Nothing is stored: there is no table and no saved game.
  * People with the same room code talk over a Supabase Realtime "broadcast" channel, which only passes messages along
  * while people are connected. The person who made the room (the host) keeps the real room state and runs the rules.
- * Everyone else sends what they want to do (join, pick a colour, leave) to the host and receives the result.
+ * Everyone else sends what they want to do (join, pick a colour, roll, move, leave) to the host and receives the result.
+ * The host rolls the dice, so nobody can pick their own number. Computers, and people who dropped out, are played by the host.
  */
 
 export type RoomStatus = "idle" | "connecting" | "ready" | "notfound" | "closed" | "error";
 
-type Act = { t: "hello"; id: string; name: string } | { t: "color"; id: string; color: Color } | { t: "bye"; id: string };
+type Act =
+  | { t: "hello"; id: string; name: string }
+  | { t: "color"; id: string; color: Color }
+  | { t: "bye"; id: string }
+  | { t: "roll"; id: string }
+  | { t: "move"; id: string; i: number };
 type Meta = { name?: string; host?: boolean };
 
 const FIND_TIMEOUT_MS = 10_000; // how long a guest keeps knocking before saying "no room found"
@@ -52,6 +58,8 @@ export function useLudoRoom() {
   const left = useRef(new Set<string>()); // people who pressed Leave: their presence signal may linger for a moment, so do not seat them again
   const presenceNow = useRef<() => Record<string, Meta>>(() => ({}));
   const session = useRef(0); // ignores events from a room that was already left
+  const scheduled = useRef(-1); // the game version the host already has an automatic step waiting for
+  const publishRef = useRef<(next: RoomState) => void>(() => {});
   const syncRef = useRef<(here: Record<string, Meta>) => void>(() => {});
   const connectRef = useRef<(roomCode: string, name: string, host: boolean, attempt?: number) => void>(() => {});
 
@@ -73,17 +81,37 @@ export function useLudoRoom() {
     gotState.current = false;
     knocked.current = {};
     left.current = new Set();
+    scheduled.current = -1;
   }, []);
 
   useEffect(() => teardown, [teardown]);
 
   /* ---------- host: runs the room ---------- */
 
-  const publish = useCallback((next: RoomState) => {
-    hostState.current = next;
-    setState(next);
-    void channel.current?.send({ type: "broadcast", event: "state", payload: next });
-  }, []);
+  const publish = useCallback(
+    (next: RoomState) => {
+      hostState.current = next;
+      setState(next);
+      void channel.current?.send({ type: "broadcast", event: "state", payload: next });
+      // Computers, people who dropped out, and a lone possible move are played by the host after a short pause.
+      const todo = autoPending(next);
+      const gv = next.game?.v ?? -1;
+      if (todo && scheduled.current !== gv) {
+        scheduled.current = gv;
+        const mine = session.current;
+        later(() => {
+          const cur = hostState.current;
+          if (session.current !== mine || !cur || cur.game?.v !== gv) return;
+          const after = autoStep(cur);
+          if (after) publishRef.current(after);
+        }, todo.ms);
+      }
+    },
+    [later],
+  );
+  useEffect(() => {
+    publishRef.current = publish;
+  }, [publish]);
 
   const hostAct = useCallback(
     (act: Act) => {
@@ -101,6 +129,16 @@ export function useLudoRoom() {
         left.current.delete(act.id); // knocking again means they are back
         const next = joinRoom(s, act.id, act.name ?? "Player");
         if (next && next !== s) publish(next);
+        return;
+      }
+      if (act.t === "roll") {
+        const next = actRoll(s, act.id);
+        if (next) publish(next);
+        return;
+      }
+      if (act.t === "move") {
+        const next = actMove(s, act.id, act.i);
+        if (next) publish(next);
         return;
       }
       const next = takeColor(s, act.id, act.color);
@@ -269,5 +307,19 @@ export function useLudoRoom() {
   /** The colour this person holds, or null (not seated yet, room full, or the game already started without them). */
   const seat = state ? seatOf(state, me) : null;
 
-  return { status, state, code, me, seat, isHost, create, join, leave, pickColor, start };
+  /** Roll the dice when it is your turn. */
+  const rollDice = useCallback(() => send({ t: "roll", id: me }), [me, send]);
+
+  /** Move one of your tokens (0 to 3) when it is your turn. */
+  const moveToken = useCallback((i: number) => send({ t: "move", id: me, i }), [me, send]);
+
+  /** Host only: after a finished game, go back to the lobby with the same people. */
+  const playAgain = useCallback(() => {
+    const s = hostState.current;
+    if (!isHost || !s) return;
+    const next = backToLobby(s);
+    if (next) publish(next);
+  }, [isHost, publish]);
+
+  return { status, state, game: state?.game ?? null, code, me, seat, isHost, create, join, leave, pickColor, start, rollDice, moveToken, playAgain };
 }

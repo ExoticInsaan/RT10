@@ -1,7 +1,7 @@
 // Ludo Rush rooms: who sits where before and during a game. No network and no React here, so it can be tested on its own.
 // The host keeps the real state and runs these functions. Everyone else only receives the result.
 
-import { COLORS, MAX_PLAYERS, MIN_PLAYERS, cleanName, newGame, type Color, type GameState } from "./ludo";
+import { COLORS, MAX_PLAYERS, MIN_PLAYERS, botPick, cleanName, current, move, newGame, roll, rollDie, type Color, type GameState } from "./ludo";
 
 export { CODE_LENGTH, cleanCode, newRoomCode } from "./memory-match";
 
@@ -83,4 +83,75 @@ export function beginGame(s: RoomState): RoomState | null {
   if (!canStart(s)) return null;
   const game = newGame(members(s).filter((m) => m.online).map((m) => ({ color: m.color, name: m.name, kind: "human" as const, id: m.id })));
   return game ? { ...s, v: s.v + 1, phase: "play", game } : null;
+}
+
+/* ---------- playing: dice, moves and turns ---------- */
+
+/** How long the host waits before it plays a step by itself, so everyone can see the dice and the move. */
+export const AUTO_MS = { roll: 1000, move: 1100, single: 750 } as const;
+
+const withGame = (s: RoomState, game: GameState): RoomState => ({ ...s, v: s.v + 1, game, phase: game.phase === "done" ? "done" : "play" });
+
+/**
+ * The colour `id` may play right now, or null. A colour with an id belongs to that person only.
+ * A colour with no id is a person sharing a phone (pass and play), so whoever holds the phone plays it.
+ */
+export function canAct(s: RoomState, id: string | null): Color | null {
+  const g = s.game;
+  if (s.phase !== "play" || !g) return null;
+  const p = current(g);
+  if (!p || p.kind !== "human") return null;
+  return p.id === null || p.id === id ? p.color : null;
+}
+
+/** The player whose colour it is rolls. The host picks the number, so nobody can choose their own roll. */
+export function actRoll(s: RoomState, id: string | null, random: () => number = Math.random): RoomState | null {
+  if (!canAct(s, id) || !s.game) return null;
+  const g = roll(s.game, rollDie(random));
+  return g ? withGame(s, g) : null;
+}
+
+/** The player whose colour it is moves token `i`. */
+export function actMove(s: RoomState, id: string | null, i: number): RoomState | null {
+  if (!canAct(s, id) || !s.game) return null;
+  const g = move(s.game, i);
+  return g ? withGame(s, g) : null;
+}
+
+/** True when the computer should play this turn: a computer colour, or a person who has gone offline (they get the colour back when they return). */
+export function isAutoTurn(s: RoomState) {
+  const g = s.game;
+  if (s.phase !== "play" || !g) return false;
+  const p = current(g);
+  if (!p) return false;
+  return p.kind === "bot" || s.seats[p.color]?.online === false;
+}
+
+/** What the host should do by itself next, and how long to wait first. Null when it is waiting for a person. */
+export function autoPending(s: RoomState): { kind: "roll" | "move"; ms: number } | null {
+  const g = s.game;
+  if (s.phase !== "play" || !g) return null;
+  if (isAutoTurn(s)) return g.step === "roll" ? { kind: "roll", ms: AUTO_MS.roll } : { kind: "move", ms: AUTO_MS.move };
+  // A person with only one possible move does not need to tap: it is played for them.
+  return g.step === "pick" && g.movable.length === 1 ? { kind: "move", ms: AUTO_MS.single } : null;
+}
+
+/** Plays the pending automatic step. */
+export function autoStep(s: RoomState, random: () => number = Math.random): RoomState | null {
+  const g = s.game;
+  const todo = autoPending(s);
+  if (!g || !todo) return null;
+  const next = todo.kind === "roll" ? roll(g, rollDie(random)) : move(g, botPick(g));
+  return next ? withGame(s, next) : null;
+}
+
+/** Host only: after a finished game, back to the lobby with the same people and colours. */
+export function backToLobby(s: RoomState): RoomState | null {
+  if (s.phase !== "done") return null;
+  const seats: RoomState["seats"] = {};
+  for (const c of COLORS) {
+    const m = s.seats[c];
+    if (m && m.online) seats[c] = m;
+  }
+  return { ...s, v: s.v + 1, phase: "lobby", seats, game: null };
 }
