@@ -57,7 +57,7 @@ export default function TermsPage() {
       <UL>
         <li><b>Student calculators</b> (CGPA and percentage, attendance, marks needed and exam countdown) give estimates based on what you enter. Banks, tax authorities and universities may use different rules or rounding, so please confirm important figures with the official source.</li>
         <li><b>Photo and document tools</b> (such as the photo and signature resizer, letter maker and image to PDF) help you meet a size or format. We cannot promise that any office, exam portal or website will accept the result.</li>
-        <li><b>Fun Zone tools</b> are entertainment. Scores, roasts and excuses are made up for fun and are not about you or anyone in real life.</li>
+        <li><b>Fun Zone tools</b> are entertainment. Scores, excuses and game results are made up for fun and are not about you or anyone in real life.</li>
       </UL>
 
       <H2>6. Our content and your sharing</H2>
