@@ -32,15 +32,6 @@ export const funConfig: Record<string, FunConfig> = {
     cta: "Reveal my result",
     maxLength: 40,
   },
-  "excuse-generator": {
-    heading: "What do you need an excuse for?",
-    intro: "Describe the situation. We will supply a reason nobody can fully disprove.",
-    label: "The situation",
-    placeholder: "e.g. missing the 8am class",
-    cta: "Make my excuse",
-    maxLength: 80,
-    reroll: true,
-  },
   "vibe-check": {
     heading: "Check today's vibe.",
     intro: "Enter a name for a completely unbiased reading of today's energy.",
@@ -80,7 +71,6 @@ function random(seed: number) {
 }
 
 const pick = <T,>(list: T[], rnd: () => number) => list[Math.floor(rnd() * list.length)];
-const capitalise = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
 const cooked: [number, string, string[]][] = [
   [20, "RAW.", ["Barely warmed up. Suspiciously calm for a person with deadlines.", "Enjoy this peace. It is rare and it will not last."]],
@@ -88,33 +78,6 @@ const cooked: [number, string, string[]][] = [
   [60, "SIZZLING.", ["You are on your way. The smell of panic is faint but present.", "Medium heat, high potential. Start before it gets worse."]],
   [80, "COOKED.", ["Well done. You have almost reached your final form.", "Fully cooked, still standing. That counts for something."]],
   [101, "FULLY CHARRED.", ["Call it. Frame the deadline. Order snacks and begin anyway.", "Nothing left to lose, which is a very powerful place to start from."]],
-];
-
-const excuseOpeners = [
-  "I was fully on my way, but",
-  "I had everything ready until",
-  "Honestly, I would have made it, but",
-  "I checked everything twice, and then",
-  "Right when I stepped out,",
-  "I swear this is true:",
-  "Plans were perfect. Then",
-  "I do not like to complain, but",
-];
-const excuseCauses = [
-  "a pigeon sat on my Wi-Fi router and refused to leave",
-  "my alarm decided it was Sunday",
-  "the lift stopped on a floor that does not exist",
-  "my phone updated itself at the worst possible moment",
-  "a very confident cow blocked the entire road",
-  "my charger chose today to stop believing in electricity",
-  "I got stuck helping a stranger find their other slipper",
-  "the auto driver took a shortcut through a wedding",
-];
-const excuseClosers = [
-  "I am deeply sorry and slightly traumatised.",
-  "It will not happen again, and if it does, it will be a different reason.",
-  "I have proof, but it is also stuck.",
-  "Please consider this a rare act of fate.",
 ];
 
 const vibes: [number, string, string[]][] = [
@@ -131,17 +94,6 @@ export function runFunTool(id: string, input: string, salt: number): FunResult |
       const pct = Math.floor(rnd() * 101);
       const [, title, messages] = cooked.find(([max]) => pct < max)!;
       return { kicker: "Official diagnosis", big: `${pct}%`, title, message: pick(messages, rnd), subject: input };
-    }
-    case "excuse-generator": {
-      const believability = 40 + Math.floor(rnd() * 60);
-      const message = `${pick(excuseOpeners, rnd)} ${pick(excuseCauses, rnd)}. ${pick(excuseClosers, rnd)}`;
-      return {
-        kicker: "Excuse believability",
-        big: `${believability}%`,
-        title: believability >= 75 ? "BELIEVABLE." : believability >= 55 ? "RISKY." : "BOLD.",
-        message,
-        subject: capitalise(input),
-      };
     }
     case "vibe-check": {
       const pct = Math.floor(rnd() * 101);

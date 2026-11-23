@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComponentType } from "react";
-import ExcuseGenerator from "@/components/fun/games/ExcuseGenerator";
+import LudoRush from "@/components/fun/games/LudoRush";
 import MemoryMatch from "@/components/fun/games/MemoryMatch";
 import VibeCheck from "@/components/fun/games/VibeCheck";
 import DecisionWheel from "@/components/fun/games/DecisionWheel";
@@ -15,7 +15,7 @@ import HowCooked from "@/components/fun/games/HowCooked";
 /** Fun Zone games built as full interactive screens, keyed by their tool id in `lib/tools/registry.ts`. */
 export const funGames: Record<string, ComponentType> = {
   "how-cooked": HowCooked,
-  "excuse-generator": ExcuseGenerator,
+  "ludo-rush": LudoRush,
   "memory-match": MemoryMatch,
   "vibe-check": VibeCheck,
   "decision-wheel": DecisionWheel,

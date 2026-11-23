@@ -19,7 +19,7 @@ const hi: Record<string, { name: string; description: string }> = {
   "what-am-i-to-you": { name: "मैं तुम्हारे लिए क्या हूँ?", description: "लिंक शेयर करें और जानें कि दोस्त आपको असल में कैसे देखते हैं।" },
   "how-well-do-you-know-me": { name: "तुम मुझे कितना जानते हो?", description: "अपने बारे में क्विज़ बनाएँ और देखें किस दोस्त का स्कोर सबसे ज़्यादा है।" },
   "how-cooked": { name: "आप कितने कुक्ड हैं?", description: "अपना बेहद वैज्ञानिक कैओस स्कोर पाएँ।" },
-  "excuse-generator": { name: "बहाना जनरेटर", description: "अजीब-से-अजीब हालात के लिए ताज़ा बहाने।" },
+  "ludo-rush": { name: "लूडो रश", description: "3D पासे और आवाज़ों वाला क्लासिक लूडो। 3 कंप्यूटर को हराओ।" },
   "memory-match": { name: "मेमोरी मैच", description: "कार्ड पलटें, जोड़े ढूँढें और प्राइवेट रूम में दोस्तों से आगे निकलें।" },
   "vibe-check": { name: "इंस्टेंट वाइब चेक", description: "आज की एनर्जी की पूरी तरह निष्पक्ष रीडिंग।" },
 };

@@ -35,18 +35,18 @@ export const toolContent: Record<string, ToolContent> = {
     ],
     privacyNote: funNote,
   },
-  "excuse-generator": {
+  "ludo-rush": {
     howTo: [
       "Sign in with Google (one tap, free).",
-      "Describe the situation, for example “missing the 8am class”.",
-      "Press “Make my excuse”.",
-      "Not happy with it? Press “Roll again” for a new one, then download or share the card.",
+      "You play Red against 3 computers. Press “Roll Dice” or tap the dice.",
+      "Roll a 6 to bring a token out. A 6, a capture or reaching home gives you another roll. Tap a glowing token to move it.",
+      "Get all 4 tokens home first to win. Tired of tapping? Switch on Auto Play.",
     ],
     faq: [
-      { q: "Will these excuses actually work?", a: "They are made up for fun, and each one comes with a silly believability score. Please be honest with the people who matter." },
-      { q: "Can I get a different excuse for the same situation?", a: "Yes. Use “Roll again” on the result page and you will get a new one." },
-      { q: "Can I share the excuse?", a: "Yes. Download the card or copy the link from the result page." },
-      { q: "Do you save what I type?", a: "No. What you type only appears in the result link that you choose to share." },
+      { q: "Is Ludo Rush free?", a: "Yes. It is free to play, and the game runs in your browser with no download." },
+      { q: "Who do I play against?", a: "You play Red against three computer players. Pass-and-play with friends is coming." },
+      { q: "What are the rules?", a: "Roll a 6 to leave the yard. A 6, a capture or reaching home gives another roll, and three 6s in a row lose the turn. Start squares and star squares are safe, and you need the exact number to finish." },
+      { q: "Does it have sound?", a: "Yes: dice, hops, captures and wins all have sounds. Use the speaker button at the top to mute." },
     ],
     privacyNote: funNote,
   },
@@ -381,10 +381,10 @@ Object.assign(toolContent, {
 // Search titles and descriptions for the Fun Zone tools people are most likely to search for.
 // Grow a Sapling, Instant Vibe Check and How Cooked Are You? are left as they are, because few people search for them by name.
 const funSeo: Record<string, Pick<ToolContent, "seoTitle" | "seoDescription">> = {
-  "excuse-generator": {
-    seoTitle: "Funny Excuse Generator for Any Situation",
+  "ludo-rush": {
+    seoTitle: "Play Ludo Online Free: 3D Dice, vs Computer",
     seoDescription:
-      "Type a situation like missing the 8am class and get a funny, made-up excuse with a silly believability score. Free, with a card you can share.",
+      "Play classic Ludo free in your browser. Roll the 3D dice, capture tokens and beat 3 computer players. No download, works on your phone.",
   },
   "decision-wheel": {
     seoTitle: "Decision Wheel: Spin to Pick an Option",

@@ -59,7 +59,7 @@ export function Onboard2() {
   const picks = [
     { id: "how-cooked", tilt: -3, drop: false },
     { id: "decision-wheel", tilt: 2.5, drop: true },
-    { id: "excuse-generator", tilt: 2, drop: false },
+    { id: "ludo-rush", tilt: 2, drop: false },
     { id: "vibe-check", tilt: -2.5, drop: true },
   ].map((p) => ({ ...p, tool: byId(p.id) }));
   return (

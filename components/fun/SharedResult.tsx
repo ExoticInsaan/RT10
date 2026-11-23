@@ -4,11 +4,9 @@ import { useRef, type ReactNode, type Ref } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import CardCooked from "@/components/fun/cards/CardCooked";
-import CardExcuse from "@/components/fun/cards/CardExcuse";
 import CardVibe from "@/components/fun/cards/CardVibe";
 import CardActions from "@/components/fun/CardActions";
 import { cookedResult } from "@/components/fun/games/HowCooked";
-import { excuseParts } from "@/components/fun/games/ExcuseGenerator";
 import { dayKey, vibeFor } from "@/components/fun/games/VibeCheck";
 import { resultLink, type ResultKind } from "@/lib/fun/results";
 
@@ -20,7 +18,6 @@ const ghost =
 const TOOL: Record<ResultKind, { id: string; cta: string }> = {
   cooked: { id: "how-cooked", cta: "Find out how cooked you are" },
   vibe: { id: "vibe-check", cta: "Check your own vibe" },
-  excuse: { id: "excuse-generator", cta: "Make your own excuse" },
 };
 
 type Built = { node: (ref: Ref<HTMLDivElement>) => ReactNode; fileName: string; shareText: string; shareUrl: string };
@@ -56,18 +53,6 @@ function build(kind: ResultKind, q: URLSearchParams): Built | null {
       fileName: "vibe-check-toppershelf.png",
       shareText: `${n}'s vibe today: ${r.v.n}. What's yours?`,
       shareUrl: resultLink("vibe", { n, d }),
-    };
-  }
-  if (kind === "excuse") {
-    const s = clip("s", 60);
-    const roll = Math.min(50, Math.max(0, parseInt(q.get("r") ?? "0", 10) || 0));
-    if (!s) return null;
-    const e = excuseParts(s, roll);
-    return {
-      node: (cardRef) => <CardExcuse cardRef={cardRef} data={{ situation: s, text: e.text, believe: e.believe }} />,
-      fileName: "excuse-toppershelf.png",
-      shareText: `My excuse for ${s}: ${e.believe}% believable. Make yours!`,
-      shareUrl: resultLink("excuse", { s, r: roll }),
     };
   }
   return null;

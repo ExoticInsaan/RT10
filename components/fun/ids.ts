@@ -1,7 +1,7 @@
 /** Tool ids that have a full Fun Zone game screen (shared by server pages and the client game map). */
 export const funGameIds = [
   "how-cooked",
-  "excuse-generator",
+  "ludo-rush",
   "memory-match",
   "vibe-check",
   "decision-wheel",

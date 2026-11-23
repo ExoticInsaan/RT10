@@ -6,7 +6,7 @@ import { useLanguage } from "../i18n/LanguageProvider";
 
 const shelf = tools.filter((t) => t.category === "The Shelf");
 const byId = (id: string) => tools.find((t) => t.id === id)!;
-const funPicks = ["how-cooked", "excuse-generator"].map(byId);
+const funPicks = ["how-cooked", "ludo-rush"].map(byId);
 
 export default function MyShelf() {
   const { t: tr } = useLanguage();

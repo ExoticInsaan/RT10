@@ -113,7 +113,7 @@ Every tool page follows one template so new tools are quick to add: H1 that matc
 ### Tools today (18, all live)
 
 - **The Shelf (8):** PDF Toolkit, Image Toolkit, Focus Timer, Flashcard Maker, CGPA & Percentage Calculator, Attendance Calculator, Reminder, Days Countdown
-- **Fun Zone (10):** Decision Wheel, Would You Rather, Grow a Sapling, Friendship Score, What Am I to You?, How Well Do You Know Me?, How Cooked Are You?, Excuse Generator, Memory Match (live multiplayer), Instant Vibe Check
+- **Fun Zone (10):** Decision Wheel, Would You Rather, Grow a Sapling, Friendship Score, What Am I to You?, How Well Do You Know Me?, How Cooked Are You?, Ludo Rush, Memory Match (live multiplayer), Instant Vibe Check
 
 Later ideas: Photo & Signature Resizer for exact exam-form sizes, Image to PDF, Leave & Application Letter Maker, Marks Needed Calculator, assignment cover page maker, resume maker, syllabus planner.
 

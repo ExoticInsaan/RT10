@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import CardCooked from "@/components/fun/cards/CardCooked";
-import CardExcuse from "@/components/fun/cards/CardExcuse";
 import CardFriend from "@/components/fun/cards/CardFriend";
 import CardKnowMe from "@/components/fun/cards/CardKnowMe";
 import CardSapling from "@/components/fun/cards/CardSapling";
@@ -21,7 +20,6 @@ const cards = [
   ["How Well Do You Know Me?", CardKnowMe],
   ["What Am I to You?", CardWhatAmI],
   ["Grow a Sapling", CardSapling],
-  ["Excuse Generator", CardExcuse],
 ] as const;
 
 export default function CardsPreview() {
