@@ -172,7 +172,13 @@ function ctx(){if(!ac){var A=window.AudioContext||window.webkitAudioContext;ac=n
 function tone(f,type,dur,vol,delay,f2){if(muted)return;var a=ctx(),t=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}
 function noise(dur,vol){if(muted)return;var a=ctx(),n=a.sampleRate*dur,b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);for(var i=0;i<n;i++)d[i]=Math.random()*2-1;var s=a.createBufferSource(),g=a.createGain(),fl=a.createBiquadFilter();s.buffer=b;fl.type='lowpass';fl.frequency.setValueAtTime(3000,a.currentTime);fl.frequency.exponentialRampToValueAtTime(200,a.currentTime+dur);g.gain.setValueAtTime(vol,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+dur);s.connect(fl);fl.connect(g);g.connect(a.destination);s.start()}
 function chime(){[523,659,784,1047].forEach(function(f,i){tone(f,'triangle',.35,.2,i*.09)})}
-function diceSfx(v){for(var i=0;i<9;i++)tone(300+Math.random()*500,'square',.05,.1,i*.07);tone(140,'sine',.3,.6,.62,40);tone(140,'sine',.3,.5,.95,40);if(v===6)setTimeout(chime,1100)}
+/* recorded sounds: /ludo/kill.mp3 when a token is captured, /ludo/six.mp3 when the dice shows 6 (both respect the mute button) */
+var SFX={kill:new Audio('/ludo/kill.mp3'),six:new Audio('/ludo/six.mp3')};
+for(var sk in SFX){SFX[sk].preload='auto'}
+function clip(n,fallback){if(muted)return;var a=SFX[n];try{a.pause();a.currentTime=0;var pr=a.play();if(pr&&pr.catch)pr.catch(function(){if(fallback)fallback()})}catch(e){if(fallback)fallback()}}
+function killSfx(){clip('kill',function(){noise(.5,.5);tone(220,'sawtooth',.4,.25,0,50)})}
+function sixSfx(){clip('six',chime)}
+function diceSfx(v){for(var i=0;i<9;i++)tone(300+Math.random()*500,'square',.05,.1,i*.07);tone(140,'sine',.3,.6,.62,40);tone(140,'sine',.3,.5,.95,40);if(v===6)setTimeout(sixSfx,1100)}
 function confetti(){var cs=['#ff3860','#1fe08f','#ffc928','#2f9bff','#fff'];for(var i=0;i<45;i++){var d=document.createElement('div');d.className='conf';d.style.left=Math.random()*100+'vw';d.style.background=cs[i%5];d.style.animationDelay=Math.random()*.5+'s';document.body.appendChild(d);setTimeout(function(x){x.remove()}.bind(null,d),2600)}}
 /* state */
 var T,els={},turn,phase,sixes,val,movable,over;
@@ -208,7 +214,7 @@ function move(i){var k=CO[turn],p0=T[k][i],tg=[];phase='anim';mark();if(p0<0){tg
  (function st(n){if(n>=tg.length)return done(k,i);T[k][i]=tg[n];render();hop(els[k][i]);tone(520+n*25,'sine',.09,.18);setTimeout(function(){st(n+1)},175)})(0)}
 function done(k,i){var p=T[k][i],cap=false,idx;
  if(p>=0&&p<=50){idx=(START[k]+p)%52;if(!SAFE[idx])CO.forEach(function(o){if(o!==k)T[o].forEach(function(q,j){if(q>=0&&q<=50&&(START[o]+q)%52===idx){T[o][j]=-1;cap=true}})});
-  if(cap){boom(TR[idx]);noise(.5,.5);tone(220,'sawtooth',.4,.25,0,50);say(wn(k)+' captured a token!')}}
+  if(cap){boom(TR[idx]);killSfx();say(wn(k)+' captured a token!')}}
  var home=p===56;if(home){chime();say(wn(k)+' got a token home!')}
  render();if(T[k].every(function(q){return q===56})){return win(k)}
  setTimeout(function(){next(val===6||cap||home)},cap||home?900:450)}
@@ -260,7 +266,7 @@ function playState(g,done){
   g.players.forEach(function(p){if(p.color===c)return;var o=P.players.filter(function(q){return q.color===p.color})[0];
    p.tokens.forEach(function(q,j){if(o&&o.tokens[j]>=0&&q<0){T[p.color][j]=-1;cap=true}})});
   var home=p1===56;
-  if(cap){boom(TR[(START[c]+p1)%52]);noise(.5,.5);tone(220,'sawtooth',.4,.25,0,50);say(wn(c)+' captured a token!')}
+  if(cap){boom(TR[(START[c]+p1)%52]);killSfx();say(wn(c)+' captured a token!')}
   if(home){chime();say(wn(c)+' got a token home!')}
   snap(g);render();
   if(g.phase==='done'){onlineWin(c);return done()}
