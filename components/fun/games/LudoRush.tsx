@@ -11,11 +11,17 @@ import LudoOnline from "@/components/fun/games/LudoOnline";
  */
 export default function LudoRush() {
   const [online, setOnline] = useState(false);
+  // The setup screens are short; the board screen needs the full height. The game tells us which one it is showing.
+  const [size, setSize] = useState<{ mode: "setup" | "game"; h: number }>({ mode: "setup", h: 520 });
 
   useEffect(() => {
     const onMessage = (e: MessageEvent) => {
       if (e.origin !== window.location.origin) return;
-      if ((e.data as { type?: string } | null)?.type === "ludo:online") setOnline(true);
+      const d = e.data as { type?: string; mode?: "setup" | "game"; h?: number } | null;
+      if (d?.type === "ludo:online") setOnline(true);
+      if (d?.type === "ludo:size" && (d.mode === "setup" || d.mode === "game")) {
+        setSize({ mode: d.mode, h: Math.max(320, Math.min(Number(d.h) || 520, 900)) });
+      }
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
@@ -30,7 +36,8 @@ export default function LudoRush() {
         title="Ludo Rush"
         allow="autoplay"
         loading="eager"
-        className="block h-[940px] w-full border-0 max-[420px]:h-[900px]"
+        style={size.mode === "setup" ? { height: size.h } : undefined}
+        className={`block w-full border-0 ${size.mode === "game" ? "h-[940px] max-[420px]:h-[900px]" : ""}`}
       />
     </div>
   );

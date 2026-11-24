@@ -87,6 +87,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff;backgr
 #su .mc{display:flex;align-items:center;gap:14px;text-align:left;padding:16px;border-radius:22px;border:2px solid #2d56c2;background:linear-gradient(#0e2a78cc,#071a52cc);color:#fff;font:inherit;cursor:pointer}
 #su .mc b{display:block;font-size:18px;margin-bottom:3px}#su .mc span{font-size:13px;color:#a9bbea;line-height:1.4}
 #su .mc img{height:40px;margin-right:-8px}
+#su .mc img.ic{height:60px;width:60px;margin-right:0;flex:none;border-radius:50%;box-shadow:0 0 16px #38e1ff66}
 .sb{min-height:54px;border:0;border-radius:18px;padding:12px;font:inherit;font-weight:800;font-size:16px;color:#fff;cursor:pointer;background:linear-gradient(#27e8a0,#12b673);box-shadow:0 5px 0 #0a7a4e}
 .sb:disabled{opacity:.45;cursor:default}.sb.ghost{background:none;box-shadow:none;border:2px solid #2d56c2;min-height:46px;font-size:14px;margin-top:10px}
 #su .bk{align-self:flex-start;border:0;background:none;color:#a9bbea;font:inherit;font-weight:700;cursor:pointer;min-height:40px;padding:6px 2px}
@@ -286,10 +287,11 @@ function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;
 function pre(me,n){var i=CW.indexOf(me),l=[CW[(i+2)%4],CW[(i+1)%4],CW[(i+3)%4]].slice(0,n),o={};l.forEach(function(k){o[k]=1});return o}
 function go(list){location.href=location.pathname+'?p='+list.join(',')}
 function seat(k,cls,who,sub,extra,act,bot){return '<div class="st '+cls+'" style="--k:'+HX[k]+'"><button class="h" data-a="'+act+'" data-k="'+k+'" aria-label="'+NMC[k]+'"><div class="a'+(bot?'':' pc')+'"><img src="'+(bot?AV[k]:TKI[k])+'" alt=""></div><b>'+who+'</b><span class="sm">'+sub+'</span></button>'+(extra||'')+'</div>'}
+var GLOBE='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><radialGradient id="o" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#7fd4ff"/><stop offset=".45" stop-color="#2f9bff"/><stop offset="1" stop-color="#0b3aa8"/></radialGradient><radialGradient id="h" cx=".32" cy=".22" r=".4"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><clipPath id="c"><circle cx="60" cy="60" r="52"/></clipPath></defs><circle cx="60" cy="60" r="56" fill="#0a1a4a"/><circle cx="60" cy="60" r="52" fill="url(#o)"/><g clip-path="url(#c)"><path d="M22 38c6-8 16-12 24-10 4 3 2 8-2 10-5 2-6 8-12 9-5 1-9-3-10-9z" fill="#2fe08f"/><path d="M52 62c6-3 14-2 17 3 3 6 1 14-4 20-3 4-8 4-10 0-2-6-6-9-5-15 0-4 0-6 2-8z" fill="#2fe08f"/><path d="M70 32c8-5 20-4 28 2 4 4 2 9-3 10-6 1-8 6-14 5-6-1-9-7-14-8-3-3-3-7 3-9z" fill="#2fe08f"/><path d="M84 66c6-1 12 2 12 7s-5 9-10 8c-5-2-7-8-2-15z" fill="#2fe08f"/><g fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.6"><ellipse cx="60" cy="60" rx="22" ry="52"/><ellipse cx="60" cy="60" rx="42" ry="52"/><path d="M8 60h104M14 36h92M14 84h92"/></g></g><circle cx="60" cy="60" r="52" fill="url(#h)"/><circle cx="60" cy="60" r="52" fill="none" stroke="#9fe3ff" stroke-width="3" stroke-opacity=".8"/><circle cx="96" cy="26" r="9" fill="#1fe08f" stroke="#fff" stroke-width="3"/></svg>');
 function home(){return '<div class="w"><h2>Choose how to play</h2><p>Pick a mode to start a new game.</p>'+
- '<button class="mc" data-m="vc"><img src="'+TKI.R+'" alt=""><div><b>Vs computer</b><span>Play against 1, 2 or 3 computers.</span></div></button>'+
+ '<button class="mc" data-m="vc"><img class="ic" src="'+AV.G+'" alt=""><div><b>Vs computer</b><span>Play against 1, 2 or 3 computers.</span></div></button>'+
  '<button class="mc" data-m="pp"><img src="'+TKI.R+'" alt=""><img src="'+TKI.G+'" alt=""><img src="'+TKI.Y+'" alt=""><div><b>Pass and play</b><span>2, 3 or 4 people on one device, each with their own name. No computers.</span></div></button>'+
- (window.parent!==window?'<button class="mc" data-ol="1"><img src="'+TKI.B+'" alt=""><img src="'+TKI.Y+'" alt=""><div><b>Play online</b><span>Make a room and share the code, or join a friend\'s room. 2 to 4 players on their own phones.</span></div></button>':'')+'</div>'}
+ (window.parent!==window?'<button class="mc" data-ol="1"><img class="ic" src="'+GLOBE+'" alt=""><div><b>Play online</b><span>Make a room and share the code, or join a friend\'s room. 2 to 4 players on their own phones.</span></div></button>':'')+'</div>'}
 function vcv(){var bs=pre(S.me,S.n);
  return '<div class="w"><button class="bk" data-m="home">‹ Back</button><h2>Vs computer</h2><p>Pick your colour and how many computers you play against.</p>'+
  '<div class="cp">'+GRID.map(function(k){return '<button data-me="'+k+'" style="--k:'+HX[k]+'" class="'+(S.me===k?'on':'')+'" aria-label="'+NMC[k]+'"><img src="'+TKI[k]+'" alt=""></button>'}).join('')+'</div>'+
@@ -313,7 +315,12 @@ function draw(){su.innerHTML=S.v==='home'?home():S.v==='vc'?vcv():ppv();
   if(S.v==='vc'){var bs=pre(S.me,S.n);go(CW.filter(function(k){return k===S.me||bs[k]}).map(function(k){return k===S.me?k+':You:h':k+'::b'}))}
   else go(CW.filter(function(k){return S.on[k]}).map(function(k){return k+':'+encodeURIComponent((S.nm[k]||'').trim())+':h'}))}}
 $('ovc').onclick=function(){location.href=location.pathname};
+/* Tell the page around us how tall the setup screen is, so the frame fits it instead of leaving empty space. */
+function report(){if(window.parent===window)return;var w=su.querySelector('.w'),h=0;if(!CFG&&w)h=Math.ceil(w.getBoundingClientRect().height)+38;try{window.parent.postMessage({type:'ludo:size',mode:CFG?'game':'setup',h:h},location.origin)}catch(e){}}
+var _draw=draw;draw=function(){_draw();report()};
+window.addEventListener('resize',report);
 if(!CFG){su.classList.add('show');draw()}
+report();setTimeout(report,300)
 })();
 })();
 </script></body></html>
