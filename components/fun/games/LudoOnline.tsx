@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { copyText, loadJSON, saveJSON } from "@/components/fun/kit";
+import { useImmersive } from "@/components/fun/useImmersive";
 import { useLudoRoom } from "@/components/fun/useLudoRoom";
 import { COLORS, COLOR_NAMES, MAX_PLAYERS, cleanName, type Color } from "@/lib/fun/ludo";
 import { CODE_LENGTH, canStart, cleanCode, members } from "@/lib/fun/ludo-room";
@@ -209,6 +210,9 @@ export default function LudoOnline({ onExit }: { onExit: () => void }) {
 function OnlineBoard({ room }: { room: ReturnType<typeof useLudoRoom> }) {
   const { game, seat, isHost, rollDice, moveToken, playAgain, leave } = room;
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  // The board is mounted when the host starts, so the game goes full screen then; back returns to the normal page.
+  const full = useImmersive(wrapRef, true);
   const latest = useRef(game);
 
   // The page learns who plays from its address. Names are encoded twice because the page reads them back out of a query value.
@@ -248,8 +252,21 @@ function OnlineBoard({ room }: { room: ReturnType<typeof useLudoRoom> }) {
   }, [rollDice, moveToken, playAgain, leave, send]);
 
   return (
-    <div className="mx-auto w-full max-w-[30rem] overflow-hidden rounded-[28px] bg-[#041240] shadow-[0_24px_60px_-24px_rgba(16,42,76,.45)] sm:rounded-[36px]">
-      <iframe ref={frameRef} src={src} title="Ludo Rush online" allow="autoplay" className="block h-[940px] w-full border-0 max-[420px]:h-[900px]" />
+    <div
+      ref={wrapRef}
+      className={
+        full
+          ? "fixed inset-0 z-[10000] h-dvh w-screen overflow-hidden bg-[#041240]"
+          : "mx-auto w-full max-w-[30rem] overflow-hidden rounded-[28px] bg-[#041240] shadow-[0_24px_60px_-24px_rgba(16,42,76,.45)] sm:rounded-[36px]"
+      }
+    >
+      <iframe
+        ref={frameRef}
+        src={src}
+        title="Ludo Rush online"
+        allow="autoplay"
+        className={`block w-full border-0 ${full ? "h-full" : "h-[940px] max-[420px]:h-[900px]"}`}
+      />
     </div>
   );
 }
