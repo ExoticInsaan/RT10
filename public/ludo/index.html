@@ -232,7 +232,8 @@ function go(list){location.href=location.pathname+'?p='+list.join(',')}
 function seat(k,cls,who,sub,extra,act,bot){return '<div class="st '+cls+'" style="--k:'+HX[k]+'"><button class="h" data-a="'+act+'" data-k="'+k+'" aria-label="'+NMC[k]+'"><div class="a'+(bot?'':' pc')+'"><img src="'+(bot?AV[k]:TKI[k])+'" alt=""></div><b>'+who+'</b><span class="sm">'+sub+'</span></button>'+(extra||'')+'</div>'}
 function home(){return '<div class="w"><h2>Choose how to play</h2><p>Pick a mode to start a new game.</p>'+
  '<button class="mc" data-m="vc"><img src="'+TKI.R+'" alt=""><div><b>Vs computer</b><span>Play against 1, 2 or 3 computers.</span></div></button>'+
- '<button class="mc" data-m="pp"><img src="'+TKI.R+'" alt=""><img src="'+TKI.G+'" alt=""><img src="'+TKI.Y+'" alt=""><div><b>Pass and play</b><span>2, 3 or 4 people on one device, each with their own name. No computers.</span></div></button></div>'}
+ '<button class="mc" data-m="pp"><img src="'+TKI.R+'" alt=""><img src="'+TKI.G+'" alt=""><img src="'+TKI.Y+'" alt=""><div><b>Pass and play</b><span>2, 3 or 4 people on one device, each with their own name. No computers.</span></div></button>'+
+ (window.parent!==window?'<button class="mc" data-ol="1"><img src="'+TKI.B+'" alt=""><img src="'+TKI.Y+'" alt=""><div><b>Play online</b><span>Make a room and share the code, or join a friend\'s room. 2 to 4 players on their own phones.</span></div></button>':'')+'</div>'}
 function vcv(){var bs=pre(S.me,S.n);
  return '<div class="w"><button class="bk" data-m="home">‹ Back</button><h2>Vs computer</h2><p>Pick your colour and how many computers you play against.</p>'+
  '<div class="cp">'+GRID.map(function(k){return '<button data-me="'+k+'" style="--k:'+HX[k]+'" class="'+(S.me===k?'on':'')+'" aria-label="'+NMC[k]+'"><img src="'+TKI[k]+'" alt=""></button>'}).join('')+'</div>'+
@@ -247,6 +248,7 @@ function ppv(){var c=CW.filter(function(k){return S.on[k]}).length;
 function draw(){su.innerHTML=S.v==='home'?home():S.v==='vc'?vcv():ppv();
  su.querySelectorAll('[data-n2]').forEach(function(i){i.value=S.nm[i.dataset.n2]||'';i.oninput=function(){S.nm[i.dataset.n2]=i.value}});
  su.querySelectorAll('[data-m]').forEach(function(b){b.onclick=function(){S.v=b.dataset.m;draw()}});
+ su.querySelectorAll('[data-ol]').forEach(function(b){b.onclick=function(){try{window.parent.postMessage({type:'ludo:online'},location.origin)}catch(e){}}});
  su.querySelectorAll('[data-me]').forEach(function(b){b.onclick=function(){S.me=b.dataset.me;draw()}});
  su.querySelectorAll('[data-n]').forEach(function(b){b.onclick=function(){S.n=+b.dataset.n;draw()}});
  su.querySelectorAll('[data-pc]').forEach(function(b){b.onclick=function(){var pc=+b.dataset.pc,l={2:['R','Y'],3:['R','G','Y'],4:CW}[pc];S.on={};l.forEach(function(k){S.on[k]=1});draw()}});
