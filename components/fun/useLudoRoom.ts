@@ -62,6 +62,7 @@ export function useLudoRoom() {
   const publishRef = useRef<(next: RoomState) => void>(() => {});
   const syncRef = useRef<(here: Record<string, Meta>) => void>(() => {});
   const connectRef = useRef<(roomCode: string, name: string, host: boolean, attempt?: number) => void>(() => {});
+  const netRetries = useRef(0); // automatic retries after a failed connection
 
   const later = useCallback((fn: () => void, ms: number) => {
     const id = window.setTimeout(fn, ms);
@@ -227,6 +228,7 @@ export function useLudoRoom() {
       ch.subscribe(async (st) => {
         if (session.current !== mine) return;
         if (st === "SUBSCRIBED") {
+          netRetries.current = 0;
           await ch.track({ name, host });
           if (host) {
             // If another host already uses this code, pick a new one.
@@ -260,10 +262,18 @@ export function useLudoRoom() {
             }, FIND_TIMEOUT_MS);
           }
         } else if (st === "CHANNEL_ERROR" || st === "TIMED_OUT") {
+          // The very first connection after a quiet spell can be slow. Try again by itself twice before showing an error.
           teardown();
-          setStatus("error");
+          if (netRetries.current < 2) {
+            netRetries.current++;
+            setStatus("connecting");
+            later(() => connectRef.current(roomCode, name, host, attempt), 1500);
+          } else {
+            netRetries.current = 0;
+            setStatus("error");
+          }
         }
-      });
+      }, 20000);
     },
     [hostAct, hostSync, later, me, publish, teardown],
   );
@@ -273,8 +283,20 @@ export function useLudoRoom() {
 
   /* ---------- what the screen can do ---------- */
 
-  const create = useCallback((name: string) => connect(newRoomCode(), name, true), [connect]);
-  const join = useCallback((roomCode: string, name: string) => connect(roomCode, name, false), [connect]);
+  const create = useCallback(
+    (name: string) => {
+      netRetries.current = 0;
+      connect(newRoomCode(), name, true);
+    },
+    [connect],
+  );
+  const join = useCallback(
+    (roomCode: string, name: string) => {
+      netRetries.current = 0;
+      connect(roomCode, name, false);
+    },
+    [connect],
+  );
 
   const leave = useCallback(() => {
     if (!isHost) void channel.current?.send({ type: "broadcast", event: "act", payload: { t: "bye", id: me } satisfies Act });

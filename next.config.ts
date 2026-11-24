@@ -40,6 +40,15 @@ const nextConfig: NextConfig = {
           { key: "Content-Security-Policy", value: "frame-ancestors 'none'; base-uri 'self'; object-src 'none'" },
         ],
       },
+      {
+        // Ludo Rush is a page of its own (public/ludo) that the game screen shows in a frame, so our own pages must be allowed
+        // to frame it. Every other site is still blocked. This rule comes second so it replaces the two framing headers above.
+        source: "/ludo/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'" },
+        ],
+      },
     ];
   },
   turbopack: {
