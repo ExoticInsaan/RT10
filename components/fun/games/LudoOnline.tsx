@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { copyText, loadJSON, saveJSON } from "@/components/fun/kit";
 import { useLudoRoom } from "@/components/fun/useLudoRoom";
 import { COLORS, COLOR_NAMES, MAX_PLAYERS, cleanName, type Color } from "@/lib/fun/ludo";
@@ -20,7 +20,8 @@ const field =
 /**
  * Ludo Rush online: make a room or join one, then wait in the lobby, pick a colour and start.
  * The room itself (who sits where, the rules, the dice) lives in `useLudoRoom`.
- * The board for a running game comes in the next step.
+ * Once the host starts, the board is the same page as the offline game (`public/ludo/index.html?online=1`) in a frame:
+ * this component sends it the room's game state, and passes its roll, move, play again and leave taps back to the room.
  */
 export default function LudoOnline({ onExit }: { onExit: () => void }) {
   const tr = useTr();
@@ -199,12 +200,49 @@ export default function LudoOnline({ onExit }: { onExit: () => void }) {
     );
   }
 
-  /* ---------- 4. The game (the board is added in the next step) ---------- */
-  return frame(
-    <div className="my-auto flex flex-col gap-4 text-center">
-      <p role="status" className="m-0 font-display text-3xl">{tr("The game has started!")}</p>
-      <p className="m-0 text-sm leading-6 text-white/65">{tr("The board is coming soon.")}</p>
-      <button type="button" className={ghost} onClick={room.leave}>{tr("Leave room")}</button>
-    </div>,
+  /* ---------- 4. The game ---------- */
+  if (!s.game) return null;
+  return <OnlineBoard room={room} />;
+}
+
+/** The board for a running game. Mounted when the host starts, so a rematch (back to the lobby and start again) gets a fresh board. */
+function OnlineBoard({ room }: { room: ReturnType<typeof useLudoRoom> }) {
+  const { game, seat, isHost, rollDice, moveToken, playAgain, leave } = room;
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const latest = useRef(game);
+
+  // The page learns who plays from its address. Names are encoded twice because the page reads them back out of a query value.
+  const [src] = useState(() => {
+    const players = (game?.players ?? []).map((p) => `${p.color}:${encodeURIComponent(encodeURIComponent(p.name))}:h`).join(",");
+    return `/ludo/index.html?online=1&me=${seat ?? ""}&host=${isHost ? 1 : 0}&p=${players}`;
+  });
+
+  const send = useCallback((g: NonNullable<typeof game>) => frameRef.current?.contentWindow?.postMessage({ type: "ludo:state", game: g }, window.location.origin), []);
+
+  // Every new game state goes to the board. The board ignores one it has already drawn.
+  useEffect(() => {
+    latest.current = game;
+    if (game) send(game);
+  }, [game, send]);
+
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.origin !== window.location.origin || e.source !== frameRef.current?.contentWindow) return;
+      const d = e.data as { type?: string; i?: unknown } | null;
+      if (d?.type === "ludo:ready") {
+        if (latest.current) send(latest.current);
+      } else if (d?.type === "ludo:roll") rollDice();
+      else if (d?.type === "ludo:move" && Number.isInteger(d.i)) moveToken(d.i as number);
+      else if (d?.type === "ludo:again") playAgain();
+      else if (d?.type === "ludo:leave") leave();
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [rollDice, moveToken, playAgain, leave, send]);
+
+  return (
+    <div className="mx-auto w-full max-w-[30rem] overflow-hidden rounded-[28px] bg-[#041240] shadow-[0_24px_60px_-24px_rgba(16,42,76,.45)] sm:rounded-[36px]">
+      <iframe ref={frameRef} src={src} title="Ludo Rush online" allow="autoplay" className="block h-[940px] w-full border-0 max-[420px]:h-[900px]" />
+    </div>
   );
 }
