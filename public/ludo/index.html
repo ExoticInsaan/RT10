@@ -41,7 +41,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff;backgr
 .bt:disabled{filter:grayscale(.7) brightness(.7);cursor:default}.bt.on{filter:drop-shadow(0 0 10px #38e1ff) brightness(1.15)}
 .ring{width:104px;height:104px;border-radius:50%;border:4px solid #3aa8ff;background:radial-gradient(circle,#1b4fc4,#0a2468 70%);box-shadow:0 0 26px #3aa8ff,inset 0 0 18px #0008;display:grid;place-items:center;flex:none;cursor:pointer}
 .sc{width:60px;height:60px;perspective:420px}
-.dice{width:50px;height:50px;margin:5px;position:relative;transform-style:preserve-3d;transition:transform 1.2s cubic-bezier(.2,.8,.2,1);transform:rotateX(-24deg) rotateY(30deg)}
+.dice{width:50px;height:50px;margin:5px;position:relative;transform-style:preserve-3d;transition:transform 1.2s cubic-bezier(.2,.8,.2,1);transform:rotateX(0deg) rotateY(0deg)}
 .dice.go{animation:toss 1.2s cubic-bezier(.2,.7,.3,1)}
 @keyframes toss{0%{translate:0 0}30%{translate:0 -34px}60%{translate:0 0}75%{translate:0 -10px}100%{translate:0 0}}
 .f{position:absolute;inset:0;border-radius:11px;background:linear-gradient(145deg,#fff,#c3cdf5);display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:7px;box-shadow:inset 0 0 8px #3a52b788;backface-visibility:hidden;border:1.5px solid #2a3f9a}
@@ -194,7 +194,7 @@ function schedule(){if(ON)return;if(phase==='roll'&&!over&&isBot(CO[turn]))setTi
 var spinX=0,spinY=0;
 function roll(){if(phase!=='roll'||over)return;phase='rolling';sync();var v=1+Math.floor(Math.random()*6);
  dice.classList.remove('go');void dice.offsetWidth;dice.classList.add('go');spinX+=720;spinY+=1080;
- dice.style.transform='rotateX('+(rot[v][0]+spinX-24)+'deg) rotateY('+(rot[v][1]+spinY+30)+'deg)';diceSfx(v);
+ dice.style.transform='rotateX('+(rot[v][0]+spinX)+'deg) rotateY('+(rot[v][1]+spinY)+'deg)';diceSfx(v);
  say((me(CO[turn])?'You roll':NM[CO[turn]]+' rolls')+'…');setTimeout(function(){landed(v)},1250)}
 function can(k,i,v){var p=T[k][i];return p<0?v===6:p+v<=56}
 function landed(v){val=v;var k=CO[turn];if(v===6){sixes++;confetti();if(navigator.vibrate)navigator.vibrate(50)}
@@ -237,7 +237,7 @@ function applyUi(g,bonus){
  if(g.step==='pick')say(me(k)?'Tap a glowing token to move it':NM[k]+' is choosing…');else turnMsg(!!bonus)}
 function spinTo(c,v,cb){
  dice.classList.remove('go');void dice.offsetWidth;dice.classList.add('go');spinX+=720;spinY+=1080;
- dice.style.transform='rotateX('+(rot[v][0]+spinX-24)+'deg) rotateY('+(rot[v][1]+spinY+30)+'deg)';diceSfx(v);
+ dice.style.transform='rotateX('+(rot[v][0]+spinX)+'deg) rotateY('+(rot[v][1]+spinY)+'deg)';diceSfx(v);
  say((me(c)?'You roll':NM[c]+' rolls')+'…');
  setTimeout(function(){if(v===6){confetti();if(navigator.vibrate)navigator.vibrate(50)}say(wn(c)+' rolled a '+v+'!');cb()},1250)}
 function onlineWin(c){
