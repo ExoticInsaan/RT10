@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Ludo Rush: you (Red) against 3 computers, with 3D dice, sounds and Auto Play.
+ * Ludo Rush: vs 1 to 3 computers, or pass and play with names, with 3D dice and sounds.
  * The game itself is a self-contained page in `public/ludo/index.html`, shown here in a frame.
  * TODO: port it to React so it can share the account, share card and analytics code.
  */

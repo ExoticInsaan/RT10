@@ -38,13 +38,13 @@ export const toolContent: Record<string, ToolContent> = {
   "ludo-rush": {
     howTo: [
       "Sign in with Google (one tap, free).",
-      "You play Red against 3 computers. Press “Roll Dice” or tap the dice.",
+      "Choose Vs computer (1 to 3 computers) or Pass and play (2 to 4 people on one phone, each with their own name).",
       "Roll a 6 to bring a token out. A 6, a capture or reaching home gives you another roll. Tap a glowing token to move it.",
-      "Get all 4 tokens home first to win. Tired of tapping? Switch on Auto Play.",
+      "Get all 4 tokens home first to win. In pass and play, everyone taps the dice in their own corner, so nobody has to turn the phone.",
     ],
     faq: [
       { q: "Is Ludo Rush free?", a: "Yes. It is free to play, and the game runs in your browser with no download." },
-      { q: "Who do I play against?", a: "You play Red against three computer players. Pass-and-play with friends is coming." },
+      { q: "Who do I play against?", a: "Pick Vs computer to play against 1, 2 or 3 computers, or Pass and play to share one phone with 2 to 4 friends. Each player types a name and gets their own dice." },
       { q: "What are the rules?", a: "Roll a 6 to leave the yard. A 6, a capture or reaching home gives another roll, and three 6s in a row lose the turn. Start squares and star squares are safe, and you need the exact number to finish." },
       { q: "Does it have sound?", a: "Yes: dice, hops, captures and wins all have sounds. Use the speaker button at the top to mute." },
     ],
