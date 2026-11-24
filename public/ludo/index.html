@@ -173,12 +173,14 @@ function tone(f,type,dur,vol,delay,f2){if(muted)return;var a=ctx(),t=a.currentTi
 function noise(dur,vol){if(muted)return;var a=ctx(),n=a.sampleRate*dur,b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);for(var i=0;i<n;i++)d[i]=Math.random()*2-1;var s=a.createBufferSource(),g=a.createGain(),fl=a.createBiquadFilter();s.buffer=b;fl.type='lowpass';fl.frequency.setValueAtTime(3000,a.currentTime);fl.frequency.exponentialRampToValueAtTime(200,a.currentTime+dur);g.gain.setValueAtTime(vol,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+dur);s.connect(fl);fl.connect(g);g.connect(a.destination);s.start()}
 function chime(){[523,659,784,1047].forEach(function(f,i){tone(f,'triangle',.35,.2,i*.09)})}
 /* recorded sounds: /ludo/kill.mp3 when a token is captured, /ludo/six.mp3 when the dice shows 6 (both respect the mute button) */
-var SFX={kill:new Audio('/ludo/kill.mp3'),six:new Audio('/ludo/six.mp3')};
-for(var sk in SFX){SFX[sk].preload='auto'}
-function clip(n,fallback){if(muted)return;var a=SFX[n];try{a.pause();a.currentTime=0;var pr=a.play();if(pr&&pr.catch)pr.catch(function(){if(fallback)fallback()})}catch(e){if(fallback)fallback()}}
+var SFX={kill:new Audio('/ludo/kill.mp3'),six:new Audio('/ludo/six.mp3')},sixT=0;
+for(var sk in SFX){SFX[sk].preload='auto';SFX[sk].loop=false}
+/* Restarts the clip from the start: any copy still playing is stopped first, so back-to-back sounds never overlap or loop. */
+function stopClip(n){var a=SFX[n];try{a.pause();a.currentTime=0}catch(e){}}
+function clip(n,fallback){if(muted)return;var a=SFX[n];stopClip(n);try{var pr=a.play();if(pr&&pr.catch)pr.catch(function(e){if(fallback&&e&&e.name!=='AbortError')fallback()})}catch(e){if(fallback)fallback()}}
 function killSfx(){clip('kill',function(){noise(.5,.5);tone(220,'sawtooth',.4,.25,0,50)})}
 function sixSfx(){clip('six',chime)}
-function diceSfx(v){for(var i=0;i<9;i++)tone(300+Math.random()*500,'square',.05,.1,i*.07);tone(140,'sine',.3,.6,.62,40);tone(140,'sine',.3,.5,.95,40);if(v===6)setTimeout(sixSfx,1100)}
+function diceSfx(v){for(var i=0;i<9;i++)tone(300+Math.random()*500,'square',.05,.1,i*.07);tone(140,'sine',.3,.6,.62,40);tone(140,'sine',.3,.5,.95,40);clearTimeout(sixT);stopClip('six');if(v===6)sixT=setTimeout(sixSfx,1100)}
 function confetti(){var cs=['#ff3860','#1fe08f','#ffc928','#2f9bff','#fff'];for(var i=0;i<45;i++){var d=document.createElement('div');d.className='conf';d.style.left=Math.random()*100+'vw';d.style.background=cs[i%5];d.style.animationDelay=Math.random()*.5+'s';document.body.appendChild(d);setTimeout(function(x){x.remove()}.bind(null,d),2600)}}
 /* state */
 var T,els={},turn,phase,sixes,val,movable,over;
