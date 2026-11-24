@@ -212,10 +212,17 @@ function OnlineBoard({ room }: { room: ReturnType<typeof useLudoRoom> }) {
   const latest = useRef(game);
 
   // The page learns who plays from its address. Names are encoded twice because the page reads them back out of a query value.
-  const [src] = useState(() => {
+  const makeSrc = () => {
     const players = (game?.players ?? []).map((p) => `${p.color}:${encodeURIComponent(encodeURIComponent(p.name))}:h`).join(",");
     return `/ludo/index.html?online=1&me=${seat ?? ""}&host=${isHost ? 1 : 0}&p=${players}`;
-  });
+  };
+  const [src, setSrc] = useState(makeSrc);
+  // A new game starts counting from 0 again. If this player never saw the lobby in between (a flaky connection), reload the board for the new game.
+  const [topV, setTopV] = useState(game?.v ?? 0);
+  if (game && game.v !== topV) {
+    if (game.v < topV) setSrc(makeSrc());
+    setTopV(game.v);
+  }
 
   const send = useCallback((g: NonNullable<typeof game>) => frameRef.current?.contentWindow?.postMessage({ type: "ludo:state", game: g }, window.location.origin), []);
 
