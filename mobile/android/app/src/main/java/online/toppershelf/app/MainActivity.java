@@ -11,6 +11,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(DownloadsPlugin.class); // saves downloads to Downloads / Pictures
         registerPlugin(CountdownWidgetPlugin.class); // passes the countdown dates to the home-screen widget
         registerPlugin(SystemUiPlugin.class); // colours the strips behind the status bar and navigation bar
+        registerPlugin(TtsPlugin.class); // the phone's voices, for Notes to Audio
         super.onCreate(savedInstanceState);
         getWindow().getDecorView().setBackgroundColor(0xFFFFFBF7);
     }

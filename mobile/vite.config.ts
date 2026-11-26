@@ -58,6 +58,8 @@ export default defineConfig({
       { find: /^@\/components\/AuthProvider$/, replacement: shim("AuthProvider.tsx") },
       // Offline-capable saving for Flashcards, Countdown and Reminders (the website keeps its own online-only version).
       { find: /^@\/lib\/tools\/useAccountData$/, replacement: shim("useAccountData.ts") },
+      // Audio files for Notes to Audio come from the phone's own voice (no 90 MB download).
+      { find: /^@\/lib\/tools\/notes-audio-file$/, replacement: shim("notes-audio-file.ts") },
       { find: /^@\//, replacement: root + "/" },
       { find: /^react$/, replacement: mod("react") },
       { find: /^react\/(.*)$/, replacement: mod("react") + "/$1" },

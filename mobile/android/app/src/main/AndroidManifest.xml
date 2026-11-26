@@ -54,6 +54,10 @@
         <package android:name="com.instagram.android" />
         <package android:name="com.whatsapp" />
         <package android:name="com.whatsapp.w4b" />
+        <!-- Android 11+: lets the app find the phone's text-to-speech engine, for Notes to Audio -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
     </queries>
 
     <!-- Permissions -->

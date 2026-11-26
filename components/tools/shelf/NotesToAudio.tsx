@@ -18,7 +18,6 @@ export default function NotesToAudio() {
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [rate, setRate] = useState(1);
-  const [lang, setLang] = useState("en-IN");
   const [voiceList, setVoiceList] = useState<SpeechSynthesisVoice[]>([]);
   const [voiceName, setVoiceName] = useState("");
   const [sleep, setSleep] = useState(0);
@@ -168,11 +167,9 @@ export default function NotesToAudio() {
     const clean = cleanText(text);
     const split = splitParts(clean);
     if (!split.length) return setError("Add some text first: paste it in the box.");
+    if (detectLang(clean) === "hi-IN") return setError("Notes to Audio reads English only. Paste your notes in English.");
     setError("");
     stop();
-    const detected = detectLang(clean);
-    langRef.current = detected;
-    setLang(detected);
     partsRef.current = split;
     setParts(split);
     goTo(0);
@@ -300,9 +297,7 @@ export default function NotesToAudio() {
               <button type="button" onClick={() => downloadBlob(new Blob([parts.join("\n")], { type: "text/plain" }), "notes.txt")} className="cursor-pointer rounded-full border border-white/25 bg-transparent px-4 py-2 text-xs font-semibold text-white hover:bg-white/10">Save text</button>
             </div>
             <div className="mt-4 rounded-2xl border border-white/15 bg-white/5 p-3 text-center">
-              {lang === "hi-IN" ? (
-                <p className="m-0 text-xs leading-5 text-[#aab9d0]">Audio download works for English text. Hindi plays live only, for now.</p>
-              ) : fileStep === "making" ? (
+              {fileStep === "making" ? (
                 <div role="status" aria-live="polite">
                   <p className="m-0 text-sm font-semibold">
                     {modelPercent !== null && modelPercent < 100 ? `Getting the voice (one time): ${modelPercent}%` : `Making your audio: ${fileDone.done} of ${fileDone.total} sentences`}
@@ -332,7 +327,7 @@ export default function NotesToAudio() {
               )}
               {fileError && <p className="m-0 mt-2 text-xs leading-5 text-[#f6c08a]">{fileError}</p>}
             </div>
-            {noVoice && <p className="m-0 mt-3 text-center text-xs leading-5 text-[#f6c08a]">No {lang === "hi-IN" ? "Hindi" : "English"} voice was found on this device. Add one in your phone’s text-to-speech settings, or try Chrome.</p>}
+            {noVoice && <p className="m-0 mt-3 text-center text-xs leading-5 text-[#f6c08a]">No English voice was found on this device. Add one in your phone’s text-to-speech settings, or try Chrome.</p>}
             <div ref={list} className="relative mt-4 max-h-44 overflow-auto border-t border-white/10 pt-3 text-sm leading-7">
               {parts.map((p, i) => (
                 <span key={i} onClick={() => jump(i)} className={`na-part ${i === idx ? "na-now" : ""}`}>{p} </span>

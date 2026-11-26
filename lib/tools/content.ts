@@ -192,13 +192,13 @@ const shelfContent: Record<string, ToolContent> = {
     faq: [
       { q: "Is there a limit on how much I can listen to?", a: "No. The reading happens on your own phone or computer, so there is no daily limit and no waiting in a queue." },
       { q: "Can it read scanned PDFs and photos of notes?", a: "Not directly. Open the PDF or photo in Google Lens, tap “Copy text”, and paste it into the box here. Then press Listen." },
-      { q: "Does it read Hindi?", a: "Yes, if your device has a Hindi voice. Just paste Hindi text and it is detected automatically. If no Hindi voice is found, add one in your phone’s text-to-speech settings." },
+      { q: "Does it read Hindi?", a: "Not yet. Notes to Audio reads English only, so paste your notes in English." },
       { q: "Why does the voice sound different on my friend’s phone?", a: "The voices come from your own device and browser, so they differ between phones. Chrome and Edge usually have the best ones." },
       { q: "Can I download the audio?", a: "Yes, for English text. Press “Download audio”, pick a voice and you get a WAV file that plays on any phone or computer. The file is made on your own device, so nothing is uploaded or saved by us. The first time, a one-time voice download of about 90 MB is needed (use Wi-Fi if you can). Very long notes are cut into files of about 15 minutes each. Hindi plays live only for now." },
     ],
     privacyNote: "Your notes are read on your device. They are not uploaded, saved or sent anywhere.",
     seoTitle: "Free Notes to Audio: Listen to Your Notes",
-    seoDescription: "Paste your notes and listen to them read aloud, or download the audio. Free, with no limits. Works in English and Hindi, right in your browser.",
+    seoDescription: "Paste your notes and listen to them read aloud, or download the audio. Free, with no limits. Works in English, right in your browser.",
   },
   reminder: {
     howTo: [

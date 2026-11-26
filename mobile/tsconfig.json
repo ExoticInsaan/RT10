@@ -21,6 +21,7 @@
       "next/font/google": ["src/shims/next-font.ts"],
       "@/lib/supabase/client": ["src/shims/supabase-client.ts"],
       "@/components/AuthProvider": ["src/shims/AuthProvider.tsx"],
+      "@/lib/tools/notes-audio-file": ["src/shims/notes-audio-file.ts"],
       "@/*": ["../*"],
       "react": ["node_modules/@types/react"],
       "react/*": ["node_modules/@types/react/*"],

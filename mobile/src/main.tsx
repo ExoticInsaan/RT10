@@ -7,6 +7,7 @@ import { hindiContent } from "./i18n/appContent.hi";
 
 registerAppContent(hindiContent);
 import { initNative } from "./native";
+import { installNativeSpeech } from "./speech";
 import { initTheme } from "./theme";
 import { restorePush } from "./push";
 import { initCountdownWidget } from "./widget";
@@ -16,6 +17,7 @@ import "./styles.css";
 
 initTheme();
 initNative();
+installNativeSpeech();
 void restorePush();
 initReminders();
 initFocusTimer();
